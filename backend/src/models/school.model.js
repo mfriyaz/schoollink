@@ -143,10 +143,27 @@ async function deleteSchool(id) {
 
     return result.rows[0];
 }
+
+async function findSchoolByCode(code) {
+
+    const query = `
+        SELECT *
+        FROM schools
+        WHERE school_code=$1
+        LIMIT 1;
+    `;
+
+    const result = await pool.query(query,[code]);
+
+    return result.rows[0];
+
+}
+
 module.exports = {
     createSchool,
     getAllSchools,
     getSchoolById,
     updateSchool,
-    deleteSchool
+    deleteSchool,
+    findSchoolByCode
 };

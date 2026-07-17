@@ -3,7 +3,7 @@ const pool = require("../config/database");
 /**
  * Find user by email
  */
-async function findUserByEmail(email) {
+async function findUserByEmail(email, db = pool) {
 
     const query = `
         SELECT
@@ -26,7 +26,7 @@ async function findUserByEmail(email) {
         LIMIT 1;
     `;
 
-    const result = await pool.query(query, [email]);
+    const result = await db.query(query, [email]);
 
     return result.rows[0];
 }
@@ -110,6 +110,22 @@ async function createUser(data, db = pool) {
 
 }
 
+async function findUserByMobile(mobile, db = pool) {
+
+    const query = `
+        SELECT *
+        FROM users
+        WHERE mobile = $1
+        LIMIT 1;
+    `;
+
+    const result = await db.query(query,[mobile]);
+
+    return result.rows[0];
+
+}
+
+
 module.exports = {
 
     findUserByEmail,
@@ -118,6 +134,8 @@ module.exports = {
 
     mobileExists,
 
-    createUser
+    createUser,
+
+    findUserByMobile
 
 };

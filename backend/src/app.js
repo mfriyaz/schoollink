@@ -10,6 +10,7 @@ const authRoutes = require("./routes/auth.routes");
 const profileRoutes = require("./routes/profile.routes");
 const schoolRoutes = require("./routes/school.routes");
 const adminRoutes = require("./routes/admin.routes");
+const platformRoutes = require("./routes/platform.routes");
 
 // Register Routes
 app.use("/api/health", healthRoutes);
@@ -17,6 +18,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/schools", schoolRoutes);
 app.use("/api/admins", adminRoutes);
+app.use("/api/platform", platformRoutes);
 
 // Home
 app.get("/", (req, res) => {

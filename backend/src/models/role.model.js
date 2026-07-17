@@ -1,6 +1,6 @@
 const pool = require("../config/database");
 
-async function getRoleByName(roleName) {
+async function getRoleByName(roleName, db = pool) {
 
     const query = `
         SELECT *
