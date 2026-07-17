@@ -1,0 +1,15 @@
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS created_by INTEGER,
+ADD COLUMN IF NOT EXISTS updated_by INTEGER;
+
+ALTER TABLE users
+ADD CONSTRAINT fk_users_created_by
+FOREIGN KEY (created_by)
+REFERENCES users(id)
+ON DELETE SET NULL;
+
+ALTER TABLE users
+ADD CONSTRAINT fk_users_updated_by
+FOREIGN KEY (updated_by)
+REFERENCES users(id)
+ON DELETE SET NULL;

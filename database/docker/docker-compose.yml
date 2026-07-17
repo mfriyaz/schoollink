@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: schoollink-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: schoollink
+      POSTGRES_PASSWORD: SchoolLink@2026
+      POSTGRES_DB: schoollink_db
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: schoollink-pgadmin
+    restart: unless-stopped
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@schoollink.com
+      PGADMIN_DEFAULT_PASSWORD: SchoolLinkAdmin@2026
+
+    ports:
+      - "5050:80"
+
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

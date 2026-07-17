@@ -1,0 +1,15 @@
+ALTER TABLE schools
+ADD COLUMN IF NOT EXISTS created_by INTEGER,
+ADD COLUMN IF NOT EXISTS updated_by INTEGER;
+
+ALTER TABLE schools
+ADD CONSTRAINT fk_school_created_by
+FOREIGN KEY (created_by)
+REFERENCES users(id)
+ON DELETE SET NULL;
+
+ALTER TABLE schools
+ADD CONSTRAINT fk_school_updated_by
+FOREIGN KEY (updated_by)
+REFERENCES users(id)
+ON DELETE SET NULL;

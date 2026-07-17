@@ -1,12 +1,15 @@
 # Node Modules
 node_modules/
 
+# Environment Variables
+.env
+**/.env
+.env.*
+
 # Logs
 logs/
 *.log
-
-# Environment Variables
-.env
+npm-debug.log*
 
 # VS Code
 .vscode/
