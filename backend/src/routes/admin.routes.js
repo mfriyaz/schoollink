@@ -5,16 +5,19 @@ const router = express.Router();
 const adminController = require("../controllers/admin.controller");
 
 const {
-    authenticateToken
+    authenticate
 } = require("../middleware/auth.middleware");
 
 const {
     authorizeRoles
 } = require("../middleware/role.middleware");
 
+/**
+ * Create School Administrator
+ */
 router.post(
     "/",
-    authenticateToken,
+    authenticate,
     authorizeRoles("Super Admin"),
     adminController.createAdmin
 );

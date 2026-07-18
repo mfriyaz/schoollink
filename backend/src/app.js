@@ -1,3 +1,4 @@
+console.log("✅ APP LOADED");
 const express = require("express");
 
 const app = express();
@@ -11,6 +12,9 @@ const profileRoutes = require("./routes/profile.routes");
 const schoolRoutes = require("./routes/school.routes");
 const adminRoutes = require("./routes/admin.routes");
 const platformRoutes = require("./routes/platform.routes");
+const academicYearRoutes = require("./routes/academicYear.routes");
+const classRoutes = require("./routes/class.routes");
+//const sectionRoutes = require("./routes/section.routes");
 
 // Register Routes
 app.use("/api/health", healthRoutes);
@@ -19,6 +23,10 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/schools", schoolRoutes);
 app.use("/api/admins", adminRoutes);
 app.use("/api/platform", platformRoutes);
+app.use("/api/academic-years", academicYearRoutes);
+app.use("/api/classes", classRoutes);
+//app.use("/api/sections", sectionRoutes);
+
 
 // Home
 app.get("/", (req, res) => {

@@ -1,53 +1,65 @@
 const express = require("express");
+
 const router = express.Router();
 
 const schoolController = require("../controllers/school.controller");
 
 const {
-    authenticateToken
+    authenticate
 } = require("../middleware/auth.middleware");
 
 const {
     authorizeRoles
 } = require("../middleware/role.middleware");
 
-// Create
+/**
+ * Create School
+ */
 router.post(
     "/",
-    authenticateToken,
+    authenticate,
     authorizeRoles("Super Admin"),
     schoolController.createSchool
 );
 
-// Get One School
+/**
+ * Get School By ID
+ */
 router.get(
     "/:id",
-    authenticateToken,
+    authenticate,
     authorizeRoles("Super Admin"),
     schoolController.getSchoolById
 );
 
-// Get All
+/**
+ * Get All Schools
+ */
 router.get(
     "/",
-    authenticateToken,
+    authenticate,
     authorizeRoles("Super Admin"),
     schoolController.getAllSchools
 );
 
-// Update School
+/**
+ * Update School
+ */
 router.put(
     "/:id",
-    authenticateToken,
+    authenticate,
     authorizeRoles("Super Admin"),
     schoolController.updateSchool
 );
 
-// Delete School
+/**
+ * Delete School
+ */
 router.delete(
     "/:id",
-    authenticateToken,
+    authenticate,
     authorizeRoles("Super Admin"),
     schoolController.deleteSchool
 );
+
 module.exports = router;

@@ -5,16 +5,19 @@ const router = express.Router();
 const platformController = require("../controllers/platform.controller");
 
 const {
-    authenticateToken
+    authenticate
 } = require("../middleware/auth.middleware");
 
 const {
     authorizeRoles
 } = require("../middleware/role.middleware");
 
+/**
+ * Platform - Onboard New School
+ */
 router.post(
     "/onboard-school",
-    authenticateToken,
+    authenticate,
     authorizeRoles("Super Admin"),
     platformController.onboardSchool
 );
