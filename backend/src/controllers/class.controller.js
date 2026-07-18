@@ -1,4 +1,5 @@
 const classService = require("../services/class.service");
+const response = require("../utils/response");
 
 /**
  * Create Class
@@ -9,25 +10,20 @@ async function createClass(req, res) {
 
         const newClass = await classService.createClass(req.body);
 
-        return res.status(201).json({
-
-            success: true,
-
-            message: "Class created successfully",
-
-            data: newClass
-
-        });
+        return response.success(
+            res,
+            newClass,
+            "Class created successfully",
+            201
+        );
 
     } catch (err) {
 
-        return res.status(500).json({
-
-            success: false,
-
-            message: err.message
-
-        });
+        return response.error(
+            res,
+            err.message,
+            500
+        );
 
     }
 
@@ -45,23 +41,19 @@ async function getClassesByAcademicYear(req, res) {
                 req.params.academicYearId
             );
 
-        return res.json({
-
-            success: true,
-
-            data: classes
-
-        });
+        return response.success(
+            res,
+            classes,
+            "Classes retrieved successfully"
+        );
 
     } catch (err) {
 
-        return res.status(500).json({
-
-            success: false,
-
-            message: err.message
-
-        });
+        return response.error(
+            res,
+            err.message,
+            500
+        );
 
     }
 
@@ -79,33 +71,27 @@ async function getClassById(req, res) {
 
         if (!classData) {
 
-            return res.status(404).json({
-
-                success: false,
-
-                message: "Class not found"
-
-            });
+            return response.error(
+                res,
+                "Class not found",
+                404
+            );
 
         }
 
-        return res.json({
-
-            success: true,
-
-            data: classData
-
-        });
+        return response.success(
+            res,
+            classData,
+            "Class retrieved successfully"
+        );
 
     } catch (err) {
 
-        return res.status(500).json({
-
-            success: false,
-
-            message: err.message
-
-        });
+        return response.error(
+            res,
+            err.message,
+            500
+        );
 
     }
 
@@ -124,25 +110,19 @@ async function updateClass(req, res) {
                 req.body
             );
 
-        return res.json({
-
-            success: true,
-
-            message: "Class updated successfully",
-
-            data: updatedClass
-
-        });
+        return response.success(
+            res,
+            updatedClass,
+            "Class updated successfully"
+        );
 
     } catch (err) {
 
-        return res.status(500).json({
-
-            success: false,
-
-            message: err.message
-
-        });
+        return response.error(
+            res,
+            err.message,
+            500
+        );
 
     }
 
@@ -158,25 +138,19 @@ async function deleteClass(req, res) {
         const deletedClass =
             await classService.deleteClass(req.params.id);
 
-        return res.json({
-
-            success: true,
-
-            message: "Class deleted successfully",
-
-            data: deletedClass
-
-        });
+        return response.success(
+            res,
+            deletedClass,
+            "Class deleted successfully"
+        );
 
     } catch (err) {
 
-        return res.status(500).json({
-
-            success: false,
-
-            message: err.message
-
-        });
+        return response.error(
+            res,
+            err.message,
+            500
+        );
 
     }
 
