@@ -18,6 +18,7 @@ const sectionRoutes = require("./routes/section.routes");
 const studentRoutes = require("./routes/student.routes");
 const teacherRoutes = require("./routes/teacher.routes");
 const subjectRoutes = require("./routes/subject.routes");
+const teacherSubjectRoutes = require("./routes/teacherSubject.routes");
 
 // Register Routes
 app.use("/api/health", healthRoutes);
@@ -32,6 +33,7 @@ app.use("/api/sections", sectionRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/subjects", subjectRoutes);
+app.use("/api/teacher-subjects", teacherSubjectRoutes);
 
 // Home
 app.get("/", (req, res) => {
