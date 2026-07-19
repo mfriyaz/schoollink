@@ -16,6 +16,7 @@ const academicYearRoutes = require("./routes/academicYear.routes");
 const classRoutes = require("./routes/class.routes");
 const sectionRoutes = require("./routes/section.routes");
 const studentRoutes = require("./routes/student.routes");
+const teacherRoutes = require("./routes/teacher.routes");
 
 // Register Routes
 app.use("/api/health", healthRoutes);
@@ -28,7 +29,7 @@ app.use("/api/academic-years", academicYearRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/sections", sectionRoutes);
 app.use("/api/students", studentRoutes);
-
+app.use("/api/teachers", teacherRoutes);
 
 // Home
 app.get("/", (req, res) => {
