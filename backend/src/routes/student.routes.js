@@ -5,6 +5,11 @@ const router = express.Router();
 const studentController = require("../controllers/student.controller");
 
 const {
+    studentValidationRules,
+    validate
+} = require("../validators/student.validator");
+
+const {
     authenticate
 } = require("../middleware/auth.middleware");
 
@@ -19,6 +24,8 @@ router.post(
     "/",
     authenticate,
     authorizeRoles("Super Admin", "School Admin"),
+    studentValidationRules,
+    validate,
     studentController.createStudent
 );
 

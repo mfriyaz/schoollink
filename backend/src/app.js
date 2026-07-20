@@ -23,7 +23,8 @@ const attendanceRoutes = require("./routes/attendance.routes");
 const homeworkRoutes = require("./routes/homework.routes");
 const examRoutes = require("./routes/exam.routes");
 const examSubjectRoutes = require("./routes/examSubject.routes");
-const studentMarkRoutes = require("./routes/studentMark.routes");  
+const studentMarkRoutes = require("./routes/studentMark.routes");
+const gradeRoutes = require("./routes/grade.routes"); 
 
 // Register Routes
 app.use("/api/health", healthRoutes);
@@ -44,6 +45,7 @@ app.use("/api/homework", homeworkRoutes);
 app.use("/api/exams", examRoutes);
 app.use("/api/exam-subjects", examSubjectRoutes);
 app.use("/api/student-marks", studentMarkRoutes);
+app.use("/api/grades", gradeRoutes);
 
 
 // Home
