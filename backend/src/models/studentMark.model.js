@@ -11,11 +11,15 @@ async function createStudentMark(data) {
             exam_subject_id,
             student_id,
             marks_obtained,
+            percentage,
+            grade_name,
+            grade_point,
+            result,
             remarks
         )
         VALUES
         (
-            $1,$2,$3,$4
+            $1,$2,$3,$4,$5,$6,$7,$8
         )
         RETURNING *;
     `;
@@ -25,6 +29,10 @@ async function createStudentMark(data) {
         data.exam_subject_id,
         data.student_id,
         data.marks_obtained,
+        data.percentage,
+        data.grade_name,
+        data.grade_point,
+        data.result,
         data.remarks
 
     ];
@@ -100,15 +108,23 @@ async function updateStudentMark(id, data) {
         UPDATE student_marks
         SET
             marks_obtained = $1,
-            remarks = $2,
+            percentage = $2,
+            grade_name = $3,
+            grade_point = $4,
+            result = $5,
+            remarks = $6,
             updated_at = CURRENT_TIMESTAMP
-        WHERE id = $3
+        WHERE id = $7
         RETURNING *;
     `;
 
     const values = [
 
         data.marks_obtained,
+        data.percentage,
+        data.grade_name,
+        data.grade_point,
+        data.result,
         data.remarks,
         id
 

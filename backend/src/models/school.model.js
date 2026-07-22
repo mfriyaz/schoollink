@@ -144,7 +144,7 @@ async function deleteSchool(id) {
     return result.rows[0];
 }
 
-async function findSchoolByCode(code) {
+async function findSchoolByCode(code, db = pool) {
 
     const query = `
         SELECT *

@@ -1,254 +1,156 @@
 const studentService = require("../services/student.service");
 const response = require("../utils/response");
+const asyncHandler = require("../middleware/asyncHandler");
 
 /**
  * Create Student
  */
-async function createStudent(req, res) {
+const createStudent = asyncHandler(async (req, res) => {
 
-    try {
+    const newStudent = await studentService.createStudent(req.body);
 
-        const newStudent =
-            await studentService.createStudent(req.body);
+    return response.success(
+        res,
+        newStudent,
+        "Student created successfully",
+        201
+    );
 
-        return response.success(
-            res,
-            newStudent,
-            "Student created successfully",
-            201
-        );
-
-    } catch (err) {
-
-        return response.error(
-            res,
-            err.message,
-            500
-        );
-
-    }
-
-}
+});
 
 /**
- * Get All Students
+ * Get All Students (Supports Search)
  */
-async function getAllStudents(req, res) {
+const getAllStudents = asyncHandler(async (req, res) => {
 
-    try {
+    const search = req.query.search || "";
 
-        const students =
-            await studentService.getAllStudents();
+    const students = await studentService.getAllStudents(search);
 
-        return response.success(
-            res,
-            students,
-            "Students retrieved successfully"
-        );
+    return response.success(
+        res,
+        students,
+        "Students retrieved successfully"
+    );
 
-    } catch (err) {
-
-        return response.error(
-            res,
-            err.message,
-            500
-        );
-
-    }
-
-}
+});
 
 /**
  * Get Student By ID
  */
-async function getStudentById(req, res) {
+const getStudentById = asyncHandler(async (req, res) => {
 
-    try {
+    const student = await studentService.getStudentById(req.params.id);
 
-        const student =
-            await studentService.getStudentById(req.params.id);
+    if (!student) {
 
-        if (!student) {
-
-            return response.error(
-                res,
-                "Student not found",
-                404
-            );
-
-        }
-
-        return response.success(
-            res,
-            student,
-            "Student retrieved successfully"
-        );
-
-    } catch (err) {
-
-        return response.error(
-            res,
-            err.message,
-            500
-        );
+        const error = new Error("Student not found");
+        error.statusCode = 404;
+        throw error;
 
     }
 
-}
+    return response.success(
+        res,
+        student,
+        "Student retrieved successfully"
+    );
+
+});
 
 /**
  * Get Students By Class
  */
-async function getStudentsByClass(req, res) {
+const getStudentsByClass = asyncHandler(async (req, res) => {
 
-    try {
+    const students = await studentService.getStudentsByClass(
+        req.params.classId
+    );
 
-        const students =
-            await studentService.getStudentsByClass(
-                req.params.classId
-            );
+    return response.success(
+        res,
+        students,
+        "Students retrieved successfully"
+    );
 
-        return response.success(
-            res,
-            students,
-            "Students retrieved successfully"
-        );
-
-    } catch (err) {
-
-        return response.error(
-            res,
-            err.message,
-            500
-        );
-
-    }
-
-}
+});
 
 /**
  * Get Students By Section
  */
-async function getStudentsBySection(req, res) {
+const getStudentsBySection = asyncHandler(async (req, res) => {
 
-    try {
+    const students = await studentService.getStudentsBySection(
+        req.params.sectionId
+    );
 
-        const students =
-            await studentService.getStudentsBySection(
-                req.params.sectionId
-            );
+    return response.success(
+        res,
+        students,
+        "Students retrieved successfully"
+    );
 
-        return response.success(
-            res,
-            students,
-            "Students retrieved successfully"
-        );
-
-    } catch (err) {
-
-        return response.error(
-            res,
-            err.message,
-            500
-        );
-
-    }
-
-}
+});
 
 /**
  * Update Student
  */
-async function updateStudent(req, res) {
+const updateStudent = asyncHandler(async (req, res) => {
 
-    try {
+    const updatedStudent = await studentService.updateStudent(
+        req.params.id,
+        req.body
+    );
 
-        const updatedStudent =
-            await studentService.updateStudent(
-                req.params.id,
-                req.body
-            );
+    if (!updatedStudent) {
 
-        if (!updatedStudent) {
-
-            return response.error(
-                res,
-                "Student not found",
-                404
-            );
-
-        }
-
-        return response.success(
-            res,
-            updatedStudent,
-            "Student updated successfully"
-        );
-
-    } catch (err) {
-
-        return response.error(
-            res,
-            err.message,
-            500
-        );
+        const error = new Error("Student not found");
+        error.statusCode = 404;
+        throw error;
 
     }
 
-}
+    return response.success(
+        res,
+        updatedStudent,
+        "Student updated successfully"
+    );
+
+});
 
 /**
  * Delete Student
  */
-async function deleteStudent(req, res) {
+const deleteStudent = asyncHandler(async (req, res) => {
 
-    try {
+    const deletedStudent = await studentService.deleteStudent(
+        req.params.id
+    );
 
-        const deletedStudent =
-            await studentService.deleteStudent(req.params.id);
+    if (!deletedStudent) {
 
-        if (!deletedStudent) {
-
-            return response.error(
-                res,
-                "Student not found",
-                404
-            );
-
-        }
-
-        return response.success(
-            res,
-            deletedStudent,
-            "Student deleted successfully"
-        );
-
-    } catch (err) {
-
-        return response.error(
-            res,
-            err.message,
-            500
-        );
+        const error = new Error("Student not found");
+        error.statusCode = 404;
+        throw error;
 
     }
 
-}
+    return response.success(
+        res,
+        deletedStudent,
+        "Student deleted successfully"
+    );
+
+});
 
 module.exports = {
 
     createStudent,
-
     getAllStudents,
-
     getStudentById,
-
     getStudentsByClass,
-
     getStudentsBySection,
-
     updateStudent,
-
     deleteStudent
 
 };

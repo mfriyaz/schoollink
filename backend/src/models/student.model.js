@@ -56,15 +56,31 @@ async function createStudent(student) {
 }
 
 /**
- * Get All Students
+ * Get All Students (Supports Search)
  */
-async function getAllStudents() {
+async function getAllStudents(search = "") {
 
-    const result = await pool.query(`
+    const keyword = `%${search}%`;
+
+    const result = await pool.query(
+
+        `
         SELECT *
         FROM students
-        ORDER BY first_name;
-    `);
+        WHERE
+
+            first_name ILIKE $1
+            OR last_name ILIKE $1
+            OR admission_no ILIKE $1
+            OR father_name ILIKE $1
+            OR parent_phone ILIKE $1
+
+        ORDER BY first_name
+        `,
+
+        [keyword]
+
+    );
 
     return result.rows;
 
@@ -147,25 +163,15 @@ async function updateStudent(id, student) {
         SET
 
             first_name=$1,
-
             last_name=$2,
-
             gender=$3,
-
             date_of_birth=$4,
-
             father_name=$5,
-
             mother_name=$6,
-
             parent_phone=$7,
-
             parent_email=$8,
-
             address=$9,
-
             is_active=$10,
-
             updated_at=NOW()
 
         WHERE id=$11
@@ -220,17 +226,11 @@ async function deleteStudent(id) {
 module.exports = {
 
     createStudent,
-
     getAllStudents,
-
     getStudentById,
-
     getStudentsByClass,
-
     getStudentsBySection,
-
     updateStudent,
-
     deleteStudent
 
 };

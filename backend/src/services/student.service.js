@@ -10,11 +10,11 @@ async function createStudent(studentData) {
 }
 
 /**
- * Get All Students
+ * Get All Students (Supports Search)
  */
-async function getAllStudents() {
+async function getAllStudents(search = "") {
 
-    return await studentModel.getAllStudents();
+    return await studentModel.getAllStudents(search);
 
 }
 
@@ -50,7 +50,10 @@ async function getStudentsBySection(sectionId) {
  */
 async function updateStudent(id, studentData) {
 
-    return await studentModel.updateStudent(id, studentData);
+    return await studentModel.updateStudent(
+        id,
+        studentData
+    );
 
 }
 

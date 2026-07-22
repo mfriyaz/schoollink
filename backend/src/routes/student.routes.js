@@ -30,6 +30,20 @@ router.post(
 );
 
 /**
+ * @swagger
+ * /api/students:
+ *   get:
+ *     summary: Get all students
+ *     tags:
+ *       - Students
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Students retrieved successfully
+ */
+
+/**
  * Get All Students
  */
 router.get(
