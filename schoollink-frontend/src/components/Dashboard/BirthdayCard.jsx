@@ -1,58 +1,72 @@
 import {
 
-Card,
-CardContent,
-Typography,
-List,
-ListItem,
-ListItemText
+    Avatar,
+
+    List,
+
+    ListItem,
+
+    ListItemAvatar,
+
+    ListItemText,
+
+    Typography
 
 } from "@mui/material";
 
-function BirthdayCard({ birthdays = [] }) {
+import AppCard from "../ui/AppCard";
+
+function BirthdayCard({ birthdays }) {
 
     return (
 
-        <Card>
+        <AppCard>
 
-            <CardContent>
+            <Typography
+                variant="h6"
+                sx={{
+                    fontWeight: 700,
+                    mb: 3
+                }}
+            >
+                🎉 Today's Birthdays
+            </Typography>
 
-                <Typography
-                    variant="h6"
-                    mb={2}
-                >
+            {
 
-                    Today's Birthdays
+                birthdays.length === 0
 
-                </Typography>
+                    ?
 
-                <List>
+                    <Typography color="text.secondary">
 
-                    {
+                        No birthdays today
 
-                        birthdays.length === 0 ?
+                    </Typography>
 
-                            (
+                    :
 
-                                <Typography>
+                    <List>
 
-                                    No birthdays today 🎉
+                        {
 
-                                </Typography>
-
-                            )
-
-                            :
-
-                            birthdays.map(student => (
+                            birthdays.map((student) => (
 
                                 <ListItem key={student.id}>
+
+                                    <ListItemAvatar>
+
+                                        <Avatar>
+
+                                            {student.first_name[0]}
+
+                                        </Avatar>
+
+                                    </ListItemAvatar>
 
                                     <ListItemText
 
                                         primary={`${student.first_name} ${student.last_name}`}
-
-                                        secondary={student.class_name}
 
                                     />
 
@@ -60,13 +74,13 @@ function BirthdayCard({ birthdays = [] }) {
 
                             ))
 
-                    }
+                        }
 
-                </List>
+                    </List>
 
-            </CardContent>
+            }
 
-        </Card>
+        </AppCard>
 
     );
 

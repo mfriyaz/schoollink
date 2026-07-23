@@ -1,38 +1,30 @@
 import { useEffect, useState } from "react";
 
 import {
-
     Grid,
-    Typography,
-    Paper,
-    Box,
-    List,
-    ListItem,
-    ListItemText
-
+    Box
 } from "@mui/material";
 
-import DashboardCard from "../../components/Dashboard/DashboardCard";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import SchoolIcon from "@mui/icons-material/School";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 
-import { getDashboard } from "../../services/dashboardService";
+import PageTitle from "../../components/common/PageTitle";
+
+import DashboardStatCard from "../../components/dashboard/DashboardStatCard";
+
+import DashboardSection from "../../components/dashboard/DashboardSection";
+
+import RecentStudentCard from "../../components/dashboard/RecentStudentCard";
+
+import BirthdayCard from "../../components/dashboard/BirthdayCard";
+
+import { getDashboardSummary } from "../../services/dashboardService";
 
 function DashboardPage() {
 
-    const [dashboard, setDashboard] = useState({
-
-        students: 0,
-
-        teachers: 0,
-
-        classes: 0,
-
-        attendance: 0,
-
-        recentStudents: [],
-
-        birthdays: []
-
-    });
+    const [dashboard, setDashboard] = useState(null);
 
     useEffect(() => {
 
@@ -44,7 +36,7 @@ function DashboardPage() {
 
         try {
 
-            const response = await getDashboard();
+            const response = await getDashboardSummary();
 
             if (response.success) {
 
@@ -62,183 +54,114 @@ function DashboardPage() {
 
     }
 
+    if (!dashboard) return null;
+
     return (
 
-        <Box sx={{ p: 3 }}>
+        <Box>
 
-            <Typography
+            <PageTitle
 
-                variant="h4"
+                title="Dashboard"
 
-                mb={3}
+                subtitle="Welcome back to SchoolLink ERP"
 
-            >
-
-                Dashboard
-
-            </Typography>
+            />
 
             <Grid
-
                 container
-
                 spacing={3}
-
             >
 
-                <Grid size={{ xs: 12, md: 3 }}>
+                <Grid item xs={12} md={3}>
 
-                    <DashboardCard
+                    <DashboardStatCard
 
                         title="Students"
 
                         value={dashboard.students}
 
-                        color="#1976d2"
+                        icon={<PeopleAltIcon fontSize="large" />}
+
+                        color="#2563EB"
 
                     />
 
                 </Grid>
 
-                <Grid size={{ xs: 12, md: 3 }}>
+                <Grid item xs={12} md={3}>
 
-                    <DashboardCard
+                    <DashboardStatCard
 
                         title="Teachers"
 
                         value={dashboard.teachers}
 
-                        color="#43a047"
+                        icon={<SchoolIcon fontSize="large" />}
+
+                        color="#16A34A"
 
                     />
 
                 </Grid>
 
-                <Grid size={{ xs: 12, md: 3 }}>
+                <Grid item xs={12} md={3}>
 
-                    <DashboardCard
+                    <DashboardStatCard
 
                         title="Classes"
 
                         value={dashboard.classes}
 
-                        color="#ef6c00"
+                        icon={<MenuBookIcon fontSize="large" />}
+
+                        color="#EA580C"
 
                     />
 
                 </Grid>
 
-                <Grid size={{ xs: 12, md: 3 }}>
+                <Grid item xs={12} md={3}>
 
-                    <DashboardCard
+                    <DashboardStatCard
 
                         title="Attendance"
 
                         value={`${dashboard.attendance}%`}
 
-                        color="#8e24aa"
+                        icon={<TaskAltIcon fontSize="large" />}
+
+                        color="#9333EA"
 
                     />
 
                 </Grid>
 
-                <Grid size={{ xs: 12, md: 6 }}>
-
-                    <Paper sx={{ p: 2 }}>
-
-                        <Typography variant="h6">
-
-                            Recently Added Students
-
-                        </Typography>
-
-                        <List>
-
-                            {
-
-                                dashboard.recentStudents.map(student => (
-
-                                    <ListItem key={student.id}>
-
-                                        <ListItemText
-
-                                            primary={`${student.first_name} ${student.last_name}`}
-
-                                            secondary={student.admission_no}
-
-                                        />
-
-                                    </ListItem>
-
-                                ))
-
-                            }
-
-                        </List>
-
-                    </Paper>
-
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 6 }}>
-
-                    <Paper sx={{ p: 2 }}>
-
-                        <Typography variant="h6">
-
-                            Today's Birthdays
-
-                        </Typography>
-
-                        {
-
-                            dashboard.birthdays.length === 0 ?
-
-                                (
-
-                                    <Typography mt={2}>
-
-                                        No birthdays today 🎉
-
-                                    </Typography>
-
-                                )
-
-                                :
-
-                                (
-
-                                    <List>
-
-                                        {
-
-                                            dashboard.birthdays.map(student => (
-
-                                                <ListItem key={student.id}>
-
-                                                    <ListItemText
-
-                                                        primary={`${student.first_name} ${student.last_name}`}
-
-                                                    />
-
-                                                </ListItem>
-
-                                            ))
-
-                                        }
-
-                                    </List>
-
-                                )
-
-                        }
-
-                    </Paper>
-
-                </Grid>
-
             </Grid>
+
+            <DashboardSection
+
+                left={
+
+                    <RecentStudentCard
+
+                        students={dashboard.recentStudents}
+
+                    />
+
+                }
+
+                right={
+
+                    <BirthdayCard
+
+                        birthdays={dashboard.birthdays}
+
+                    />
+
+                }
+
+            />
 
         </Box>
 
