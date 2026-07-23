@@ -1,38 +1,36 @@
 import {
 
     AppBar,
+
     Toolbar,
+
     Typography,
+
     Box,
-    IconButton,
+
     Avatar,
-    Tooltip
+
+    IconButton
 
 } from "@mui/material";
 
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 
-function Topbar() {
+function Topbar(){
 
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-    return (
+    return(
 
         <AppBar
 
-            position="fixed"
+            position="static"
+
+            elevation={0}
 
             color="inherit"
 
-            elevation={1}
-
             sx={{
 
-                width: "calc(100% - 250px)",
-
-                ml: "250px",
-
-                backgroundColor: "#ffffff"
+                borderBottom:"1px solid #E5E7EB"
 
             }}
 
@@ -46,75 +44,31 @@ function Topbar() {
 
                     sx={{
 
-                        flexGrow: 1,
+                        fontWeight:700,
 
-                        color: "#1E293B",
-
-                        fontWeight: 600
+                        color:"#0F172A"
 
                     }}
 
                 >
 
-                    SchoolLink ERP
+                    Dashboard
 
                 </Typography>
 
-                <Tooltip title="Notifications">
+                <Box sx={{flexGrow:1}}/>
 
-                    <IconButton>
+                <IconButton>
 
-                        <NotificationsIcon />
+                    <NotificationsNoneIcon/>
 
-                    </IconButton>
+                </IconButton>
 
-                </Tooltip>
+                <Avatar sx={{ml:2}}>
 
-                <Box
+                    A
 
-                    sx={{
-
-                        display: "flex",
-
-                        alignItems: "center",
-
-                        ml: 2
-
-                    }}
-
-                >
-
-                    <Avatar sx={{ bgcolor: "#2563EB" }}>
-
-                        {user.full_name
-                            ? user.full_name.charAt(0).toUpperCase()
-                            : "A"}
-
-                    </Avatar>
-
-                    <Box sx={{ ml: 1 }}>
-
-                        <Typography
-                            variant="subtitle2"
-                            fontWeight="bold"
-                        >
-
-                            {user.full_name || "Administrator"}
-
-                        </Typography>
-
-                        <Typography
-                            variant="caption"
-                            color="text.secondary"
-                        >
-
-                            {user.role_name || "School Admin"}
-
-                        </Typography>
-
-                    </Box>
-
-                </Box>
+                </Avatar>
 
             </Toolbar>
 

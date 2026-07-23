@@ -1,145 +1,120 @@
-import { Drawer } from "@mui/material";
-
 import {
 
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Toolbar,
+    Box,
+
     Typography,
-    Box
+
+    List,
+
+    ListItemButton,
+
+    ListItemText
 
 } from "@mui/material";
 
-import { NavLink } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-import NavigationMenu from "./NavigationMenu";
+const menus = [
 
-const drawerWidth = 250;
+    {
+
+        title: "Dashboard",
+
+        path: "/dashboard"
+
+    },
+
+    {
+
+        title: "Students",
+
+        path: "/students"
+
+    }
+
+];
 
 function Sidebar() {
 
+    const location = useLocation();
+
     return (
 
-        <Drawer
-
-            variant="permanent"
+        <Box
 
             sx={{
 
-                width: drawerWidth,
+                width: 250,
 
-                flexShrink: 0,
+                bgcolor: "#0F172A",
 
-                "& .MuiDrawer-paper": {
+                color: "white",
 
-                    width: drawerWidth,
-
-                    boxSizing: "border-box",
-
-                    backgroundColor: "#1E293B",
-
-                    color: "#fff"
-
-                }
+                minHeight: "100vh"
 
             }}
 
         >
 
-            <Toolbar>
+            <Typography
 
-                <Typography
+                variant="h5"
 
-                    variant="h6"
+                sx={{
 
-                    fontWeight="bold"
+                    p:3,
 
-                >
+                    fontWeight:700
 
-                    SchoolLink ERP
+                }}
 
-                </Typography>
+            >
 
-            </Toolbar>
+                SchoolLink
 
-            <Box sx={{ overflow: "auto" }}>
+            </Typography>
 
-                <List>
+            <List>
 
-                    {
+                {
 
-                        NavigationMenu.map((item) => (
+                    menus.map(menu=>(
 
-                            <ListItem
+                        <ListItemButton
 
-                                key={item.title}
+                            key={menu.path}
 
-                                disablePadding
+                            component={Link}
 
-                            >
+                            to={menu.path}
 
-                                <ListItemButton
+                            selected={location.pathname===menu.path}
 
-                                    component={NavLink}
+                            sx={{
 
-                                    to={item.path}
+                                color:"white",
 
-                                    sx={{
+                                "&.Mui-selected":{
 
-                                        color: "#fff",
+                                    bgcolor:"#2563EB"
 
-                                        "&.active": {
+                                }
 
-                                            backgroundColor: "#2563EB"
+                            }}
 
-                                        },
+                        >
 
-                                        "&:hover": {
+                            <ListItemText primary={menu.title}/>
 
-                                            backgroundColor: "#334155"
+                        </ListItemButton>
 
-                                        }
+                    ))
 
-                                    }}
+                }
 
-                                >
+            </List>
 
-                                    <ListItemIcon
-
-                                        sx={{
-
-                                            color: "#fff"
-
-                                        }}
-
-                                    >
-
-                                        {item.icon}
-
-                                    </ListItemIcon>
-
-                                    <ListItemText
-
-                                        primary={item.title}
-
-                                    />
-
-                                </ListItemButton>
-
-                            </ListItem>
-
-                        ))
-
-                    }
-
-                </List>
-
-            </Box>
-
-        </Drawer>
+        </Box>
 
     );
 
