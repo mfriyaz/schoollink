@@ -1,51 +1,32 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
-import LoginPage from "../pages/Login/LoginPage";
+import MainLayout from "../layouts/MainLayout";
 
 import DashboardPage from "../pages/Dashboard/DashboardPage";
 import StudentListPage from "../pages/Students/StudentListPage";
 
-import MainLayout from "../layouts/MainLayout";
-
-function AppRoutes() {
+export default function AppRoutes() {
 
     return (
 
-        <BrowserRouter>
+        <Routes>
 
-            <Routes>
-
-                {/* Login */}
-
-                <Route path="/" element={<LoginPage />} />
-
-                {/* ERP */}
-
-                <Route element={<MainLayout />}>
-
-                    <Route
-                        path="/dashboard"
-                        element={<DashboardPage />}
-                    />
-
-                    <Route
-                        path="/students"
-                        element={<StudentListPage />}
-                    />
-
-                </Route>
+            <Route element={<MainLayout />}>
 
                 <Route
-                    path="*"
-                    element={<Navigate to="/" replace />}
+                    path="/"
+                    element={<DashboardPage />}
                 />
 
-            </Routes>
+                <Route
+                    path="/students"
+                    element={<StudentListPage />}
+                />
 
-        </BrowserRouter>
+            </Route>
+
+        </Routes>
 
     );
 
 }
-
-export default AppRoutes;

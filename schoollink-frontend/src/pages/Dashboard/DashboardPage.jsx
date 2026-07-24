@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 
-import {
-    Grid,
-    Box
-} from "@mui/material";
+import { Box, Grid } from "@mui/material";
 
 import HeroCard from "../../components/dashboard/HeroCard";
-
 import SectionTitle from "../../components/common/SectionTitle";
 
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
@@ -20,25 +16,23 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 
 import KpiCard from "../../components/dashboard/KpiCard";
 import QuickActionCard from "../../components/dashboard/QuickActionCard";
+
 import DashboardCharts from "../../components/dashboard/DashboardCharts";
-import DashboardSection from "../../components/dashboard/DashboardSection";
+
 import CalendarCard from "../../components/dashboard/CalendarCard";
 import AnnouncementCard from "../../components/dashboard/AnnouncementCard";
+
+import DashboardSection from "../../components/dashboard/DashboardSection";
 import RecentStudentCard from "../../components/dashboard/RecentStudentCard";
 import BirthdayCard from "../../components/dashboard/BirthdayCard";
 
 import { getDashboardSummary } from "../../services/dashboardService";
 
 const gradients = {
-
     blue: "linear-gradient(135deg,#2563EB,#60A5FA)",
-
     green: "linear-gradient(135deg,#16A34A,#4ADE80)",
-
     orange: "linear-gradient(135deg,#EA580C,#FB923C)",
-
     purple: "linear-gradient(135deg,#7C3AED,#A855F7)"
-
 };
 
 function DashboardPage() {
@@ -63,9 +57,9 @@ function DashboardPage() {
 
             }
 
-        } catch (err) {
+        } catch (error) {
 
-            console.error(err);
+            console.error(error);
 
         }
 
@@ -92,9 +86,10 @@ function DashboardPage() {
             <Grid
                 container
                 spacing={3}
+                sx={{ mb: 4 }}
             >
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} sm={6} lg={3}>
 
                     <KpiCard
                         title="Students"
@@ -105,7 +100,7 @@ function DashboardPage() {
 
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} sm={6} lg={3}>
 
                     <KpiCard
                         title="Teachers"
@@ -116,7 +111,7 @@ function DashboardPage() {
 
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} sm={6} lg={3}>
 
                     <KpiCard
                         title="Classes"
@@ -127,7 +122,7 @@ function DashboardPage() {
 
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item xs={12} sm={6} lg={3}>
 
                     <KpiCard
                         title="Attendance"
@@ -199,7 +194,7 @@ function DashboardPage() {
             <Grid
                 container
                 spacing={3}
-                sx={{ mt: 2, mb: 2 }}
+                sx={{ mt: 2, mb: 4 }}
             >
 
                 <Grid item xs={12} md={6}>
@@ -211,7 +206,7 @@ function DashboardPage() {
                 <Grid item xs={12} md={6}>
 
                     <AnnouncementCard
-                        announcements={dashboard.announcements}
+                        announcements={dashboard.announcements || []}
                     />
 
                 </Grid>
@@ -223,7 +218,7 @@ function DashboardPage() {
                 left={
 
                     <RecentStudentCard
-                        students={dashboard.recentStudents}
+                        students={dashboard.recentStudents || []}
                     />
 
                 }
@@ -231,7 +226,7 @@ function DashboardPage() {
                 right={
 
                     <BirthdayCard
-                        birthdays={dashboard.birthdays}
+                        birthdays={dashboard.birthdays || []}
                     />
 
                 }
