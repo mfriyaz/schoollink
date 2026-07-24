@@ -5,7 +5,6 @@ import {
     Box
 } from "@mui/material";
 
-import DashboardHeader from "../../components/dashboard/DashboardHeader";
 import HeroCard from "../../components/dashboard/HeroCard";
 
 import SectionTitle from "../../components/common/SectionTitle";
@@ -21,7 +20,10 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 
 import KpiCard from "../../components/dashboard/KpiCard";
 import QuickActionCard from "../../components/dashboard/QuickActionCard";
+import DashboardCharts from "../../components/dashboard/DashboardCharts";
 import DashboardSection from "../../components/dashboard/DashboardSection";
+import CalendarCard from "../../components/dashboard/CalendarCard";
+import AnnouncementCard from "../../components/dashboard/AnnouncementCard";
 import RecentStudentCard from "../../components/dashboard/RecentStudentCard";
 import BirthdayCard from "../../components/dashboard/BirthdayCard";
 
@@ -69,18 +71,22 @@ function DashboardPage() {
 
     }
 
-    if (!dashboard) return null;
+    if (!dashboard) {
+
+        return null;
+
+    }
 
     return (
 
         <Box>
 
-            <DashboardHeader />
-
             <HeroCard />
 
             <SectionTitle>
+
                 Dashboard Overview
+
             </SectionTitle>
 
             <Grid
@@ -188,18 +194,46 @@ function DashboardPage() {
 
             </Grid>
 
+            <DashboardCharts />
+
+            <Grid
+                container
+                spacing={3}
+                sx={{ mt: 2, mb: 2 }}
+            >
+
+                <Grid item xs={12} md={6}>
+
+                    <CalendarCard />
+
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+
+                    <AnnouncementCard
+                        announcements={dashboard.announcements}
+                    />
+
+                </Grid>
+
+            </Grid>
+
             <DashboardSection
 
                 left={
+
                     <RecentStudentCard
                         students={dashboard.recentStudents}
                     />
+
                 }
 
                 right={
+
                     <BirthdayCard
                         birthdays={dashboard.birthdays}
                     />
+
                 }
 
             />

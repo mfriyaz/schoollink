@@ -1,96 +1,88 @@
 import {
-
+    Paper,
     Typography,
-
+    List,
+    ListItem,
     Divider,
-
-    Stack
-
+    Box
 } from "@mui/material";
 
-import AppCard from "../ui/AppCard";
+import CampaignIcon from "@mui/icons-material/Campaign";
 
-function AnnouncementCard() {
+function AnnouncementCard({ announcements = [] }) {
 
     return (
 
-        <AppCard>
+        <Paper
+            sx={{
+                p: 3,
+                borderRadius: 4,
+                boxShadow: "0 10px 30px rgba(0,0,0,.05)",
+                height: "100%"
+            }}
+        >
 
             <Typography
-
                 variant="h6"
-
-                sx={{
-
-                    fontWeight: 700,
-
-                    mb: 2
-
-                }}
-
+                fontWeight={700}
+                mb={2}
             >
-
                 Announcements
-
             </Typography>
 
-            <Stack spacing={2}>
+            <List>
 
-                <div>
+                {
+                    announcements.map((item, index) => (
 
-                    <Typography fontWeight={600}>
+                        <Box key={item.id}>
 
-                        School Reopens
+                            <ListItem
+                                sx={{
+                                    alignItems: "flex-start"
+                                }}
+                            >
 
-                    </Typography>
+                                <CampaignIcon
+                                    sx={{
+                                        color: "#2563EB",
+                                        mr: 2,
+                                        mt: .5
+                                    }}
+                                />
 
-                    <Typography color="text.secondary">
+                                <Box>
 
-                        Monday 8:00 AM
+                                    <Typography
+                                        fontWeight={700}
+                                    >
+                                        {item.title}
+                                    </Typography>
 
-                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                    >
+                                        {item.description}
+                                    </Typography>
 
-                </div>
+                                </Box>
 
-                <Divider />
+                            </ListItem>
 
-                <div>
+                            {
+                                index !== announcements.length - 1 &&
+                                <Divider />
+                            }
 
-                    <Typography fontWeight={600}>
+                        </Box>
 
-                        Parent Meeting
+                    ))
+                }
 
-                    </Typography>
+            </List>
 
-                    <Typography color="text.secondary">
-
-                        Friday 2 PM
-
-                    </Typography>
-
-                </div>
-
-                <Divider />
-
-                <div>
-
-                    <Typography fontWeight={600}>
-
-                        Sports Day
-
-                    </Typography>
-
-                    <Typography color="text.secondary">
-
-                        Next Month
-
-                    </Typography>
-
-                </div>
-
-            </Stack>
-
-        </AppCard>
+        </Paper>
 
     );
 

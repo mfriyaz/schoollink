@@ -1,22 +1,39 @@
 const dashboardService = require("../services/dashboard.service");
-const response = require("../utils/response");
-const asyncHandler = require("../middleware/asyncHandler");
 
-const getDashboard = asyncHandler(async (req, res) => {
+async function getDashboard(req, res) {
 
-    const dashboard = await dashboardService.getDashboardSummary();
+    try {
 
-    return response.success(
+        const dashboard =
+            await dashboardService.getDashboardSummary();
 
-        res,
+        res.json({
 
-        dashboard,
+            success: true,
 
-        "Dashboard loaded successfully"
+            message: "Dashboard loaded successfully",
 
-    );
+            data: dashboard
 
-});
+        });
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Dashboard loading failed"
+
+        });
+
+    }
+
+}
 
 module.exports = {
 

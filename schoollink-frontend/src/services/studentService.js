@@ -1,14 +1,18 @@
 import api from "./api";
 
 /**
- * Get all students (supports search)
+ * Get all students
  */
 export async function getStudents(search = "") {
 
     const response = await api.get("/students", {
+
         params: {
+
             search
+
         }
+
     });
 
     return response.data;
@@ -27,14 +31,11 @@ export async function getStudentById(id) {
 }
 
 /**
- * Create new student
+ * Create student
  */
-export async function createStudent(student) {
+export async function createStudent(data) {
 
-    const response = await api.post(
-        "/students",
-        student
-    );
+    const response = await api.post("/students", data);
 
     return response.data;
 
@@ -43,12 +44,9 @@ export async function createStudent(student) {
 /**
  * Update student
  */
-export async function updateStudent(id, student) {
+export async function updateStudent(id, data) {
 
-    const response = await api.put(
-        `/students/${id}`,
-        student
-    );
+    const response = await api.put(`/students/${id}`, data);
 
     return response.data;
 
@@ -59,35 +57,7 @@ export async function updateStudent(id, student) {
  */
 export async function deleteStudent(id) {
 
-    const response = await api.delete(
-        `/students/${id}`
-    );
-
-    return response.data;
-
-}
-
-/**
- * Get students by class
- */
-export async function getStudentsByClass(classId) {
-
-    const response = await api.get(
-        `/students/class/${classId}`
-    );
-
-    return response.data;
-
-}
-
-/**
- * Get students by section
- */
-export async function getStudentsBySection(sectionId) {
-
-    const response = await api.get(
-        `/students/section/${sectionId}`
-    );
+    const response = await api.delete(`/students/${id}`);
 
     return response.data;
 

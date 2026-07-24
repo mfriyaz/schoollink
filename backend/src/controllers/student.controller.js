@@ -7,11 +7,11 @@ const asyncHandler = require("../middleware/asyncHandler");
  */
 const createStudent = asyncHandler(async (req, res) => {
 
-    const newStudent = await studentService.createStudent(req.body);
+    const student = await studentService.createStudent(req.body);
 
     return response.success(
         res,
-        newStudent,
+        student,
         "Student created successfully",
         201
     );
@@ -19,7 +19,7 @@ const createStudent = asyncHandler(async (req, res) => {
 });
 
 /**
- * Get All Students (Supports Search)
+ * Get All Students
  */
 const getAllStudents = asyncHandler(async (req, res) => {
 
@@ -97,12 +97,12 @@ const getStudentsBySection = asyncHandler(async (req, res) => {
  */
 const updateStudent = asyncHandler(async (req, res) => {
 
-    const updatedStudent = await studentService.updateStudent(
+    const student = await studentService.updateStudent(
         req.params.id,
         req.body
     );
 
-    if (!updatedStudent) {
+    if (!student) {
 
         const error = new Error("Student not found");
         error.statusCode = 404;
@@ -112,7 +112,7 @@ const updateStudent = asyncHandler(async (req, res) => {
 
     return response.success(
         res,
-        updatedStudent,
+        student,
         "Student updated successfully"
     );
 
@@ -123,11 +123,11 @@ const updateStudent = asyncHandler(async (req, res) => {
  */
 const deleteStudent = asyncHandler(async (req, res) => {
 
-    const deletedStudent = await studentService.deleteStudent(
+    const student = await studentService.deleteStudent(
         req.params.id
     );
 
-    if (!deletedStudent) {
+    if (!student) {
 
         const error = new Error("Student not found");
         error.statusCode = 404;
@@ -137,7 +137,7 @@ const deleteStudent = asyncHandler(async (req, res) => {
 
     return response.success(
         res,
-        deletedStudent,
+        student,
         "Student deleted successfully"
     );
 
@@ -146,11 +146,17 @@ const deleteStudent = asyncHandler(async (req, res) => {
 module.exports = {
 
     createStudent,
+
     getAllStudents,
+
     getStudentById,
+
     getStudentsByClass,
+
     getStudentsBySection,
+
     updateStudent,
+
     deleteStudent
 
 };

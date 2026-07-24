@@ -1,125 +1,114 @@
-import { Box, Typography, Button, Stack } from "@mui/material";
-import WavingHandIcon from "@mui/icons-material/WavingHand";
-import AddIcon from "@mui/icons-material/Add";
+import {
+    Paper,
+    Typography,
+    Button,
+    Stack,
+    Box
+} from "@mui/material";
+
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import PaymentsIcon from "@mui/icons-material/Payments";
 
 function HeroCard() {
-
-    const user =
-        JSON.parse(localStorage.getItem("user"));
 
     const hour = new Date().getHours();
 
     let greeting = "Good Evening";
 
     if (hour < 12) greeting = "Good Morning";
+    else if (hour < 17) greeting = "Good Afternoon";
 
-    else if (hour < 18) greeting = "Good Afternoon";
+    const today = new Date().toLocaleDateString("en-SG", {
+
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+
+    });
 
     return (
 
-        <Box
+        <Paper
 
             sx={{
+
+                p: 5,
+
+                borderRadius: 5,
+
+                mb: 4,
 
                 background:
                     "linear-gradient(135deg,#2563EB,#4F46E5)",
 
-                color: "white",
+                color: "#fff",
 
-                borderRadius: 5,
+                overflow: "hidden",
 
-                p: 5,
-
-                mb: 4,
-
-                boxShadow:
-                    "0 20px 50px rgba(37,99,235,.25)"
+                position: "relative"
 
             }}
 
         >
 
-            <Stack
-
-                direction="row"
-
-                justifyContent="space-between"
-
-                alignItems="center"
-
+            <Typography
+                variant="h4"
+                fontWeight={700}
             >
 
-                <Box>
+                {greeting}, Riyaz 👋
 
-                    <Typography
+            </Typography>
 
-                        variant="h4"
+            <Typography
+                sx={{
+                    opacity: .85,
+                    mt: 1
+                }}
+            >
 
-                        fontWeight={700}
+                {today}
 
-                    >
+            </Typography>
 
-                        {greeting}
+            <Typography
+                sx={{
+                    mt: 2,
+                    maxWidth: 600
+                }}
+            >
 
-                        {" "}
+                Welcome back to SchoolLink ERP.
 
-                        {user?.full_name}
+                Manage students, teachers, attendance,
 
-                        <WavingHandIcon
+                homework and school operations in one place.
 
-                            sx={{
+            </Typography>
 
-                                ml:1,
-
-                                verticalAlign:"middle"
-
-                            }}
-
-                        />
-
-                    </Typography>
-
-                    <Typography
-
-                        sx={{
-
-                            mt:2,
-
-                            opacity:.9
-
-                        }}
-
-                    >
-
-                        Welcome back to SchoolLink ERP.
-
-                        Here's today's school summary.
-
-                    </Typography>
-
-                </Box>
+            <Stack
+                direction="row"
+                spacing={2}
+                mt={4}
+            >
 
                 <Button
 
-                    variant="contained"
+                    startIcon={<PersonAddIcon />}
 
-                    startIcon={<AddIcon />}
+                    variant="contained"
 
                     sx={{
 
-                        bgcolor:"white",
+                        bgcolor: "#fff",
 
-                        color:"#2563EB",
+                        color: "#2563EB",
 
-                        borderRadius:3,
+                        "&:hover": {
 
-                        px:4,
-
-                        py:1.5,
-
-                        "&:hover":{
-
-                            bgcolor:"#F8FAFC"
+                            bgcolor: "#F3F4F6"
 
                         }
 
@@ -127,13 +116,53 @@ function HeroCard() {
 
                 >
 
-                    New Student
+                    Add Student
+
+                </Button>
+
+                <Button
+
+                    startIcon={<AssignmentTurnedInIcon />}
+
+                    variant="outlined"
+
+                    sx={{
+
+                        color: "#fff",
+
+                        borderColor: "#fff"
+
+                    }}
+
+                >
+
+                    Attendance
+
+                </Button>
+
+                <Button
+
+                    startIcon={<PaymentsIcon />}
+
+                    variant="outlined"
+
+                    sx={{
+
+                        color: "#fff",
+
+                        borderColor: "#fff"
+
+                    }}
+
+                >
+
+                    Collect Fees
 
                 </Button>
 
             </Stack>
 
-        </Box>
+        </Paper>
 
     );
 
