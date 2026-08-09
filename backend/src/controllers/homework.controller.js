@@ -31,6 +31,37 @@ async function createHomework(req, res) {
 }
 
 /**
+ * Get Homework For Student
+ * (Parent's feed)
+ */
+async function getHomeworkForStudent(req, res) {
+
+    try {
+
+        const homework =
+            await homeworkService.getHomeworkForStudent(
+                req.params.studentId
+            );
+
+        return response.success(
+            res,
+            homework,
+            "Homework retrieved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
  * Get Homework By Teacher Subject
  */
 async function getHomeworkByTeacherSubject(req, res) {
@@ -186,6 +217,8 @@ module.exports = {
     createHomework,
 
     getHomeworkByTeacherSubject,
+
+    getHomeworkForStudent,
 
     getHomeworkById,
 

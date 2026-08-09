@@ -16,12 +16,16 @@ import {
 
     Stack,
 
+    Tooltip,
+
     Typography
 
 } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/VisibilityOutlined";
+import BlockIcon from "@mui/icons-material/BlockOutlined";
+import RestoreIcon from "@mui/icons-material/RestoreOutlined";
 
 import StudentAvatar from "./StudentAvatar";
 import StudentStatusChip from "./StudentStatusChip";
@@ -29,6 +33,8 @@ import StudentStatusChip from "./StudentStatusChip";
 export default function StudentTable({
 
     students,
+
+    onView,
 
     onEdit,
 
@@ -59,6 +65,8 @@ export default function StudentTable({
                         <TableCell>Student</TableCell>
 
                         <TableCell>Admission No</TableCell>
+
+                        <TableCell>Class</TableCell>
 
                         <TableCell>Gender</TableCell>
 
@@ -128,6 +136,14 @@ export default function StudentTable({
 
                                 <TableCell>
 
+                                    {student.class_name
+                                        ? `${student.class_name}${student.section_name ? ` - ${student.section_name}` : ""}`
+                                        : "-"}
+
+                                </TableCell>
+
+                                <TableCell>
+
                                     {student.gender}
 
                                 </TableCell>
@@ -144,37 +160,83 @@ export default function StudentTable({
 
                                 <TableCell align="center">
 
-                                    <IconButton
+                                    <Tooltip title="View Details">
 
-                                        color="primary"
+                                        <IconButton
 
-                                        onClick={() =>
+                                            color="default"
 
-                                            onEdit(student)
+                                            onClick={() =>
+                                                onView(student)
+                                            }
 
-                                        }
+                                        >
 
-                                    >
+                                            <VisibilityIcon />
 
-                                        <EditIcon />
+                                        </IconButton>
 
-                                    </IconButton>
+                                    </Tooltip>
 
-                                    <IconButton
+                                    <Tooltip title="Edit">
 
-                                        color="error"
+                                        <IconButton
 
-                                        onClick={() =>
+                                            color="primary"
 
-                                            onDelete(student)
+                                            onClick={() =>
+                                                onEdit(student)
+                                            }
 
-                                        }
+                                        >
 
-                                    >
+                                            <EditIcon />
 
-                                        <DeleteIcon />
+                                        </IconButton>
 
-                                    </IconButton>
+                                    </Tooltip>
+
+                                    {student.is_active ? (
+
+                                        <Tooltip title="Deactivate">
+
+                                            <IconButton
+
+                                                color="error"
+
+                                                onClick={() =>
+                                                    onDelete(student)
+                                                }
+
+                                            >
+
+                                                <BlockIcon />
+
+                                            </IconButton>
+
+                                        </Tooltip>
+
+                                    ) : (
+
+                                        <Tooltip title="Reactivate">
+
+                                            <IconButton
+
+                                                color="success"
+
+                                                onClick={() =>
+                                                    onDelete(student)
+                                                }
+
+                                            >
+
+                                                <RestoreIcon />
+
+                                            </IconButton>
+
+                                        </Tooltip>
+
+                                    )}
 
                                 </TableCell>
 

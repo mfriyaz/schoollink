@@ -5,7 +5,9 @@ async function getDashboard(req, res) {
     try {
 
         const dashboard =
-            await dashboardService.getDashboardSummary();
+            await dashboardService.getDashboardSummary(
+                req.user.school_id
+            );
 
         res.json({
 

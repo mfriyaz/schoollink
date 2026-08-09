@@ -20,8 +20,7 @@ router.get(
     authenticate,
     authorizeRoles(
         "Parent",
-        "School Admin",
-        "Super Admin"
+        "School Admin"
     ),
     parentDashboardController.getParentDashboard
 );

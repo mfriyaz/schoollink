@@ -16,7 +16,6 @@ router.get(
     "/student/:studentId/exam/:examId/pdf",
     authenticate,
     authorizeRoles(
-        "Super Admin",
         "School Admin",
         "Teacher",
         "Parent"

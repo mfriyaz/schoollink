@@ -1,48 +1,31 @@
 const sectionModel = require("../models/section.model");
 
-/**
- * Create Section
- */
-async function createSection(sectionData) {
-
-    return await sectionModel.createSection(sectionData);
-
+async function createSection(data) {
+    return await sectionModel.createSection(data);
 }
 
-/**
- * Get Sections By Class
- */
-async function getSectionsByClass(classId) {
-
-    return await sectionModel.getSectionsByClass(classId);
-
+async function getSectionsByClass(classId, schoolId) {
+    return await sectionModel.getSectionsByClass(classId, schoolId);
 }
 
-/**
- * Get Section By ID
- */
-async function getSectionById(id) {
-
-    return await sectionModel.getSectionById(id);
-
+async function getAllSectionsForClass(classId, schoolId) {
+    return await sectionModel.getAllSectionsForClass(classId, schoolId);
 }
 
-/**
- * Update Section
- */
-async function updateSection(id, sectionData) {
-
-    return await sectionModel.updateSection(id, sectionData);
-
+async function getSectionById(id, schoolId) {
+    return await sectionModel.getSectionById(id, schoolId);
 }
 
-/**
- * Delete Section
- */
-async function deleteSection(id) {
+async function updateSection(id, schoolId, data) {
+    return await sectionModel.updateSection(id, schoolId, data);
+}
 
-    return await sectionModel.deleteSection(id);
+async function deactivateSection(id, schoolId) {
+    return await sectionModel.deactivateSection(id, schoolId);
+}
 
+async function reactivateSection(id, schoolId) {
+    return await sectionModel.reactivateSection(id, schoolId);
 }
 
 module.exports = {
@@ -51,10 +34,14 @@ module.exports = {
 
     getSectionsByClass,
 
+    getAllSectionsForClass,
+
     getSectionById,
 
     updateSection,
 
-    deleteSection
+    deactivateSection,
+
+    reactivateSection
 
 };

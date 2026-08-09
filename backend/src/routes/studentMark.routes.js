@@ -19,8 +19,29 @@ const {
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     studentMarkController.createStudentMark
+);
+
+/**
+ * Bulk Mark An Exam Subject For A Whole Class
+ */
+router.post(
+    "/bulk",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    studentMarkController.bulkMarkExam
+);
+
+/**
+ * Get Roster With Marks
+ * (used by the Enter Marks screen)
+ */
+router.get(
+    "/roster/:examSubjectId",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    studentMarkController.getRosterWithMarks
 );
 
 /**
@@ -29,7 +50,7 @@ router.post(
 router.get(
     "/exam-subject/:examSubjectId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     studentMarkController.getMarksByExamSubject
 );
 
@@ -39,7 +60,7 @@ router.get(
 router.get(
     "/student/:studentId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher", "Parent"),
+    authorizeRoles("School Admin", "Teacher", "Parent"),
     studentMarkController.getMarksByStudent
 );
 
@@ -49,7 +70,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     studentMarkController.getStudentMarkById
 );
 
@@ -59,7 +80,7 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     studentMarkController.updateStudentMark
 );
 
@@ -69,7 +90,7 @@ router.put(
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     studentMarkController.deleteStudentMark
 );
 

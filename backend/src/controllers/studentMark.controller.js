@@ -8,6 +8,25 @@ async function createStudentMark(req, res) {
 
     try {
 
+        if (req.user.role === "Teacher") {
+
+            const owns = await studentMarkService.teacherOwnsExamSubject(
+                req.user.id,
+                req.body.exam_subject_id
+            );
+
+            if (!owns) {
+
+                return response.error(
+                    res,
+                    "You are not assigned to this class/subject",
+                    403
+                );
+
+            }
+
+        }
+
         const studentMark =
             await studentMarkService.createStudentMark(req.body);
 
@@ -15,6 +34,116 @@ async function createStudentMark(req, res) {
             res,
             studentMark,
             "Student mark created successfully",
+            201
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
+ * Get Roster With Marks
+ */
+async function getRosterWithMarks(req, res) {
+
+    try {
+
+        if (req.user.role === "Teacher") {
+
+            const owns = await studentMarkService.teacherOwnsExamSubject(
+                req.user.id,
+                req.params.examSubjectId
+            );
+
+            if (!owns) {
+
+                return response.error(
+                    res,
+                    "You are not assigned to this class/subject",
+                    403
+                );
+
+            }
+
+        }
+
+        const roster = await studentMarkService.getRosterWithMarks(
+            req.params.examSubjectId
+        );
+
+        return response.success(
+            res,
+            roster,
+            "Roster retrieved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
+ * Bulk Mark An Exam Subject For A Whole Class
+ */
+async function bulkMarkExam(req, res) {
+
+    try {
+
+        const { exam_subject_id, records } = req.body;
+
+        if (!exam_subject_id || !Array.isArray(records)) {
+
+            return response.error(
+                res,
+                "exam_subject_id and records are required",
+                400
+            );
+
+        }
+
+        if (req.user.role === "Teacher") {
+
+            const owns = await studentMarkService.teacherOwnsExamSubject(
+                req.user.id,
+                exam_subject_id
+            );
+
+            if (!owns) {
+
+                return response.error(
+                    res,
+                    "You are not assigned to this class/subject",
+                    403
+                );
+
+            }
+
+        }
+
+        const result = await studentMarkService.bulkMarkExam(
+            exam_subject_id,
+            records
+        );
+
+        return response.success(
+            res,
+            result,
+            "Marks saved successfully",
             201
         );
 
@@ -66,6 +195,25 @@ async function getMarksByExamSubject(req, res) {
 async function getMarksByStudent(req, res) {
 
     try {
+
+        if (req.user.role === "Parent") {
+
+            const owns = await studentMarkService.parentOwnsStudent(
+                req.user.id,
+                req.params.studentId
+            );
+
+            if (!owns) {
+
+                return response.error(
+                    res,
+                    "This student is not linked to your account",
+                    403
+                );
+
+            }
+
+        }
 
         const marks =
             await studentMarkService.getMarksByStudent(
@@ -214,6 +362,10 @@ async function deleteStudentMark(req, res) {
 module.exports = {
 
     createStudentMark,
+
+    getRosterWithMarks,
+
+    bulkMarkExam,
 
     getMarksByExamSubject,
 

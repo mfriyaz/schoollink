@@ -1,0 +1,587 @@
+import { useEffect, useState } from "react";
+
+import {
+    Alert,
+    Avatar,
+    Box,
+    Button,
+    Card,
+    Chip,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    MenuItem,
+    TextField,
+    Typography
+} from "@mui/material";
+
+import AddIcon from "@mui/icons-material/AddOutlined";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import BlockIcon from "@mui/icons-material/BlockOutlined";
+import RestoreIcon from "@mui/icons-material/RestoreOutlined";
+import SchoolIcon from "@mui/icons-material/SchoolOutlined";
+
+import {
+    getMyTeachers,
+    createTeacherRecord,
+    updateTeacherRecord,
+    deactivateTeacherRecord,
+    reactivateTeacherRecord
+} from "../../services/teacherManagementService";
+
+const emptyForm = {
+
+    employee_no: "",
+
+    first_name: "",
+
+    last_name: "",
+
+    gender: "",
+
+    phone: "",
+
+    email: "",
+
+    qualification: "",
+
+    experience_years: "",
+
+    joining_date: ""
+
+};
+
+function TeachersPage() {
+
+    const [teachers, setTeachers] = useState([]);
+
+    const [loading, setLoading] = useState(true);
+
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    const [editingId, setEditingId] = useState(null);
+
+    const [form, setForm] = useState(emptyForm);
+
+    const [saving, setSaving] = useState(false);
+
+    const [formError, setFormError] = useState("");
+
+    const [pageError, setPageError] = useState("");
+
+    useEffect(() => {
+
+        loadTeachers();
+
+    }, []);
+
+    async function loadTeachers() {
+
+        try {
+
+            const response = await getMyTeachers();
+
+            if (response.success) {
+
+                setTeachers(response.data);
+
+            }
+
+        } catch (err) {
+
+            setPageError(
+                err.response?.data?.message ||
+                "Unable to load teachers."
+            );
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+    function openCreateDialog() {
+
+        setEditingId(null);
+
+        setForm(emptyForm);
+
+        setFormError("");
+
+        setDialogOpen(true);
+
+    }
+
+    function openEditDialog(teacher) {
+
+        setEditingId(teacher.id);
+
+        setForm({
+
+            employee_no: teacher.employee_no || "",
+
+            first_name: teacher.first_name || "",
+
+            last_name: teacher.last_name || "",
+
+            gender: teacher.gender || "",
+
+            phone: teacher.phone || "",
+
+            email: teacher.email || "",
+
+            qualification: teacher.qualification || "",
+
+            experience_years: teacher.experience_years || "",
+
+            joining_date: teacher.joining_date
+                ? teacher.joining_date.slice(0, 10)
+                : ""
+
+        });
+
+        setFormError("");
+
+        setDialogOpen(true);
+
+    }
+
+    async function handleSave() {
+
+        setFormError("");
+
+        if (!form.employee_no || !form.first_name || !form.last_name) {
+
+            setFormError("Employee No, First Name and Last Name are required.");
+
+            return;
+
+        }
+
+        if (!/^[a-zA-Z0-9]+$/.test(form.employee_no)) {
+
+            setFormError("Employee No can only contain letters and numbers.");
+
+            return;
+
+        }
+
+        if (!/^[a-zA-Z ]+$/.test(form.first_name)) {
+
+            setFormError("First Name can only contain letters.");
+
+            return;
+
+        }
+
+        if (!/^[a-zA-Z ]+$/.test(form.last_name)) {
+
+            setFormError("Last Name can only contain letters.");
+
+            return;
+
+        }
+
+        if (form.phone && !/^[0-9]+$/.test(form.phone)) {
+
+            setFormError("Phone can only contain numbers.");
+
+            return;
+
+        }
+
+        if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+
+            setFormError("Please enter a valid email address.");
+
+            return;
+
+        }
+
+        if (
+            form.experience_years !== "" &&
+            (!/^[0-9]+$/.test(form.experience_years) || Number(form.experience_years) < 0)
+        ) {
+
+            setFormError("Experience must be a whole number of years.");
+
+            return;
+
+        }
+
+        try {
+
+            setSaving(true);
+
+            const response = editingId
+
+                ? await updateTeacherRecord(editingId, form)
+
+                : await createTeacherRecord(form);
+
+            if (response.success) {
+
+                setDialogOpen(false);
+
+                await loadTeachers();
+
+            } else {
+
+                setFormError(response.message);
+
+            }
+
+        } catch (err) {
+
+            setFormError(
+                err.response?.data?.message ||
+                "Unable to save this teacher."
+            );
+
+        } finally {
+
+            setSaving(false);
+
+        }
+
+    }
+
+    async function handleDeactivate(id) {
+
+        try {
+
+            await deactivateTeacherRecord(id);
+
+            await loadTeachers();
+
+        } catch (err) {
+
+            setPageError(
+                err.response?.data?.message ||
+                "Unable to deactivate this teacher."
+            );
+
+        }
+
+    }
+
+    async function handleReactivate(id) {
+
+        try {
+
+            await reactivateTeacherRecord(id);
+
+            await loadTeachers();
+
+        } catch (err) {
+
+            setPageError(
+                err.response?.data?.message ||
+                "Unable to reactivate this teacher."
+            );
+
+        }
+
+    }
+
+    if (loading) {
+
+        return (
+
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
+
+                <CircularProgress />
+
+            </Box>
+
+        );
+
+    }
+
+    return (
+
+        <Box sx={{ maxWidth: 900 }}>
+
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+
+                <Typography variant="h5" sx={{ fontWeight: 700 }}>
+
+                    Teachers
+
+                </Typography>
+
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={openCreateDialog}
+                >
+
+                    Add Teacher
+
+                </Button>
+
+            </Box>
+
+            {pageError && <Alert severity="error" sx={{ mb: 2 }}>{pageError}</Alert>}
+
+            {teachers.length === 0 && (
+
+                <Typography color="text.secondary">
+
+                    No teachers added yet.
+
+                </Typography>
+
+            )}
+
+            {teachers.map((teacher) => (
+
+                <Card key={teacher.id} sx={{ p: 2.5, mb: 2 }}>
+
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+
+                            <Avatar sx={{ bgcolor: teacher.is_active ? "#DBEAFE" : "#F1F5F9" }}>
+
+                                <SchoolIcon sx={{ color: teacher.is_active ? "#2563EB" : "#94A3B8" }} fontSize="small" />
+
+                            </Avatar>
+
+                            <Box>
+
+                                <Typography sx={{ fontWeight: 600 }}>
+
+                                    {teacher.first_name} {teacher.last_name}
+
+                                </Typography>
+
+                                <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
+
+                                    {teacher.employee_no} · {teacher.email || "No email"}
+                                    {teacher.qualification && ` · ${teacher.qualification}`}
+
+                                </Typography>
+
+                            </Box>
+
+                        </Box>
+
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+
+                            <Chip
+                                size="small"
+                                color={teacher.is_active ? "success" : "default"}
+                                label={teacher.is_active ? "Active" : "Inactive"}
+                            />
+
+                            <Button
+                                size="small"
+                                startIcon={<EditIcon fontSize="small" />}
+                                onClick={() => openEditDialog(teacher)}
+                            >
+
+                                Edit
+
+                            </Button>
+
+                            {teacher.is_active ? (
+
+                                <Button
+                                    size="small"
+                                    color="error"
+                                    startIcon={<BlockIcon fontSize="small" />}
+                                    onClick={() => handleDeactivate(teacher.id)}
+                                >
+
+                                    Deactivate
+
+                                </Button>
+
+                            ) : (
+
+                                <Button
+                                    size="small"
+                                    color="success"
+                                    startIcon={<RestoreIcon fontSize="small" />}
+                                    onClick={() => handleReactivate(teacher.id)}
+                                >
+
+                                    Reactivate
+
+                                </Button>
+
+                            )}
+
+                        </Box>
+
+                    </Box>
+
+                </Card>
+
+            ))}
+
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+
+                <DialogTitle sx={{ fontWeight: 700 }}>
+
+                    {editingId ? "Edit Teacher" : "Add Teacher"}
+
+                </DialogTitle>
+
+                <DialogContent>
+
+                    {formError && <Alert severity="error" sx={{ mb: 2 }}>{formError}</Alert>}
+
+                    <Grid container spacing={2} sx={{ mt: 0.5 }}>
+
+                        <Grid item xs={12}>
+
+                            <TextField
+                                label="Employee No"
+                                value={form.employee_no}
+                                onChange={(e) => setForm({ ...form, employee_no: e.target.value })}
+                                fullWidth
+                                size="small"
+                            />
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+
+                            <TextField
+                                label="First Name"
+                                value={form.first_name}
+                                onChange={(e) => setForm({ ...form, first_name: e.target.value })}
+                                fullWidth
+                                size="small"
+                            />
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+
+                            <TextField
+                                label="Last Name"
+                                value={form.last_name}
+                                onChange={(e) => setForm({ ...form, last_name: e.target.value })}
+                                fullWidth
+                                size="small"
+                            />
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+
+                            <TextField
+                                select
+                                label="Gender"
+                                value={form.gender}
+                                onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                                fullWidth
+                                size="small"
+                            >
+
+                                <MenuItem value="">Select Gender</MenuItem>
+
+                                <MenuItem value="Male">Male</MenuItem>
+
+                                <MenuItem value="Female">Female</MenuItem>
+
+                            </TextField>
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+
+                            <TextField
+                                label="Phone"
+                                value={form.phone}
+                                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                fullWidth
+                                size="small"
+                            />
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+
+                            <TextField
+                                label="Email"
+                                value={form.email}
+                                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                fullWidth
+                                size="small"
+                            />
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+
+                            <TextField
+                                label="Qualification"
+                                value={form.qualification}
+                                onChange={(e) => setForm({ ...form, qualification: e.target.value })}
+                                fullWidth
+                                size="small"
+                            />
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+
+                            <TextField
+                                label="Experience (years)"
+                                type="number"
+                                value={form.experience_years}
+                                onChange={(e) => setForm({ ...form, experience_years: e.target.value })}
+                                fullWidth
+                                size="small"
+                            />
+
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+
+                            <TextField
+                                label="Joining Date"
+                                type="date"
+                                value={form.joining_date}
+                                onChange={(e) => setForm({ ...form, joining_date: e.target.value })}
+                                InputLabelProps={{ shrink: true }}
+                                fullWidth
+                                size="small"
+                            />
+
+                        </Grid>
+
+                    </Grid>
+
+                </DialogContent>
+
+                <DialogActions sx={{ px: 3, pb: 3 }}>
+
+                    <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+
+                    <Button variant="contained" onClick={handleSave} disabled={saving}>
+
+                        {saving ? "Saving..." : "Save"}
+
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
+
+        </Box>
+
+    );
+
+}
+
+export default TeachersPage;

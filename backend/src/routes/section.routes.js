@@ -18,18 +18,28 @@ const {
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     sectionController.createSection
 );
 
 /**
- * Get Sections By Class
+ * Get Sections By Class (active only, for pickers)
  */
 router.get(
     "/class/:classId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     sectionController.getSectionsByClass
+);
+
+/**
+ * Get All Sections For Class For Management (active + inactive)
+ */
+router.get(
+    "/class/:classId/manage",
+    authenticate,
+    authorizeRoles("School Admin"),
+    sectionController.getAllSectionsForClass
 );
 
 /**
@@ -38,7 +48,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     sectionController.getSectionById
 );
 
@@ -48,18 +58,28 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     sectionController.updateSection
 );
 
 /**
- * Delete Section
+ * Deactivate Section (soft delete)
  */
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
-    sectionController.deleteSection
+    authorizeRoles("School Admin"),
+    sectionController.deactivateSection
+);
+
+/**
+ * Reactivate Section
+ */
+router.patch(
+    "/:id/reactivate",
+    authenticate,
+    authorizeRoles("School Admin"),
+    sectionController.reactivateSection
 );
 
 module.exports = router;

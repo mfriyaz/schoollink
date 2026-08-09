@@ -1,4 +1,5 @@
 const examSubjectService = require("../services/examSubject.service");
+const examService = require("../services/exam.service");
 const response = require("../utils/response");
 
 /**
@@ -7,6 +8,21 @@ const response = require("../utils/response");
 async function createExamSubject(req, res) {
 
     try {
+
+        const exam = await examService.getExamById(
+            req.body.exam_id,
+            req.user.school_id
+        );
+
+        if (!exam) {
+
+            return response.error(
+                res,
+                "Exam not found",
+                404
+            );
+
+        }
 
         const examSubject =
             await examSubjectService.createExamSubject(req.body);

@@ -9,14 +9,25 @@ const app = express();
 // Middlewares
 // ======================
 
+// FRONTEND_URL can be a single URL or a comma-separated list
+// (e.g. your production domain + a preview deployment URL).
+// Falls back to localhost so local development is unaffected.
+const allowedOrigins = process.env.FRONTEND_URL
+
+    ? process.env.FRONTEND_URL.split(",").map((url) => url.trim())
+
+    : ["http://localhost:5173"];
+
 app.use(
     cors({
-        origin: "http://localhost:5173",
+        origin: allowedOrigins,
         credentials: true
     })
 );
 
 app.use(express.json());
+
+app.use("/uploads", express.static("uploads"));
 
 // ======================
 // Routes
@@ -48,6 +59,14 @@ const parentDashboardRoutes = require("./routes/parentDashboard.routes");
 const principalDashboardRoutes = require("./routes/principalDashboard.routes");
 const announcementRoutes = require("./routes/announcement.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
+const acknowledgementRoutes = require("./routes/acknowledgement.routes");
+const parentRoutes = require("./routes/parent.routes");
+const uploadRoutes = require("./routes/upload.routes");
+const settingsRoutes = require("./routes/settings.routes");
+const notificationRoutes = require("./routes/notification.routes");
+const postsRoutes = require("./routes/posts.routes");
+const homeworkSubmissionRoutes = require("./routes/homeworkSubmission.routes");
+const morningGreetingRoutes = require("./routes/morningGreeting.routes");
 
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./config/swagger");
@@ -85,6 +104,14 @@ app.use("/api/principal-dashboard", principalDashboardRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/acknowledgements", acknowledgementRoutes);
+app.use("/api/parents", parentRoutes);
+app.use("/api/uploads", uploadRoutes);
+app.use("/api/settings", settingsRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/posts", postsRoutes);
+app.use("/api/homework-submissions", homeworkSubmissionRoutes);
+app.use("/api/morning-greetings", morningGreetingRoutes);
 
 // ======================
 // Home

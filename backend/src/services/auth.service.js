@@ -8,9 +8,6 @@ async function login(email, password) {
     // Find user by email
     const user = await userModel.findUserByEmail(email);
 
-    console.log("========== LOGIN DEBUG ==========");
-    console.log("User:", user);
-
     if (!user) {
         throw new Error("Invalid email or password");
     }
@@ -20,17 +17,11 @@ async function login(email, password) {
         throw new Error("Account is disabled");
     }
 
-    console.log("Entered Password:", password);
-    console.log("Stored Hash:", user.password_hash);
-
     // Verify password
     const passwordMatch = await bcrypt.compare(
         password,
         user.password_hash
     );
-
-    console.log("Password Match:", passwordMatch);
-    console.log("===============================");
 
     if (!passwordMatch) {
         throw new Error("Invalid email or password");
@@ -56,7 +47,8 @@ async function login(email, password) {
             full_name: user.full_name,
             email: user.email,
             role: user.role_name,
-            school: user.school_name
+            school: user.school_name,
+            school_timezone: user.school_timezone || "Asia/Singapore"
         }
     };
 }

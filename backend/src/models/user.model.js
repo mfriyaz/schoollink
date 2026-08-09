@@ -16,7 +16,8 @@ async function findUserByEmail(email, db = pool) {
             u.password_hash,
             u.is_active,
             r.role_name,
-            s.school_name
+            s.school_name,
+            s.timezone AS school_timezone
         FROM users u
         INNER JOIN roles r
             ON u.role_id = r.id
@@ -125,6 +126,83 @@ async function findUserByMobile(mobile, db = pool) {
 
 }
 
+/**
+ * Find user by ID
+ * (used to build the Profile page - includes school name
+ * and role, unlike the bare JWT payload)
+ */
+async function findUserById(id, db = pool) {
+
+    const query = `
+        SELECT
+            u.id,
+            u.school_id,
+            u.role_id,
+            u.full_name,
+            u.email,
+            u.mobile,
+            u.password_hash,
+            u.is_active,
+            u.created_at,
+            r.role_name,
+            s.school_name
+        FROM users u
+        INNER JOIN roles r
+            ON u.role_id = r.id
+        LEFT JOIN schools s
+            ON u.school_id = s.id
+        WHERE u.id = $1
+        LIMIT 1;
+    `;
+
+    const result = await db.query(query, [id]);
+
+    return result.rows[0];
+
+}
+
+/**
+ * Update a user's own editable profile fields
+ * (full_name and mobile only - email/role/school are not
+ * self-editable)
+ */
+async function updateUserProfile(id, data, db = pool) {
+
+    const query = `
+        UPDATE users
+        SET
+            full_name = $1,
+            mobile = $2
+        WHERE id = $3
+        RETURNING id, full_name, email, mobile;
+    `;
+
+    const result = await db.query(
+        query,
+        [data.full_name, data.mobile, id]
+    );
+
+    return result.rows[0];
+
+}
+
+/**
+ * Update a user's password hash
+ */
+async function updateUserPassword(id, passwordHash, db = pool) {
+
+    const query = `
+        UPDATE users
+        SET password_hash = $1
+        WHERE id = $2
+        RETURNING id;
+    `;
+
+    const result = await db.query(query, [passwordHash, id]);
+
+    return result.rows[0];
+
+}
 
 module.exports = {
 
@@ -136,6 +214,12 @@ module.exports = {
 
     createUser,
 
-    findUserByMobile
+    findUserByMobile,
+
+    findUserById,
+
+    updateUserProfile,
+
+    updateUserPassword
 
 };

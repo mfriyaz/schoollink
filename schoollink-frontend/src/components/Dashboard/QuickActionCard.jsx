@@ -11,7 +11,9 @@ function QuickActionCard({
 
     icon,
 
-    color
+    color,
+
+    onClick
 
 }) {
 
@@ -38,6 +40,8 @@ function QuickActionCard({
         >
 
             <CardActionArea
+
+                onClick={onClick}
 
                 sx={{
 

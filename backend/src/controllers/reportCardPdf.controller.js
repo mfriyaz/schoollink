@@ -10,6 +10,24 @@ async function downloadReportCard(req, res) {
 
         const { studentId, examId } = req.params;
 
+        if (req.user.role === "Parent") {
+
+            const owns = await reportCardService.parentOwnsStudent(
+                req.user.id,
+                studentId
+            );
+
+            if (!owns) {
+
+                return res.status(403).json({
+                    success: false,
+                    message: "This student is not linked to your account"
+                });
+
+            }
+
+        }
+
         const report =
             await reportCardService.getStudentReportCard(
                 studentId,
@@ -25,6 +43,15 @@ async function downloadReportCard(req, res) {
 
         }
 
+        if (report[0].school_id !== req.user.school_id) {
+
+            return res.status(403).json({
+                success: false,
+                message: "This student does not belong to your school"
+            });
+
+        }
+
         let totalObtained = 0;
         let totalMaximum = 0;
 
@@ -36,6 +63,8 @@ async function downloadReportCard(req, res) {
         });
 
         const reportData = {
+
+            school_name: report[0].school_name,
 
             student: {
 

@@ -1,4 +1,5 @@
 const announcementModel = require("../models/announcement.model");
+const notifierService = require("./notifier.service");
 
 /**
  * Create Announcement
@@ -25,16 +26,28 @@ async function createAnnouncement(data) {
         throw new Error("Invalid target audience.");
     }
 
-    return await announcementModel.createAnnouncement(data);
+    const announcement = await announcementModel.createAnnouncement(data);
+
+    try {
+
+        await notifierService.notifyParentsOfAnnouncement(announcement.id);
+
+    } catch (err) {
+
+        console.error("Failed to notify parents of announcement:", err);
+
+    }
+
+    return announcement;
 
 }
 
 /**
  * Get All Announcements
  */
-async function getAllAnnouncements() {
+async function getAllAnnouncements(schoolId) {
 
-    return await announcementModel.getAllAnnouncements();
+    return await announcementModel.getAllAnnouncements(schoolId);
 
 }
 
@@ -109,9 +122,10 @@ async function deleteAnnouncement(id) {
 /**
  * Get Active Announcements
  */
-async function getActiveAnnouncements(targetAudience) {
+async function getActiveAnnouncements(schoolId, targetAudience) {
 
     return await announcementModel.getActiveAnnouncements(
+        schoolId,
         targetAudience
     );
 

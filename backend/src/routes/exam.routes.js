@@ -19,7 +19,7 @@ const {
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     examController.createExam
 );
 
@@ -29,7 +29,7 @@ router.post(
 router.get(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     examController.getAllExams
 );
 
@@ -39,7 +39,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     examController.getExamById
 );
 
@@ -49,7 +49,7 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     examController.updateExam
 );
 
@@ -59,7 +59,7 @@ router.put(
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     examController.deleteExam
 );
 

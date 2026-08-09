@@ -53,6 +53,17 @@ router.put(
 );
 
 /**
+ * Update School Governance
+ * (subscription, status, limits)
+ */
+router.patch(
+    "/:id/governance",
+    authenticate,
+    authorizeRoles("Super Admin"),
+    schoolController.updateSchoolGovernance
+);
+
+/**
  * Delete School
  */
 router.delete(

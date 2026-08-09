@@ -8,6 +8,8 @@ services:
       POSTGRES_USER: schoollink
       POSTGRES_PASSWORD: SchoolLink@2026
       POSTGRES_DB: schoollink_db
+      TZ: UTC
+      PGTZ: UTC
 
     ports:
       - "5432:5432"

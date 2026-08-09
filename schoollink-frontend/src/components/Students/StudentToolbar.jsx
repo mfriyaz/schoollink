@@ -1,3 +1,5 @@
+import { useRef } from "react";
+
 import {
     Box,
     Typography,
@@ -8,6 +10,8 @@ import {
 
 import SearchIcon from "@mui/icons-material/Search";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import DownloadIcon from "@mui/icons-material/DownloadOutlined";
+import UploadFileIcon from "@mui/icons-material/UploadFileOutlined";
 
 export default function StudentToolbar({
 
@@ -15,9 +19,37 @@ export default function StudentToolbar({
 
     setSearch,
 
-    onAdd
+    onAdd,
+
+    onDownloadTemplate,
+
+    onUploadFile,
+
+    uploading
 
 }) {
+
+    const fileInputRef = useRef(null);
+
+    function handleUploadClick() {
+
+        fileInputRef.current?.click();
+
+    }
+
+    function handleFileSelected(event) {
+
+        const file = event.target.files[0];
+
+        if (file) {
+
+            onUploadFile(file);
+
+        }
+
+        event.target.value = "";
+
+    }
 
     return (
 
@@ -76,9 +108,7 @@ export default function StudentToolbar({
                     value={search}
 
                     onChange={(e) =>
-
                         setSearch(e.target.value)
-
                     }
 
                     InputProps={{
@@ -97,10 +127,41 @@ export default function StudentToolbar({
 
                     sx={{
 
-                        width: 280
+                        width: 220
 
                     }}
 
+                />
+
+                <Button
+                    variant="outlined"
+                    startIcon={<DownloadIcon />}
+                    onClick={onDownloadTemplate}
+                    sx={{ borderRadius: 3 }}
+                >
+
+                    Template
+
+                </Button>
+
+                <Button
+                    variant="outlined"
+                    startIcon={<UploadFileIcon />}
+                    onClick={handleUploadClick}
+                    disabled={uploading}
+                    sx={{ borderRadius: 3 }}
+                >
+
+                    {uploading ? "Uploading..." : "Bulk Upload"}
+
+                </Button>
+
+                <input
+                    type="file"
+                    hidden
+                    accept=".xlsx,.xls"
+                    ref={fileInputRef}
+                    onChange={handleFileSelected}
                 />
 
                 <Button

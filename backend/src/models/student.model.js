@@ -56,29 +56,36 @@ async function createStudent(student) {
 }
 
 /**
- * Get All Students (Supports Search)
+ * Get All Students (Supports Search) - scoped to one school,
+ * joined with class/section names for display
  */
-async function getAllStudents(search = "") {
+async function getAllStudents(schoolId, search = "") {
 
     const keyword = `%${search}%`;
 
     const result = await pool.query(
 
         `
-        SELECT *
-        FROM students
+        SELECT
+            st.*,
+            c.class_name,
+            sec.section_name
+        FROM students st
+        LEFT JOIN classes c ON st.class_id = c.id
+        LEFT JOIN sections sec ON st.section_id = sec.id
         WHERE
-
-            first_name ILIKE $1
-            OR last_name ILIKE $1
-            OR admission_no ILIKE $1
-            OR father_name ILIKE $1
-            OR parent_phone ILIKE $1
-
-        ORDER BY first_name
+            st.school_id = $2
+            AND (
+                st.first_name ILIKE $1
+                OR st.last_name ILIKE $1
+                OR st.admission_no ILIKE $1
+                OR st.father_name ILIKE $1
+                OR st.parent_phone ILIKE $1
+            )
+        ORDER BY st.first_name
         `,
 
-        [keyword]
+        [keyword, schoolId]
 
     );
 
@@ -87,19 +94,19 @@ async function getAllStudents(search = "") {
 }
 
 /**
- * Get Student By ID
+ * Get Student By ID - scoped to one school
  */
-async function getStudentById(id) {
+async function getStudentById(id, schoolId) {
 
     const result = await pool.query(
 
         `
         SELECT *
         FROM students
-        WHERE id=$1
+        WHERE id = $1 AND school_id = $2
         `,
 
-        [id]
+        [id, schoolId]
 
     );
 
@@ -108,20 +115,20 @@ async function getStudentById(id) {
 }
 
 /**
- * Get Students By Class
+ * Get Students By Class - scoped to one school
  */
-async function getStudentsByClass(classId) {
+async function getStudentsByClass(classId, schoolId) {
 
     const result = await pool.query(
 
         `
         SELECT *
         FROM students
-        WHERE class_id=$1
+        WHERE class_id = $1 AND school_id = $2
         ORDER BY first_name
         `,
 
-        [classId]
+        [classId, schoolId]
 
     );
 
@@ -130,20 +137,20 @@ async function getStudentsByClass(classId) {
 }
 
 /**
- * Get Students By Section
+ * Get Students By Section - scoped to one school
  */
-async function getStudentsBySection(sectionId) {
+async function getStudentsBySection(sectionId, schoolId) {
 
     const result = await pool.query(
 
         `
         SELECT *
         FROM students
-        WHERE section_id=$1
+        WHERE section_id = $1 AND school_id = $2
         ORDER BY first_name
         `,
 
-        [sectionId]
+        [sectionId, schoolId]
 
     );
 
@@ -152,9 +159,9 @@ async function getStudentsBySection(sectionId) {
 }
 
 /**
- * Update Student
+ * Update Student - scoped to one school
  */
-async function updateStudent(id, student) {
+async function updateStudent(id, schoolId, student) {
 
     const query = `
 
@@ -171,10 +178,9 @@ async function updateStudent(id, student) {
             parent_phone=$7,
             parent_email=$8,
             address=$9,
-            is_active=$10,
             updated_at=NOW()
 
-        WHERE id=$11
+        WHERE id=$10 AND school_id=$11
 
         RETURNING *;
 
@@ -191,8 +197,8 @@ async function updateStudent(id, student) {
         student.parent_phone,
         student.parent_email,
         student.address,
-        student.is_active,
-        id
+        id,
+        schoolId
 
     ];
 
@@ -203,19 +209,45 @@ async function updateStudent(id, student) {
 }
 
 /**
- * Delete Student
+ * Deactivate Student (soft delete)
+ * - a student with attendance/marks/acknowledgements tied to
+ * them can't be safely erased without either orphaning that
+ * history or crashing on a foreign key constraint
  */
-async function deleteStudent(id) {
+async function deactivateStudent(id, schoolId) {
 
     const result = await pool.query(
 
         `
-        DELETE FROM students
-        WHERE id=$1
+        UPDATE students
+        SET is_active = false, updated_at = NOW()
+        WHERE id = $1 AND school_id = $2
         RETURNING *;
         `,
 
-        [id]
+        [id, schoolId]
+
+    );
+
+    return result.rows[0];
+
+}
+
+/**
+ * Reactivate Student
+ */
+async function reactivateStudent(id, schoolId) {
+
+    const result = await pool.query(
+
+        `
+        UPDATE students
+        SET is_active = true, updated_at = NOW()
+        WHERE id = $1 AND school_id = $2
+        RETURNING *;
+        `,
+
+        [id, schoolId]
 
     );
 
@@ -231,6 +263,7 @@ module.exports = {
     getStudentsByClass,
     getStudentsBySection,
     updateStudent,
-    deleteStudent
+    deactivateStudent,
+    reactivateStudent
 
 };

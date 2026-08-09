@@ -8,7 +8,9 @@ function KpiCard({
 
     icon,
 
-    gradient
+    iconBg,
+
+    iconColor
 
 }) {
 
@@ -18,25 +20,21 @@ function KpiCard({
 
             sx={{
 
-                borderRadius: 5,
+                p: 2.5,
 
-                overflow: "hidden",
+                height: "100%",
 
-                background: gradient,
+                display: "flex",
 
-                color: "#fff",
+                flexDirection: "column",
 
-                height: 170,
+                gap: 1.5,
 
-                position: "relative",
-
-                boxShadow: "0 20px 45px rgba(0,0,0,.18)",
-
-                transition: ".35s",
+                transition: ".25s",
 
                 "&:hover": {
 
-                    transform: "translateY(-8px)"
+                    transform: "translateY(-4px)"
 
                 }
 
@@ -48,79 +46,39 @@ function KpiCard({
 
                 sx={{
 
-                    p: 3,
+                    width: 44,
+
+                    height: 44,
+
+                    borderRadius: "12px",
+
+                    bgcolor: iconBg || "#DBEAFE",
 
                     display: "flex",
 
-                    justifyContent: "space-between",
+                    alignItems: "center",
 
-                    alignItems: "center"
+                    justifyContent: "center"
 
                 }}
 
             >
 
-                <Box>
-
-                    <Typography
-
-                        sx={{
-
-                            opacity: .85,
-
-                            fontSize: 15
-
-                        }}
-
-                    >
-
-                        {title}
-
-                    </Typography>
-
-                    <Typography
-
-                        variant="h3"
-
-                        fontWeight={700}
-
-                        mt={1}
-
-                    >
-
-                        {value}
-
-                    </Typography>
-
-                </Box>
-
-                <Box
-
-                    sx={{
-
-                        width: 70,
-
-                        height: 70,
-
-                        borderRadius: "50%",
-
-                        bgcolor: "rgba(255,255,255,.18)",
-
-                        display: "flex",
-
-                        alignItems: "center",
-
-                        justifyContent: "center"
-
-                    }}
-
-                >
-
-                    {icon}
-
-                </Box>
+                {icon}
 
             </Box>
+
+            <Typography sx={{ color: "#64748B", fontSize: "0.85rem" }}>
+
+                {title}
+
+            </Typography>
+
+            <Typography sx={{ fontWeight: 700, fontSize: "1.9rem", lineHeight: 1 }}>
+
+                {value}
+
+            </Typography>
 
         </Card>
 

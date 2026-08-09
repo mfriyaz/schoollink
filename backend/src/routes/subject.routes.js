@@ -18,18 +18,29 @@ const {
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     subjectController.createSubject
 );
 
 /**
- * Get Subjects By School
+ * Get My Subjects (active only, for pickers)
+ * (self-scoped from the JWT, not a client-supplied ID)
  */
 router.get(
-    "/school/:schoolId",
+    "/mine",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     subjectController.getSubjectsBySchool
+);
+
+/**
+ * Get All Subjects For Management (active + inactive)
+ */
+router.get(
+    "/manage/all",
+    authenticate,
+    authorizeRoles("School Admin"),
+    subjectController.getAllSubjectsForManagement
 );
 
 /**
@@ -38,7 +49,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     subjectController.getSubjectById
 );
 
@@ -48,18 +59,28 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     subjectController.updateSubject
 );
 
 /**
- * Delete Subject
+ * Deactivate Subject (soft delete)
  */
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
-    subjectController.deleteSubject
+    authorizeRoles("School Admin"),
+    subjectController.deactivateSubject
+);
+
+/**
+ * Reactivate Subject
+ */
+router.patch(
+    "/:id/reactivate",
+    authenticate,
+    authorizeRoles("School Admin"),
+    subjectController.reactivateSubject
 );
 
 module.exports = router;

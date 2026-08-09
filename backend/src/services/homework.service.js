@@ -1,11 +1,26 @@
 const homeworkModel = require("../models/homework.model");
+const notifierService = require("./notifier.service");
 
 /**
  * Create Homework
  */
 async function createHomework(data) {
 
-    return await homeworkModel.createHomework(data);
+    const homework = await homeworkModel.createHomework(data);
+
+    // Notification failures shouldn't block the post itself from
+    // being created - log and move on rather than throwing.
+    try {
+
+        await notifierService.notifyParentsOfHomework(homework.id);
+
+    } catch (err) {
+
+        console.error("Failed to notify parents of homework:", err);
+
+    }
+
+    return homework;
 
 }
 
@@ -17,6 +32,15 @@ async function getHomeworkByTeacherSubject(teacherSubjectId) {
     return await homeworkModel.getHomeworkByTeacherSubject(
         teacherSubjectId
     );
+
+}
+
+/**
+ * Get Homework For Student
+ */
+async function getHomeworkForStudent(studentId) {
+
+    return await homeworkModel.getHomeworkForStudent(studentId);
 
 }
 
@@ -52,6 +76,8 @@ module.exports = {
     createHomework,
 
     getHomeworkByTeacherSubject,
+
+    getHomeworkForStudent,
 
     getHomeworkById,
 

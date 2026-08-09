@@ -40,36 +40,56 @@ async function createSection(section) {
 }
 
 /**
- * Get Sections By Class
+ * Get Sections By Class - scoped to one school, active only
+ * (used by pickers, e.g. the Student form)
  */
-async function getSectionsByClass(classId) {
+async function getSectionsByClass(classId, schoolId) {
 
     const query = `
         SELECT *
         FROM sections
-        WHERE class_id=$1
+        WHERE class_id = $1 AND school_id = $2 AND is_active = true
         ORDER BY section_name;
     `;
 
-    const result = await pool.query(query, [classId]);
+    const result = await pool.query(query, [classId, schoolId]);
 
     return result.rows;
 
 }
 
 /**
- * Get Section By ID
+ * Get All Sections For Class (including inactive) - for the
+ * Classes management page
  */
-async function getSectionById(id) {
+async function getAllSectionsForClass(classId, schoolId) {
+
+    const query = `
+        SELECT *
+        FROM sections
+        WHERE class_id = $1 AND school_id = $2
+        ORDER BY section_name;
+    `;
+
+    const result = await pool.query(query, [classId, schoolId]);
+
+    return result.rows;
+
+}
+
+/**
+ * Get Section By ID - scoped to one school
+ */
+async function getSectionById(id, schoolId) {
 
     const result = await pool.query(
 
         `
         SELECT *
         FROM sections
-        WHERE id=$1
+        WHERE id = $1 AND school_id = $2
         `,
-        [id]
+        [id, schoolId]
 
     );
 
@@ -78,9 +98,9 @@ async function getSectionById(id) {
 }
 
 /**
- * Update Section
+ * Update Section - scoped to one school
  */
-async function updateSection(id, section) {
+async function updateSection(id, schoolId, section) {
 
     const query = `
         UPDATE sections
@@ -92,11 +112,9 @@ async function updateSection(id, section) {
 
             capacity=$3,
 
-            is_active=$4,
-
             updated_at=NOW()
 
-        WHERE id=$5
+        WHERE id=$4 AND school_id=$5
 
         RETURNING *;
     `;
@@ -109,9 +127,9 @@ async function updateSection(id, section) {
 
         section.capacity,
 
-        section.is_active,
+        id,
 
-        id
+        schoolId
 
     ];
 
@@ -122,18 +140,40 @@ async function updateSection(id, section) {
 }
 
 /**
- * Delete Section
+ * Deactivate Section (soft delete)
  */
-async function deleteSection(id) {
+async function deactivateSection(id, schoolId) {
 
     const result = await pool.query(
 
         `
-        DELETE FROM sections
-        WHERE id=$1
+        UPDATE sections
+        SET is_active = false, updated_at = NOW()
+        WHERE id = $1 AND school_id = $2
         RETURNING *;
         `,
-        [id]
+        [id, schoolId]
+
+    );
+
+    return result.rows[0];
+
+}
+
+/**
+ * Reactivate Section
+ */
+async function reactivateSection(id, schoolId) {
+
+    const result = await pool.query(
+
+        `
+        UPDATE sections
+        SET is_active = true, updated_at = NOW()
+        WHERE id = $1 AND school_id = $2
+        RETURNING *;
+        `,
+        [id, schoolId]
 
     );
 
@@ -147,10 +187,14 @@ module.exports = {
 
     getSectionsByClass,
 
+    getAllSectionsForClass,
+
     getSectionById,
 
     updateSection,
 
-    deleteSection
+    deactivateSection,
+
+    reactivateSection
 
 };

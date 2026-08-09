@@ -9,7 +9,13 @@ async function createSubject(req, res) {
     try {
 
         const subject =
-            await subjectService.createSubject(req.body);
+            await subjectService.createSubject({
+
+                ...req.body,
+
+                school_id: req.user.school_id
+
+            });
 
         return response.success(
             res,
@@ -31,7 +37,7 @@ async function createSubject(req, res) {
 }
 
 /**
- * Get Subjects By School
+ * Get My Subjects (active only - for pickers)
  */
 async function getSubjectsBySchool(req, res) {
 
@@ -39,7 +45,37 @@ async function getSubjectsBySchool(req, res) {
 
         const subjects =
             await subjectService.getSubjectsBySchool(
-                req.params.schoolId
+                req.user.school_id
+            );
+
+        return response.success(
+            res,
+            subjects,
+            "Subjects retrieved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
+ * Get All Subjects For Management (active + inactive)
+ */
+async function getAllSubjectsForManagement(req, res) {
+
+    try {
+
+        const subjects =
+            await subjectService.getAllSubjectsForSchool(
+                req.user.school_id
             );
 
         return response.success(
@@ -69,7 +105,8 @@ async function getSubjectById(req, res) {
 
         const subject =
             await subjectService.getSubjectById(
-                req.params.id
+                req.params.id,
+                req.user.school_id
             );
 
         if (!subject) {
@@ -110,6 +147,7 @@ async function updateSubject(req, res) {
         const subject =
             await subjectService.updateSubject(
                 req.params.id,
+                req.user.school_id,
                 req.body
             );
 
@@ -142,15 +180,16 @@ async function updateSubject(req, res) {
 }
 
 /**
- * Delete Subject
+ * Deactivate Subject (soft delete)
  */
-async function deleteSubject(req, res) {
+async function deactivateSubject(req, res) {
 
     try {
 
         const subject =
-            await subjectService.deleteSubject(
-                req.params.id
+            await subjectService.deactivateSubject(
+                req.params.id,
+                req.user.school_id
             );
 
         if (!subject) {
@@ -166,7 +205,48 @@ async function deleteSubject(req, res) {
         return response.success(
             res,
             subject,
-            "Subject deleted successfully"
+            "Subject deactivated successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
+ * Reactivate Subject
+ */
+async function reactivateSubject(req, res) {
+
+    try {
+
+        const subject =
+            await subjectService.reactivateSubject(
+                req.params.id,
+                req.user.school_id
+            );
+
+        if (!subject) {
+
+            return response.error(
+                res,
+                "Subject not found",
+                404
+            );
+
+        }
+
+        return response.success(
+            res,
+            subject,
+            "Subject reactivated successfully"
         );
 
     } catch (err) {
@@ -187,10 +267,14 @@ module.exports = {
 
     getSubjectsBySchool,
 
+    getAllSubjectsForManagement,
+
     getSubjectById,
 
     updateSubject,
 
-    deleteSubject
+    deactivateSubject,
+
+    reactivateSubject
 
 };

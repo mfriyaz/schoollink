@@ -19,8 +19,7 @@ router.get(
     "/",
     authenticate,
     authorizeRoles(
-        "School Admin",
-        "Super Admin"
+        "School Admin"
     ),
     principalDashboardController.getPrincipalDashboard
 );

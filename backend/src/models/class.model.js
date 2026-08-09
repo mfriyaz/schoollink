@@ -37,33 +37,72 @@ async function createClass(data, db = pool) {
 }
 
 /**
- * Get Classes By Academic Year
+ * Get Classes By Academic Year - scoped to one school
  */
-async function getClassesByAcademicYear(academicYearId) {
+async function getClassesByAcademicYear(academicYearId, schoolId) {
 
     const query = `
         SELECT *
         FROM classes
-        WHERE academic_year_id = $1
+        WHERE academic_year_id = $1 AND school_id = $2
         ORDER BY class_order;
     `;
 
-    const result = await pool.query(query, [academicYearId]);
+    const result = await pool.query(query, [academicYearId, schoolId]);
 
     return result.rows;
 
 }
 
 /**
- * Get Class By ID
+ * Get Classes By School
  */
-async function getClassById(id) {
+async function getClassesBySchool(schoolId) {
+
+    const query = `
+        SELECT *
+        FROM classes
+        WHERE school_id = $1
+        AND is_active = true
+        ORDER BY class_order;
+    `;
+
+    const result = await pool.query(query, [schoolId]);
+
+    return result.rows;
+
+}
+
+/**
+ * Get All Classes For School (including inactive)
+ * - used by the Classes management page, unlike
+ * getClassesBySchool which is active-only (for pickers)
+ */
+async function getAllClassesForSchool(schoolId) {
+
+    const query = `
+        SELECT *
+        FROM classes
+        WHERE school_id = $1
+        ORDER BY class_order;
+    `;
+
+    const result = await pool.query(query, [schoolId]);
+
+    return result.rows;
+
+}
+
+/**
+ * Get Class By ID - scoped to one school
+ */
+async function getClassById(id, schoolId) {
 
     const result = await pool.query(
 
-        `SELECT * FROM classes WHERE id = $1`,
+        `SELECT * FROM classes WHERE id = $1 AND school_id = $2`,
 
-        [id]
+        [id, schoolId]
 
     );
 
@@ -72,9 +111,9 @@ async function getClassById(id) {
 }
 
 /**
- * Update Class
+ * Update Class - scoped to one school
  */
-async function updateClass(id, data) {
+async function updateClass(id, schoolId, data) {
 
     const query = `
         UPDATE classes
@@ -82,7 +121,7 @@ async function updateClass(id, data) {
             class_name = $1,
             class_order = $2,
             updated_at = CURRENT_TIMESTAMP
-        WHERE id = $3
+        WHERE id = $3 AND school_id = $4
         RETURNING *;
     `;
 
@@ -92,7 +131,9 @@ async function updateClass(id, data) {
 
         data.class_order,
 
-        id
+        id,
+
+        schoolId
 
     ];
 
@@ -103,19 +144,45 @@ async function updateClass(id, data) {
 }
 
 /**
- * Delete Class
+ * Deactivate Class (soft delete)
+ * - classes with students/teacher_subjects tied to them can't
+ * be safely erased without either orphaning that data or
+ * crashing on a foreign key constraint
  */
-async function deleteClass(id) {
+async function deactivateClass(id, schoolId) {
 
     const result = await pool.query(
 
         `
-        DELETE FROM classes
-        WHERE id = $1
+        UPDATE classes
+        SET is_active = false, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1 AND school_id = $2
         RETURNING *;
         `,
 
-        [id]
+        [id, schoolId]
+
+    );
+
+    return result.rows[0];
+
+}
+
+/**
+ * Reactivate Class
+ */
+async function reactivateClass(id, schoolId) {
+
+    const result = await pool.query(
+
+        `
+        UPDATE classes
+        SET is_active = true, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1 AND school_id = $2
+        RETURNING *;
+        `,
+
+        [id, schoolId]
 
     );
 
@@ -129,10 +196,16 @@ module.exports = {
 
     getClassesByAcademicYear,
 
+    getClassesBySchool,
+
+    getAllClassesForSchool,
+
     getClassById,
 
     updateClass,
 
-    deleteClass
+    deactivateClass,
+
+    reactivateClass
 
 };

@@ -9,7 +9,13 @@ async function createSection(req, res) {
     try {
 
         const newSection =
-            await sectionService.createSection(req.body);
+            await sectionService.createSection({
+
+                ...req.body,
+
+                school_id: req.user.school_id
+
+            });
 
         return response.success(
             res,
@@ -31,7 +37,7 @@ async function createSection(req, res) {
 }
 
 /**
- * Get Sections By Class
+ * Get Sections By Class (active only - for pickers)
  */
 async function getSectionsByClass(req, res) {
 
@@ -39,7 +45,39 @@ async function getSectionsByClass(req, res) {
 
         const sections =
             await sectionService.getSectionsByClass(
-                req.params.classId
+                req.params.classId,
+                req.user.school_id
+            );
+
+        return response.success(
+            res,
+            sections,
+            "Sections retrieved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
+ * Get All Sections For Class For Management (active + inactive)
+ */
+async function getAllSectionsForClass(req, res) {
+
+    try {
+
+        const sections =
+            await sectionService.getAllSectionsForClass(
+                req.params.classId,
+                req.user.school_id
             );
 
         return response.success(
@@ -69,7 +107,8 @@ async function getSectionById(req, res) {
 
         const section =
             await sectionService.getSectionById(
-                req.params.id
+                req.params.id,
+                req.user.school_id
             );
 
         if (!section) {
@@ -110,6 +149,7 @@ async function updateSection(req, res) {
         const updatedSection =
             await sectionService.updateSection(
                 req.params.id,
+                req.user.school_id,
                 req.body
             );
 
@@ -142,15 +182,16 @@ async function updateSection(req, res) {
 }
 
 /**
- * Delete Section
+ * Deactivate Section (soft delete)
  */
-async function deleteSection(req, res) {
+async function deactivateSection(req, res) {
 
     try {
 
         const deletedSection =
-            await sectionService.deleteSection(
-                req.params.id
+            await sectionService.deactivateSection(
+                req.params.id,
+                req.user.school_id
             );
 
         if (!deletedSection) {
@@ -166,7 +207,48 @@ async function deleteSection(req, res) {
         return response.success(
             res,
             deletedSection,
-            "Section deleted successfully"
+            "Section deactivated successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
+ * Reactivate Section
+ */
+async function reactivateSection(req, res) {
+
+    try {
+
+        const reactivatedSection =
+            await sectionService.reactivateSection(
+                req.params.id,
+                req.user.school_id
+            );
+
+        if (!reactivatedSection) {
+
+            return response.error(
+                res,
+                "Section not found",
+                404
+            );
+
+        }
+
+        return response.success(
+            res,
+            reactivatedSection,
+            "Section reactivated successfully"
         );
 
     } catch (err) {
@@ -187,10 +269,14 @@ module.exports = {
 
     getSectionsByClass,
 
+    getAllSectionsForClass,
+
     getSectionById,
 
     updateSection,
 
-    deleteSection
+    deactivateSection,
+
+    reactivateSection
 
 };

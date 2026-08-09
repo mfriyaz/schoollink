@@ -1,71 +1,35 @@
 const classModel = require("../models/class.model");
 
-/**
- * Create Class
- */
 async function createClass(data) {
-
     return await classModel.createClass(data);
-
 }
 
-/**
- * Get Classes By Academic Year
- */
-async function getClassesByAcademicYear(academicYearId) {
-
-    return await classModel.getClassesByAcademicYear(
-        academicYearId
-    );
-
+async function getClassesByAcademicYear(academicYearId, schoolId) {
+    return await classModel.getClassesByAcademicYear(academicYearId, schoolId);
 }
 
-/**
- * Get Class By ID
- */
-async function getClassById(id) {
-
-    return await classModel.getClassById(id);
-
+async function getClassesBySchool(schoolId) {
+    return await classModel.getClassesBySchool(schoolId);
 }
 
-/**
- * Update Class
- */
-async function updateClass(id, data) {
-
-    const existingClass =
-        await classModel.getClassById(id);
-
-    if (!existingClass) {
-
-        throw new Error("Class not found");
-
-    }
-
-    return await classModel.updateClass(
-        id,
-        data
-    );
-
+async function getAllClassesForSchool(schoolId) {
+    return await classModel.getAllClassesForSchool(schoolId);
 }
 
-/**
- * Delete Class
- */
-async function deleteClass(id) {
+async function getClassById(id, schoolId) {
+    return await classModel.getClassById(id, schoolId);
+}
 
-    const existingClass =
-        await classModel.getClassById(id);
+async function updateClass(id, schoolId, data) {
+    return await classModel.updateClass(id, schoolId, data);
+}
 
-    if (!existingClass) {
+async function deactivateClass(id, schoolId) {
+    return await classModel.deactivateClass(id, schoolId);
+}
 
-        throw new Error("Class not found");
-
-    }
-
-    return await classModel.deleteClass(id);
-
+async function reactivateClass(id, schoolId) {
+    return await classModel.reactivateClass(id, schoolId);
 }
 
 module.exports = {
@@ -74,10 +38,16 @@ module.exports = {
 
     getClassesByAcademicYear,
 
+    getClassesBySchool,
+
+    getAllClassesForSchool,
+
     getClassById,
 
     updateClass,
 
-    deleteClass
+    deactivateClass,
+
+    reactivateClass
 
 };

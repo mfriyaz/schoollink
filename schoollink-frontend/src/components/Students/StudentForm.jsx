@@ -5,6 +5,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Alert,
     Button,
     Grid,
     TextField,
@@ -15,6 +16,29 @@ import {
     createStudent,
     updateStudent
 } from "../../services/studentService";
+
+import {
+    getMyClasses,
+    getSectionsByClass
+} from "../../services/postService";
+
+const emptyStudent = {
+
+    admission_no: "",
+    first_name: "",
+    last_name: "",
+    gender: "Male",
+    date_of_birth: "",
+    father_name: "",
+    mother_name: "",
+    parent_phone: "",
+    parent_email: "",
+    address: "",
+    class_id: "",
+    section_id: "",
+    is_active: true
+
+};
 
 function StudentForm({
 
@@ -28,51 +52,107 @@ function StudentForm({
 
 }) {
 
-   const emptyStudent = {
-
-    admission_no: "",
-    first_name: "",
-    last_name: "",
-    gender: "Male",
-    date_of_birth: "",
-    father_name: "",
-    mother_name: "",
-    parent_phone: "",
-    parent_email: "",
-    address: "",
-    is_active: true
-
-};
-
     const [student, setStudent] = useState(emptyStudent);
+
+    const [classes, setClasses] = useState([]);
+
+    const [sections, setSections] = useState([]);
+
+    const [error, setError] = useState("");
+
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+
+        if (open) {
+
+            loadClasses();
+
+        }
+
+    }, [open]);
 
     useEffect(() => {
 
         if (selectedStudent) {
 
-           setStudent({
+            setStudent({
 
-    admission_no: selectedStudent.admission_no,
-    first_name: selectedStudent.first_name,
-    last_name: selectedStudent.last_name,
-    gender: selectedStudent.gender,
-    date_of_birth: selectedStudent.date_of_birth.substring(0,10),
-    father_name: selectedStudent.father_name,
-    mother_name: selectedStudent.mother_name,
-    parent_phone: selectedStudent.parent_phone,
-    parent_email: selectedStudent.parent_email,
-    address: selectedStudent.address,
-    is_active: selectedStudent.is_active
+                admission_no: selectedStudent.admission_no || "",
+                first_name: selectedStudent.first_name || "",
+                last_name: selectedStudent.last_name || "",
+                gender: selectedStudent.gender || "Male",
+                date_of_birth: selectedStudent.date_of_birth
+                    ? selectedStudent.date_of_birth.substring(0, 10)
+                    : "",
+                father_name: selectedStudent.father_name || "",
+                mother_name: selectedStudent.mother_name || "",
+                parent_phone: selectedStudent.parent_phone || "",
+                parent_email: selectedStudent.parent_email || "",
+                address: selectedStudent.address || "",
+                class_id: selectedStudent.class_id || "",
+                section_id: selectedStudent.section_id || "",
+                is_active: selectedStudent.is_active
 
-});
+            });
+
+            if (selectedStudent.class_id) {
+
+                loadSections(selectedStudent.class_id);
+
+            }
 
         } else {
 
             setStudent(emptyStudent);
 
+            setSections([]);
+
         }
 
-    }, [selectedStudent]);
+        setError("");
+
+    }, [selectedStudent, open]);
+
+    async function loadClasses() {
+
+        try {
+
+            const response = await getMyClasses();
+
+            if (response.success) {
+
+                setClasses(response.data);
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
+
+    }
+
+    async function loadSections(classId) {
+
+        try {
+
+            const response = await getSectionsByClass(classId);
+
+            if (response.success) {
+
+                setSections(response.data);
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
+
+    }
 
     function handleChange(event) {
 
@@ -88,65 +168,87 @@ function StudentForm({
 
     }
 
+    function handleClassChange(event) {
+
+        const classId = event.target.value;
+
+        setStudent((prev) => ({
+
+            ...prev,
+
+            class_id: classId,
+
+            section_id: ""
+
+        }));
+
+        setSections([]);
+
+        if (classId) {
+
+            loadSections(classId);
+
+        }
+
+    }
+
     async function handleSave() {
 
+        setError("");
+
+        if (!student.admission_no || !student.first_name || !student.last_name) {
+
+            setError("Admission No, First Name and Last Name are required.");
+
+            return;
+
+        }
+
+        if (!student.class_id || !student.section_id) {
+
+            setError("Please select a Class and Section.");
+
+            return;
+
+        }
+
+        // academic_year_id isn't picker-driven anywhere in the app
+        // yet (Exams has the same simplification) - hardcoded to
+        // the one seeded academic year until that's built.
         const payload = {
 
-    school_id:37,
-    academic_year_id:1,
-    class_id:6,
-    section_id:1,
+            academic_year_id: 1,
 
-    admission_no:student.admission_no,
-    first_name:student.first_name,
-    last_name:student.last_name,
-    gender:student.gender,
-    date_of_birth:student.date_of_birth,
-    father_name:student.father_name,
-    mother_name:student.mother_name,
-    parent_phone:student.parent_phone,
-    parent_email:student.parent_email,
-    address:student.address,
+            class_id: student.class_id,
 
-    is_active: student.is_active
+            section_id: student.section_id,
 
-};
+            admission_no: student.admission_no,
+            first_name: student.first_name,
+            last_name: student.last_name,
+            gender: student.gender,
+            date_of_birth: student.date_of_birth || null,
+            father_name: student.father_name,
+            mother_name: student.mother_name,
+            parent_phone: student.parent_phone,
+            parent_email: student.parent_email,
+            address: student.address,
 
-        console.log("Payload:", payload);
+            is_active: student.is_active
+
+        };
 
         try {
 
-            let response;
+            setSaving(true);
 
-            if (selectedStudent) {
+            const response = selectedStudent
 
-                response = await updateStudent(
+                ? await updateStudent(selectedStudent.id, payload)
 
-                    selectedStudent.id,
-
-                    payload
-
-                );
-
-            } else {
-
-                response = await createStudent(payload);
-
-            }
-
-            console.log(response);
+                : await createStudent(payload);
 
             if (response.success) {
-
-                alert(
-
-                    selectedStudent
-
-                        ? "Student updated successfully."
-
-                        : "Student added successfully."
-
-                );
 
                 setStudent(emptyStudent);
 
@@ -158,19 +260,22 @@ function StudentForm({
 
                 onClose();
 
+            } else {
+
+                setError(response.message);
+
             }
 
         } catch (err) {
 
-            console.error(err);
-
-            alert(
-
+            setError(
                 err.response?.data?.message ||
-
                 "Unable to save student."
-
             );
+
+        } finally {
+
+            setSaving(false);
 
         }
 
@@ -187,19 +292,13 @@ function StudentForm({
 
             <DialogTitle>
 
-                {
-
-                    selectedStudent
-
-                        ? "Edit Student"
-
-                        : "Add Student"
-
-                }
+                {selectedStudent ? "Edit Student" : "Add Student"}
 
             </DialogTitle>
 
             <DialogContent>
+
+                {error && <Alert severity="error" sx={{ mb: 2, mt: 1 }}>{error}</Alert>}
 
                 <Grid container spacing={2} sx={{ mt: 1 }}>
 
@@ -250,17 +349,51 @@ function StudentForm({
                             onChange={handleChange}
                         >
 
-                            <MenuItem value="Male">
+                            <MenuItem value="Male">Male</MenuItem>
 
-                                Male
+                            <MenuItem value="Female">Female</MenuItem>
 
-                            </MenuItem>
+                        </TextField>
 
-                            <MenuItem value="Female">
+                    </Grid>
 
-                                Female
+                    <Grid size={6}>
 
-                            </MenuItem>
+                        <TextField
+                            fullWidth
+                            select
+                            label="Class"
+                            value={student.class_id}
+                            onChange={handleClassChange}
+                        >
+
+                            {classes.map((c) => (
+
+                                <MenuItem key={c.id} value={c.id}>{c.class_name}</MenuItem>
+
+                            ))}
+
+                        </TextField>
+
+                    </Grid>
+
+                    <Grid size={6}>
+
+                        <TextField
+                            fullWidth
+                            select
+                            label="Section"
+                            name="section_id"
+                            value={student.section_id}
+                            onChange={handleChange}
+                            disabled={!student.class_id}
+                        >
+
+                            {sections.map((s) => (
+
+                                <MenuItem key={s.id} value={s.id}>{s.section_name}</MenuItem>
+
+                            ))}
 
                         </TextField>
 
@@ -361,17 +494,10 @@ function StudentForm({
                 <Button
                     variant="contained"
                     onClick={handleSave}
+                    disabled={saving}
                 >
 
-                    {
-
-                        selectedStudent
-
-                            ? "Update"
-
-                            : "Save"
-
-                    }
+                    {saving ? "Saving..." : (selectedStudent ? "Update" : "Save")}
 
                 </Button>
 

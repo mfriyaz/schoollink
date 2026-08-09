@@ -12,18 +12,18 @@ async function createExam(data) {
 /**
  * Get All Exams
  */
-async function getAllExams() {
+async function getAllExams(schoolId) {
 
-    return await examModel.getAllExams();
+    return await examModel.getAllExams(schoolId);
 
 }
 
 /**
  * Get Exam By ID
  */
-async function getExamById(id) {
+async function getExamById(id, schoolId) {
 
-    return await examModel.getExamById(id);
+    return await examModel.getExamById(id, schoolId);
 
 }
 

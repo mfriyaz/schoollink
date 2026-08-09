@@ -80,6 +80,42 @@ async function getAssignmentsBySchool(schoolId) {
 }
 
 /**
+ * Get Assignments By Teacher
+ * (used to populate the Class/Subject dropdowns on the
+ * Teacher's Create Post screen)
+ */
+async function getAssignmentsByTeacher(teacherId) {
+
+    const query = `
+        SELECT
+            ts.id AS teacher_subject_id,
+            ts.class_id,
+            ts.section_id,
+            ts.subject_id,
+            s.subject_name,
+            c.class_name,
+            sec.section_name
+        FROM teacher_subjects ts
+        JOIN subjects s
+            ON ts.subject_id = s.id
+        JOIN classes c
+            ON ts.class_id = c.id
+        JOIN sections sec
+            ON ts.section_id = sec.id
+        WHERE ts.teacher_id = $1
+        ORDER BY
+            c.class_name,
+            sec.section_name,
+            s.subject_name;
+    `;
+
+    const result = await db.query(query, [teacherId]);
+
+    return result.rows;
+
+}
+
+/**
  * Get Assignment By ID
  */
 async function getAssignmentById(id) {
@@ -120,6 +156,8 @@ module.exports = {
     createAssignment,
 
     getAssignmentsBySchool,
+
+    getAssignmentsByTeacher,
 
     getAssignmentById,
 

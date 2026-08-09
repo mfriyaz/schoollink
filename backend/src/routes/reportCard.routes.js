@@ -19,7 +19,6 @@ router.get(
     "/student/:studentId/exam/:examId",
     authenticate,
     authorizeRoles(
-        "Super Admin",
         "School Admin",
         "Teacher",
         "Parent"

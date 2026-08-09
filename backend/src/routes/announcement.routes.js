@@ -19,18 +19,23 @@ router.post(
     "/",
     authenticate,
     authorizeRoles(
-        "School Admin",
-        "Super Admin"
+        "School Admin"
     ),
     announcementController.createAnnouncement
 );
 
 /**
  * Get All Announcements
+ * (unfiltered by audience - Admin-only; other roles should
+ * use /active/:audience instead so they only see what's
+ * actually meant for them)
  */
 router.get(
     "/",
     authenticate,
+    authorizeRoles(
+        "School Admin"
+    ),
     announcementController.getAllAnnouncements
 );
 
@@ -59,8 +64,7 @@ router.put(
     "/:id",
     authenticate,
     authorizeRoles(
-        "School Admin",
-        "Super Admin"
+        "School Admin"
     ),
     announcementController.updateAnnouncement
 );
@@ -72,8 +76,7 @@ router.delete(
     "/:id",
     authenticate,
     authorizeRoles(
-        "School Admin",
-        "Super Admin"
+        "School Admin"
     ),
     announcementController.deleteAnnouncement
 );

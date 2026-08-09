@@ -1,48 +1,31 @@
 const subjectModel = require("../models/subject.model");
 
-/**
- * Create Subject
- */
 async function createSubject(data) {
-
     return await subjectModel.createSubject(data);
-
 }
 
-/**
- * Get Subjects By School
- */
 async function getSubjectsBySchool(schoolId) {
-
     return await subjectModel.getSubjectsBySchool(schoolId);
-
 }
 
-/**
- * Get Subject By ID
- */
-async function getSubjectById(id) {
-
-    return await subjectModel.getSubjectById(id);
-
+async function getAllSubjectsForSchool(schoolId) {
+    return await subjectModel.getAllSubjectsForSchool(schoolId);
 }
 
-/**
- * Update Subject
- */
-async function updateSubject(id, data) {
-
-    return await subjectModel.updateSubject(id, data);
-
+async function getSubjectById(id, schoolId) {
+    return await subjectModel.getSubjectById(id, schoolId);
 }
 
-/**
- * Delete Subject
- */
-async function deleteSubject(id) {
+async function updateSubject(id, schoolId, data) {
+    return await subjectModel.updateSubject(id, schoolId, data);
+}
 
-    return await subjectModel.deleteSubject(id);
+async function deactivateSubject(id, schoolId) {
+    return await subjectModel.deactivateSubject(id, schoolId);
+}
 
+async function reactivateSubject(id, schoolId) {
+    return await subjectModel.reactivateSubject(id, schoolId);
 }
 
 module.exports = {
@@ -51,10 +34,14 @@ module.exports = {
 
     getSubjectsBySchool,
 
+    getAllSubjectsForSchool,
+
     getSubjectById,
 
     updateSubject,
 
-    deleteSubject
+    deactivateSubject,
+
+    reactivateSubject
 
 };

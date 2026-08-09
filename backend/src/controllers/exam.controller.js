@@ -9,7 +9,13 @@ async function createExam(req, res) {
     try {
 
         const exam =
-            await examService.createExam(req.body);
+            await examService.createExam({
+
+                ...req.body,
+
+                school_id: req.user.school_id
+
+            });
 
         return response.success(
             res,
@@ -38,7 +44,7 @@ async function getAllExams(req, res) {
     try {
 
         const exams =
-            await examService.getAllExams();
+            await examService.getAllExams(req.user.school_id);
 
         return response.success(
             res,
@@ -67,7 +73,8 @@ async function getExamById(req, res) {
 
         const exam =
             await examService.getExamById(
-                req.params.id
+                req.params.id,
+                req.user.school_id
             );
 
         if (!exam) {

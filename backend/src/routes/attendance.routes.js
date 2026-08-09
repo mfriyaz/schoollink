@@ -14,13 +14,34 @@ const {
 } = require("../middleware/role.middleware");
 
 /**
- * Mark Attendance
+ * Mark Attendance (single record)
  */
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     attendanceController.createAttendance
+);
+
+/**
+ * Bulk Mark Attendance For A Whole Class
+ */
+router.post(
+    "/bulk",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    attendanceController.bulkMarkAttendance
+);
+
+/**
+ * Get Class Roster With Attendance For A Date
+ * (used by the Take Attendance screen)
+ */
+router.get(
+    "/roster/:teacherSubjectId/:attendanceDate",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    attendanceController.getRosterWithAttendance
 );
 
 /**
@@ -29,17 +50,18 @@ router.post(
 router.get(
     "/teacher-subject/:teacherSubjectId/date/:attendanceDate",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     attendanceController.getAttendanceByDate
 );
 
 /**
  * Get Attendance By Student
+ * (Parent role can now view their own child's history too)
  */
 router.get(
     "/student/:studentId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher", "Parent"),
     attendanceController.getAttendanceByStudent
 );
 
@@ -49,7 +71,7 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     attendanceController.updateAttendance
 );
 
@@ -59,7 +81,7 @@ router.put(
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     attendanceController.deleteAttendance
 );
 

@@ -44,14 +44,16 @@ async function createAnnouncement(data) {
 /**
  * Get All Announcements
  */
-async function getAllAnnouncements() {
+async function getAllAnnouncements(schoolId) {
 
     const result = await db.query(
         `
         SELECT *
         FROM announcements
+        WHERE school_id = $1
         ORDER BY publish_date DESC;
-        `
+        `,
+        [schoolId]
     );
 
     return result.rows;
@@ -134,14 +136,15 @@ async function deleteAnnouncement(id) {
 /**
  * Get Active Announcements
  */
-async function getActiveAnnouncements(targetAudience) {
+async function getActiveAnnouncements(schoolId, targetAudience) {
 
     const result = await db.query(
         `
         SELECT *
         FROM announcements
         WHERE
-            is_active = true
+            school_id = $1
+            AND is_active = true
             AND publish_date <= CURRENT_DATE
             AND
             (
@@ -151,11 +154,11 @@ async function getActiveAnnouncements(targetAudience) {
             AND
             (
                 target_audience = 'All'
-                OR target_audience = $1
+                OR target_audience = $2
             )
         ORDER BY publish_date DESC;
         `,
-        [targetAudience]
+        [schoolId, targetAudience]
     );
 
     return result.rows;

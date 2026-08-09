@@ -16,6 +16,10 @@ async function updateSchool(id, data) {
     return await schoolModel.updateSchool(id, data);
 }
 
+async function updateSchoolGovernance(id, data) {
+    return await schoolModel.updateSchoolGovernance(id, data);
+}
+
 async function deleteSchool(id) {
 
     const school = await schoolModel.deleteSchool(id);
@@ -31,6 +35,7 @@ module.exports = {
     createSchool,
     getAllSchools,
     updateSchool,
+    updateSchoolGovernance,
     deleteSchool,
     getSchoolById
 };

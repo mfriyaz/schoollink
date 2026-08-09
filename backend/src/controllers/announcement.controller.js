@@ -8,7 +8,13 @@ async function createAnnouncement(req, res) {
     try {
 
         const announcement =
-            await announcementService.createAnnouncement(req.body);
+            await announcementService.createAnnouncement({
+
+                ...req.body,
+
+                school_id: req.user.school_id
+
+            });
 
         return res.status(201).json({
 
@@ -44,7 +50,9 @@ async function getAllAnnouncements(req, res) {
     try {
 
         const announcements =
-            await announcementService.getAllAnnouncements();
+            await announcementService.getAllAnnouncements(
+                req.user.school_id
+            );
 
         return res.status(200).json({
 
@@ -188,6 +196,7 @@ async function getActiveAnnouncements(req, res) {
 
         const announcements =
             await announcementService.getActiveAnnouncements(
+                req.user.school_id,
                 audience
             );
 

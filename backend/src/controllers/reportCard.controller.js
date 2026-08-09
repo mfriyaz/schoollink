@@ -9,6 +9,24 @@ async function getStudentReportCard(req, res) {
 
         const { studentId, examId } = req.params;
 
+        if (req.user.role === "Parent") {
+
+            const owns = await reportCardService.parentOwnsStudent(
+                req.user.id,
+                studentId
+            );
+
+            if (!owns) {
+
+                return res.status(403).json({
+                    success: false,
+                    message: "This student is not linked to your account"
+                });
+
+            }
+
+        }
+
         const report =
             await reportCardService.getStudentReportCard(
                 studentId,
@@ -20,6 +38,18 @@ async function getStudentReportCard(req, res) {
             return res.status(404).json({
                 success: false,
                 message: "No report card found."
+            });
+
+        }
+
+        // School Admin/Teacher can only see report cards for
+        // their own school - a student ID from another school
+        // shouldn't be viewable just by guessing an ID.
+        if (report[0].school_id !== req.user.school_id) {
+
+            return res.status(403).json({
+                success: false,
+                message: "This student does not belong to your school"
             });
 
         }
@@ -45,6 +75,8 @@ async function getStudentReportCard(req, res) {
         return res.status(200).json({
 
             success: true,
+
+            school_name: report[0].school_name,
 
             student: {
 

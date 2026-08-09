@@ -53,11 +53,22 @@ export async function updateStudent(id, data) {
 }
 
 /**
- * Delete student
+ * Delete (deactivate) student
  */
 export async function deleteStudent(id) {
 
     const response = await api.delete(`/students/${id}`);
+
+    return response.data;
+
+}
+
+/**
+ * Reactivate a deactivated student
+ */
+export async function reactivateStudent(id) {
+
+    const response = await api.patch(`/students/${id}/reactivate`);
 
     return response.data;
 

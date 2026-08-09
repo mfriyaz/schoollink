@@ -40,15 +40,16 @@ async function createExam(data) {
 /**
  * Get All Exams
  */
-async function getAllExams() {
+async function getAllExams(schoolId) {
 
     const query = `
         SELECT *
         FROM exams
+        WHERE school_id = $1
         ORDER BY start_date DESC;
     `;
 
-    const result = await db.query(query);
+    const result = await db.query(query, [schoolId]);
 
     return result.rows;
 
@@ -57,15 +58,16 @@ async function getAllExams() {
 /**
  * Get Exam By ID
  */
-async function getExamById(id) {
+async function getExamById(id, schoolId) {
 
     const result = await db.query(
         `
         SELECT *
         FROM exams
         WHERE id = $1
+        AND school_id = $2
         `,
-        [id]
+        [id, schoolId]
     );
 
     return result.rows[0];

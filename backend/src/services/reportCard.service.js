@@ -12,6 +12,9 @@ async function getStudentReportCard(studentId, examId) {
             s.admission_no,
             s.first_name,
             s.last_name,
+            s.school_id,
+
+            sch.school_name,
 
             c.class_name,
             sec.section_name,
@@ -32,6 +35,9 @@ async function getStudentReportCard(studentId, examId) {
 
         INNER JOIN students s
             ON sm.student_id = s.id
+
+        INNER JOIN schools sch
+            ON s.school_id = sch.id
 
         INNER JOIN exam_subjects es
             ON sm.exam_subject_id = es.id
@@ -68,8 +74,30 @@ async function getStudentReportCard(studentId, examId) {
 
 }
 
+/**
+ * Verify a parent (by their users.id) is actually linked to
+ * the given student.
+ */
+async function parentOwnsStudent(userId, studentId) {
+
+    const result = await db.query(
+        `
+        SELECT 1
+        FROM parent_students
+        WHERE parent_user_id = $1
+        AND student_id = $2
+        `,
+        [userId, studentId]
+    );
+
+    return result.rows.length > 0;
+
+}
+
 module.exports = {
 
-    getStudentReportCard
+    getStudentReportCard,
+
+    parentOwnsStudent
 
 };

@@ -19,6 +19,15 @@ async function getAssignmentsBySchool(schoolId) {
 }
 
 /**
+ * Get Assignments By Teacher
+ */
+async function getAssignmentsByTeacher(teacherId) {
+
+    return await teacherSubjectModel.getAssignmentsByTeacher(teacherId);
+
+}
+
+/**
  * Get Assignment By ID
  */
 async function getAssignmentById(id) {
@@ -41,6 +50,8 @@ module.exports = {
     createAssignment,
 
     getAssignmentsBySchool,
+
+    getAssignmentsByTeacher,
 
     getAssignmentById,
 

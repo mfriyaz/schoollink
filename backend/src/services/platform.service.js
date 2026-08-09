@@ -61,74 +61,64 @@ async function onboardSchool(data) {
             throw new Error("School Admin role not found");
         }
 
-        // ⭐ ADD THIS NEXT
         // Create School
-const newSchool = await schoolModel.createSchool(
-    school,
-    client
-);
+        const newSchool = await schoolModel.createSchool(
+            school,
+            client
+        );
 
-// Hash Password
-const passwordHash = await bcrypt.hash(
-    admin.password,
-    10
-);
+        // Hash Password
+        const passwordHash = await bcrypt.hash(
+            admin.password,
+            10
+        );
 
-// Prepare User Data
-const userData = {
+        // Prepare User Data
+        const userData = {
 
-    school_id: newSchool.id,
+            school_id: newSchool.id,
 
-    role_id: role.id,
+            role_id: role.id,
 
-    full_name: admin.full_name,
+            full_name: admin.full_name,
 
-    email: admin.email,
+            email: admin.email,
 
-    mobile: admin.mobile,
+            mobile: admin.mobile,
 
-    password_hash: passwordHash
+            password_hash: passwordHash
 
-};
+        };
 
-// Create School Administrator
-const newAdmin = await userModel.createUser(
-    userData,
-    client
-);
+        // Create School Administrator
+        const newAdmin = await userModel.createUser(
+            userData,
+            client
+        );
 
-// Commit Transaction
-await client.query("COMMIT");
+        // Commit Transaction
+        await client.query("COMMIT");
 
-return {
+        return {
 
-    school: newSchool,
+            school: newSchool,
 
-    administrator: newAdmin
+            // Deliberately excludes password_hash - this
+            // response goes straight back to the Super Admin's
+            // browser, and a hash never needs to leave the server.
+            administrator: {
 
-};
+                id: newAdmin.id,
 
-// (Next step: create the admin user here)
+                full_name: newAdmin.full_name,
 
-await client.query("COMMIT");
+                email: newAdmin.email,
 
-return {
+                mobile: newAdmin.mobile
 
-    school: newSchool,
+            }
 
-    administrator: {
-
-        id: newAdmin.id,
-
-        full_name: newAdmin.full_name,
-
-        email: newAdmin.email,
-
-        mobile: newAdmin.mobile
-
-    }
-
-};
+        };
 
     } catch (err) {
 

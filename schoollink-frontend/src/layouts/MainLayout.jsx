@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { Box } from "@mui/material";
 
 import { Outlet } from "react-router-dom";
@@ -6,6 +8,29 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 
 function MainLayout() {
+
+    const [collapsed, setCollapsed] = useState(false);
+
+    useEffect(() => {
+
+        function handleKeyDown(event) {
+
+            // Ctrl+< (or Cmd+< on Mac) toggles the sidebar.
+            if ((event.ctrlKey || event.metaKey) && event.key === "<") {
+
+                event.preventDefault();
+
+                setCollapsed((c) => !c);
+
+            }
+
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => window.removeEventListener("keydown", handleKeyDown);
+
+    }, []);
 
     return (
 
@@ -17,17 +42,18 @@ function MainLayout() {
             }}
         >
 
-            <Sidebar />
+            <Sidebar collapsed={collapsed} />
 
             <Box
                 sx={{
                     flex: 1,
                     display: "flex",
-                    flexDirection: "column"
+                    flexDirection: "column",
+                    minWidth: 0
                 }}
             >
 
-                <Topbar />
+                <Topbar onToggleSidebar={() => setCollapsed((c) => !c)} />
 
                 <Box
                     sx={{

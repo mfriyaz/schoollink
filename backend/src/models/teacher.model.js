@@ -68,11 +68,26 @@ async function getTeachersBySchool(schoolId) {
 /**
  * Get Teacher By ID
  */
-async function getTeacherById(id) {
+async function getTeacherById(id, schoolId) {
 
     const result = await db.query(
-        "SELECT * FROM teachers WHERE id = $1",
-        [id]
+        "SELECT * FROM teachers WHERE id = $1 AND school_id = $2",
+        [id, schoolId]
+    );
+
+    return result.rows[0];
+}
+
+/**
+ * Get Teacher By User ID
+ * (resolves a logged-in Teacher's JWT user id -> teacher_id,
+ * needed since the JWT only carries the users.id, not teachers.id)
+ */
+async function getTeacherByUserId(userId) {
+
+    const result = await db.query(
+        "SELECT * FROM teachers WHERE user_id = $1",
+        [userId]
     );
 
     return result.rows[0];
@@ -81,7 +96,7 @@ async function getTeacherById(id) {
 /**
  * Update Teacher
  */
-async function updateTeacher(id, data) {
+async function updateTeacher(id, schoolId, data) {
 
     const query = `
         UPDATE teachers
@@ -99,6 +114,7 @@ async function updateTeacher(id, data) {
             joining_date = $11,
             updated_at = CURRENT_TIMESTAMP
         WHERE id = $12
+        AND school_id = $13
         RETURNING *;
     `;
 
@@ -114,7 +130,8 @@ async function updateTeacher(id, data) {
         data.qualification,
         data.experience_years,
         data.joining_date,
-        id
+        id,
+        schoolId
     ];
 
     const result = await db.query(query, values);
@@ -123,13 +140,40 @@ async function updateTeacher(id, data) {
 }
 
 /**
- * Delete Teacher
+ * Deactivate Teacher
+ * (soft delete - a teacher with existing homework/attendance/
+ * marks tied to them can't be safely erased outright without
+ * either orphaning that history or crashing on the foreign key
+ * constraint, so this deactivates them instead)
  */
-async function deleteTeacher(id) {
+async function deactivateTeacher(id, schoolId) {
 
     const result = await db.query(
-        "DELETE FROM teachers WHERE id = $1 RETURNING *",
-        [id]
+        `
+        UPDATE teachers
+        SET is_active = false, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1 AND school_id = $2
+        RETURNING *
+        `,
+        [id, schoolId]
+    );
+
+    return result.rows[0];
+}
+
+/**
+ * Reactivate Teacher
+ */
+async function reactivateTeacher(id, schoolId) {
+
+    const result = await db.query(
+        `
+        UPDATE teachers
+        SET is_active = true, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1 AND school_id = $2
+        RETURNING *
+        `,
+        [id, schoolId]
     );
 
     return result.rows[0];
@@ -143,8 +187,12 @@ module.exports = {
 
     getTeacherById,
 
+    getTeacherByUserId,
+
     updateTeacher,
 
-    deleteTeacher
+    deactivateTeacher,
+
+    reactivateTeacher
 
 };

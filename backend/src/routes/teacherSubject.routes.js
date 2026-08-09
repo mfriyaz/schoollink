@@ -19,18 +19,31 @@ const {
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     teacherSubjectController.createAssignment
 );
 
 /**
  * Get Assignments By School
+ * (self-scoped from the JWT, not a client-supplied ID)
  */
 router.get(
-    "/school/:schoolId",
+    "/mine",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     teacherSubjectController.getAssignmentsBySchool
+);
+
+/**
+ * Get Assignments By Teacher
+ * (Teacher role needs this to populate their own
+ * Class/Subject dropdowns on Create Post)
+ */
+router.get(
+    "/teacher/:teacherId",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    teacherSubjectController.getAssignmentsByTeacher
 );
 
 /**
@@ -39,7 +52,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     teacherSubjectController.getAssignmentById
 );
 
@@ -49,7 +62,7 @@ router.get(
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     teacherSubjectController.deleteAssignment
 );
 

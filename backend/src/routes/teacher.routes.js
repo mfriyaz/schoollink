@@ -18,18 +18,31 @@ const {
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     teacherController.createTeacher
 );
 
 /**
  * Get Teachers By School
+ * (self-scoped from the JWT)
  */
 router.get(
-    "/school/:schoolId",
+    "/mine",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     teacherController.getTeachersBySchool
+);
+
+/**
+ * Get My Teacher Profile
+ * (must be defined before "/:id" so Express doesn't
+ * treat "me" as an :id param)
+ */
+router.get(
+    "/me",
+    authenticate,
+    authorizeRoles("Teacher"),
+    teacherController.getMyTeacherProfile
 );
 
 /**
@@ -38,7 +51,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     teacherController.getTeacherById
 );
 
@@ -48,18 +61,28 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     teacherController.updateTeacher
 );
 
 /**
- * Delete Teacher
+ * Deactivate Teacher (soft delete)
  */
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
-    teacherController.deleteTeacher
+    authorizeRoles("School Admin"),
+    teacherController.deactivateTeacher
+);
+
+/**
+ * Reactivate Teacher
+ */
+router.patch(
+    "/:id/reactivate",
+    authenticate,
+    authorizeRoles("School Admin"),
+    teacherController.reactivateTeacher
 );
 
 module.exports = router;

@@ -39,7 +39,37 @@ async function getAssignmentsBySchool(req, res) {
 
         const assignments =
             await teacherSubjectService.getAssignmentsBySchool(
-                req.params.schoolId
+                req.user.school_id
+            );
+
+        return response.success(
+            res,
+            assignments,
+            "Assignments retrieved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
+ * Get Assignments By Teacher
+ */
+async function getAssignmentsByTeacher(req, res) {
+
+    try {
+
+        const assignments =
+            await teacherSubjectService.getAssignmentsByTeacher(
+                req.params.teacherId
             );
 
         return response.success(
@@ -145,6 +175,8 @@ module.exports = {
     createAssignment,
 
     getAssignmentsBySchool,
+
+    getAssignmentsByTeacher,
 
     getAssignmentById,
 

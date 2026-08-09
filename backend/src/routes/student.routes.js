@@ -17,13 +17,36 @@ const {
     authorizeRoles
 } = require("../middleware/role.middleware");
 
+const uploadExcel = require("../middleware/uploadExcel.middleware");
+
+/**
+ * Download Excel Import Template
+ */
+router.get(
+    "/template",
+    authenticate,
+    authorizeRoles("School Admin"),
+    studentController.downloadTemplate
+);
+
+/**
+ * Bulk Upload Students From Excel
+ */
+router.post(
+    "/bulk-upload",
+    authenticate,
+    authorizeRoles("School Admin"),
+    uploadExcel.single("file"),
+    studentController.bulkUploadStudents
+);
+
 /**
  * Create Student
  */
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     studentValidationRules,
     validate,
     studentController.createStudent
@@ -35,7 +58,7 @@ router.post(
 router.get(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     studentController.getAllStudents
 );
 
@@ -45,7 +68,7 @@ router.get(
 router.get(
     "/class/:classId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     studentController.getStudentsByClass
 );
 
@@ -55,7 +78,7 @@ router.get(
 router.get(
     "/section/:sectionId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     studentController.getStudentsBySection
 );
 
@@ -65,7 +88,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     studentController.getStudentById
 );
 
@@ -75,7 +98,7 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     studentController.updateStudent
 );
 
@@ -85,8 +108,18 @@ router.put(
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
-    studentController.deleteStudent
+    authorizeRoles("School Admin"),
+    studentController.deactivateStudent
+);
+
+/**
+ * Reactivate Student
+ */
+router.patch(
+    "/:id/reactivate",
+    authenticate,
+    authorizeRoles("School Admin"),
+    studentController.reactivateStudent
 );
 
 module.exports = router;

@@ -17,4 +17,22 @@ router.get(
     profileController.getProfile
 );
 
+/**
+ * Update Logged-in User Profile
+ */
+router.patch(
+    "/me",
+    authenticate,
+    profileController.updateProfile
+);
+
+/**
+ * Change Password
+ */
+router.post(
+    "/change-password",
+    authenticate,
+    profileController.changePassword
+);
+
 module.exports = router;

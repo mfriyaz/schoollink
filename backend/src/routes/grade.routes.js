@@ -18,7 +18,7 @@ const {
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     gradeController.createGrade
 );
 
@@ -28,7 +28,7 @@ router.post(
 router.get(
     "/school/:schoolId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     gradeController.getAllGrades
 );
 
@@ -38,7 +38,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     gradeController.getGradeById
 );
 
@@ -48,7 +48,7 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     gradeController.updateGrade
 );
 
@@ -58,7 +58,7 @@ router.put(
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     gradeController.deleteGrade
 );
 

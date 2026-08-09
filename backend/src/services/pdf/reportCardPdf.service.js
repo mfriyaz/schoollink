@@ -21,7 +21,7 @@ async function generateReportCard(reportData, res) {
     // School Header
     doc
         .fontSize(22)
-        .text("FOUSIYYA PRIMARY SCHOOL", {
+        .text(reportData.school_name || "School Report Card", {
             align: "center"
         });
 

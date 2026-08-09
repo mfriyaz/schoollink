@@ -19,8 +19,19 @@ const {
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     homeworkController.createHomework
+);
+
+/**
+ * Get Homework For Student
+ * (Parent's feed - Parent role needs this, unlike the others)
+ */
+router.get(
+    "/student/:studentId",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher", "Parent"),
+    homeworkController.getHomeworkForStudent
 );
 
 /**
@@ -29,7 +40,7 @@ router.post(
 router.get(
     "/teacher-subject/:teacherSubjectId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     homeworkController.getHomeworkByTeacherSubject
 );
 
@@ -39,7 +50,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     homeworkController.getHomeworkById
 );
 
@@ -49,7 +60,7 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    authorizeRoles("School Admin", "Teacher"),
     homeworkController.updateHomework
 );
 
@@ -59,7 +70,7 @@ router.put(
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     homeworkController.deleteHomework
 );
 

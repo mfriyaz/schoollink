@@ -4,19 +4,7 @@ import BoyIcon from "@mui/icons-material/Boy";
 import GirlIcon from "@mui/icons-material/Girl";
 import SchoolIcon from "@mui/icons-material/School";
 
-import KpiCard from "../dashboard/KpiCard";
-
-const gradients = {
-
-    blue: "linear-gradient(135deg,#2563EB,#60A5FA)",
-
-    green: "linear-gradient(135deg,#16A34A,#4ADE80)",
-
-    pink: "linear-gradient(135deg,#DB2777,#F472B6)",
-
-    orange: "linear-gradient(135deg,#EA580C,#FB923C)"
-
-};
+import KpiCard from "../Dashboard/KpiCard";
 
 export default function StudentStatistics({ students }) {
 
@@ -26,43 +14,45 @@ export default function StudentStatistics({ students }) {
 
     const girls = students.filter(x => x.gender === "Female").length;
 
+    const active = students.filter(x => x.is_active).length;
+
     return (
 
         <Grid container spacing={3} sx={{ mb: 3 }}>
 
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
                 <KpiCard
                     title="Total Students"
                     value={total}
-                    icon={<PeopleIcon sx={{ fontSize: 34 }} />}
-                    gradient={gradients.blue}
+                    icon={<PeopleIcon sx={{ color: "#2563EB" }} />}
+                    iconBg="#DBEAFE"
                 />
             </Grid>
 
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
                 <KpiCard
                     title="Boys"
                     value={boys}
-                    icon={<BoyIcon sx={{ fontSize: 34 }} />}
-                    gradient={gradients.green}
+                    icon={<BoyIcon sx={{ color: "#2563EB" }} />}
+                    iconBg="#DBEAFE"
                 />
             </Grid>
 
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
                 <KpiCard
                     title="Girls"
                     value={girls}
-                    icon={<GirlIcon sx={{ fontSize: 34 }} />}
-                    gradient={gradients.pink}
+                    icon={<GirlIcon sx={{ color: "#DB2777" }} />}
+                    iconBg="#FCE7F3"
                 />
             </Grid>
 
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
                 <KpiCard
-                    title="Classes"
-                    value="6"
-                    icon={<SchoolIcon sx={{ fontSize: 34 }} />}
-                    gradient={gradients.orange}
+                    title="Active"
+                    value={active}
+                    icon={<SchoolIcon sx={{ color: "#16A34A" }} />}
+                    iconBg="#DCFCE7"
                 />
             </Grid>
 

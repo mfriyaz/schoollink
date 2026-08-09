@@ -1,7 +1,7 @@
 const attendanceModel = require("../models/attendance.model");
 
 /**
- * Mark Attendance
+ * Mark Attendance (single record)
  */
 async function createAttendance(data) {
 
@@ -48,6 +48,52 @@ async function deleteAttendance(id) {
 
 }
 
+/**
+ * Get Roster With Attendance
+ */
+async function getRosterWithAttendance(teacherSubjectId, attendanceDate) {
+
+    return await attendanceModel.getRosterWithAttendance(
+        teacherSubjectId,
+        attendanceDate
+    );
+
+}
+
+/**
+ * Bulk Mark Attendance
+ */
+async function bulkMarkAttendance(teacherSubjectId, attendanceDate, records) {
+
+    return await attendanceModel.bulkUpsertAttendance(
+        teacherSubjectId,
+        attendanceDate,
+        records
+    );
+
+}
+
+/**
+ * Verify Teacher Owns Assignment
+ */
+async function teacherOwnsAssignment(userId, teacherSubjectId) {
+
+    return await attendanceModel.teacherOwnsAssignment(
+        userId,
+        teacherSubjectId
+    );
+
+}
+
+/**
+ * Verify Parent Owns Student
+ */
+async function parentOwnsStudent(userId, studentId) {
+
+    return await attendanceModel.parentOwnsStudent(userId, studentId);
+
+}
+
 module.exports = {
 
     createAttendance,
@@ -58,6 +104,14 @@ module.exports = {
 
     updateAttendance,
 
-    deleteAttendance
+    deleteAttendance,
+
+    getRosterWithAttendance,
+
+    bulkMarkAttendance,
+
+    teacherOwnsAssignment,
+
+    parentOwnsStudent
 
 };

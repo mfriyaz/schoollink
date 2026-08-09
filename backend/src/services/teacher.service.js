@@ -21,27 +21,45 @@ async function getTeachersBySchool(schoolId) {
 /**
  * Get Teacher By ID
  */
-async function getTeacherById(id) {
+async function getTeacherById(id, schoolId) {
 
-    return await teacherModel.getTeacherById(id);
+    return await teacherModel.getTeacherById(id, schoolId);
+
+}
+
+/**
+ * Get Teacher By User ID
+ */
+async function getTeacherByUserId(userId) {
+
+    return await teacherModel.getTeacherByUserId(userId);
 
 }
 
 /**
  * Update Teacher
  */
-async function updateTeacher(id, data) {
+async function updateTeacher(id, schoolId, data) {
 
-    return await teacherModel.updateTeacher(id, data);
+    return await teacherModel.updateTeacher(id, schoolId, data);
 
 }
 
 /**
- * Delete Teacher
+ * Deactivate Teacher
  */
-async function deleteTeacher(id) {
+async function deactivateTeacher(id, schoolId) {
 
-    return await teacherModel.deleteTeacher(id);
+    return await teacherModel.deactivateTeacher(id, schoolId);
+
+}
+
+/**
+ * Reactivate Teacher
+ */
+async function reactivateTeacher(id, schoolId) {
+
+    return await teacherModel.reactivateTeacher(id, schoolId);
 
 }
 
@@ -53,8 +71,12 @@ module.exports = {
 
     getTeacherById,
 
+    getTeacherByUserId,
+
     updateTeacher,
 
-    deleteTeacher
+    deactivateTeacher,
+
+    reactivateTeacher
 
 };

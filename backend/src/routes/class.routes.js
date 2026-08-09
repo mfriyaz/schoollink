@@ -14,8 +14,28 @@ const { authorizeRoles } = require("../middleware/role.middleware");
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     classController.createClass
+);
+
+/**
+ * Get My Classes (active only, for pickers)
+ */
+router.get(
+    "/mine",
+    authenticate,
+    authorizeRoles("School Admin"),
+    classController.getMyClasses
+);
+
+/**
+ * Get All Classes For Management (active + inactive)
+ */
+router.get(
+    "/manage/all",
+    authenticate,
+    authorizeRoles("School Admin"),
+    classController.getAllClassesForManagement
 );
 
 /**
@@ -24,7 +44,7 @@ router.post(
 router.get(
     "/academic-year/:academicYearId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     classController.getClassesByAcademicYear
 );
 
@@ -34,7 +54,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     classController.getClassById
 );
 
@@ -44,18 +64,28 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     classController.updateClass
 );
 
 /**
- * Delete Class
+ * Deactivate Class (soft delete)
  */
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
-    classController.deleteClass
+    authorizeRoles("School Admin"),
+    classController.deactivateClass
+);
+
+/**
+ * Reactivate Class
+ */
+router.patch(
+    "/:id/reactivate",
+    authenticate,
+    authorizeRoles("School Admin"),
+    classController.reactivateClass
 );
 
 module.exports = router;

@@ -13,7 +13,7 @@ const { authorizeRoles } = require("../middleware/role.middleware");
 router.post(
     "/",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     academicYearController.createAcademicYear
 );
 
@@ -23,7 +23,7 @@ router.post(
 router.get(
     "/school/:schoolId",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     academicYearController.getAcademicYearsBySchool
 );
 
@@ -33,7 +33,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     academicYearController.getAcademicYearById
 );
 
@@ -43,7 +43,7 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     academicYearController.updateAcademicYear
 );
 
@@ -53,7 +53,7 @@ router.put(
 router.delete(
     "/:id",
     authenticate,
-    authorizeRoles("Super Admin", "School Admin"),
+    authorizeRoles("School Admin"),
     academicYearController.deleteAcademicYear
 );
 

@@ -1,6 +1,41 @@
 const schoolService = require("../services/school.service");
 
 /**
+ * Update School Governance
+ * (Super Admin only - subscription/status/limits)
+ */
+async function updateSchoolGovernance(req, res) {
+    try {
+
+        const school = await schoolService.updateSchoolGovernance(
+            req.params.id,
+            req.body
+        );
+
+        if (!school) {
+            return res.status(404).json({
+                success: false,
+                message: "School not found"
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: "School governance updated successfully",
+            data: school
+        });
+
+    } catch (err) {
+
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+}
+
+/**
  * Create School
  */
 async function createSchool(req, res) {
@@ -140,5 +175,6 @@ module.exports = {
     getAllSchools,
     getSchoolById,
     updateSchool,
+    updateSchoolGovernance,
     deleteSchool
 };

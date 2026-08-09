@@ -19,11 +19,12 @@ async function createSchool(data, db = pool) {
             country,
             postal_code,
             subscription_plan,
-            status
+            status,
+            timezone
         )
         VALUES
         (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
         )
         RETURNING *;
     `;
@@ -40,7 +41,8 @@ async function createSchool(data, db = pool) {
         data.country,
         data.postal_code,
         data.subscription_plan,
-        data.status
+        data.status,
+        data.timezone || "Asia/Singapore"
     ];
 
     const result = await db.query(query, values);
@@ -126,6 +128,45 @@ async function updateSchool(id, data) {
 }
 
 /**
+ * Update School Governance Fields Only
+ * (dedicated function so the Super Admin console can update
+ * subscription/limits without needing to resupply every other
+ * field - unlike updateSchool, which replaces the whole row)
+ */
+async function updateSchoolGovernance(id, data) {
+
+    const query = `
+        UPDATE schools
+        SET
+            subscription_plan = $1,
+            subscription_expiry = $2,
+            status = $3,
+            max_classes = $4,
+            max_students = $5,
+            max_teachers = $6,
+            timezone = $7,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $8
+        RETURNING *;
+    `;
+
+    const values = [
+        data.subscription_plan,
+        data.subscription_expiry,
+        data.status,
+        data.max_classes,
+        data.max_students,
+        data.max_teachers,
+        data.timezone,
+        id
+    ];
+
+    const result = await pool.query(query, values);
+
+    return result.rows[0];
+}
+
+/**
  * Soft delete school
  */
 async function deleteSchool(id) {
@@ -164,6 +205,7 @@ module.exports = {
     getAllSchools,
     getSchoolById,
     updateSchool,
+    updateSchoolGovernance,
     deleteSchool,
     findSchoolByCode
 };
