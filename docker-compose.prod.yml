@@ -1,0 +1,36 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: schoollink-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: schoollink
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: schoollink_db
+      TZ: UTC
+      PGTZ: UTC
+    # Bound to 127.0.0.1 only - Postgres is never reachable from
+    # outside this server, only from other containers/processes
+    # running on the machine itself (like the backend, or a
+    # future SSH-tunneled admin tool).
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: schoollink-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    # Also bound to localhost only - Nginx is the one public
+    # entry point, proxying requests to this port internally.
+    ports:
+      - "127.0.0.1:3001:3001"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
