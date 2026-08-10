@@ -22,4 +22,24 @@ router.get(
     parentController.getMyChildren
 );
 
+/**
+ * Create (or reuse) a Parent account and link them to a student
+ */
+router.post(
+    "/",
+    authenticate,
+    authorizeRoles("School Admin"),
+    parentController.createOrLinkParent
+);
+
+/**
+ * Get every parent linked to a student
+ */
+router.get(
+    "/student/:studentId",
+    authenticate,
+    authorizeRoles("School Admin"),
+    parentController.getParentsForStudent
+);
+
 module.exports = router;
