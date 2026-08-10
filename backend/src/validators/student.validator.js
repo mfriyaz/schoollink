@@ -5,12 +5,6 @@ const { body, validationResult } = require("express-validator");
  */
 const studentValidationRules = [
 
-    body("school_id")
-        .notEmpty()
-        .withMessage("School ID is required")
-        .isInt({ min: 1 })
-        .withMessage("School ID must be a positive integer"),
-
     body("academic_year_id")
         .notEmpty()
         .withMessage("Academic Year ID is required")
