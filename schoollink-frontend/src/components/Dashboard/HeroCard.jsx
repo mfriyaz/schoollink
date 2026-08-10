@@ -1,13 +1,7 @@
 import {
     Paper,
-    Typography,
-    Button,
-    Stack
+    Typography
 } from "@mui/material";
-
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import PaymentsIcon from "@mui/icons-material/Payments";
 
 function HeroCard() {
 
@@ -33,7 +27,7 @@ function HeroCard() {
         <Paper
             elevation={0}
             sx={{
-                p: { xs: 3, md: 5 },
+                p: { xs: 2.5, md: 5 },
                 mb: 4,
                 borderRadius: 5,
                 color: "#FFFFFF",
@@ -45,6 +39,7 @@ function HeroCard() {
             <Typography
                 variant="h4"
                 fontWeight={700}
+                sx={{ fontSize: { xs: "1.5rem", md: "2.125rem" } }}
             >
                 {greeting}, Riyaz 👋
             </Typography>
@@ -52,7 +47,8 @@ function HeroCard() {
             <Typography
                 sx={{
                     mt: 1,
-                    opacity: 0.9
+                    opacity: 0.9,
+                    fontSize: { xs: "0.85rem", md: "1rem" }
                 }}
             >
                 {today}
@@ -62,7 +58,9 @@ function HeroCard() {
                 sx={{
                     mt: 2,
                     maxWidth: 700,
-                    lineHeight: 1.7
+                    lineHeight: 1.7,
+                    fontSize: { xs: "0.85rem", md: "1rem" },
+                    display: { xs: "none", sm: "block" }
                 }}
             >
                 Welcome back to <strong>SchoolLink ERP</strong>.
@@ -70,67 +68,6 @@ function HeroCard() {
                 fees, homework and school operations
                 from one modern dashboard.
             </Typography>
-
-            <Stack
-                direction={{
-                    xs: "column",
-                    sm: "row"
-                }}
-                spacing={2}
-                mt={4}
-            >
-
-                <Button
-                    variant="contained"
-                    size="large"
-                    startIcon={<PersonAddIcon />}
-                    sx={{
-                        bgcolor: "#FFFFFF",
-                        color: "#2563EB",
-                        fontWeight: 700,
-                        "&:hover": {
-                            bgcolor: "#F3F4F6"
-                        }
-                    }}
-                >
-                    Add Student
-                </Button>
-
-                <Button
-                    variant="outlined"
-                    size="large"
-                    startIcon={<AssignmentTurnedInIcon />}
-                    sx={{
-                        color: "#FFFFFF",
-                        borderColor: "#FFFFFF",
-                        fontWeight: 700,
-                        "&:hover": {
-                            borderColor: "#FFFFFF",
-                            bgcolor: "rgba(255,255,255,.12)"
-                        }
-                    }}
-                >
-                    Attendance
-                </Button>
-
-                <Button
-                    variant="outlined"
-                    size="large"
-                    startIcon={<PaymentsIcon />}
-                    sx={{
-                        color: "#FFFFFF",
-                        borderColor: "#FFFFFF",
-                        fontWeight: 700,
-                        "&:hover": {
-                            borderColor: "#FFFFFF",
-                            bgcolor: "rgba(255,255,255,.12)"
-                        }
-                    }}
-                >
-                    Collect Fees
-                </Button>
-
-            </Stack>
 
         </Paper>
 

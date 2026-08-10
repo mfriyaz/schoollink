@@ -223,6 +223,7 @@ function DashboardPage() {
                                 title="Add Student"
                                 icon={<PersonAddIcon />}
                                 color="#2563EB"
+                                onClick={() => navigate("/students")}
                             />
 
                         </Grid>
@@ -233,6 +234,7 @@ function DashboardPage() {
                                 title="Add Teacher"
                                 icon={<SchoolIcon />}
                                 color="#16A34A"
+                                onClick={() => navigate("/teachers")}
                             />
 
                         </Grid>
