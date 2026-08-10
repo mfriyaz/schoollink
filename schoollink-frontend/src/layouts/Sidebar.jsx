@@ -22,7 +22,6 @@ import AddCircleIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import HomeIcon from "@mui/icons-material/HomeOutlined";
 import PersonIcon from "@mui/icons-material/PersonOutlined";
 import SettingsIcon from "@mui/icons-material/SettingsOutlined";
-import LogoutIcon from "@mui/icons-material/LogoutOutlined";
 import FactCheckIcon from "@mui/icons-material/FactCheckOutlined";
 import AssessmentIcon from "@mui/icons-material/AssessmentOutlined";
 import GradeIcon from "@mui/icons-material/GradeOutlined";
@@ -250,16 +249,6 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
     const sidebarWidth = collapsed ? 76 : 260;
 
-    function handleLogout() {
-
-        localStorage.removeItem("token");
-
-        localStorage.removeItem("user");
-
-        navigate("/login");
-
-    }
-
     return (
 
         <Drawer
@@ -440,7 +429,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
             </Box>
 
-            <List sx={{ px: collapsed ? 1 : 2, mt: 1, flexGrow: 1 }}>
+            <List sx={{ px: collapsed ? 1 : 2, mt: 1, flexGrow: 1, overflowY: "auto" }}>
 
                 {
 
@@ -556,97 +545,6 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
             </List>
 
-            <Divider sx={{ borderColor: "rgba(255,255,255,0.08)", mx: 2 }} />
-
-            <Box sx={{ px: collapsed ? 1 : 2, py: 2 }}>
-
-                {(() => {
-
-                    const logoutButton = (
-
-                        <ListItemButton
-
-                            onClick={handleLogout}
-
-                            sx={{
-
-                                color: "#94A3B8",
-
-                                borderRadius: 2,
-
-                                py: 1.1,
-
-                                justifyContent: collapsed ? "center" : "flex-start",
-
-                                "&:hover": {
-
-                                    bgcolor: "rgba(255,255,255,0.06)",
-
-                                    color: "white"
-
-                                }
-
-                            }}
-
-                        >
-
-                            <ListItemIcon
-
-                                sx={{
-
-                                    color: "inherit",
-
-                                    minWidth: collapsed ? "auto" : 36,
-
-                                    justifyContent: "center"
-
-                                }}
-
-                            >
-
-                                <LogoutIcon />
-
-                            </ListItemIcon>
-
-                            {!collapsed && (
-
-                                <ListItemText
-
-                                    primary="Logout"
-
-                                    slotProps={{
-
-                                        primary: {
-
-                                            fontWeight: 500,
-
-                                            fontSize: "0.92rem"
-
-                                        }
-
-                                    }}
-
-                                />
-
-                            )}
-
-                        </ListItemButton>
-
-                    );
-
-                    return collapsed ? (
-
-                        <Tooltip title="Logout" placement="right">
-
-                            {logoutButton}
-
-                        </Tooltip>
-
-                    ) : logoutButton;
-
-                })()}
-
-            </Box>
 
         </Drawer>
 

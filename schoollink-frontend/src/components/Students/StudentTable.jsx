@@ -2,6 +2,8 @@ import {
 
     Table,
 
+    TableContainer,
+
     TableHead,
 
     TableBody,
@@ -56,7 +58,9 @@ export default function StudentTable({
 
         >
 
-            <Table>
+            <TableContainer sx={{ overflowX: "auto" }}>
+
+                <Table>
 
                 <TableHead>
 
@@ -249,6 +253,8 @@ export default function StudentTable({
                 </TableBody>
 
             </Table>
+
+            </TableContainer>
 
         </Paper>
 

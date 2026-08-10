@@ -343,7 +343,7 @@ function TeachersPage() {
 
                 <Card key={teacher.id} sx={{ p: 2.5, mb: 2 }}>
 
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1.5 }}>
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
@@ -372,7 +372,7 @@ function TeachersPage() {
 
                         </Box>
 
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
 
                             <Chip
                                 size="small"

@@ -31,6 +31,8 @@ import {
 
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import LogoutIcon from "@mui/icons-material/LogoutOutlined";
+import PersonIcon from "@mui/icons-material/PersonOutlineOutlined";
 
 import {
     getMyNotifications,
@@ -75,6 +77,8 @@ function Topbar({ onToggleSidebar }) {
 
     const [anchorEl, setAnchorEl] = useState(null);
 
+    const [avatarAnchorEl, setAvatarAnchorEl] = useState(null);
+
     const [unreadCount, setUnreadCount] = useState(0);
 
     const [notifications, setNotifications] = useState([]);
@@ -110,6 +114,28 @@ function Topbar({ onToggleSidebar }) {
             console.error(err);
 
         }
+
+    }
+
+    function handleOpenAvatarMenu(event) {
+
+        setAvatarAnchorEl(event.currentTarget);
+
+    }
+
+    function handleCloseAvatarMenu() {
+
+        setAvatarAnchorEl(null);
+
+    }
+
+    function handleLogout() {
+
+        localStorage.removeItem("token");
+
+        localStorage.removeItem("user");
+
+        navigate("/login");
 
     }
 
@@ -406,11 +432,58 @@ function Topbar({ onToggleSidebar }) {
 
                     </Box>
 
-                    <Avatar sx={{ bgcolor: user && user.role === "Super Admin" ? "#7C3AED" : "#2563EB" }}>
+                    <Avatar
+
+                        onClick={handleOpenAvatarMenu}
+
+                        sx={{ bgcolor: user && user.role === "Super Admin" ? "#7C3AED" : "#2563EB", cursor: "pointer" }}
+                    >
 
                         {user && user.full_name ? user.full_name[0] : "?"}
 
                     </Avatar>
+
+                    <Menu
+
+                        anchorEl={avatarAnchorEl}
+
+                        open={Boolean(avatarAnchorEl)}
+
+                        onClose={handleCloseAvatarMenu}
+
+                        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+
+                        transformOrigin={{ vertical: "top", horizontal: "right" }}
+                    >
+
+                        <MenuItem
+
+                            onClick={() => {
+
+                                handleCloseAvatarMenu();
+
+                                navigate("/profile");
+
+                            }}
+                        >
+
+                            <PersonIcon fontSize="small" sx={{ mr: 1.5, color: "#64748B" }} />
+
+                            Profile
+
+                        </MenuItem>
+
+                        <Divider />
+
+                        <MenuItem onClick={handleLogout}>
+
+                            <LogoutIcon fontSize="small" sx={{ mr: 1.5, color: "#DC2626" }} />
+
+                            <Typography sx={{ color: "#DC2626" }}>Logout</Typography>
+
+                        </MenuItem>
+
+                    </Menu>
 
                 </Box>
 
