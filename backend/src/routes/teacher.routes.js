@@ -76,6 +76,16 @@ router.delete(
 );
 
 /**
+ * Add a login to an existing teacher who doesn't have one yet
+ */
+router.patch(
+    "/:id/add-login",
+    authenticate,
+    authorizeRoles("School Admin"),
+    teacherController.addLoginToExistingTeacher
+);
+
+/**
  * Reactivate Teacher
  */
 router.patch(

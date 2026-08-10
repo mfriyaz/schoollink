@@ -39,3 +39,11 @@ export async function reactivateTeacherRecord(id) {
     return response.data;
 
 }
+
+export async function addLoginToExistingTeacher(id, data) {
+
+    const response = await api.patch(`/teachers/${id}/add-login`, data);
+
+    return response.data;
+
+}

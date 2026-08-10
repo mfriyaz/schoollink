@@ -89,6 +89,88 @@ async function createTeacher(data) {
 }
 
 /**
+ * Add a login to an existing teacher record that doesn't have
+ * one yet - covers teachers created before this feature
+ * existed, or created without a password originally.
+ */
+async function addLoginToExistingTeacher(teacherId, schoolId, email, password) {
+
+    const teacher = await teacherModel.getTeacherById(teacherId, schoolId);
+
+    if (!teacher) {
+
+        throw new Error("Teacher not found.");
+
+    }
+
+    if (teacher.user_id) {
+
+        throw new Error("This teacher already has a login.");
+
+    }
+
+    if (await userModel.emailExists(email)) {
+
+        throw new Error("Email already exists");
+
+    }
+
+    const teacherRole = await roleModel.getRoleByName("Teacher");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await userModel.createUser({
+
+        school_id: schoolId,
+
+        role_id: teacherRole.id,
+
+        full_name: `${teacher.first_name} ${teacher.last_name}`,
+
+        email,
+
+        mobile: teacher.phone,
+
+        password_hash: hashedPassword
+
+    });
+
+    const updatedTeacher = await teacherModel.linkTeacherToUser(
+
+        teacherId,
+
+        schoolId,
+
+        user.id
+
+    );
+
+    try {
+
+        await emailService.sendEmail(
+
+            email,
+
+            "Your SchoolLink Teacher Account",
+
+            `An account has been created for you on SchoolLink.<br><br>` +
+            `Email: ${email}<br>` +
+            `Temporary Password: ${password}<br><br>` +
+            `Please log in and change your password.`
+
+        );
+
+    } catch (err) {
+
+        console.error("Failed to send teacher welcome email:", err);
+
+    }
+
+    return updatedTeacher;
+
+}
+
+/**
  * Get Teachers By School
  */
 async function getTeachersBySchool(schoolId) {
@@ -145,6 +227,8 @@ async function reactivateTeacher(id, schoolId) {
 module.exports = {
 
     createTeacher,
+
+    addLoginToExistingTeacher,
 
     getTeachersBySchool,
 

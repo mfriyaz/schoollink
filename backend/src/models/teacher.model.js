@@ -81,6 +81,26 @@ async function getTeacherById(id, schoolId) {
 }
 
 /**
+ * Link a teacher record (created before logins existed, or
+ * created without one) to a newly created user_id.
+ */
+async function linkTeacherToUser(id, schoolId, userId) {
+
+    const result = await db.query(
+        `
+        UPDATE teachers
+        SET user_id = $1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $2 AND school_id = $3
+        RETURNING *;
+        `,
+        [userId, id, schoolId]
+    );
+
+    return result.rows[0];
+
+}
+
+/**
  * Get Teacher By User ID
  * (resolves a logged-in Teacher's JWT user id -> teacher_id,
  * needed since the JWT only carries the users.id, not teachers.id)
@@ -188,6 +208,8 @@ module.exports = {
     getTeachersBySchool,
 
     getTeacherById,
+
+    linkTeacherToUser,
 
     getTeacherByUserId,
 

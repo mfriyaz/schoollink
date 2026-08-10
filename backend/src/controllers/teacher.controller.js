@@ -40,6 +40,57 @@ async function createTeacher(req, res) {
 }
 
 /**
+ * Add a login to an existing teacher who doesn't have one yet
+ */
+async function addLoginToExistingTeacher(req, res) {
+
+    try {
+
+        const { id } = req.params;
+
+        const { email, temporary_password } = req.body;
+
+        if (!email || !temporary_password) {
+
+            return response.error(
+                res,
+                "email and temporary_password are required",
+                400
+            );
+
+        }
+
+        const teacher = await teacherService.addLoginToExistingTeacher(
+
+            id,
+
+            req.user.school_id,
+
+            email,
+
+            temporary_password
+
+        );
+
+        return response.success(
+            res,
+            teacher,
+            "Login added successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
  * Get Teachers By School
  * (self-scoped from the JWT, not a client-supplied ID)
  */
@@ -280,6 +331,8 @@ async function reactivateTeacher(req, res) {
 module.exports = {
 
     createTeacher,
+
+    addLoginToExistingTeacher,
 
     getTeachersBySchool,
 

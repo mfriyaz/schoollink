@@ -24,13 +24,15 @@ import BlockIcon from "@mui/icons-material/BlockOutlined";
 import RestoreIcon from "@mui/icons-material/RestoreOutlined";
 import SchoolIcon from "@mui/icons-material/SchoolOutlined";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentIndOutlined";
+import VpnKeyIcon from "@mui/icons-material/VpnKeyOutlined";
 
 import {
     getMyTeachers,
     createTeacherRecord,
     updateTeacherRecord,
     deactivateTeacherRecord,
-    reactivateTeacherRecord
+    reactivateTeacherRecord,
+    addLoginToExistingTeacher
 } from "../../services/teacherManagementService";
 
 import { getAllSubjectsForManagement } from "../../services/subjectManagementService";
@@ -107,6 +109,20 @@ function TeachersPage() {
     const [assignError, setAssignError] = useState("");
 
     const [assignSuccess, setAssignSuccess] = useState("");
+
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+
+    const [loginTeacher, setLoginTeacher] = useState(null);
+
+    const [loginEmail, setLoginEmail] = useState("");
+
+    const [loginPassword, setLoginPassword] = useState("");
+
+    const [addingLogin, setAddingLogin] = useState(false);
+
+    const [loginError, setLoginError] = useState("");
+
+    const [loginSuccess, setLoginSuccess] = useState("");
 
     useEffect(() => {
 
@@ -331,6 +347,77 @@ function TeachersPage() {
         } finally {
 
             setAssigning(false);
+
+        }
+
+    }
+
+    function openLoginDialog(teacher) {
+
+        setLoginTeacher(teacher);
+
+        setLoginEmail(teacher.email || "");
+
+        setLoginPassword("");
+
+        setLoginError("");
+
+        setLoginSuccess("");
+
+        setLoginDialogOpen(true);
+
+    }
+
+    async function handleAddLogin() {
+
+        setLoginError("");
+
+        setLoginSuccess("");
+
+        if (!loginEmail || !loginPassword) {
+
+            setLoginError("Email and a temporary password are required.");
+
+            return;
+
+        }
+
+        try {
+
+            setAddingLogin(true);
+
+            const response = await addLoginToExistingTeacher(loginTeacher.id, {
+
+                email: loginEmail,
+
+                temporary_password: loginPassword
+
+            });
+
+            if (response.success) {
+
+                setLoginSuccess("Login created and emailed to the teacher!");
+
+                await loadTeachers();
+
+            } else {
+
+                setLoginError(response.message);
+
+            }
+
+        } catch (err) {
+
+            setLoginError(
+
+                err.response?.data?.message ||
+                "Unable to add a login for this teacher."
+
+            );
+
+        } finally {
+
+            setAddingLogin(false);
 
         }
 
@@ -564,6 +651,21 @@ function TeachersPage() {
                                 color={teacher.is_active ? "success" : "default"}
                                 label={teacher.is_active ? "Active" : "Inactive"}
                             />
+
+                            {!teacher.user_id && (
+
+                                <Button
+                                    size="small"
+                                    color="warning"
+                                    startIcon={<VpnKeyIcon fontSize="small" />}
+                                    onClick={() => openLoginDialog(teacher)}
+                                >
+
+                                    Add Login
+
+                                </Button>
+
+                            )}
 
                             <Button
                                 size="small"
@@ -904,6 +1006,60 @@ function TeachersPage() {
                     >
 
                         {assigning ? "Assigning..." : "Assign"}
+
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
+
+            <Dialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} maxWidth="xs" fullWidth>
+
+                <DialogTitle>
+
+                    Add Login for {loginTeacher ? `${loginTeacher.first_name} ${loginTeacher.last_name}` : "Teacher"}
+
+                </DialogTitle>
+
+                <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+
+                    {loginError && <Alert severity="error">{loginError}</Alert>}
+
+                    {loginSuccess && <Alert severity="success">{loginSuccess}</Alert>}
+
+                    <TextField
+                        label="Login Email"
+                        size="small"
+                        fullWidth
+                        value={loginEmail}
+                        onChange={(e) => setLoginEmail(e.target.value)}
+                    />
+
+                    <TextField
+                        label="Temporary Password"
+                        size="small"
+                        fullWidth
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                    />
+
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button onClick={() => setLoginDialogOpen(false)}>
+
+                        Close
+
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        onClick={handleAddLogin}
+                        disabled={addingLogin}
+                    >
+
+                        {addingLogin ? "Adding..." : "Add Login"}
 
                     </Button>
 
