@@ -9,7 +9,13 @@ async function createAssignment(req, res) {
     try {
 
         const assignment =
-            await teacherSubjectService.createAssignment(req.body);
+            await teacherSubjectService.createAssignment({
+
+                ...req.body,
+
+                school_id: req.user.school_id
+
+            });
 
         return response.success(
             res,

@@ -23,6 +23,7 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import BlockIcon from "@mui/icons-material/BlockOutlined";
 import RestoreIcon from "@mui/icons-material/RestoreOutlined";
 import SchoolIcon from "@mui/icons-material/SchoolOutlined";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentIndOutlined";
 
 import {
     getMyTeachers,
@@ -31,6 +32,15 @@ import {
     deactivateTeacherRecord,
     reactivateTeacherRecord
 } from "../../services/teacherManagementService";
+
+import { getAllSubjectsForManagement } from "../../services/subjectManagementService";
+
+import {
+    getAllClassesForManagement,
+    getAllSectionsForClass
+} from "../../services/classManagementService";
+
+import { createTeacherSubjectAssignment } from "../../services/teacherSubjectService";
 
 const emptyForm = {
 
@@ -50,7 +60,9 @@ const emptyForm = {
 
     experience_years: "",
 
-    joining_date: ""
+    joining_date: "",
+
+    temporary_password: ""
 
 };
 
@@ -71,6 +83,30 @@ function TeachersPage() {
     const [formError, setFormError] = useState("");
 
     const [pageError, setPageError] = useState("");
+
+    const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+
+    const [assignTeacher, setAssignTeacher] = useState(null);
+
+    const [subjects, setSubjects] = useState([]);
+
+    const [classes, setClasses] = useState([]);
+
+    const [sections, setSections] = useState([]);
+
+    const [assignSubjectId, setAssignSubjectId] = useState("");
+
+    const [assignClassId, setAssignClassId] = useState("");
+
+    const [assignSectionId, setAssignSectionId] = useState("");
+
+    const [isClassTeacher, setIsClassTeacher] = useState(false);
+
+    const [assigning, setAssigning] = useState(false);
+
+    const [assignError, setAssignError] = useState("");
+
+    const [assignSuccess, setAssignSuccess] = useState("");
 
     useEffect(() => {
 
@@ -148,6 +184,155 @@ function TeachersPage() {
         setFormError("");
 
         setDialogOpen(true);
+
+    }
+
+    async function openAssignDialog(teacher) {
+
+        setAssignTeacher(teacher);
+
+        setAssignSubjectId("");
+
+        setAssignClassId("");
+
+        setAssignSectionId("");
+
+        setIsClassTeacher(false);
+
+        setAssignError("");
+
+        setAssignSuccess("");
+
+        setAssignDialogOpen(true);
+
+        try {
+
+            const [subjectsResponse, classesResponse] = await Promise.all([
+
+                getAllSubjectsForManagement(),
+
+                getAllClassesForManagement()
+
+            ]);
+
+            if (subjectsResponse.success) {
+
+                setSubjects(subjectsResponse.data.filter((s) => s.is_active));
+
+            }
+
+            if (classesResponse.success) {
+
+                setClasses(classesResponse.data.filter((c) => c.is_active));
+
+            }
+
+        } catch (err) {
+
+            setAssignError("Unable to load subjects/classes.");
+
+        }
+
+    }
+
+    async function handleClassChange(classId) {
+
+        setAssignClassId(classId);
+
+        setAssignSectionId("");
+
+        setSections([]);
+
+        if (!classId) {
+
+            return;
+
+        }
+
+        try {
+
+            const response = await getAllSectionsForClass(classId);
+
+            if (response.success) {
+
+                setSections(response.data.filter((s) => s.is_active));
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
+
+    }
+
+    async function handleAssign() {
+
+        setAssignError("");
+
+        setAssignSuccess("");
+
+        if (!assignSubjectId || !assignClassId || !assignSectionId) {
+
+            setAssignError("Please select a subject, class, and section.");
+
+            return;
+
+        }
+
+        try {
+
+            setAssigning(true);
+
+            const response = await createTeacherSubjectAssignment({
+
+                teacher_id: assignTeacher.id,
+
+                subject_id: assignSubjectId,
+
+                class_id: assignClassId,
+
+                section_id: assignSectionId,
+
+                academic_year_id: 1,
+
+                is_class_teacher: isClassTeacher
+
+            });
+
+            if (response.success) {
+
+                setAssignSuccess("Teacher assigned successfully!");
+
+                setAssignSubjectId("");
+
+                setAssignClassId("");
+
+                setAssignSectionId("");
+
+                setIsClassTeacher(false);
+
+            } else {
+
+                setAssignError(response.message);
+
+            }
+
+        } catch (err) {
+
+            setAssignError(
+
+                err.response?.data?.message ||
+                "Unable to assign this teacher."
+
+            );
+
+        } finally {
+
+            setAssigning(false);
+
+        }
 
     }
 
@@ -382,6 +567,16 @@ function TeachersPage() {
 
                             <Button
                                 size="small"
+                                startIcon={<AssignmentIndIcon fontSize="small" />}
+                                onClick={() => openAssignDialog(teacher)}
+                            >
+
+                                Assign
+
+                            </Button>
+
+                            <Button
+                                size="small"
                                 startIcon={<EditIcon fontSize="small" />}
                                 onClick={() => openEditDialog(teacher)}
                             >
@@ -517,9 +712,27 @@ function TeachersPage() {
                                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                                 fullWidth
                                 size="small"
+                                helperText={!editingId ? "This becomes the teacher's login email" : ""}
                             />
 
                         </Grid>
+
+                        {!editingId && (
+
+                            <Grid item xs={12} sm={6}>
+
+                                <TextField
+                                    label="Temporary Password (optional)"
+                                    value={form.temporary_password}
+                                    onChange={(e) => setForm({ ...form, temporary_password: e.target.value })}
+                                    fullWidth
+                                    size="small"
+                                    helperText="Leave blank to create a profile-only record with no login"
+                                />
+
+                            </Grid>
+
+                        )}
 
                         <Grid item xs={12} sm={6}>
 
@@ -571,6 +784,126 @@ function TeachersPage() {
                     <Button variant="contained" onClick={handleSave} disabled={saving}>
 
                         {saving ? "Saving..." : "Save"}
+
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
+
+            <Dialog open={assignDialogOpen} onClose={() => setAssignDialogOpen(false)} maxWidth="xs" fullWidth>
+
+                <DialogTitle>
+
+                    Assign {assignTeacher ? `${assignTeacher.first_name} ${assignTeacher.last_name}` : "Teacher"}
+
+                </DialogTitle>
+
+                <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+
+                    {assignError && <Alert severity="error">{assignError}</Alert>}
+
+                    {assignSuccess && <Alert severity="success">{assignSuccess}</Alert>}
+
+                    <TextField
+                        select
+                        label="Subject"
+                        size="small"
+                        fullWidth
+                        value={assignSubjectId}
+                        onChange={(e) => setAssignSubjectId(e.target.value)}
+                    >
+
+                        {subjects.map((s) => (
+
+                            <MenuItem key={s.id} value={s.id}>{s.subject_name}</MenuItem>
+
+                        ))}
+
+                    </TextField>
+
+                    <TextField
+                        select
+                        label="Class"
+                        size="small"
+                        fullWidth
+                        value={assignClassId}
+                        onChange={(e) => handleClassChange(e.target.value)}
+                    >
+
+                        {classes.map((c) => (
+
+                            <MenuItem key={c.id} value={c.id}>{c.class_name}</MenuItem>
+
+                        ))}
+
+                    </TextField>
+
+                    <TextField
+                        select
+                        label="Section"
+                        size="small"
+                        fullWidth
+                        value={assignSectionId}
+                        onChange={(e) => setAssignSectionId(e.target.value)}
+                        disabled={!assignClassId}
+                    >
+
+                        {sections.map((s) => (
+
+                            <MenuItem key={s.id} value={s.id}>{s.section_name}</MenuItem>
+
+                        ))}
+
+                    </TextField>
+
+                    <Box
+
+                        onClick={() => setIsClassTeacher((v) => !v)}
+
+                        sx={{
+
+                            display: "flex",
+
+                            alignItems: "center",
+
+                            gap: 1,
+
+                            cursor: "pointer",
+
+                            color: isClassTeacher ? "#2563EB" : "#64748B"
+
+                        }}
+
+                    >
+
+                        <SchoolIcon fontSize="small" />
+
+                        <Typography sx={{ fontSize: "0.85rem" }}>
+
+                            {isClassTeacher ? "✓ Set as Class Teacher for this section" : "Set as Class Teacher for this section"}
+
+                        </Typography>
+
+                    </Box>
+
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button onClick={() => setAssignDialogOpen(false)}>
+
+                        Close
+
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        onClick={handleAssign}
+                        disabled={assigning}
+                    >
+
+                        {assigning ? "Assigning..." : "Assign"}
 
                     </Button>
 

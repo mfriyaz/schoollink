@@ -9,6 +9,7 @@ async function createTeacher(data) {
         INSERT INTO teachers
         (
             school_id,
+            user_id,
             employee_no,
             first_name,
             last_name,
@@ -23,13 +24,14 @@ async function createTeacher(data) {
         )
         VALUES
         (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
         )
         RETURNING *;
     `;
 
     const values = [
         data.school_id,
+        data.user_id,
         data.employee_no,
         data.first_name,
         data.last_name,

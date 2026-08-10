@@ -52,6 +52,10 @@ function SectionRow({ section, onEdit, onToggle }) {
 
                 alignItems: "center",
 
+                flexWrap: "wrap",
+
+                gap: 1,
+
                 py: 1,
 
                 borderBottom: "1px solid #F1F5F9",
@@ -505,7 +509,7 @@ function ClassesPage() {
 
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
 
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", pr: 2 }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1, width: "100%", pr: 2 }}>
 
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
 
