@@ -270,41 +270,45 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
             onClose={onMobileClose}
 
-            ModalProps={{ keepMounted: true }}
+            slotProps={{
+
+                root: { keepMounted: true },
+
+                paper: {
+
+                    sx: {
+
+                        width: sidebarWidth,
+
+                        flexShrink: 0,
+
+                        bgcolor: theme.bg,
+
+                        color: "white",
+
+                        minHeight: "100vh",
+
+                        display: "flex",
+
+                        flexDirection: "column",
+
+                        transition: "width .2s ease",
+
+                        overflow: "hidden",
+
+                        border: "none"
+
+                    }
+
+                }
+
+            }}
 
             onClick={() => {
 
                 if (isMobile) {
 
                     onMobileClose?.();
-
-                }
-
-            }}
-
-            PaperProps={{
-
-                sx: {
-
-                    width: sidebarWidth,
-
-                    flexShrink: 0,
-
-                    bgcolor: theme.bg,
-
-                    color: "white",
-
-                    minHeight: "100vh",
-
-                    display: "flex",
-
-                    flexDirection: "column",
-
-                    transition: "width .2s ease",
-
-                    overflow: "hidden",
-
-                    border: "none"
 
                 }
 

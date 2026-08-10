@@ -207,6 +207,29 @@ function CreatePostPage() {
 
     const timerRef = useRef(null);
 
+    // Chrome/Android record in webm; Safari on iPhone doesn't
+    // support webm at all and records in mp4 instead. Hardcoding
+    // "audio/webm" regardless of what was actually recorded
+    // causes playback to fail with an error on iPhone - this
+    // picks whatever format the browser actually supports.
+    function getSupportedAudioMimeType() {
+
+        if (MediaRecorder.isTypeSupported("audio/webm")) {
+
+            return "audio/webm";
+
+        }
+
+        if (MediaRecorder.isTypeSupported("audio/mp4")) {
+
+            return "audio/mp4";
+
+        }
+
+        return "";
+
+    }
+
     async function handleStartRecording() {
 
         setVoiceError("");
@@ -215,7 +238,9 @@ function CreatePostPage() {
 
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-            const recorder = new MediaRecorder(stream);
+            const mimeType = getSupportedAudioMimeType();
+
+            const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
 
             audioChunksRef.current = [];
 
@@ -235,9 +260,13 @@ function CreatePostPage() {
 
                 clearInterval(timerRef.current);
 
-                const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+                const actualType = recorder.mimeType || "audio/webm";
 
-                const audioFile = new File([audioBlob], `voice-note-${Date.now()}.webm`, { type: "audio/webm" });
+                const fileExtension = actualType.includes("mp4") ? "mp4" : "webm";
+
+                const audioBlob = new Blob(audioChunksRef.current, { type: actualType });
+
+                const audioFile = new File([audioBlob], `voice-note-${Date.now()}.${fileExtension}`, { type: actualType });
 
                 try {
 

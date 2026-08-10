@@ -249,7 +249,7 @@ function Topbar({ onToggleSidebar }) {
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={handleCloseMenu}
-                    PaperProps={{ sx: { width: 360, maxHeight: 420 } }}
+                    slotProps={{ paper: { sx: { width: 360, maxHeight: 420 } } }}
                 >
 
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2, py: 1 }}>

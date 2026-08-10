@@ -219,6 +219,29 @@ function ParentDashboardPage() {
 
     const greetingTimerRef = useRef(null);
 
+    // Chrome/Android record in webm; Safari on iPhone doesn't
+    // support webm at all and records in mp4 instead. Hardcoding
+    // "audio/webm" regardless of what was actually recorded
+    // causes playback to fail with an error on iPhone - this
+    // picks whatever format the browser actually supports.
+    function getSupportedAudioMimeType() {
+
+        if (MediaRecorder.isTypeSupported("audio/webm")) {
+
+            return "audio/webm";
+
+        }
+
+        if (MediaRecorder.isTypeSupported("audio/mp4")) {
+
+            return "audio/mp4";
+
+        }
+
+        return "";
+
+    }
+
     async function handleStartGreetingRecording() {
 
         setGreetingError("");
@@ -227,7 +250,9 @@ function ParentDashboardPage() {
 
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-            const recorder = new MediaRecorder(stream);
+            const mimeType = getSupportedAudioMimeType();
+
+            const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
 
             greetingChunksRef.current = [];
 
@@ -247,7 +272,11 @@ function ParentDashboardPage() {
 
                 clearInterval(greetingTimerRef.current);
 
-                const audioBlob = new Blob(greetingChunksRef.current, { type: "audio/webm" });
+                // Use the recorder's actual mimeType, not a
+                // hardcoded guess - this is what fixes playback.
+                const actualType = recorder.mimeType || "audio/webm";
+
+                const audioBlob = new Blob(greetingChunksRef.current, { type: actualType });
 
                 setPreviewAudioBlob(audioBlob);
 
@@ -323,11 +352,13 @@ function ParentDashboardPage() {
 
             setSendingGreeting(true);
 
+            const fileExtension = previewAudioBlob.type.includes("mp4") ? "mp4" : "webm";
+
             const audioFile = new File(
 
                 [previewAudioBlob],
-                `greeting-${Date.now()}.webm`,
-                { type: "audio/webm" }
+                `greeting-${Date.now()}.${fileExtension}`,
+                { type: previewAudioBlob.type || "audio/webm" }
 
             );
 
