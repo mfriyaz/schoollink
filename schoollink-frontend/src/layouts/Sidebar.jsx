@@ -267,6 +267,14 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
                     sx: {
 
+                        // MUI's Drawer paper defaults to position:
+                        // fixed even in "permanent" mode - fine for
+                        // the mobile overlay, but on desktop it means
+                        // the sidebar floats on top of content instead
+                        // of pushing it aside. Force normal in-flow
+                        // positioning for desktop specifically.
+                        position: isMobile ? "fixed" : "relative",
+
                         width: sidebarWidth,
 
                         flexShrink: 0,
