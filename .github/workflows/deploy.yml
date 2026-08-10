@@ -1,9 +1,9 @@
 name: Deploy to Production
 
-# Runs automatically every time code is pushed to modern-ui.
-# Uses the same steps we've been running by hand over SSH:
-# pull the latest code, rebuild the backend container, rebuild
-# the frontend, and fix its file permissions for Nginx.
+# Runs automatically on every push to modern-ui. Unlike the
+# previous SSH-based version, this runs directly ON the server
+# itself via a self-hosted runner - no SSH connection, no key
+# ever leaves the server, port 22 stays closed to the internet.
 
 on:
   push:
@@ -12,18 +12,21 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ~/schoollink
-            git pull
-            docker compose -f docker-compose.prod.yml up -d --build backend
-            docker run --rm -v $(pwd)/schoollink-frontend:/app -w /app node:20-slim sh -c "npm install && npm run build"
-            sudo chmod -R o+rX /home/ubuntu/schoollink/schoollink-frontend/dist
+      - name: Pull latest code
+        run: |
+          cd ~/schoollink
+          git pull
+
+      - name: Rebuild backend
+        run: |
+          cd ~/schoollink
+          docker compose -f docker-compose.prod.yml up -d --build backend
+
+      - name: Rebuild frontend
+        run: |
+          cd ~/schoollink
+          docker run --rm -v $(pwd)/schoollink-frontend:/app -w /app node:20-slim sh -c "npm install && npm run build"
+          sudo chmod -R o+rX /home/ubuntu/schoollink/schoollink-frontend/dist
