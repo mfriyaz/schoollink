@@ -1,6 +1,36 @@
 const db = require("../config/database");
 
 /**
+ * Check whether this exact assignment already exists, to give
+ * a friendly error instead of a raw database constraint error.
+ */
+async function assignmentExists(data) {
+
+    const result = await db.query(
+        `
+        SELECT 1 FROM teacher_subjects
+        WHERE teacher_id = $1
+        AND subject_id = $2
+        AND class_id = $3
+        AND section_id = $4
+        AND academic_year_id = $5
+        `,
+        [
+
+            data.teacher_id,
+            data.subject_id,
+            data.class_id,
+            data.section_id,
+            data.academic_year_id
+
+        ]
+    );
+
+    return result.rows.length > 0;
+
+}
+
+/**
  * Assign Teacher to Subject
  */
 async function createAssignment(data) {
@@ -154,6 +184,8 @@ async function deleteAssignment(id) {
 module.exports = {
 
     createAssignment,
+
+    assignmentExists,
 
     getAssignmentsBySchool,
 

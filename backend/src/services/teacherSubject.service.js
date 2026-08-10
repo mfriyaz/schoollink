@@ -5,6 +5,18 @@ const teacherSubjectModel = require("../models/teacherSubject.model");
  */
 async function createAssignment(data) {
 
+    const alreadyExists = await teacherSubjectModel.assignmentExists(data);
+
+    if (alreadyExists) {
+
+        throw new Error(
+
+            "This teacher is already assigned to this exact subject, class, and section."
+
+        );
+
+    }
+
     return await teacherSubjectModel.createAssignment(data);
 
 }
