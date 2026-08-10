@@ -6,7 +6,10 @@ import {
     ListItemIcon,
     ListItemText,
     Divider,
-    Tooltip
+    Tooltip,
+    Drawer,
+    useMediaQuery,
+    useTheme
 } from "@mui/material";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -223,7 +226,11 @@ function getMenus() {
 
 }
 
-function Sidebar({ collapsed }) {
+function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
+
+    const muiTheme = useTheme();
+
+    const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
 
     const location = useLocation();
 
@@ -255,27 +262,51 @@ function Sidebar({ collapsed }) {
 
     return (
 
-        <Box
+        <Drawer
 
-            sx={{
+            variant={isMobile ? "temporary" : "permanent"}
 
-                width: sidebarWidth,
+            open={isMobile ? mobileOpen : true}
 
-                flexShrink: 0,
+            onClose={onMobileClose}
 
-                bgcolor: theme.bg,
+            ModalProps={{ keepMounted: true }}
 
-                color: "white",
+            onClick={() => {
 
-                minHeight: "100vh",
+                if (isMobile) {
 
-                display: "flex",
+                    onMobileClose?.();
 
-                flexDirection: "column",
+                }
 
-                transition: "width .2s ease",
+            }}
 
-                overflow: "hidden"
+            PaperProps={{
+
+                sx: {
+
+                    width: sidebarWidth,
+
+                    flexShrink: 0,
+
+                    bgcolor: theme.bg,
+
+                    color: "white",
+
+                    minHeight: "100vh",
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    transition: "width .2s ease",
+
+                    overflow: "hidden",
+
+                    border: "none"
+
+                }
 
             }}
 
@@ -613,7 +644,7 @@ function Sidebar({ collapsed }) {
 
             </Box>
 
-        </Box>
+        </Drawer>
 
     );
 

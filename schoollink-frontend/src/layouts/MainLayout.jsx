@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Box } from "@mui/material";
+import { Box, useMediaQuery, useTheme } from "@mui/material";
 
 import { Outlet } from "react-router-dom";
 
@@ -10,6 +10,15 @@ import Topbar from "./Topbar";
 function MainLayout() {
 
     const [collapsed, setCollapsed] = useState(false);
+
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    const theme = useTheme();
+
+    // MUI's default "md" breakpoint is 900px - below that, the
+    // sidebar becomes an overlay drawer instead of a permanent
+    // panel sharing the screen with content.
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
     useEffect(() => {
 
@@ -32,6 +41,20 @@ function MainLayout() {
 
     }, []);
 
+    function handleToggleSidebar() {
+
+        if (isMobile) {
+
+            setMobileOpen((v) => !v);
+
+        } else {
+
+            setCollapsed((c) => !c);
+
+        }
+
+    }
+
     return (
 
         <Box
@@ -42,7 +65,11 @@ function MainLayout() {
             }}
         >
 
-            <Sidebar collapsed={collapsed} />
+            <Sidebar
+                collapsed={!isMobile && collapsed}
+                mobileOpen={mobileOpen}
+                onMobileClose={() => setMobileOpen(false)}
+            />
 
             <Box
                 sx={{
@@ -53,12 +80,12 @@ function MainLayout() {
                 }}
             >
 
-                <Topbar onToggleSidebar={() => setCollapsed((c) => !c)} />
+                <Topbar onToggleSidebar={handleToggleSidebar} />
 
                 <Box
                     sx={{
                         flex: 1,
-                        p: 4
+                        p: { xs: 2, sm: 3, md: 4 }
                     }}
                 >
 
