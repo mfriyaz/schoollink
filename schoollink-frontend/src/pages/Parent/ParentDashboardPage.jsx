@@ -877,6 +877,12 @@ function ParentDashboardPage() {
 
                             onChange={(e, val) => setAttendanceTab(val)}
 
+                            variant="scrollable"
+
+                            scrollButtons="auto"
+
+                            allowScrollButtonsMobile
+
                             sx={{ minHeight: 36, mb: 1.5, borderBottom: "1px solid #F1F5F9" }}
 
                         >

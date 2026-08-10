@@ -88,6 +88,12 @@ function DashboardPage() {
 
                 onChange={(e, value) => setTab(value)}
 
+                variant="scrollable"
+
+                scrollButtons="auto"
+
+                allowScrollButtonsMobile
+
                 sx={{
 
                     mb: 3,

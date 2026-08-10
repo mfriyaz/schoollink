@@ -85,6 +85,8 @@ function MainLayout() {
                 <Box
                     sx={{
                         flex: 1,
+                        minWidth: 0,
+                        overflowX: "hidden",
                         p: { xs: 2, sm: 3, md: 4 }
                     }}
                 >
