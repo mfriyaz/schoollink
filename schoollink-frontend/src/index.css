@@ -5,6 +5,12 @@ body,
     padding: 0;
     width: 100%;
     height: 100%;
+    /* Guards against any component deep in the tree forcing
+       the page wider than the viewport - rather than the whole
+       page scrolling sideways and misaligning the sidebar, an
+       overly-wide element gets clipped at the true page edge. */
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 body {

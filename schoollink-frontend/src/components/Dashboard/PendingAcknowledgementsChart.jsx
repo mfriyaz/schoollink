@@ -97,6 +97,7 @@ function PendingAcknowledgementsChart({ pendingByClass }) {
                     series={chart.series}
                     type="donut"
                     height={280}
+                    width="100%"
                 />
 
             )}

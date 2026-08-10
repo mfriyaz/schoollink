@@ -142,6 +142,7 @@ function DashboardCharts() {
                         series={admissionChart.series}
                         type="area"
                         height={320}
+                        width="100%"
                     />
 
                 </Paper>
@@ -177,6 +178,7 @@ function DashboardCharts() {
                         series={attendanceChart.series}
                         type="donut"
                         height={320}
+                        width="100%"
                     />
 
                 </Paper>

@@ -96,6 +96,8 @@ function AttendanceChart() {
 
                 height={320}
 
+                width="100%"
+
                 options={options}
 
                 series={series}
