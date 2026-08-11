@@ -166,15 +166,15 @@ async function getAssignmentById(id) {
 /**
  * Delete Assignment
  */
-async function deleteAssignment(id) {
+async function deleteAssignment(id, schoolId) {
 
     const result = await db.query(
         `
         DELETE FROM teacher_subjects
-        WHERE id=$1
+        WHERE id=$1 AND school_id=$2
         RETURNING *;
         `,
-        [id]
+        [id, schoolId]
     );
 
     return result.rows[0];

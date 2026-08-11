@@ -145,7 +145,9 @@ async function deleteAssignment(req, res) {
 
         const assignment =
             await teacherSubjectService.deleteAssignment(
-                req.params.id
+                req.params.id,
+
+                req.user.school_id
             );
 
         if (!assignment) {

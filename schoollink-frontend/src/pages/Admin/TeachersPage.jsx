@@ -12,7 +12,9 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Divider,
     Grid,
+    IconButton,
     MenuItem,
     TextField,
     Typography
@@ -25,6 +27,7 @@ import RestoreIcon from "@mui/icons-material/RestoreOutlined";
 import SchoolIcon from "@mui/icons-material/SchoolOutlined";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentIndOutlined";
 import VpnKeyIcon from "@mui/icons-material/VpnKeyOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 import {
     getMyTeachers,
@@ -42,7 +45,11 @@ import {
     getAllSectionsForClass
 } from "../../services/classManagementService";
 
-import { createTeacherSubjectAssignment } from "../../services/teacherSubjectService";
+import {
+    createTeacherSubjectAssignment,
+    getAssignmentsByTeacher,
+    deleteTeacherSubjectAssignment
+} from "../../services/teacherSubjectService";
 
 const emptyForm = {
 
@@ -109,6 +116,12 @@ function TeachersPage() {
     const [assignError, setAssignError] = useState("");
 
     const [assignSuccess, setAssignSuccess] = useState("");
+
+    const [currentAssignments, setCurrentAssignments] = useState([]);
+
+    const [loadingAssignments, setLoadingAssignments] = useState(false);
+
+    const [removingId, setRemovingId] = useState(null);
 
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
@@ -221,6 +234,8 @@ function TeachersPage() {
 
         setAssignDialogOpen(true);
 
+        loadCurrentAssignments(teacher.id);
+
         try {
 
             const [subjectsResponse, classesResponse] = await Promise.all([
@@ -283,6 +298,69 @@ function TeachersPage() {
 
     }
 
+    async function loadCurrentAssignments(teacherId) {
+
+        try {
+
+            setLoadingAssignments(true);
+
+            const response = await getAssignmentsByTeacher(teacherId);
+
+            if (response.success) {
+
+                setCurrentAssignments(response.data);
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        } finally {
+
+            setLoadingAssignments(false);
+
+        }
+
+    }
+
+    async function handleRemoveAssignment(assignmentId) {
+
+        try {
+
+            setRemovingId(assignmentId);
+
+            const response = await deleteTeacherSubjectAssignment(assignmentId);
+
+            if (response.success) {
+
+                setCurrentAssignments((prev) =>
+                    prev.filter((a) => a.teacher_subject_id !== assignmentId)
+                );
+
+            } else {
+
+                setAssignError(response.message);
+
+            }
+
+        } catch (err) {
+
+            setAssignError(
+
+                err.response?.data?.message ||
+                "Unable to remove this assignment."
+
+            );
+
+        } finally {
+
+            setRemovingId(null);
+
+        }
+
+    }
+
     async function handleAssign() {
 
         setAssignError("");
@@ -328,6 +406,8 @@ function TeachersPage() {
                 setAssignSectionId("");
 
                 setIsClassTeacher(false);
+
+                await loadCurrentAssignments(assignTeacher.id);
 
             } else {
 
@@ -893,7 +973,7 @@ function TeachersPage() {
 
             </Dialog>
 
-            <Dialog open={assignDialogOpen} onClose={() => setAssignDialogOpen(false)} maxWidth="xs" fullWidth>
+            <Dialog open={assignDialogOpen} onClose={() => setAssignDialogOpen(false)} maxWidth="sm" fullWidth>
 
                 <DialogTitle>
 
@@ -906,6 +986,123 @@ function TeachersPage() {
                     {assignError && <Alert severity="error">{assignError}</Alert>}
 
                     {assignSuccess && <Alert severity="success">{assignSuccess}</Alert>}
+
+                    <Box>
+
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", mb: 1 }}>
+
+                            Current Assignments
+
+                        </Typography>
+
+                        {loadingAssignments && (
+
+                            <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+
+                                <CircularProgress size={20} />
+
+                            </Box>
+
+                        )}
+
+                        {!loadingAssignments && currentAssignments.length === 0 && (
+
+                            <Typography sx={{ color: "#94A3B8", fontSize: "0.85rem", py: 1 }}>
+
+                                Not assigned to any subject/class yet.
+
+                            </Typography>
+
+                        )}
+
+                        {!loadingAssignments && currentAssignments.length > 0 && (
+
+                            <Box
+
+                                sx={{
+
+                                    display: "flex",
+
+                                    flexDirection: "column",
+
+                                    gap: 1,
+
+                                    maxHeight: 220,
+
+                                    overflowY: "auto",
+
+                                    border: "1px solid #F1F5F9",
+
+                                    borderRadius: 2,
+
+                                    p: 1
+
+                                }}
+
+                            >
+
+                                {currentAssignments.map((a) => (
+
+                                    <Box
+
+                                        key={a.teacher_subject_id}
+
+                                        sx={{
+
+                                            display: "flex",
+
+                                            alignItems: "center",
+
+                                            justifyContent: "space-between",
+
+                                            bgcolor: "#F8FAFC",
+
+                                            borderRadius: 2,
+
+                                            px: 1.5,
+
+                                            py: 1
+
+                                        }}
+
+                                    >
+
+                                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 500 }}>
+
+                                            {a.subject_name} · {a.class_name} - {a.section_name}
+
+                                        </Typography>
+
+                                        <IconButton
+
+                                            size="small"
+
+                                            onClick={() => handleRemoveAssignment(a.teacher_subject_id)}
+
+                                            disabled={removingId === a.teacher_subject_id}
+                                        >
+
+                                            <DeleteOutlineIcon fontSize="small" sx={{ color: "#DC2626" }} />
+
+                                        </IconButton>
+
+                                    </Box>
+
+                                ))}
+
+                            </Box>
+
+                        )}
+
+                    </Box>
+
+                    <Divider />
+
+                    <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>
+
+                        Add New Assignment
+
+                    </Typography>
 
                     <TextField
                         select

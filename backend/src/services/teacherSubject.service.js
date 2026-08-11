@@ -51,9 +51,9 @@ async function getAssignmentById(id) {
 /**
  * Delete Assignment
  */
-async function deleteAssignment(id) {
+async function deleteAssignment(id, schoolId) {
 
-    return await teacherSubjectModel.deleteAssignment(id);
+    return await teacherSubjectModel.deleteAssignment(id, schoolId);
 
 }
 
