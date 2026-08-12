@@ -1,4 +1,5 @@
 const homeworkService = require("../services/homework.service");
+const teacherService = require("../services/teacher.service");
 const response = require("../utils/response");
 
 /**
@@ -98,9 +99,23 @@ async function getHomeworkById(req, res) {
 
     try {
 
+        let teacherId = null;
+
+        if (req.user.role === "Teacher") {
+
+            const teacher = await teacherService.getTeacherByUserId(req.user.id);
+
+            teacherId = teacher ? teacher.id : null;
+
+        }
+
         const homework =
             await homeworkService.getHomeworkById(
-                req.params.id
+                req.params.id,
+
+                req.user.school_id,
+
+                teacherId
             );
 
         if (!homework) {
@@ -138,9 +153,24 @@ async function updateHomework(req, res) {
 
     try {
 
+        let teacherId = null;
+
+        if (req.user.role === "Teacher") {
+
+            const teacher = await teacherService.getTeacherByUserId(req.user.id);
+
+            teacherId = teacher ? teacher.id : null;
+
+        }
+
         const homework =
             await homeworkService.updateHomework(
                 req.params.id,
+
+                req.user.school_id,
+
+                teacherId,
+
                 req.body
             );
 

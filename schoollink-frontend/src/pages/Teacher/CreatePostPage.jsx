@@ -21,6 +21,7 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import FlagIcon from "@mui/icons-material/FlagOutlined";
 import MicIcon from "@mui/icons-material/MicOutlined";
+import ImageIcon from "@mui/icons-material/ImageOutlined";
 import StopCircleIcon from "@mui/icons-material/StopCircleOutlined";
 
 import { resolveFileUrl } from "../../config";
@@ -69,6 +70,12 @@ function CreatePostPage() {
     const [dueDate, setDueDate] = useState("");
 
     const [attachment, setAttachment] = useState(null);
+
+    const [images, setImages] = useState([]);
+
+    const [uploadingImages, setUploadingImages] = useState(false);
+
+    const [imageError, setImageError] = useState("");
 
     const [isRecording, setIsRecording] = useState(false);
 
@@ -408,6 +415,87 @@ function CreatePostPage() {
 
     }
 
+    const MAX_IMAGES = 3;
+
+    async function handleImageSelect(e) {
+
+        const files = Array.from(e.target.files);
+
+        if (files.length === 0) {
+
+            return;
+
+        }
+
+        setImageError("");
+
+        if (images.length + files.length > MAX_IMAGES) {
+
+            setImageError(`You can upload up to ${MAX_IMAGES} images per post.`);
+
+            e.target.value = "";
+
+            return;
+
+        }
+
+        try {
+
+            setUploadingImages(true);
+
+            const uploaded = [];
+
+            for (const file of files) {
+
+                const response = await uploadAttachment(file);
+
+                if (response.success) {
+
+                    uploaded.push({
+
+                        url: response.data.url,
+
+                        name: response.data.original_name
+
+                    });
+
+                } else {
+
+                    setImageError(response.message);
+
+                    break;
+
+                }
+
+            }
+
+            setImages((prev) => [...prev, ...uploaded]);
+
+        } catch (err) {
+
+            setImageError(
+
+                err.response?.data?.message ||
+                "Unable to upload one of these images."
+
+            );
+
+        } finally {
+
+            setUploadingImages(false);
+
+            e.target.value = "";
+
+        }
+
+    }
+
+    function handleRemoveImage(index) {
+
+        setImages((prev) => prev.filter((_, i) => i !== index));
+
+    }
+
     function formatFileSize(bytes) {
 
         if (bytes < 1024) return `${bytes} B`;
@@ -452,6 +540,8 @@ function CreatePostPage() {
 
                 attachment_url: attachment ? attachment.url : null,
 
+                image_urls: images.map((img) => img.url),
+
                 priority,
 
                 require_acknowledgement: requireAck,
@@ -471,6 +561,8 @@ function CreatePostPage() {
                 setDueDate("");
 
                 setAttachment(null);
+
+                setImages([]);
 
                 setVoiceNote(null);
 
@@ -783,6 +875,116 @@ function CreatePostPage() {
                                 </Grid>
 
                             </Grid>
+
+                            <Box>
+
+                                <Typography sx={{ fontSize: "0.85rem", color: "#334155", mb: 1, fontWeight: 500 }}>
+
+                                    Images (optional, up to {MAX_IMAGES})
+
+                                </Typography>
+
+                                {imageError && <Alert severity="error" sx={{ mb: 1.5 }}>{imageError}</Alert>}
+
+                                {images.length > 0 && (
+
+                                    <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 1.5 }}>
+
+                                        {images.map((img, i) => (
+
+                                            <Box key={i} sx={{ position: "relative" }}>
+
+                                                <Box
+
+                                                    component="img"
+
+                                                    src={resolveFileUrl(img.url)}
+
+                                                    sx={{
+
+                                                        width: 90,
+
+                                                        height: 90,
+
+                                                        objectFit: "cover",
+
+                                                        borderRadius: 2,
+
+                                                        border: "1px solid #E2E8F0"
+
+                                                    }}
+
+                                                />
+
+                                                <Button
+                                                    onClick={() => handleRemoveImage(i)}
+                                                    sx={{
+
+                                                        position: "absolute",
+
+                                                        top: -8,
+
+                                                        right: -8,
+
+                                                        minWidth: "auto",
+
+                                                        width: 22,
+
+                                                        height: 22,
+
+                                                        borderRadius: "50%",
+
+                                                        bgcolor: "#DC2626",
+
+                                                        color: "white",
+
+                                                        fontSize: "0.65rem",
+
+                                                        p: 0,
+
+                                                        "&:hover": { bgcolor: "#B91C1C" }
+
+                                                    }}
+                                                >
+
+                                                    ✕
+
+                                                </Button>
+
+                                            </Box>
+
+                                        ))}
+
+                                    </Box>
+
+                                )}
+
+                                {images.length < MAX_IMAGES && (
+
+                                    <Button
+                                        component="label"
+                                        variant="outlined"
+                                        startIcon={uploadingImages ? <CircularProgress size={16} /> : <ImageIcon />}
+                                        disabled={uploadingImages}
+                                        fullWidth
+                                        sx={{ justifyContent: "flex-start", color: "#64748B", borderColor: "#E2E8F0", py: 1.5 }}
+                                    >
+
+                                        {uploadingImages ? "Uploading..." : `Add Image${images.length > 0 ? "s" : ""} (${images.length}/${MAX_IMAGES})`}
+
+                                        <input
+                                            type="file"
+                                            hidden
+                                            multiple
+                                            accept="image/jpeg,image/png,image/webp"
+                                            onChange={handleImageSelect}
+                                        />
+
+                                    </Button>
+
+                                )}
+
+                            </Box>
 
                             <Box>
 

@@ -45,18 +45,42 @@ async function getHomeworkForStudent(studentId) {
 }
 
 /**
- * Get Homework By ID
+ * Get Homework By ID, scoped to a school (and optionally a
+ * specific teacher, so a Teacher can only see their own posts
+ * while a School Admin can see any post at their school).
  */
-async function getHomeworkById(id) {
+async function getHomeworkById(id, schoolId, teacherId) {
 
-    return await homeworkModel.getHomeworkById(id);
+    const homework = await homeworkModel.getHomeworkByIdForSchool(id, schoolId);
+
+    if (!homework) {
+
+        return null;
+
+    }
+
+    if (teacherId && homework.teacher_id !== teacherId) {
+
+        return null;
+
+    }
+
+    return homework;
 
 }
 
 /**
- * Update Homework
+ * Update Homework, with the same ownership scoping as above.
  */
-async function updateHomework(id, data) {
+async function updateHomework(id, schoolId, teacherId, data) {
+
+    const existing = await getHomeworkById(id, schoolId, teacherId);
+
+    if (!existing) {
+
+        return null;
+
+    }
 
     return await homeworkModel.updateHomework(id, data);
 

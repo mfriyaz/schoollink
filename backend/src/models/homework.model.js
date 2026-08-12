@@ -16,11 +16,12 @@ async function createHomework(data) {
             attachment_url,
             priority,
             require_acknowledgement,
-            voice_note_url
+            voice_note_url,
+            image_urls
         )
         VALUES
         (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
         )
         RETURNING *;
     `;
@@ -35,7 +36,8 @@ async function createHomework(data) {
         data.attachment_url || null,
         data.priority || "Normal",
         data.require_acknowledgement !== undefined ? data.require_acknowledgement : true,
-        data.voice_note_url || null
+        data.voice_note_url || null,
+        data.image_urls && data.image_urls.length > 0 ? data.image_urls : null
 
     ];
 
@@ -128,6 +130,27 @@ async function getHomeworkById(id) {
 }
 
 /**
+ * Get Homework By ID, scoped to a school - prevents one
+ * school's Admin/Teacher from viewing or editing another
+ * school's post just by guessing/incrementing an ID.
+ */
+async function getHomeworkByIdForSchool(id, schoolId) {
+
+    const result = await db.query(
+        `
+        SELECT hw.*, ts.teacher_id, ts.school_id
+        FROM homework hw
+        JOIN teacher_subjects ts ON hw.teacher_subject_id = ts.id
+        WHERE hw.id = $1 AND ts.school_id = $2
+        `,
+        [id, schoolId]
+    );
+
+    return result.rows[0];
+
+}
+
+/**
  * Update Homework
  */
 async function updateHomework(id, data) {
@@ -140,8 +163,9 @@ async function updateHomework(id, data) {
             homework_date = $3,
             due_date = $4,
             attachment_url = $5,
+            image_urls = $6,
             updated_at = NOW()
-        WHERE id = $6
+        WHERE id = $7
         RETURNING *;
     `;
 
@@ -152,6 +176,7 @@ async function updateHomework(id, data) {
         data.homework_date,
         data.due_date,
         data.attachment_url || null,
+        data.image_urls && data.image_urls.length > 0 ? data.image_urls : null,
         id
 
     ];
@@ -189,6 +214,8 @@ module.exports = {
     getHomeworkForStudent,
 
     getHomeworkById,
+
+    getHomeworkByIdForSchool,
 
     updateHomework,
 

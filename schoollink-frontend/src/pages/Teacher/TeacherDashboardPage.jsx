@@ -717,7 +717,12 @@ function TeacherDashboardPage() {
 
                     >
 
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <Box
+
+                            onClick={() => navigate(`/teacher/posts/${post.id}`)}
+
+                            sx={{ display: "flex", alignItems: "center", gap: 2, cursor: "pointer" }}
+                        >
 
                             <Box
 
@@ -760,6 +765,44 @@ function TeacherDashboardPage() {
                                     {post.class_name} - {post.section_name} · {post.subject_name}
 
                                 </Typography>
+
+                                {post.image_urls && post.image_urls.length > 0 && (
+
+                                    <Box sx={{ display: "flex", gap: 0.75, mt: 1 }}>
+
+                                        {post.image_urls.map((url, i) => (
+
+                                            <Box
+
+                                                key={i}
+
+                                                component="img"
+
+                                                loading="lazy"
+
+                                                src={resolveFileUrl(url)}
+
+                                                sx={{
+
+                                                    width: 32,
+
+                                                    height: 32,
+
+                                                    objectFit: "cover",
+
+                                                    borderRadius: 1.5,
+
+                                                    border: "1px solid #E2E8F0"
+
+                                                }}
+
+                                            />
+
+                                        ))}
+
+                                    </Box>
+
+                                )}
 
                             </Box>
 

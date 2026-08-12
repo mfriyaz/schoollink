@@ -149,6 +149,22 @@ export async function createHomeworkPost(data) {
 
 }
 
+export async function getHomeworkById(id) {
+
+    const response = await api.get(`/homework/${id}`);
+
+    return response.data;
+
+}
+
+export async function updateHomeworkPost(id, data) {
+
+    const response = await api.put(`/homework/${id}`, data);
+
+    return response.data;
+
+}
+
 /**
  * Get the acknowledgement summary for a homework post
  * (total/acknowledged/pending counts + per-student status)
