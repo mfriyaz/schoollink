@@ -12,7 +12,6 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Divider,
     Grid,
     IconButton,
     MenuItem,
@@ -987,11 +986,11 @@ function TeachersPage() {
 
                     {assignSuccess && <Alert severity="success">{assignSuccess}</Alert>}
 
-                    <Box>
+                    <Box sx={{ bgcolor: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 3, p: 2 }}>
 
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", mb: 1 }}>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", mb: 1, color: "#334155" }}>
 
-                            Current Assignments
+                            📋 Current Assignments
 
                         </Typography>
 
@@ -1029,13 +1028,7 @@ function TeachersPage() {
 
                                     maxHeight: 220,
 
-                                    overflowY: "auto",
-
-                                    border: "1px solid #F1F5F9",
-
-                                    borderRadius: 2,
-
-                                    p: 1
+                                    overflowY: "auto"
 
                                 }}
 
@@ -1055,7 +1048,9 @@ function TeachersPage() {
 
                                             justifyContent: "space-between",
 
-                                            bgcolor: "#F8FAFC",
+                                            bgcolor: "white",
+
+                                            border: "1px solid #E2E8F0",
 
                                             borderRadius: 2,
 
@@ -1096,13 +1091,13 @@ function TeachersPage() {
 
                     </Box>
 
-                    <Divider />
+                    <Box sx={{ bgcolor: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 3, p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
 
-                    <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", color: "#1E40AF" }}>
 
-                        Add New Assignment
+                            ➕ Add New Assignment
 
-                    </Typography>
+                        </Typography>
 
                     <TextField
                         select
@@ -1183,6 +1178,8 @@ function TeachersPage() {
                             {isClassTeacher ? "✓ Set as Class Teacher for this section" : "Set as Class Teacher for this section"}
 
                         </Typography>
+
+                    </Box>
 
                     </Box>
 
