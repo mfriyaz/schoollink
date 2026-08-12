@@ -204,6 +204,10 @@ function TeacherPostsPage() {
 
                             justifyContent: "space-between",
 
+                            flexWrap: "wrap",
+
+                            gap: 1.5,
+
                             py: 2,
 
                             borderBottom: "1px solid #F1F5F9",
@@ -218,7 +222,7 @@ function TeacherPostsPage() {
 
                             onClick={() => navigate(`/teacher/posts/${post.id}`)}
 
-                            sx={{ display: "flex", alignItems: "center", gap: 2, cursor: "pointer" }}
+                            sx={{ display: "flex", alignItems: "center", gap: 2, cursor: "pointer", minWidth: 0, flex: "1 1 220px" }}
                         >
 
                             <Box
@@ -249,9 +253,9 @@ function TeacherPostsPage() {
 
                             </Box>
 
-                            <Box>
+                            <Box sx={{ minWidth: 0 }}>
 
-                                <Typography sx={{ fontWeight: 600 }}>
+                                <Typography sx={{ fontWeight: 600, wordBreak: "break-word" }}>
 
                                     {post.title}
 
