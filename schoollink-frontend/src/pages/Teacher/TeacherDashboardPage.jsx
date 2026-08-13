@@ -420,7 +420,7 @@ function TeacherDashboardPage() {
 
             <Grid container spacing={3} sx={{ mb: 4 }}>
 
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                     <KpiCard
                         icon={<MenuBookIcon sx={{ color: "#2563EB" }} />}
@@ -433,7 +433,7 @@ function TeacherDashboardPage() {
 
                 </Grid>
 
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                     <KpiCard
                         icon={<PendingActionsIcon sx={{ color: "#EA580C" }} />}
@@ -446,7 +446,7 @@ function TeacherDashboardPage() {
 
                 </Grid>
 
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                     <KpiCard
                         icon={<GroupsIcon sx={{ color: "#16A34A" }} />}
@@ -457,7 +457,7 @@ function TeacherDashboardPage() {
 
                 </Grid>
 
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                     <KpiCard
                         icon={<ClassIcon sx={{ color: "#D97706" }} />}
@@ -814,7 +814,7 @@ function TeacherDashboardPage() {
 
                         {post.summary && (
 
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 2.5, sm: 4 }, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
 
                                 <Box sx={{ textAlign: "center" }}>
 

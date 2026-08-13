@@ -273,13 +273,13 @@ function StudentViewDialog({ open, student, onClose }) {
 
                 <Grid container spacing={2.5}>
 
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
 
                         <Field label="Admission No" value={student.admission_no} />
 
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
 
                         <Field
                             label="Class"
@@ -290,13 +290,13 @@ function StudentViewDialog({ open, student, onClose }) {
 
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
 
                         <Field label="Gender" value={student.gender} />
 
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
 
                         <Field
                             label="Date of Birth"
@@ -305,31 +305,31 @@ function StudentViewDialog({ open, student, onClose }) {
 
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
 
                         <Field label="Father's Name" value={student.father_name} />
 
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
 
                         <Field label="Mother's Name" value={student.mother_name} />
 
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
 
                         <Field label="Parent Phone" value={student.parent_phone} />
 
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid size={{ xs: 6 }}>
 
                         <Field label="Parent Email" value={student.parent_email} />
 
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
 
                         <Field label="Address" value={student.address} />
 

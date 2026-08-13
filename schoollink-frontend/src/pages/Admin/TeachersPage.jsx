@@ -818,7 +818,7 @@ function TeachersPage() {
 
                     <Grid container spacing={2} sx={{ mt: 0.5 }}>
 
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
 
                             <TextField
                                 label="Employee No"
@@ -830,7 +830,7 @@ function TeachersPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
 
                             <TextField
                                 label="First Name"
@@ -842,7 +842,7 @@ function TeachersPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
 
                             <TextField
                                 label="Last Name"
@@ -854,7 +854,7 @@ function TeachersPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
 
                             <TextField
                                 select
@@ -875,7 +875,7 @@ function TeachersPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
 
                             <TextField
                                 label="Phone"
@@ -887,7 +887,7 @@ function TeachersPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
 
                             <TextField
                                 label="Email"
@@ -902,7 +902,7 @@ function TeachersPage() {
 
                         {!editingId && (
 
-                            <Grid item xs={12} sm={6}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
 
                                 <TextField
                                     label="Temporary Password (optional)"
@@ -917,7 +917,7 @@ function TeachersPage() {
 
                         )}
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
 
                             <TextField
                                 label="Qualification"
@@ -929,7 +929,7 @@ function TeachersPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
 
                             <TextField
                                 label="Experience (years)"
@@ -942,7 +942,7 @@ function TeachersPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={{ xs: 12, sm: 6 }}>
 
                             <SchoolDatePicker
                                 label="Joining Date"

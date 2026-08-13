@@ -330,7 +330,7 @@ function ExamsPage() {
 
             <Grid container spacing={3}>
 
-                <Grid item xs={12} md={5}>
+                <Grid size={{ xs: 12, md: 5 }}>
 
                     <Card sx={{ p: 3, mb: 3 }}>
 
@@ -476,7 +476,7 @@ function ExamsPage() {
 
                 </Grid>
 
-                <Grid item xs={12} md={7}>
+                <Grid size={{ xs: 12, md: 7 }}>
 
                     <Card sx={{ p: 3 }}>
 

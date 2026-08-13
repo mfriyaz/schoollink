@@ -211,7 +211,7 @@ function SchoolCard({ school, onSaved }) {
 
                     <Grid container spacing={2}>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={{ xs: 12, sm: 4 }}>
 
                             <TextField
                                 select
@@ -232,7 +232,7 @@ function SchoolCard({ school, onSaved }) {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={{ xs: 12, sm: 4 }}>
 
                             <TextField
                                 select
@@ -253,7 +253,7 @@ function SchoolCard({ school, onSaved }) {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={{ xs: 12, sm: 4 }}>
 
                             <SchoolDatePicker
                                 label="Subscription Expiry"
@@ -265,7 +265,7 @@ function SchoolCard({ school, onSaved }) {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={{ xs: 12, sm: 4 }}>
 
                             <TextField
                                 label="Max Classes"
@@ -279,7 +279,7 @@ function SchoolCard({ school, onSaved }) {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={{ xs: 12, sm: 4 }}>
 
                             <TextField
                                 label="Max Students"
@@ -293,7 +293,7 @@ function SchoolCard({ school, onSaved }) {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={{ xs: 12, sm: 4 }}>
 
                             <TextField
                                 label="Max Teachers"
@@ -307,7 +307,7 @@ function SchoolCard({ school, onSaved }) {
 
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid size={{ xs: 12 }}>
 
                             <TextField
                                 select

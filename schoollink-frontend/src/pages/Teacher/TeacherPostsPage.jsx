@@ -311,7 +311,7 @@ function TeacherPostsPage() {
 
                         {post.summary && (
 
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 2.5, sm: 4 }, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
 
                                 <Box sx={{ textAlign: "center" }}>
 

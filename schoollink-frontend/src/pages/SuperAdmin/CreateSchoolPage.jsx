@@ -188,7 +188,7 @@ function CreateSchoolPage() {
 
                 <Grid container spacing={2} sx={{ mb: 3 }}>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             label="School Name"
@@ -200,7 +200,7 @@ function CreateSchoolPage() {
 
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             label="School Code"
@@ -213,7 +213,7 @@ function CreateSchoolPage() {
 
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             label="City"
@@ -225,7 +225,7 @@ function CreateSchoolPage() {
 
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             label="Country"
@@ -237,7 +237,7 @@ function CreateSchoolPage() {
 
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             select
@@ -258,7 +258,7 @@ function CreateSchoolPage() {
 
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             select
@@ -287,7 +287,7 @@ function CreateSchoolPage() {
 
                 <Grid container spacing={2}>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             label="Full Name"
@@ -299,7 +299,7 @@ function CreateSchoolPage() {
 
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             label="Email"
@@ -311,7 +311,7 @@ function CreateSchoolPage() {
 
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             label="Mobile"
@@ -323,7 +323,7 @@ function CreateSchoolPage() {
 
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             label="Temporary Password"

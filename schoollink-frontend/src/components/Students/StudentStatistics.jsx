@@ -20,7 +20,7 @@ export default function StudentStatistics({ students }) {
 
         <Grid container spacing={3} sx={{ mb: 3 }}>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <KpiCard
                     title="Total Students"
                     value={total}
@@ -29,7 +29,7 @@ export default function StudentStatistics({ students }) {
                 />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <KpiCard
                     title="Boys"
                     value={boys}
@@ -38,7 +38,7 @@ export default function StudentStatistics({ students }) {
                 />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <KpiCard
                     title="Girls"
                     value={girls}
@@ -47,7 +47,7 @@ export default function StudentStatistics({ students }) {
                 />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <KpiCard
                     title="Active"
                     value={active}

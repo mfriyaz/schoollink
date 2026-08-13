@@ -676,7 +676,7 @@ function CreatePostPage() {
 
                             <Grid container spacing={2}>
 
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
 
                                     <TextField
                                         select
@@ -693,7 +693,7 @@ function CreatePostPage() {
 
                                 </Grid>
 
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
 
                                     <TextField
                                         select
@@ -713,7 +713,7 @@ function CreatePostPage() {
 
                                 </Grid>
 
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
 
                                     <TextField
                                         select
@@ -755,7 +755,7 @@ function CreatePostPage() {
 
                             <Grid container spacing={2}>
 
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
 
                                     <Typography sx={{ fontSize: "0.85rem", color: "#334155", mb: 1, fontWeight: 500 }}>
 
@@ -847,7 +847,7 @@ function CreatePostPage() {
 
                                 </Grid>
 
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
 
                                     <TextField
                                         select
@@ -1070,7 +1070,7 @@ function CreatePostPage() {
 
                             <Grid container spacing={2}>
 
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
 
                                     <SchoolDatePicker
                                         label="Homework Date"
@@ -1081,7 +1081,7 @@ function CreatePostPage() {
 
                                 </Grid>
 
-                                <Grid item xs={12} sm={6}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
 
                                     <SchoolDatePicker
                                         label="Due Date"

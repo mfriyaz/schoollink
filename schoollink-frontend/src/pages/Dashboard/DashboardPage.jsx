@@ -138,7 +138,7 @@ function DashboardPage() {
                         sx={{ mb: 4 }}
                     >
 
-                        <Grid item xs={12} sm={6} lg={3}>
+                        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                             <KpiCard
                                 title="Students"
@@ -149,7 +149,7 @@ function DashboardPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6} lg={3}>
+                        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                             <KpiCard
                                 title="Teachers"
@@ -160,7 +160,7 @@ function DashboardPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6} lg={3}>
+                        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                             <KpiCard
                                 title="Classes"
@@ -171,7 +171,7 @@ function DashboardPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6} lg={3}>
+                        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                             <KpiCard
                                 title="Attendance"
@@ -182,7 +182,7 @@ function DashboardPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6} lg={3}>
+                        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                             <KpiCard
                                 title="Posts Today"
@@ -193,7 +193,7 @@ function DashboardPage() {
 
                         </Grid>
 
-                        <Grid item xs={12} sm={6} lg={3}>
+                        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
 
                             <KpiCard
                                 title="Pending Acknowledgements"
@@ -217,7 +217,7 @@ function DashboardPage() {
                         spacing={3}
                     >
 
-                        <Grid item xs={6} md={3}>
+                        <Grid size={{ xs: 6, md: 3 }}>
 
                             <QuickActionCard
                                 title="Add Student"
@@ -228,7 +228,7 @@ function DashboardPage() {
 
                         </Grid>
 
-                        <Grid item xs={6} md={3}>
+                        <Grid size={{ xs: 6, md: 3 }}>
 
                             <QuickActionCard
                                 title="Add Teacher"
@@ -239,7 +239,7 @@ function DashboardPage() {
 
                         </Grid>
 
-                        <Grid item xs={6} md={3}>
+                        <Grid size={{ xs: 6, md: 3 }}>
 
                             <QuickActionCard
                                 title="Attendance"
@@ -249,7 +249,7 @@ function DashboardPage() {
 
                         </Grid>
 
-                        <Grid item xs={6} md={3}>
+                        <Grid size={{ xs: 6, md: 3 }}>
 
                             <QuickActionCard
                                 title="Collect Fees"
@@ -259,7 +259,7 @@ function DashboardPage() {
 
                         </Grid>
 
-                        <Grid item xs={6} md={3}>
+                        <Grid size={{ xs: 6, md: 3 }}>
 
                             <QuickActionCard
                                 title="Create Announcement"
@@ -316,13 +316,13 @@ function DashboardPage() {
                         sx={{ mb: 4 }}
                     >
 
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
 
                             <CalendarCard />
 
                         </Grid>
 
-                        <Grid item xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
 
                             <AnnouncementCard
                                 announcements={dashboard.announcements || []}

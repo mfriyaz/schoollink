@@ -30,7 +30,7 @@ function StudentAcademicSection({ formData, handleChange }) {
 
             <Grid container spacing={3}>
 
-                <Grid item xs={12} md={3}>
+                <Grid size={{ xs: 12, md: 3 }}>
 
                     <TextField
                         select
@@ -47,7 +47,7 @@ function StudentAcademicSection({ formData, handleChange }) {
 
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid size={{ xs: 12, md: 3 }}>
 
                     <TextField
                         select
@@ -66,7 +66,7 @@ function StudentAcademicSection({ formData, handleChange }) {
 
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid size={{ xs: 12, md: 3 }}>
 
                     <TextField
                         select
@@ -82,7 +82,7 @@ function StudentAcademicSection({ formData, handleChange }) {
 
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid size={{ xs: 12, md: 3 }}>
 
                     <TextField
                         fullWidth
