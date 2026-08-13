@@ -18,6 +18,10 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircleOutlined";
 import CancelIcon from "@mui/icons-material/CancelOutlined";
 import AccessTimeIcon from "@mui/icons-material/AccessTimeOutlined";
 
+import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
+
+import SchoolDatePicker from "../../components/common/SchoolDatePicker";
+
 import {
     getMyTeacherProfile,
     getMyAssignments,
@@ -203,7 +207,11 @@ function TakeAttendancePage() {
 
             if (response.success) {
 
-                setSuccess("Attendance saved successfully.");
+                await loadRoster();
+
+                const now = new Date().toLocaleTimeString(undefined, { timeZone: getSchoolTimezone() });
+
+                setSuccess(`Attendance saved successfully at ${now}.`);
 
             } else {
 
@@ -326,12 +334,11 @@ function TakeAttendancePage() {
 
                         </TextField>
 
-                        <TextField
+                        <SchoolDatePicker
                             label="Date"
-                            type="date"
                             value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            InputLabelProps={{ shrink: true }}
+                            onChange={setDate}
+                            maxDate={new Date()}
                         />
 
                     </Box>
@@ -395,6 +402,16 @@ function TakeAttendancePage() {
                                 {student.admission_no}
 
                             </Typography>
+
+                            {student.updated_at && (
+
+                                <Typography sx={{ color: "#94A3B8", fontSize: "0.72rem" }}>
+
+                                    Recorded {toUtcDate(student.updated_at).toLocaleTimeString(undefined, { timeZone: getSchoolTimezone() })}
+
+                                </Typography>
+
+                            )}
 
                         </Box>
 

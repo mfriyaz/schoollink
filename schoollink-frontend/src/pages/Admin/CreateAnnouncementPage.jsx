@@ -15,6 +15,8 @@ import CampaignIcon from "@mui/icons-material/CampaignOutlined";
 
 import { createAnnouncement } from "../../services/postService";
 
+import SchoolDatePicker from "../../components/common/SchoolDatePicker";
+
 const audiences = ["All", "Teachers", "Parents", "Students", "School Admin"];
 
 function CreateAnnouncementPage() {
@@ -191,21 +193,17 @@ function CreateAnnouncementPage() {
 
                     </TextField>
 
-                    <TextField
+                    <SchoolDatePicker
                         label="Publish Date"
-                        type="date"
                         value={publishDate}
-                        onChange={(e) => setPublishDate(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
+                        onChange={setPublishDate}
                         fullWidth
                     />
 
-                    <TextField
+                    <SchoolDatePicker
                         label="Expiry Date (optional)"
-                        type="date"
                         value={expiryDate}
-                        onChange={(e) => setExpiryDate(e.target.value)}
-                        InputLabelProps={{ shrink: true }}
+                        onChange={setExpiryDate}
                         fullWidth
                     />
 

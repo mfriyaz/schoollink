@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 
 import DomainIcon from "@mui/icons-material/DomainOutlined";
+
+import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import EditIcon from "@mui/icons-material/EditOutlined";
 
 import {
@@ -253,12 +255,10 @@ function SchoolCard({ school, onSaved }) {
 
                         <Grid item xs={12} sm={4}>
 
-                            <TextField
+                            <SchoolDatePicker
                                 label="Subscription Expiry"
-                                type="date"
                                 value={expiry}
-                                onChange={(e) => setExpiry(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
+                                onChange={setExpiry}
                                 fullWidth
                                 size="small"
                             />

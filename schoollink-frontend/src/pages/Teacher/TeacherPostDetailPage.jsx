@@ -18,6 +18,8 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
 import ImageIcon from "@mui/icons-material/ImageOutlined";
 
+import SchoolDatePicker from "../../components/common/SchoolDatePicker";
+
 import {
     getHomeworkById,
     updateHomeworkPost,
@@ -386,20 +388,16 @@ function TeacherPostDetailPage() {
 
                             </TextField>
 
-                            <TextField
+                            <SchoolDatePicker
                                 label="Homework Date"
-                                type="date"
                                 value={homeworkDate}
-                                onChange={(e) => setHomeworkDate(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
+                                onChange={setHomeworkDate}
                             />
 
-                            <TextField
+                            <SchoolDatePicker
                                 label="Due Date"
-                                type="date"
                                 value={dueDate}
-                                onChange={(e) => setDueDate(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
+                                onChange={setDueDate}
                             />
 
                         </Box>

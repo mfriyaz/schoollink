@@ -15,6 +15,8 @@ import {
 
 import AssessmentIcon from "@mui/icons-material/AssessmentOutlined";
 
+import SchoolDatePicker from "../../components/common/SchoolDatePicker";
+
 import {
     createExam,
     getAllExams,
@@ -350,21 +352,17 @@ function ExamsPage() {
                                 fullWidth
                             />
 
-                            <TextField
+                            <SchoolDatePicker
                                 label="Start Date"
-                                type="date"
                                 value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
+                                onChange={setStartDate}
                                 fullWidth
                             />
 
-                            <TextField
+                            <SchoolDatePicker
                                 label="End Date"
-                                type="date"
                                 value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                InputLabelProps={{ shrink: true }}
+                                onChange={setEndDate}
                                 fullWidth
                             />
 

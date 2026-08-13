@@ -22,6 +22,8 @@ import CloseIcon from "@mui/icons-material/CloseOutlined";
 import FlagIcon from "@mui/icons-material/FlagOutlined";
 import MicIcon from "@mui/icons-material/MicOutlined";
 import ImageIcon from "@mui/icons-material/ImageOutlined";
+
+import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import StopCircleIcon from "@mui/icons-material/StopCircleOutlined";
 
 import { resolveFileUrl } from "../../config";
@@ -1070,12 +1072,10 @@ function CreatePostPage() {
 
                                 <Grid item xs={12} sm={6}>
 
-                                    <TextField
+                                    <SchoolDatePicker
                                         label="Homework Date"
-                                        type="date"
                                         value={homeworkDate}
-                                        onChange={(e) => setHomeworkDate(e.target.value)}
-                                        InputLabelProps={{ shrink: true }}
+                                        onChange={setHomeworkDate}
                                         fullWidth
                                     />
 
@@ -1083,12 +1083,10 @@ function CreatePostPage() {
 
                                 <Grid item xs={12} sm={6}>
 
-                                    <TextField
+                                    <SchoolDatePicker
                                         label="Due Date"
-                                        type="date"
                                         value={dueDate}
-                                        onChange={(e) => setDueDate(e.target.value)}
-                                        InputLabelProps={{ shrink: true }}
+                                        onChange={setDueDate}
                                         fullWidth
                                     />
 

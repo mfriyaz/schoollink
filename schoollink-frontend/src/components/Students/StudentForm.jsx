@@ -12,6 +12,8 @@ import {
     MenuItem
 } from "@mui/material";
 
+import SchoolDatePicker from "../common/SchoolDatePicker";
+
 import {
     createStudent,
     updateStudent
@@ -401,18 +403,11 @@ function StudentForm({
 
                     <Grid size={6}>
 
-                        <TextField
+                        <SchoolDatePicker
                             fullWidth
-                            type="date"
-                            name="date_of_birth"
                             label="Date of Birth"
                             value={student.date_of_birth}
-                            onChange={handleChange}
-                            slotProps={{
-                                inputLabel: {
-                                    shrink: true
-                                }
-                            }}
+                            onChange={(val) => handleChange({ target: { name: "date_of_birth", value: val } })}
                         />
 
                     </Grid>

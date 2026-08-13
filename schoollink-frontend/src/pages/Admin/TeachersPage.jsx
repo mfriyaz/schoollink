@@ -25,6 +25,8 @@ import BlockIcon from "@mui/icons-material/BlockOutlined";
 import RestoreIcon from "@mui/icons-material/RestoreOutlined";
 import SchoolIcon from "@mui/icons-material/SchoolOutlined";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentIndOutlined";
+
+import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import VpnKeyIcon from "@mui/icons-material/VpnKeyOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
@@ -942,12 +944,10 @@ function TeachersPage() {
 
                         <Grid item xs={12} sm={6}>
 
-                            <TextField
+                            <SchoolDatePicker
                                 label="Joining Date"
-                                type="date"
                                 value={form.joining_date}
-                                onChange={(e) => setForm({ ...form, joining_date: e.target.value })}
-                                InputLabelProps={{ shrink: true }}
+                                onChange={(val) => setForm({ ...form, joining_date: val })}
                                 fullWidth
                                 size="small"
                             />
