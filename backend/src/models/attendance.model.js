@@ -149,7 +149,9 @@ async function getRosterWithAttendance(teacherSubjectId, attendanceDate) {
             st.admission_no,
             a.id AS attendance_id,
             a.status,
-            a.remarks
+            a.remarks,
+            a.created_at,
+            a.updated_at
         FROM teacher_subjects ts
         JOIN students st
             ON st.class_id = ts.class_id
@@ -190,7 +192,8 @@ async function bulkUpsertAttendance(teacherSubjectId, attendanceDate, records) {
             ON CONFLICT (teacher_subject_id, student_id, attendance_date)
             DO UPDATE SET
                 status = EXCLUDED.status,
-                remarks = EXCLUDED.remarks
+                remarks = EXCLUDED.remarks,
+                updated_at = CURRENT_TIMESTAMP
             RETURNING *;
         `;
 

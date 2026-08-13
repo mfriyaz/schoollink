@@ -65,6 +65,14 @@ async function getRosterWithAttendance(teacherSubjectId, attendanceDate) {
  */
 async function bulkMarkAttendance(teacherSubjectId, attendanceDate, records) {
 
+    const today = new Date().toISOString().slice(0, 10);
+
+    if (attendanceDate > today) {
+
+        throw new Error("Attendance cannot be marked for a future date.");
+
+    }
+
     return await attendanceModel.bulkUpsertAttendance(
         teacherSubjectId,
         attendanceDate,
