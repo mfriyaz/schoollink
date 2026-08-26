@@ -333,6 +333,41 @@ async function notifyParentOfReview(submission) {
 
 }
 
+const GREETING_REACTION_LABELS = {
+
+    good: "👍 Good",
+
+    nice: "⭐ Nice",
+
+    great: "🎉 Great",
+
+    good_job: "💯 Good Job"
+
+};
+
+/**
+ * Notify a parent that the teacher reacted to their Good
+ * Morning voice message - the whole point of reacting is for
+ * the parent (and student) to actually see it, not just have
+ * it sit in the database.
+ */
+async function notifyParentOfGreetingReaction(greeting) {
+
+    const reactionLabel = GREETING_REACTION_LABELS[greeting.teacher_reaction] || "reacted";
+
+    const message =
+        `Your teacher ${reactionLabel} to ${greeting.student_first_name}'s Good Morning message!`;
+
+    await notifyIfEnabled(
+        greeting.parent_user_id,
+        "Good Morning Message Reaction",
+        message,
+        message,
+        `/parent/dashboard`
+    );
+
+}
+
 module.exports = {
 
     notifyParentsOfHomework,
@@ -341,6 +376,8 @@ module.exports = {
 
     notifyOwnerOfAcknowledgement,
 
-    notifyParentOfReview
+    notifyParentOfReview,
+
+    notifyParentOfGreetingReaction
 
 };

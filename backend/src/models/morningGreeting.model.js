@@ -90,10 +90,12 @@ async function reactToGreeting(greetingId, reaction) {
 
     const result = await db.query(
         `
-        UPDATE morning_greetings
+        UPDATE morning_greetings mg
         SET teacher_reaction = $1
-        WHERE id = $2
-        RETURNING *;
+        FROM students st
+        WHERE mg.id = $2
+        AND st.id = mg.student_id
+        RETURNING mg.*, st.first_name AS student_first_name;
         `,
         [reaction, greetingId]
     );
@@ -138,10 +140,12 @@ async function bulkReactToGreetings(greetingIds, reaction) {
 
     const result = await db.query(
         `
-        UPDATE morning_greetings
+        UPDATE morning_greetings mg
         SET teacher_reaction = $1
-        WHERE id = ANY($2::int[])
-        RETURNING *;
+        FROM students st
+        WHERE mg.id = ANY($2::int[])
+        AND st.id = mg.student_id
+        RETURNING mg.*, st.first_name AS student_first_name;
         `,
         [reaction, greetingIds]
     );

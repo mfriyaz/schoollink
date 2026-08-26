@@ -1,4 +1,5 @@
 const morningGreetingModel = require("../models/morningGreeting.model");
+const notifierService = require("./notifier.service");
 
 const db = require("../config/database");
 
@@ -60,7 +61,19 @@ async function reactToGreeting(greetingId, teacherUserId, reaction) {
 
     }
 
-    return await morningGreetingModel.reactToGreeting(greetingId, reaction);
+    const greeting = await morningGreetingModel.reactToGreeting(greetingId, reaction);
+
+    try {
+
+        await notifierService.notifyParentOfGreetingReaction(greeting);
+
+    } catch (err) {
+
+        console.error("Failed to notify parent of greeting reaction:", err);
+
+    }
+
+    return greeting;
 
 }
 
@@ -90,7 +103,23 @@ async function bulkReactToGreetings(greetingIds, teacherUserId, reaction) {
 
     }
 
-    return await morningGreetingModel.bulkReactToGreetings(verifiedIds, reaction);
+    const greetings = await morningGreetingModel.bulkReactToGreetings(verifiedIds, reaction);
+
+    for (const greeting of greetings) {
+
+        try {
+
+            await notifierService.notifyParentOfGreetingReaction(greeting);
+
+        } catch (err) {
+
+            console.error("Failed to notify parent of greeting reaction:", err);
+
+        }
+
+    }
+
+    return greetings;
 
 }
 
