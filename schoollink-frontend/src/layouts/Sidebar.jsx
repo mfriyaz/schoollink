@@ -82,6 +82,12 @@ const adminMenus = [
     },
 
     {
+        title: "Grading Scale",
+        path: "/grades",
+        icon: <GradeIcon />
+    },
+
+    {
         title: "Reports",
         path: "/reports",
         icon: <DescriptionIcon />
