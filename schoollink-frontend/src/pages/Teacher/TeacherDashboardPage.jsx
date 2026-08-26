@@ -29,7 +29,9 @@ import {
 } from "../../services/postService";
 
 import PendingStudentsDialog from "../../components/Teacher/PendingStudentsDialog";
+import AcknowledgedStudentsDialog from "../../components/Teacher/AcknowledgedStudentsDialog";
 import SubmissionsDialog from "../../components/Teacher/SubmissionsDialog";
+import GreetingReactionPicker, { reactions } from "../../components/Teacher/GreetingReactionPicker";
 
 import { getSubmissionCount } from "../../services/homeworkSubmissionService";
 
@@ -184,6 +186,8 @@ function TeacherDashboardPage() {
     const [totalStudents, setTotalStudents] = useState(0);
 
     const [pendingDialogPost, setPendingDialogPost] = useState(null);
+
+    const [acknowledgedDialogPost, setAcknowledgedDialogPost] = useState(null);
 
     const [submissionsDialogPost, setSubmissionsDialogPost] = useState(null);
 
@@ -543,43 +547,62 @@ function TeacherDashboardPage() {
                                         title={`${g.first_name} ${g.last_name}${sent ? "" : " - not sent yet"}`}
                                     >
 
-                                        <Avatar
+                                        <Badge
 
-                                            onClick={() => sent && setSelectedGreetingId(isSelected ? null : key)}
+                                            overlap="circular"
 
-                                            sx={{
+                                            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
 
-                                                width: 44,
+                                            badgeContent={
 
-                                                height: 44,
+                                                g.teacher_reaction
 
-                                                fontSize: "0.85rem",
+                                                    ? reactions.find((r) => r.key === g.teacher_reaction)?.emoji
 
-                                                fontWeight: 700,
+                                                    : null
 
-                                                cursor: sent ? "pointer" : "default",
-
-                                                bgcolor: sent ? "#DCFCE7" : "#F1F5F9",
-
-                                                color: sent ? "#16A34A" : "#CBD5E1",
-
-                                                border: isSelected
-
-                                                    ? "3px solid #16A34A"
-
-                                                    : sent
-
-                                                        ? "2px solid #86EFAC"
-
-                                                        : "2px dashed #E2E8F0"
-
-                                            }}
-
+                                            }
                                         >
 
-                                            {g.first_name[0]}{g.last_name ? g.last_name[0] : ""}
+                                            <Avatar
 
-                                        </Avatar>
+                                                onClick={() => sent && setSelectedGreetingId(isSelected ? null : key)}
+
+                                                sx={{
+
+                                                    width: 44,
+
+                                                    height: 44,
+
+                                                    fontSize: "0.85rem",
+
+                                                    fontWeight: 700,
+
+                                                    cursor: sent ? "pointer" : "default",
+
+                                                    bgcolor: sent ? "#DCFCE7" : "#F1F5F9",
+
+                                                    color: sent ? "#16A34A" : "#CBD5E1",
+
+                                                    border: isSelected
+
+                                                        ? "3px solid #16A34A"
+
+                                                        : sent
+
+                                                            ? "2px solid #86EFAC"
+
+                                                            : "2px dashed #E2E8F0"
+
+                                                }}
+
+                                            >
+
+                                                {g.first_name[0]}{g.last_name ? g.last_name[0] : ""}
+
+                                            </Avatar>
+
+                                        </Badge>
 
                                     </Tooltip>
 
@@ -601,6 +624,10 @@ function TeacherDashboardPage() {
 
                                     justifyContent: "space-between",
 
+                                    flexWrap: "wrap",
+
+                                    gap: 1.5,
+
                                     mt: 2.5,
 
                                     p: 1.5,
@@ -620,6 +647,22 @@ function TeacherDashboardPage() {
                                 </Typography>
 
                                 <audio controls autoPlay src={resolveFileUrl(selectedGreeting.voice_url)} style={{ height: 32, maxWidth: 220 }} />
+
+                                <GreetingReactionPicker
+
+                                    greeting={selectedGreeting}
+
+                                    onReacted={(updated) => {
+
+                                        setGreetings((prev) =>
+                                            prev.map((g) =>
+                                                g.id === updated.id ? { ...g, teacher_reaction: updated.teacher_reaction } : g
+                                            )
+                                        );
+
+                                    }}
+
+                                />
 
                             </Box>
 
@@ -816,9 +859,29 @@ function TeacherDashboardPage() {
 
                             <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 2.5, sm: 4 }, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
 
-                                <Box sx={{ textAlign: "center" }}>
+                                <Box
 
-                                    <Typography sx={{ color: "#16A34A", fontWeight: 700 }}>
+                                    sx={{
+
+                                        textAlign: "center",
+
+                                        cursor: post.summary.acknowledged_count > 0 ? "pointer" : "default"
+
+                                    }}
+
+                                    onClick={() => {
+
+                                        if (post.summary.acknowledged_count > 0) {
+
+                                            setAcknowledgedDialogPost(post);
+
+                                        }
+
+                                    }}
+
+                                >
+
+                                    <Typography sx={{ color: "#16A34A", fontWeight: 700, textDecoration: post.summary.acknowledged_count > 0 ? "underline" : "none" }}>
 
                                         {post.summary.acknowledged_count}/{post.summary.total_students}
 
@@ -960,6 +1023,12 @@ function TeacherDashboardPage() {
                 open={Boolean(pendingDialogPost)}
                 post={pendingDialogPost}
                 onClose={() => setPendingDialogPost(null)}
+            />
+
+            <AcknowledgedStudentsDialog
+                open={Boolean(acknowledgedDialogPost)}
+                post={acknowledgedDialogPost}
+                onClose={() => setAcknowledgedDialogPost(null)}
             />
 
         </Box>

@@ -8,7 +8,7 @@ import {
 
 import { reactToGreeting } from "../../services/morningGreetingService";
 
-const reactions = [
+export const reactions = [
 
     { key: "good", emoji: "👍", label: "Good" },
 
