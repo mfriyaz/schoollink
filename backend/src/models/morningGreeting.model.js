@@ -130,6 +130,26 @@ async function teacherOwnsGreeting(greetingId, teacherUserId) {
 
 }
 
+/**
+ * React to multiple greetings at once - lets a teacher clear a
+ * whole class in one action instead of one avatar at a time.
+ */
+async function bulkReactToGreetings(greetingIds, reaction) {
+
+    const result = await db.query(
+        `
+        UPDATE morning_greetings
+        SET teacher_reaction = $1
+        WHERE id = ANY($2::int[])
+        RETURNING *;
+        `,
+        [reaction, greetingIds]
+    );
+
+    return result.rows;
+
+}
+
 module.exports = {
 
     submitGreeting,
@@ -139,6 +159,8 @@ module.exports = {
     getTodaysGreetingsForClassTeacher,
 
     reactToGreeting,
+
+    bulkReactToGreetings,
 
     teacherOwnsGreeting
 

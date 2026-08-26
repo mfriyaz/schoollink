@@ -184,6 +184,65 @@ async function reactToGreeting(req, res) {
 
 }
 
+/**
+ * React to multiple greetings at once
+ */
+async function bulkReactToGreetings(req, res) {
+
+    try {
+
+        const { greeting_ids, reaction } = req.body;
+
+        const allowedReactions = ["good", "nice", "great", "good_job"];
+
+        if (!Array.isArray(greeting_ids) || greeting_ids.length === 0) {
+
+            return response.error(
+                res,
+                "greeting_ids must be a non-empty array.",
+                400
+            );
+
+        }
+
+        if (!reaction || !allowedReactions.includes(reaction)) {
+
+            return response.error(
+                res,
+                "A valid reaction is required.",
+                400
+            );
+
+        }
+
+        const greetings = await morningGreetingService.bulkReactToGreetings(
+
+            greeting_ids,
+
+            req.user.id,
+
+            reaction
+
+        );
+
+        return response.success(
+            res,
+            greetings,
+            `Reacted to ${greetings.length} message(s)`
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
 module.exports = {
 
     submitGreeting,
@@ -192,6 +251,8 @@ module.exports = {
 
     getTodaysGreetingsForClassTeacher,
 
-    reactToGreeting
+    reactToGreeting,
+
+    bulkReactToGreetings
 
 };

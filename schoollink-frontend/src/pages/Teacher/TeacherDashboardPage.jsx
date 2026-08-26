@@ -10,6 +10,8 @@ import {
     CircularProgress,
     Grid,
     LinearProgress,
+    Menu,
+    MenuItem,
     Tooltip,
     Typography
 } from "@mui/material";
@@ -35,7 +37,7 @@ import GreetingReactionPicker, { reactions } from "../../components/Teacher/Gree
 
 import { getSubmissionCount } from "../../services/homeworkSubmissionService";
 
-import { getTodaysGreetingsForClassTeacher } from "../../services/morningGreetingService";
+import { getTodaysGreetingsForClassTeacher, bulkReactToGreetings } from "../../services/morningGreetingService";
 
 import { formatPostTime, toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
 
@@ -195,6 +197,10 @@ function TeacherDashboardPage() {
 
     const [greetings, setGreetings] = useState([]);
 
+    const [bulkReactAnchor, setBulkReactAnchor] = useState(null);
+
+    const [bulkReacting, setBulkReacting] = useState(false);
+
     const [selectedGreetingId, setSelectedGreetingId] = useState(null);
 
     useEffect(() => {
@@ -330,6 +336,56 @@ function TeacherDashboardPage() {
         } finally {
 
             setLoading(false);
+
+        }
+
+    }
+
+    const unreactedIds = greetings
+
+        .filter((g) => g.voice_url && !g.teacher_reaction)
+
+        .map((g) => g.id)
+
+        .filter(Boolean);
+
+    async function handleBulkReact(reactionKey) {
+
+        setBulkReactAnchor(null);
+
+        if (unreactedIds.length === 0) {
+
+            return;
+
+        }
+
+        try {
+
+            setBulkReacting(true);
+
+            const response = await bulkReactToGreetings(unreactedIds, reactionKey);
+
+            if (response.success) {
+
+                setGreetings((prev) =>
+                    prev.map((g) => {
+
+                        const updated = response.data.find((u) => u.id === g.id);
+
+                        return updated ? { ...g, teacher_reaction: updated.teacher_reaction } : g;
+
+                    })
+                );
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        } finally {
+
+            setBulkReacting(false);
 
         }
 
@@ -490,7 +546,7 @@ function TeacherDashboardPage() {
 
                     <Card sx={{ p: 3, mb: 3 }}>
 
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5, flexWrap: "wrap", gap: 1 }}>
 
                             <Typography variant="h6" sx={{ fontWeight: 700 }}>
 
@@ -498,13 +554,59 @@ function TeacherDashboardPage() {
 
                             </Typography>
 
-                            <Typography sx={{ color: "#64748B", fontSize: "0.85rem", fontWeight: 600 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
 
-                                {sentCount}/{greetings.length} sent
+                                {unreactedIds.length > 0 && (
 
-                            </Typography>
+                                    <Button
+
+                                        size="small"
+
+                                        variant="outlined"
+
+                                        disabled={bulkReacting}
+
+                                        onClick={(e) => setBulkReactAnchor(e.currentTarget)}
+
+                                    >
+
+                                        {bulkReacting ? "Reacting..." : `React to All (${unreactedIds.length})`}
+
+                                    </Button>
+
+                                )}
+
+                                <Typography sx={{ color: "#64748B", fontSize: "0.85rem", fontWeight: 600 }}>
+
+                                    {sentCount}/{greetings.length} sent
+
+                                </Typography>
+
+                            </Box>
 
                         </Box>
+
+                        <Menu
+
+                            anchorEl={bulkReactAnchor}
+
+                            open={Boolean(bulkReactAnchor)}
+
+                            onClose={() => setBulkReactAnchor(null)}
+
+                        >
+
+                            {reactions.map((r) => (
+
+                                <MenuItem key={r.key} onClick={() => handleBulkReact(r.key)}>
+
+                                    {r.emoji} &nbsp; {r.label}
+
+                                </MenuItem>
+
+                            ))}
+
+                        </Menu>
 
                         <LinearProgress
 

@@ -64,6 +64,36 @@ async function reactToGreeting(greetingId, teacherUserId, reaction) {
 
 }
 
+/**
+ * React to multiple greetings at once. Reuses the existing
+ * "today's greetings for this class teacher" query as the
+ * source of truth for ownership, rather than checking each id
+ * one at a time - anything in greetingIds that isn't actually
+ * one of this teacher's own students today is silently
+ * dropped, not just trusted from the request.
+ */
+async function bulkReactToGreetings(greetingIds, teacherUserId, reaction) {
+
+    const ownGreetings = await morningGreetingModel.getTodaysGreetingsForClassTeacher(
+
+        teacherUserId
+
+    );
+
+    const ownIds = new Set(ownGreetings.map((g) => g.id));
+
+    const verifiedIds = greetingIds.filter((id) => ownIds.has(id));
+
+    if (verifiedIds.length === 0) {
+
+        return [];
+
+    }
+
+    return await morningGreetingModel.bulkReactToGreetings(verifiedIds, reaction);
+
+}
+
 module.exports = {
 
     submitGreeting,
@@ -74,6 +104,8 @@ module.exports = {
 
     parentOwnsStudent,
 
-    reactToGreeting
+    reactToGreeting,
+
+    bulkReactToGreetings
 
 };

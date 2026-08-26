@@ -41,3 +41,17 @@ export async function reactToGreeting(greetingId, reaction) {
     return response.data;
 
 }
+
+export async function bulkReactToGreetings(greetingIds, reaction) {
+
+    const response = await api.patch("/morning-greetings/bulk-react", {
+
+        greeting_ids: greetingIds,
+
+        reaction
+
+    });
+
+    return response.data;
+
+}

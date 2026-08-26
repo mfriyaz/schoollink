@@ -52,4 +52,14 @@ router.patch(
     morningGreetingController.reactToGreeting
 );
 
+/**
+ * React to multiple greetings at once
+ */
+router.patch(
+    "/bulk-react",
+    authenticate,
+    authorizeRoles("Teacher"),
+    morningGreetingController.bulkReactToGreetings
+);
+
 module.exports = router;
