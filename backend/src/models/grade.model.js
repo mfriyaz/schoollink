@@ -27,7 +27,7 @@ async function createGrade(data) {
         data.grade_name,
         data.minimum_percentage,
         data.maximum_percentage,
-        data.grade_point,
+        data.grade_point === "" ? null : data.grade_point,
         data.result
     ];
 
@@ -95,7 +95,7 @@ async function updateGrade(id, schoolId, data) {
         data.grade_name,
         data.minimum_percentage,
         data.maximum_percentage,
-        data.grade_point,
+        data.grade_point === "" ? null : data.grade_point,
         data.result,
         id,
         schoolId

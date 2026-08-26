@@ -164,11 +164,19 @@ function GradesPage() {
 
             setSaving(true);
 
+            const payload = {
+
+                ...form,
+
+                grade_point: form.grade_point === "" ? null : form.grade_point
+
+            };
+
             const response = editingId
 
-                ? await updateGrade(editingId, form)
+                ? await updateGrade(editingId, payload)
 
-                : await createGrade(form);
+                : await createGrade(payload);
 
             if (response.success) {
 
