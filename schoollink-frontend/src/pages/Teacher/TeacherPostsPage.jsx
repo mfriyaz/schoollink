@@ -21,6 +21,7 @@ import {
 } from "../../services/postService";
 
 import PendingStudentsDialog from "../../components/Teacher/PendingStudentsDialog";
+import AcknowledgedStudentsDialog from "../../components/Teacher/AcknowledgedStudentsDialog";
 import SubmissionsDialog from "../../components/Teacher/SubmissionsDialog";
 
 import { getSubmissionCount } from "../../services/homeworkSubmissionService";
@@ -38,6 +39,8 @@ function TeacherPostsPage() {
     const [posts, setPosts] = useState([]);
 
     const [pendingDialogPost, setPendingDialogPost] = useState(null);
+
+    const [acknowledgedDialogPost, setAcknowledgedDialogPost] = useState(null);
 
     const [submissionsDialogPost, setSubmissionsDialogPost] = useState(null);
 
@@ -313,9 +316,29 @@ function TeacherPostsPage() {
 
                             <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 2.5, sm: 4 }, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
 
-                                <Box sx={{ textAlign: "center" }}>
+                                <Box
 
-                                    <Typography sx={{ color: "#16A34A", fontWeight: 700 }}>
+                                    sx={{
+
+                                        textAlign: "center",
+
+                                        cursor: post.summary.acknowledged_count > 0 ? "pointer" : "default"
+
+                                    }}
+
+                                    onClick={() => {
+
+                                        if (post.summary.acknowledged_count > 0) {
+
+                                            setAcknowledgedDialogPost(post);
+
+                                        }
+
+                                    }}
+
+                                >
+
+                                    <Typography sx={{ color: "#16A34A", fontWeight: 700, textDecoration: post.summary.acknowledged_count > 0 ? "underline" : "none" }}>
 
                                         {post.summary.acknowledged_count}/{post.summary.total_students}
 
@@ -457,6 +480,12 @@ function TeacherPostsPage() {
                 open={Boolean(pendingDialogPost)}
                 post={pendingDialogPost}
                 onClose={() => setPendingDialogPost(null)}
+            />
+
+            <AcknowledgedStudentsDialog
+                open={Boolean(acknowledgedDialogPost)}
+                post={acknowledgedDialogPost}
+                onClose={() => setAcknowledgedDialogPost(null)}
             />
 
         </Box>
