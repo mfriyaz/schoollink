@@ -14,6 +14,7 @@ async function submitGreeting(studentId, parentUserId, voiceUrl) {
         DO UPDATE SET
             voice_url = EXCLUDED.voice_url,
             parent_user_id = EXCLUDED.parent_user_id,
+            teacher_reaction = NULL,
             created_at = CURRENT_TIMESTAMP
         RETURNING *;
     `;
@@ -82,12 +83,63 @@ async function getTodaysGreetingsForClassTeacher(teacherUserId) {
 
 }
 
+/**
+ * Save a teacher's reaction to a greeting.
+ */
+async function reactToGreeting(greetingId, reaction) {
+
+    const result = await db.query(
+        `
+        UPDATE morning_greetings
+        SET teacher_reaction = $1
+        WHERE id = $2
+        RETURNING *;
+        `,
+        [reaction, greetingId]
+    );
+
+    return result.rows[0];
+
+}
+
+/**
+ * Verify the greeting belongs to one of this teacher's
+ * class-teacher students - prevents reacting to a greeting
+ * for a student that isn't theirs.
+ */
+async function teacherOwnsGreeting(greetingId, teacherUserId) {
+
+    const result = await db.query(
+        `
+        SELECT mg.id
+        FROM morning_greetings mg
+        JOIN students st ON mg.student_id = st.id
+        JOIN teacher_subjects ts
+            ON ts.class_id = st.class_id
+            AND ts.section_id = st.section_id
+            AND ts.is_class_teacher = true
+        JOIN teachers t
+            ON ts.teacher_id = t.id
+            AND t.user_id = $2
+        WHERE mg.id = $1
+        `,
+        [greetingId, teacherUserId]
+    );
+
+    return result.rows.length > 0;
+
+}
+
 module.exports = {
 
     submitGreeting,
 
     getTodaysGreeting,
 
-    getTodaysGreetingsForClassTeacher
+    getTodaysGreetingsForClassTeacher,
+
+    reactToGreeting,
+
+    teacherOwnsGreeting
 
 };

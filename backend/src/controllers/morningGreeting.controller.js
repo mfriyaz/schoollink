@@ -133,12 +133,65 @@ async function getTodaysGreetingsForClassTeacher(req, res) {
 
 }
 
+/**
+ * React to a Good Morning greeting
+ */
+async function reactToGreeting(req, res) {
+
+    try {
+
+        const { greetingId } = req.params;
+
+        const { reaction } = req.body;
+
+        const allowedReactions = ["good", "nice", "great", "good_job"];
+
+        if (!reaction || !allowedReactions.includes(reaction)) {
+
+            return response.error(
+                res,
+                "A valid reaction is required.",
+                400
+            );
+
+        }
+
+        const greeting = await morningGreetingService.reactToGreeting(
+
+            greetingId,
+
+            req.user.id,
+
+            reaction
+
+        );
+
+        return response.success(
+            res,
+            greeting,
+            "Reaction saved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
 module.exports = {
 
     submitGreeting,
 
     getTodaysGreeting,
 
-    getTodaysGreetingsForClassTeacher
+    getTodaysGreetingsForClassTeacher,
+
+    reactToGreeting
 
 };

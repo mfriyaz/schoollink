@@ -40,6 +40,30 @@ async function parentOwnsStudent(userId, studentId) {
 
 }
 
+/**
+ * React to a greeting - verifies the teacher actually owns
+ * this student's class before allowing the reaction.
+ */
+async function reactToGreeting(greetingId, teacherUserId, reaction) {
+
+    const owns = await morningGreetingModel.teacherOwnsGreeting(
+
+        greetingId,
+
+        teacherUserId
+
+    );
+
+    if (!owns) {
+
+        throw new Error("This greeting is not for one of your students.");
+
+    }
+
+    return await morningGreetingModel.reactToGreeting(greetingId, reaction);
+
+}
+
 module.exports = {
 
     submitGreeting,
@@ -48,6 +72,8 @@ module.exports = {
 
     getTodaysGreetingsForClassTeacher,
 
-    parentOwnsStudent
+    parentOwnsStudent,
+
+    reactToGreeting
 
 };

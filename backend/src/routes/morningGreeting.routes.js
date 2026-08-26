@@ -42,4 +42,14 @@ router.get(
     morningGreetingController.getTodaysGreetingsForClassTeacher
 );
 
+/**
+ * React to a Good Morning greeting
+ */
+router.patch(
+    "/:greetingId/react",
+    authenticate,
+    authorizeRoles("Teacher"),
+    morningGreetingController.reactToGreeting
+);
+
 module.exports = router;

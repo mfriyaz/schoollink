@@ -29,3 +29,15 @@ export async function getTodaysGreetingsForClassTeacher() {
     return response.data;
 
 }
+
+export async function reactToGreeting(greetingId, reaction) {
+
+    const response = await api.patch(`/morning-greetings/${greetingId}/react`, {
+
+        reaction
+
+    });
+
+    return response.data;
+
+}
