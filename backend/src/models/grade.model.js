@@ -23,14 +23,12 @@ async function createGrade(data) {
     `;
 
     const values = [
-
         data.school_id,
         data.grade_name,
         data.minimum_percentage,
         data.maximum_percentage,
         data.grade_point,
         data.result
-
     ];
 
     const result = await db.query(query, values);
@@ -59,17 +57,17 @@ async function getAllGrades(schoolId) {
 }
 
 /**
- * Get Grade By ID
+ * Get Grade By ID, scoped to a school
  */
-async function getGradeById(id) {
+async function getGradeById(id, schoolId) {
 
     const result = await db.query(
         `
         SELECT *
         FROM grades
-        WHERE id = $1;
+        WHERE id = $1 AND school_id = $2;
         `,
-        [id]
+        [id, schoolId]
     );
 
     return result.rows[0];
@@ -77,9 +75,9 @@ async function getGradeById(id) {
 }
 
 /**
- * Update Grade
+ * Update Grade, scoped to a school
  */
-async function updateGrade(id, data) {
+async function updateGrade(id, schoolId, data) {
 
     const query = `
         UPDATE grades
@@ -89,19 +87,18 @@ async function updateGrade(id, data) {
             maximum_percentage = $3,
             grade_point = $4,
             result = $5
-        WHERE id = $6
+        WHERE id = $6 AND school_id = $7
         RETURNING *;
     `;
 
     const values = [
-
         data.grade_name,
         data.minimum_percentage,
         data.maximum_percentage,
         data.grade_point,
         data.result,
-        id
-
+        id,
+        schoolId
     ];
 
     const result = await db.query(query, values);
@@ -111,17 +108,17 @@ async function updateGrade(id, data) {
 }
 
 /**
- * Delete Grade
+ * Delete Grade, scoped to a school
  */
-async function deleteGrade(id) {
+async function deleteGrade(id, schoolId) {
 
     const result = await db.query(
         `
         DELETE FROM grades
-        WHERE id = $1
+        WHERE id = $1 AND school_id = $2
         RETURNING *;
         `,
-        [id]
+        [id, schoolId]
     );
 
     return result.rows[0];

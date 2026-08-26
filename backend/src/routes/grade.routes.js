@@ -24,9 +24,10 @@ router.post(
 
 /**
  * Get All Grades
+ * (self-scoped from the JWT - no schoolId in the URL anymore)
  */
 router.get(
-    "/school/:schoolId",
+    "/",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
     gradeController.getAllGrades

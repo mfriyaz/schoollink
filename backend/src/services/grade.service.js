@@ -5,14 +5,6 @@ const gradeModel = require("../models/grade.model");
  */
 async function createGrade(data) {
 
-    // Business Rule:
-    // Minimum percentage cannot be greater than maximum percentage
-    if (Number(data.minimum_percentage) > Number(data.maximum_percentage)) {
-        throw new Error(
-            "Minimum percentage cannot be greater than maximum percentage."
-        );
-    }
-
     return await gradeModel.createGrade(data);
 
 }
@@ -29,45 +21,27 @@ async function getAllGrades(schoolId) {
 /**
  * Get Grade By ID
  */
-async function getGradeById(id) {
+async function getGradeById(id, schoolId) {
 
-    return await gradeModel.getGradeById(id);
+    return await gradeModel.getGradeById(id, schoolId);
 
 }
 
 /**
  * Update Grade
  */
-async function updateGrade(id, data) {
+async function updateGrade(id, schoolId, data) {
 
-    if (Number(data.minimum_percentage) > Number(data.maximum_percentage)) {
-        throw new Error(
-            "Minimum percentage cannot be greater than maximum percentage."
-        );
-    }
-
-    return await gradeModel.updateGrade(id, data);
+    return await gradeModel.updateGrade(id, schoolId, data);
 
 }
 
 /**
  * Delete Grade
  */
-async function deleteGrade(id) {
+async function deleteGrade(id, schoolId) {
 
-    return await gradeModel.deleteGrade(id);
-
-}
-
-/**
- * Find Grade By Percentage
- */
-async function findGradeByPercentage(schoolId, percentage) {
-
-    return await gradeModel.findGradeByPercentage(
-        schoolId,
-        percentage
-    );
+    return await gradeModel.deleteGrade(id, schoolId);
 
 }
 
@@ -81,8 +55,6 @@ module.exports = {
 
     updateGrade,
 
-    deleteGrade,
-
-    findGradeByPercentage
+    deleteGrade
 
 };

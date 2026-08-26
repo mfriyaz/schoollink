@@ -31,6 +31,7 @@ import TeachersPage from "../pages/Admin/TeachersPage";
 import ClassesPage from "../pages/Admin/ClassesPage";
 import SubjectsPage from "../pages/Admin/SubjectsPage";
 import ReportsPage from "../pages/Admin/ReportsPage";
+import GradesPage from "../pages/Admin/GradesPage";
 
 import ProfilePage from "../pages/Profile/ProfilePage";
 import SettingsPage from "../pages/Settings/SettingsPage";
@@ -124,6 +125,19 @@ export default function AppRoutes() {
                         <ProtectedRoute allowedRoles={["School Admin"]}>
 
                             <SubjectsPage />
+
+                        </ProtectedRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/grades"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["School Admin"]}>
+
+                            <GradesPage />
 
                         </ProtectedRoute>
 

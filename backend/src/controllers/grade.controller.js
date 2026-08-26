@@ -2,12 +2,21 @@ const gradeService = require("../services/grade.service");
 
 /**
  * Create Grade
+ * (school_id is derived from the logged-in admin's own token,
+ * never trusted from the request body - otherwise anyone could
+ * create grade bands for a school that isn't theirs)
  */
 async function createGrade(req, res) {
 
     try {
 
-        const grade = await gradeService.createGrade(req.body);
+        const grade = await gradeService.createGrade({
+
+            ...req.body,
+
+            school_id: req.user.school_id
+
+        });
 
         return res.status(201).json({
             success: true,
@@ -28,13 +37,16 @@ async function createGrade(req, res) {
 
 /**
  * Get All Grades
+ * (self-scoped from the JWT, not a client-supplied schoolId -
+ * previously anyone could view another school's grading scale
+ * just by changing the URL)
  */
 async function getAllGrades(req, res) {
 
     try {
 
         const grades = await gradeService.getAllGrades(
-            req.params.schoolId
+            req.user.school_id
         );
 
         return res.status(200).json({
@@ -54,14 +66,15 @@ async function getAllGrades(req, res) {
 }
 
 /**
- * Get Grade By ID
+ * Get Grade By ID, scoped to the caller's own school
  */
 async function getGradeById(req, res) {
 
     try {
 
         const grade = await gradeService.getGradeById(
-            req.params.id
+            req.params.id,
+            req.user.school_id
         );
 
         if (!grade) {
@@ -90,7 +103,7 @@ async function getGradeById(req, res) {
 }
 
 /**
- * Update Grade
+ * Update Grade, scoped to the caller's own school
  */
 async function updateGrade(req, res) {
 
@@ -98,8 +111,18 @@ async function updateGrade(req, res) {
 
         const grade = await gradeService.updateGrade(
             req.params.id,
+            req.user.school_id,
             req.body
         );
+
+        if (!grade) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Grade not found"
+            });
+
+        }
 
         return res.status(200).json({
             success: true,
@@ -119,15 +142,25 @@ async function updateGrade(req, res) {
 }
 
 /**
- * Delete Grade
+ * Delete Grade, scoped to the caller's own school
  */
 async function deleteGrade(req, res) {
 
     try {
 
         const grade = await gradeService.deleteGrade(
-            req.params.id
+            req.params.id,
+            req.user.school_id
         );
+
+        if (!grade) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Grade not found"
+            });
+
+        }
 
         return res.status(200).json({
             success: true,
