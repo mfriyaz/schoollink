@@ -30,6 +30,7 @@ import ClassIcon from "@mui/icons-material/ClassOutlined";
 import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 import DescriptionIcon from "@mui/icons-material/DescriptionOutlined";
 import AddBusinessIcon from "@mui/icons-material/AddBusinessOutlined";
+import ArchiveIcon from "@mui/icons-material/ArchiveOutlined";
 
 const adminMenus = [
 
@@ -67,6 +68,12 @@ const adminMenus = [
         title: "Posts",
         path: "/posts",
         icon: <MenuBookIcon />
+    },
+
+    {
+        title: "Expired Announcements",
+        path: "/announcements/expired",
+        icon: <ArchiveIcon />
     },
 
     {

@@ -374,6 +374,29 @@ function Topbar({ onToggleSidebar }) {
 
                     ))}
 
+                    <Divider />
+
+                    <MenuItem
+
+                        onClick={() => {
+
+                            handleCloseMenu();
+
+                            navigate("/notifications/expired");
+
+                        }}
+
+                        sx={{ justifyContent: "center" }}
+                    >
+
+                        <Typography sx={{ color: "#2563EB", fontSize: "0.85rem", fontWeight: 600 }}>
+
+                            View Expired Notifications
+
+                        </Typography>
+
+                    </MenuItem>
+
                 </Menu>
 
                 <Box
