@@ -531,6 +531,57 @@ function ViewPostPage() {
 
                 </Typography>
 
+                {post.image_urls && post.image_urls.length > 0 && (
+
+                    <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 3 }}>
+
+                        {post.image_urls.map((url, i) => (
+
+                            <Box
+
+                                key={i}
+
+                                component="a"
+
+                                href={resolveFileUrl(url)}
+
+                                target="_blank"
+
+                                rel="noopener noreferrer"
+                            >
+
+                                <Box
+
+                                    component="img"
+
+                                    src={resolveFileUrl(url)}
+
+                                    sx={{
+
+                                        width: 140,
+
+                                        height: 140,
+
+                                        objectFit: "cover",
+
+                                        borderRadius: 2,
+
+                                        border: "1px solid #E2E8F0",
+
+                                        display: "block"
+
+                                    }}
+
+                                />
+
+                            </Box>
+
+                        ))}
+
+                    </Box>
+
+                )}
+
                 {post.attachment_url && (
 
                     <Box
