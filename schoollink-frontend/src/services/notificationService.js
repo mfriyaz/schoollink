@@ -8,6 +8,14 @@ export async function getMyNotifications() {
 
 }
 
+export async function getExpiredNotifications() {
+
+    const response = await api.get("/notifications/me/expired");
+
+    return response.data;
+
+}
+
 export async function getUnreadCount() {
 
     const response = await api.get("/notifications/me/unread-count");

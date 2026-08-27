@@ -222,6 +222,40 @@ async function getActiveAnnouncements(req, res) {
 
 }
 
+/**
+ * Get Expired Announcements
+ */
+async function getExpiredAnnouncements(req, res) {
+
+    try {
+
+        const announcements =
+            await announcementService.getExpiredAnnouncements(
+                req.user.school_id
+            );
+
+        return res.status(200).json({
+
+            success: true,
+
+            data: announcements
+
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+}
+
 module.exports = {
 
     createAnnouncement,
@@ -234,6 +268,8 @@ module.exports = {
 
     deleteAnnouncement,
 
-    getActiveAnnouncements
+    getActiveAnnouncements,
+
+    getExpiredAnnouncements
 
 };

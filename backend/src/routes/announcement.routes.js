@@ -49,6 +49,20 @@ router.get(
 );
 
 /**
+ * Get Expired Announcements
+ * (must come before /:id, otherwise Express would match
+ * "expired" as if it were an announcement id)
+ */
+router.get(
+    "/expired",
+    authenticate,
+    authorizeRoles(
+        "School Admin"
+    ),
+    announcementController.getExpiredAnnouncements
+);
+
+/**
  * Get Announcement By ID
  */
 router.get(

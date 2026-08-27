@@ -22,6 +22,27 @@ async function getMyNotifications(req, res) {
 
 }
 
+async function getExpiredNotifications(req, res) {
+
+    try {
+
+        const notifications =
+            await notificationService.getExpiredNotifications(req.user.id);
+
+        return response.success(
+            res,
+            notifications,
+            "Expired notifications retrieved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(res, err.message, 500);
+
+    }
+
+}
+
 async function getUnreadCount(req, res) {
 
     try {
@@ -89,6 +110,8 @@ async function markAllAsRead(req, res) {
 module.exports = {
 
     getMyNotifications,
+
+    getExpiredNotifications,
 
     getUnreadCount,
 

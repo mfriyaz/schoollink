@@ -6,6 +6,12 @@ async function getMyNotifications(userId) {
 
 }
 
+async function getExpiredNotifications(userId) {
+
+    return await notificationModel.getExpiredNotifications(userId);
+
+}
+
 async function getUnreadCount(userId) {
 
     return await notificationModel.getUnreadCount(userId);
@@ -27,6 +33,8 @@ async function markAllAsRead(userId) {
 module.exports = {
 
     getMyNotifications,
+
+    getExpiredNotifications,
 
     getUnreadCount,
 

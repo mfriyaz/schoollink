@@ -191,6 +191,18 @@ export async function createAnnouncement(data) {
 }
 
 /**
+ * Get expired announcements (School Admin only) - for a
+ * dedicated "Expired" view separate from the main list
+ */
+export async function getExpiredAnnouncements() {
+
+    const response = await api.get("/announcements/expired");
+
+    return response.data;
+
+}
+
+/**
  * Get the Admin's school's classes
  * (for the announcement class-picker)
  */

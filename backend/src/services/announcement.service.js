@@ -131,6 +131,15 @@ async function getActiveAnnouncements(schoolId, targetAudience) {
 
 }
 
+/**
+ * Get Expired Announcements
+ */
+async function getExpiredAnnouncements(schoolId) {
+
+    return await announcementModel.getExpiredAnnouncements(schoolId);
+
+}
+
 module.exports = {
 
     createAnnouncement,
@@ -143,6 +152,8 @@ module.exports = {
 
     deleteAnnouncement,
 
-    getActiveAnnouncements
+    getActiveAnnouncements,
+
+    getExpiredAnnouncements
 
 };

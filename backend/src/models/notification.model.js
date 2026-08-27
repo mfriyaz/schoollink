@@ -24,7 +24,8 @@ async function createNotification(data) {
 /**
  * Get My Notifications
  * (most recent first, capped - this is a feed, not a full
- * history export)
+ * history export. Excludes expired ones - see
+ * getExpiredNotifications for those.)
  */
 async function getMyNotifications(userId) {
 
@@ -33,6 +34,7 @@ async function getMyNotifications(userId) {
         SELECT *
         FROM notifications
         WHERE user_id = $1
+        AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
         ORDER BY created_at DESC
         LIMIT 20;
         `,
@@ -44,7 +46,33 @@ async function getMyNotifications(userId) {
 }
 
 /**
+ * Get Expired Notifications
+ * (a separate history view, rather than expired ones just
+ * disappearing entirely)
+ */
+async function getExpiredNotifications(userId) {
+
+    const result = await db.query(
+        `
+        SELECT *
+        FROM notifications
+        WHERE user_id = $1
+        AND expires_at IS NOT NULL
+        AND expires_at <= CURRENT_TIMESTAMP
+        ORDER BY created_at DESC
+        LIMIT 50;
+        `,
+        [userId]
+    );
+
+    return result.rows;
+
+}
+
+/**
  * Get Unread Count
+ * (excludes expired ones, so the bell badge doesn't count
+ * things that no longer show in the main feed)
  */
 async function getUnreadCount(userId) {
 
@@ -53,7 +81,8 @@ async function getUnreadCount(userId) {
         SELECT COUNT(*)
         FROM notifications
         WHERE user_id = $1
-        AND is_read = false;
+        AND is_read = false
+        AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP);
         `,
         [userId]
     );
@@ -106,6 +135,8 @@ module.exports = {
     createNotification,
 
     getMyNotifications,
+
+    getExpiredNotifications,
 
     getUnreadCount,
 

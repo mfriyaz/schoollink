@@ -15,6 +15,12 @@ router.get(
 );
 
 router.get(
+    "/me/expired",
+    authenticate,
+    notificationController.getExpiredNotifications
+);
+
+router.get(
     "/me/unread-count",
     authenticate,
     notificationController.getUnreadCount

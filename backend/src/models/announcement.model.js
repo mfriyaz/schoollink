@@ -165,6 +165,30 @@ async function getActiveAnnouncements(schoolId, targetAudience) {
 
 }
 
+/**
+ * Get Expired Announcements
+ * (the mirror of getActiveAnnouncements - for a dedicated
+ * "Expired" view rather than mixing them into the main list)
+ */
+async function getExpiredAnnouncements(schoolId) {
+
+    const result = await db.query(
+        `
+        SELECT *
+        FROM announcements
+        WHERE
+            school_id = $1
+            AND expiry_date IS NOT NULL
+            AND expiry_date < CURRENT_DATE
+        ORDER BY expiry_date DESC;
+        `,
+        [schoolId]
+    );
+
+    return result.rows;
+
+}
+
 module.exports = {
 
     createAnnouncement,
@@ -177,6 +201,8 @@ module.exports = {
 
     deleteAnnouncement,
 
-    getActiveAnnouncements
+    getActiveAnnouncements,
+
+    getExpiredAnnouncements
 
 };
