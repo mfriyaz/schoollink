@@ -8,13 +8,13 @@ async function submitHomework(req, res) {
 
     try {
 
-        const { homework_id, student_id, photo_urls, remarks } = req.body;
+        const { homework_id, student_id, photo_urls, voice_url, remarks } = req.body;
 
-        if (!homework_id || !student_id || !photo_urls) {
+        if (!homework_id || !student_id || (!photo_urls && !voice_url)) {
 
             return response.error(
                 res,
-                "homework_id, student_id and photo_urls are required",
+                "homework_id, student_id, and either photo_urls or voice_url are required",
                 400
             );
 
@@ -44,6 +44,8 @@ async function submitHomework(req, res) {
             parent_user_id: req.user.id,
 
             photo_urls,
+
+            voice_url,
 
             remarks
 

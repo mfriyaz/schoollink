@@ -10,13 +10,17 @@ const VALID_REACTIONS = ["thumbs_up", "heart", "star"];
 
 async function submitHomework(data) {
 
-    if (!Array.isArray(data.photo_urls) || data.photo_urls.length === 0) {
+    const hasPhotos = Array.isArray(data.photo_urls) && data.photo_urls.length > 0;
 
-        throw new Error("At least one photo is required.");
+    const hasVoice = Boolean(data.voice_url);
+
+    if (!hasPhotos && !hasVoice) {
+
+        throw new Error("At least one photo or a voice recording is required.");
 
     }
 
-    if (data.photo_urls.length > MAX_PHOTOS_PER_SUBMISSION) {
+    if (hasPhotos && data.photo_urls.length > MAX_PHOTOS_PER_SUBMISSION) {
 
         throw new Error(`You can submit up to ${MAX_PHOTOS_PER_SUBMISSION} photos.`);
 

@@ -9,11 +9,12 @@ async function submitHomework(data) {
 
     const query = `
         INSERT INTO homework_submissions
-        (homework_id, student_id, parent_user_id, photo_urls, remarks)
-        VALUES ($1, $2, $3, $4, $5)
+        (homework_id, student_id, parent_user_id, photo_urls, voice_url, remarks)
+        VALUES ($1, $2, $3, $4, $5, $6)
         ON CONFLICT (homework_id, student_id)
         DO UPDATE SET
             photo_urls = EXCLUDED.photo_urls,
+            voice_url = EXCLUDED.voice_url,
             remarks = EXCLUDED.remarks,
             parent_user_id = EXCLUDED.parent_user_id,
             submitted_at = CURRENT_TIMESTAMP
@@ -24,7 +25,8 @@ async function submitHomework(data) {
         data.homework_id,
         data.student_id,
         data.parent_user_id,
-        data.photo_urls,
+        data.photo_urls || null,
+        data.voice_url || null,
         data.remarks || null
     ];
 
