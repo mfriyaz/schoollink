@@ -266,15 +266,30 @@ function SubmissionsDialog({ open, post, onClose }) {
 
                         <Typography sx={{ color: "#94A3B8", fontSize: "0.78rem", mb: 1 }}>
 
-                            Submitted {toUtcDate(submission.submitted_at).toLocaleString(undefined, { timeZone: getSchoolTimezone() })} · {submission.photo_urls.length} photo{submission.photo_urls.length !== 1 ? "s" : ""}
+                            Submitted {toUtcDate(submission.submitted_at).toLocaleString(undefined, { timeZone: getSchoolTimezone() })}
+
+                            {submission.photo_urls && submission.photo_urls.length > 0 &&
+                                ` · ${submission.photo_urls.length} photo${submission.photo_urls.length !== 1 ? "s" : ""}`}
+
+                            {submission.voice_url && " · Voice recording"}
 
                             {submission.reviewed_at && " · Reviewed"}
 
                         </Typography>
 
+                        {submission.voice_url && (
+
+                            <Box sx={{ mb: 1.5 }}>
+
+                                <audio controls src={resolveFileUrl(submission.voice_url)} style={{ height: 36, maxWidth: 280 }} />
+
+                            </Box>
+
+                        )}
+
                         <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
 
-                            {submission.photo_urls.map((url, i) => (
+                            {submission.photo_urls && submission.photo_urls.map((url, i) => (
 
                                 <Box
                                     key={i}

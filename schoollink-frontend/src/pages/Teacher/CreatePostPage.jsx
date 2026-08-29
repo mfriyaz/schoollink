@@ -65,6 +65,10 @@ function CreatePostPage() {
 
     const [requireAck, setRequireAck] = useState(true);
 
+    const [allowPhotoSubmission, setAllowPhotoSubmission] = useState(true);
+
+    const [allowVoiceSubmission, setAllowVoiceSubmission] = useState(false);
+
     const [homeworkDate, setHomeworkDate] = useState(
         new Date().toISOString().slice(0, 10)
     );
@@ -548,6 +552,10 @@ function CreatePostPage() {
 
                 require_acknowledgement: requireAck,
 
+                allow_photo_submission: allowPhotoSubmission,
+
+                allow_voice_submission: allowVoiceSubmission,
+
                 voice_note_url: voiceNote ? voiceNote.url : null
 
             });
@@ -571,6 +579,10 @@ function CreatePostPage() {
                 setPriority("Normal");
 
                 setRequireAck(true);
+
+                setAllowPhotoSubmission(true);
+
+                setAllowVoiceSubmission(false);
 
                 setTimeout(() => {
 
@@ -1112,6 +1124,46 @@ function CreatePostPage() {
 
                                     }
                                     label={requireAck ? "Yes, require acknowledgement" : "No, this is informational only"}
+                                />
+
+                            </Box>
+
+                            <Box>
+
+                                <Typography sx={{ fontSize: "0.85rem", color: "#334155", mb: 0.5, fontWeight: 500 }}>
+
+                                    Student Submission Options
+
+                                </Typography>
+
+                                <Typography sx={{ fontSize: "0.78rem", color: "#94A3B8", mb: 0.5 }}>
+
+                                    Turn on whichever ways of submitting this homework make sense - e.g. a photo of completed written work, or a voice recording for reading homework.
+
+                                </Typography>
+
+                                <FormControlLabel
+                                    control={
+
+                                        <Switch
+                                            checked={allowPhotoSubmission}
+                                            onChange={(e) => setAllowPhotoSubmission(e.target.checked)}
+                                        />
+
+                                    }
+                                    label="Allow photo submission"
+                                />
+
+                                <FormControlLabel
+                                    control={
+
+                                        <Switch
+                                            checked={allowVoiceSubmission}
+                                            onChange={(e) => setAllowVoiceSubmission(e.target.checked)}
+                                        />
+
+                                    }
+                                    label="Allow voice recording submission"
                                 />
 
                             </Box>

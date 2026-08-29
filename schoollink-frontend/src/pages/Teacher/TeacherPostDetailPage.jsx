@@ -8,7 +8,9 @@ import {
     Card,
     Chip,
     CircularProgress,
+    FormControlLabel,
     MenuItem,
+    Switch,
     TextField,
     Typography
 } from "@mui/material";
@@ -57,6 +59,10 @@ function TeacherPostDetailPage() {
 
     const [dueDate, setDueDate] = useState("");
 
+    const [allowPhotoSubmission, setAllowPhotoSubmission] = useState(true);
+
+    const [allowVoiceSubmission, setAllowVoiceSubmission] = useState(false);
+
     const [images, setImages] = useState([]);
 
     const [uploadingImages, setUploadingImages] = useState(false);
@@ -98,6 +104,18 @@ function TeacherPostDetailPage() {
                 setHomeworkDate(p.homework_date ? p.homework_date.slice(0, 10) : "");
 
                 setDueDate(p.due_date ? p.due_date.slice(0, 10) : "");
+
+                setAllowPhotoSubmission(
+
+                    p.allow_photo_submission !== undefined ? p.allow_photo_submission : true
+
+                );
+
+                setAllowVoiceSubmission(
+
+                    p.allow_voice_submission !== undefined ? p.allow_voice_submission : false
+
+                );
 
                 setImages(
 
@@ -225,7 +243,11 @@ function TeacherPostDetailPage() {
 
                 attachment_url: post.attachment_url,
 
-                image_urls: images.map((img) => img.url)
+                image_urls: images.map((img) => img.url),
+
+                allow_photo_submission: allowPhotoSubmission,
+
+                allow_voice_submission: allowVoiceSubmission
 
             });
 
@@ -402,6 +424,40 @@ function TeacherPostDetailPage() {
 
                         </Box>
 
+                        <Box>
+
+                            <Typography sx={{ fontSize: "0.85rem", color: "#334155", mb: 0.5, fontWeight: 500 }}>
+
+                                Student Submission Options
+
+                            </Typography>
+
+                            <FormControlLabel
+                                control={
+
+                                    <Switch
+                                        checked={allowPhotoSubmission}
+                                        onChange={(e) => setAllowPhotoSubmission(e.target.checked)}
+                                    />
+
+                                }
+                                label="Allow photo submission"
+                            />
+
+                            <FormControlLabel
+                                control={
+
+                                    <Switch
+                                        checked={allowVoiceSubmission}
+                                        onChange={(e) => setAllowVoiceSubmission(e.target.checked)}
+                                    />
+
+                                }
+                                label="Allow voice recording submission"
+                            />
+
+                        </Box>
+
                     </Box>
 
                 ) : (
@@ -429,6 +485,18 @@ function TeacherPostDetailPage() {
                             size="small"
                             label={`Due: ${post.due_date ? post.due_date.slice(0, 10) : "-"}`}
                         />
+
+                        {post.allow_photo_submission && (
+
+                            <Chip size="small" color="info" label="Photo submission on" />
+
+                        )}
+
+                        {post.allow_voice_submission && (
+
+                            <Chip size="small" color="info" label="Voice submission on" />
+
+                        )}
 
                     </Box>
 
