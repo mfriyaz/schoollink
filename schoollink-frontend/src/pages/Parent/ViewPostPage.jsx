@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import {
@@ -21,6 +21,8 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import DownloadIcon from "@mui/icons-material/DownloadOutlined";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCameraOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircleOutlined";
+import MicIcon from "@mui/icons-material/MicOutlined";
+import StopCircleIcon from "@mui/icons-material/StopCircleOutlined";
 
 import {
     acknowledgePost,
@@ -82,6 +84,20 @@ function ViewPostPage() {
     const [submissionPhotos, setSubmissionPhotos] = useState([]);
 
     const [uploadingSubmission, setUploadingSubmission] = useState(false);
+
+    const [submissionVoice, setSubmissionVoice] = useState(null);
+
+    const [isRecordingSubmission, setIsRecordingSubmission] = useState(false);
+
+    const [recordingSeconds, setRecordingSeconds] = useState(0);
+
+    const [uploadingSubmissionVoice, setUploadingSubmissionVoice] = useState(false);
+
+    const submissionRecorderRef = useRef(null);
+
+    const submissionChunksRef = useRef([]);
+
+    const submissionTimerRef = useRef(null);
 
     const [submittingWork, setSubmittingWork] = useState(false);
 
@@ -226,15 +242,156 @@ function ViewPostPage() {
 
     }
 
+    // Chrome/Android record in webm; Safari on iPhone doesn't
+    // support webm at all and records in mp4 instead. Detecting
+    // the actual supported format (rather than hardcoding one)
+    // is what makes playback work correctly on both.
+    function getSupportedAudioMimeType() {
+
+        if (MediaRecorder.isTypeSupported("audio/webm")) {
+
+            return "audio/webm";
+
+        }
+
+        if (MediaRecorder.isTypeSupported("audio/mp4")) {
+
+            return "audio/mp4";
+
+        }
+
+        return "";
+
+    }
+
+    async function handleStartSubmissionRecording() {
+
+        setSubmissionError("");
+
+        try {
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+            const mimeType = getSupportedAudioMimeType();
+
+            const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+
+            submissionChunksRef.current = [];
+
+            recorder.ondataavailable = (e) => {
+
+                if (e.data.size > 0) {
+
+                    submissionChunksRef.current.push(e.data);
+
+                }
+
+            };
+
+            recorder.onstop = async () => {
+
+                stream.getTracks().forEach((track) => track.stop());
+
+                clearInterval(submissionTimerRef.current);
+
+                const actualType = recorder.mimeType || "audio/webm";
+
+                const fileExtension = actualType.includes("mp4") ? "mp4" : "webm";
+
+                const audioBlob = new Blob(submissionChunksRef.current, { type: actualType });
+
+                const audioFile = new File([audioBlob], `submission-${Date.now()}.${fileExtension}`, { type: actualType });
+
+                try {
+
+                    setUploadingSubmissionVoice(true);
+
+                    const response = await uploadAttachment(audioFile);
+
+                    if (response.success) {
+
+                        setSubmissionVoice({
+
+                            url: response.data.url
+
+                        });
+
+                    } else {
+
+                        setSubmissionError(response.message);
+
+                    }
+
+                } catch (err) {
+
+                    setSubmissionError(
+
+                        err.response?.data?.message ||
+                        "Unable to upload this recording."
+
+                    );
+
+                } finally {
+
+                    setUploadingSubmissionVoice(false);
+
+                }
+
+            };
+
+            submissionRecorderRef.current = recorder;
+
+            recorder.start();
+
+            setIsRecordingSubmission(true);
+
+            setRecordingSeconds(0);
+
+            submissionTimerRef.current = setInterval(() => {
+
+                setRecordingSeconds((s) => s + 1);
+
+            }, 1000);
+
+        } catch (err) {
+
+            setSubmissionError(
+
+                "Unable to access the microphone. Please allow microphone access and try again."
+
+            );
+
+        }
+
+    }
+
+    function handleStopSubmissionRecording() {
+
+        if (submissionRecorderRef.current) {
+
+            submissionRecorderRef.current.stop();
+
+            setIsRecordingSubmission(false);
+
+        }
+
+    }
+
+    function handleRemoveSubmissionVoice() {
+
+        setSubmissionVoice(null);
+
+    }
+
     async function handleSubmitWork() {
 
         setSubmissionError("");
 
         setSubmissionSuccess("");
 
-        if (submissionPhotos.length === 0) {
+        if (submissionPhotos.length === 0 && !submissionVoice) {
 
-            setSubmissionError("Please upload at least one photo.");
+            setSubmissionError("Please add at least one photo or a voice recording.");
 
             return;
 
@@ -250,7 +407,9 @@ function ViewPostPage() {
 
                 student_id: student.student_id,
 
-                photo_urls: submissionPhotos.map((p) => p.url)
+                photo_urls: submissionPhotos.map((p) => p.url),
+
+                voice_url: submissionVoice ? submissionVoice.url : null
 
             });
 
@@ -259,6 +418,8 @@ function ViewPostPage() {
                 setExistingSubmission(response.data);
 
                 setSubmissionPhotos([]);
+
+                setSubmissionVoice(null);
 
                 setSubmissionSuccess("Homework submitted successfully!");
 
@@ -272,7 +433,7 @@ function ViewPostPage() {
 
             setSubmissionError(
                 err.response?.data?.message ||
-                "Unable to submit these photos."
+                "Unable to submit this work."
             );
 
         } finally {
@@ -754,7 +915,7 @@ function ViewPostPage() {
 
             </Card>
 
-            {!isAnnouncement && !loadingSubmission && (
+            {!isAnnouncement && !loadingSubmission && (post.allow_photo_submission || post.allow_voice_submission) && (
 
                 <Card sx={{ p: 3.5, mt: 3 }}>
 
@@ -768,7 +929,7 @@ function ViewPostPage() {
 
                     {submissionSuccess && <Alert severity="success" sx={{ mb: 2 }}>{submissionSuccess}</Alert>}
 
-                    {existingSubmission && submissionPhotos.length === 0 ? (
+                    {existingSubmission && submissionPhotos.length === 0 && !submissionVoice ? (
 
                         <Box>
 
@@ -778,7 +939,12 @@ function ViewPostPage() {
 
                                 <Typography sx={{ color: "#16A34A", fontWeight: 600 }}>
 
-                                    Submitted on {toUtcDate(existingSubmission.submitted_at).toLocaleString(undefined, { timeZone: getSchoolTimezone() })} ({existingSubmission.photo_urls.length} photo{existingSubmission.photo_urls.length !== 1 ? "s" : ""})
+                                    Submitted on {toUtcDate(existingSubmission.submitted_at).toLocaleString(undefined, { timeZone: getSchoolTimezone() })}
+
+                                    {existingSubmission.photo_urls && existingSubmission.photo_urls.length > 0 &&
+                                        ` (${existingSubmission.photo_urls.length} photo${existingSubmission.photo_urls.length !== 1 ? "s" : ""})`}
+
+                                    {existingSubmission.voice_url && " (voice recording)"}
 
                                 </Typography>
 
@@ -800,16 +966,12 @@ function ViewPostPage() {
 
                             <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 2 }}>
 
-                                {existingSubmission.photo_urls.map((url, i) => (
+                                {existingSubmission.photo_urls && existingSubmission.photo_urls.map((url, i) => (
 
                                     <Box
-
                                         key={i}
-
                                         component="img"
-
                                         src={resolveFileUrl(url)}
-
                                         sx={{
 
                                             width: 110,
@@ -823,148 +985,243 @@ function ViewPostPage() {
                                             border: "1px solid #E2E8F0"
 
                                         }}
-
                                     />
 
                                 ))}
 
                             </Box>
 
-                            <Button
-                                component="label"
-                                variant="outlined"
-                                startIcon={<PhotoCameraIcon />}
-                            >
+                            {existingSubmission.voice_url && (
 
-                                Resubmit With New Photos
+                                <Box sx={{ mb: 2 }}>
 
-                                <input
-                                    type="file"
-                                    hidden
-                                    multiple
-                                    accept="image/jpeg,image/png,image/webp"
-                                    onChange={handleSubmissionFileSelect}
-                                />
+                                    <audio controls src={resolveFileUrl(existingSubmission.voice_url)} style={{ height: 36, maxWidth: 280 }} />
 
-                            </Button>
+                                </Box>
 
+                            )}
+
+                            <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
+
+                                {post.allow_photo_submission && (
+
+                                    <Button
+                                        component="label"
+                                        variant="outlined"
+                                        startIcon={<PhotoCameraIcon />}
+                                    >
+
+                                        Resubmit With New Photos
+
+                                        <input
+                                            type="file"
+                                            hidden
+                                            multiple
+                                            accept="image/jpeg,image/png,image/webp"
+                                            onChange={handleSubmissionFileSelect}
+                                        />
+
+                                    </Button>
+
+                                )}
+
+                                {post.allow_voice_submission && (
+
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<MicIcon />}
+                                        onClick={handleStartSubmissionRecording}
+                                    >
+
+                                        Re-record Voice
+
+                                    </Button>
+
+                                )}
+
+                            </Box>
                         </Box>
 
                     ) : (
 
                         <Box>
 
-                            <Typography sx={{ color: "#64748B", mb: 2 }}>
+                            {post.allow_photo_submission && (
 
-                                Take up to {MAX_PHOTOS} photos of your child's completed work and upload them here.
+                                <Box sx={{ mb: post.allow_voice_submission ? 3 : 0 }}>
 
-                            </Typography>
+                                    <Typography sx={{ color: "#64748B", mb: 2 }}>
 
-                            {submissionPhotos.length > 0 && (
+                                        Take up to {MAX_PHOTOS} photos of your child's completed work and upload them here.
 
-                                <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 2 }}>
+                                    </Typography>
 
-                                    {submissionPhotos.map((photo, i) => (
+                                    {submissionPhotos.length > 0 && (
 
-                                        <Box key={i} sx={{ position: "relative" }}>
+                                        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 2 }}>
 
-                                            <Box
+                                            {submissionPhotos.map((photo, i) => (
 
-                                                component="img"
+                                                <Box key={i} sx={{ position: "relative" }}>
 
-                                                src={resolveFileUrl(photo.url)}
+                                                    <Box
+                                                        component="img"
+                                                        src={resolveFileUrl(photo.url)}
+                                                        sx={{
 
-                                                sx={{
+                                                            width: 110,
 
-                                                    width: 110,
+                                                            height: 110,
 
-                                                    height: 110,
+                                                            objectFit: "cover",
 
-                                                    objectFit: "cover",
+                                                            borderRadius: 2,
 
-                                                    borderRadius: 2,
+                                                            border: "1px solid #E2E8F0"
 
-                                                    border: "1px solid #E2E8F0"
+                                                        }}
+                                                    />
 
-                                                }}
+                                                    <Button
+                                                        onClick={() => handleRemovePhoto(i)}
+                                                        sx={{
 
-                                            />
+                                                            position: "absolute",
 
-                                            <Button
-                                                onClick={() => handleRemovePhoto(i)}
-                                                sx={{
+                                                            top: -8,
 
-                                                    position: "absolute",
+                                                            right: -8,
 
-                                                    top: -8,
+                                                            minWidth: "auto",
 
-                                                    right: -8,
+                                                            width: 24,
 
-                                                    minWidth: "auto",
+                                                            height: 24,
 
-                                                    width: 24,
+                                                            borderRadius: "50%",
 
-                                                    height: 24,
+                                                            bgcolor: "#DC2626",
 
-                                                    borderRadius: "50%",
+                                                            color: "white",
 
-                                                    bgcolor: "#DC2626",
+                                                            fontSize: "0.7rem",
 
-                                                    color: "white",
+                                                            p: 0,
 
-                                                    fontSize: "0.7rem",
+                                                            "&:hover": { bgcolor: "#B91C1C" }
 
-                                                    p: 0,
+                                                        }}
+                                                    >
 
-                                                    "&:hover": { bgcolor: "#B91C1C" }
+                                                        ✕
 
-                                                }}
-                                            >
+                                                    </Button>
 
-                                                ✕
+                                                </Box>
 
-                                            </Button>
+                                            ))}
 
                                         </Box>
 
-                                    ))}
+                                    )}
+
+                                    {submissionPhotos.length < MAX_PHOTOS && (
+
+                                        <Button
+                                            component="label"
+                                            variant="outlined"
+                                            startIcon={uploadingSubmission ? <CircularProgress size={16} /> : <PhotoCameraIcon />}
+                                            disabled={uploadingSubmission}
+                                            fullWidth
+                                            sx={{ justifyContent: "flex-start", color: "#64748B", borderColor: "#E2E8F0", py: 1.5 }}
+                                        >
+
+                                            {uploadingSubmission ? "Uploading..." : `Upload Photo${submissionPhotos.length > 0 ? "s" : ""} (${submissionPhotos.length}/${MAX_PHOTOS})`}
+
+                                            <input
+                                                type="file"
+                                                hidden
+                                                multiple
+                                                accept="image/jpeg,image/png,image/webp"
+                                                onChange={handleSubmissionFileSelect}
+                                            />
+
+                                        </Button>
+
+                                    )}
 
                                 </Box>
 
                             )}
 
-                            {submissionPhotos.length < MAX_PHOTOS && (
+                            {post.allow_voice_submission && (
 
-                                <Button
-                                    component="label"
-                                    variant="outlined"
-                                    startIcon={uploadingSubmission ? <CircularProgress size={16} /> : <PhotoCameraIcon />}
-                                    disabled={uploadingSubmission}
-                                    fullWidth
-                                    sx={{ justifyContent: "flex-start", color: "#64748B", borderColor: "#E2E8F0", py: 1.5, mb: submissionPhotos.length > 0 ? 2 : 0 }}
-                                >
+                                <Box>
 
-                                    {uploadingSubmission ? "Uploading..." : `Upload Photo${submissionPhotos.length > 0 ? "s" : ""} (${submissionPhotos.length}/${MAX_PHOTOS})`}
+                                    <Typography sx={{ color: "#64748B", mb: 2 }}>
 
-                                    <input
-                                        type="file"
-                                        hidden
-                                        multiple
-                                        accept="image/jpeg,image/png,image/webp"
-                                        onChange={handleSubmissionFileSelect}
-                                    />
+                                        Record your child reading this homework aloud.
 
-                                </Button>
+                                    </Typography>
+
+                                    {submissionVoice ? (
+
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2, flexWrap: "wrap" }}>
+
+                                            <audio controls src={resolveFileUrl(submissionVoice.url)} style={{ height: 36, maxWidth: 220 }} />
+
+                                            <Button size="small" color="error" onClick={handleRemoveSubmissionVoice}>
+
+                                                Remove
+
+                                            </Button>
+
+                                        </Box>
+
+                                    ) : isRecordingSubmission ? (
+
+                                        <Button
+                                            variant="outlined"
+                                            color="error"
+                                            startIcon={<StopCircleIcon />}
+                                            onClick={handleStopSubmissionRecording}
+                                            fullWidth
+                                            sx={{ py: 1.5 }}
+                                        >
+
+                                            Stop Recording ({recordingSeconds}s)
+
+                                        </Button>
+
+                                    ) : (
+
+                                        <Button
+                                            variant="outlined"
+                                            startIcon={uploadingSubmissionVoice ? <CircularProgress size={16} /> : <MicIcon />}
+                                            disabled={uploadingSubmissionVoice}
+                                            onClick={handleStartSubmissionRecording}
+                                            fullWidth
+                                            sx={{ justifyContent: "flex-start", color: "#64748B", borderColor: "#E2E8F0", py: 1.5 }}
+                                        >
+
+                                            {uploadingSubmissionVoice ? "Uploading..." : "Start Recording"}
+
+                                        </Button>
+
+                                    )}
+
+                                </Box>
 
                             )}
 
-                            {submissionPhotos.length > 0 && (
+                            {(submissionPhotos.length > 0 || submissionVoice) && (
 
                                 <Button
                                     variant="contained"
                                     onClick={handleSubmitWork}
                                     disabled={submittingWork}
                                     fullWidth
+                                    sx={{ mt: 3 }}
                                 >
 
                                     {submittingWork ? "Submitting..." : "Submit"}
