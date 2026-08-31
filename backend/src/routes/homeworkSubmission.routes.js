@@ -53,6 +53,17 @@ router.get(
 );
 
 /**
+ * Get every submission for a homework post, for a Parent -
+ * only when the teacher enabled shared viewing for that post
+ */
+router.get(
+    "/homework/:homeworkId/shared",
+    authenticate,
+    authorizeRoles("Parent"),
+    homeworkSubmissionController.getSubmissionsForParentView
+);
+
+/**
  * Teacher reacts to (and marks reviewed) a submission
  */
 router.patch(

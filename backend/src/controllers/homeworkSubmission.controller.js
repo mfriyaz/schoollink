@@ -172,6 +172,41 @@ async function getSubmissionsByHomework(req, res) {
 }
 
 /**
+ * Get every submission for a homework post, for a Parent -
+ * only allowed when the teacher turned on shared viewing for
+ * this specific post, and only for a parent whose child is
+ * actually in that post's class.
+ */
+async function getSubmissionsForParentView(req, res) {
+
+    try {
+
+        const { homeworkId } = req.params;
+
+        const submissions = await homeworkSubmissionService.getSubmissionsForParentView(
+            homeworkId,
+            req.user.id
+        );
+
+        return response.success(
+            res,
+            submissions,
+            "Submissions retrieved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            403
+        );
+
+    }
+
+}
+
+/**
  * Get just the submission count for a homework post
  */
 async function getSubmissionCount(req, res) {
@@ -292,6 +327,8 @@ module.exports = {
     getSubmission,
 
     getSubmissionsByHomework,
+
+    getSubmissionsForParentView,
 
     getSubmissionCount,
 

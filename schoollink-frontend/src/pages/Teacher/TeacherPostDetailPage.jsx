@@ -63,6 +63,8 @@ function TeacherPostDetailPage() {
 
     const [allowVoiceSubmission, setAllowVoiceSubmission] = useState(false);
 
+    const [allowViewAllSubmissions, setAllowViewAllSubmissions] = useState(false);
+
     const [images, setImages] = useState([]);
 
     const [uploadingImages, setUploadingImages] = useState(false);
@@ -114,6 +116,12 @@ function TeacherPostDetailPage() {
                 setAllowVoiceSubmission(
 
                     p.allow_voice_submission !== undefined ? p.allow_voice_submission : false
+
+                );
+
+                setAllowViewAllSubmissions(
+
+                    p.allow_view_all_submissions !== undefined ? p.allow_view_all_submissions : false
 
                 );
 
@@ -247,7 +255,9 @@ function TeacherPostDetailPage() {
 
                 allow_photo_submission: allowPhotoSubmission,
 
-                allow_voice_submission: allowVoiceSubmission
+                allow_voice_submission: allowVoiceSubmission,
+
+                allow_view_all_submissions: allowViewAllSubmissions
 
             });
 
@@ -456,6 +466,18 @@ function TeacherPostDetailPage() {
                                 label="Allow voice recording submission"
                             />
 
+                            <FormControlLabel
+                                control={
+
+                                    <Switch
+                                        checked={allowViewAllSubmissions}
+                                        onChange={(e) => setAllowViewAllSubmissions(e.target.checked)}
+                                    />
+
+                                }
+                                label="Let parents see everyone's submissions for this post (like a WhatsApp group)"
+                            />
+
                         </Box>
 
                     </Box>
@@ -495,6 +517,12 @@ function TeacherPostDetailPage() {
                         {post.allow_voice_submission && (
 
                             <Chip size="small" color="info" label="Voice submission on" />
+
+                        )}
+
+                        {post.allow_view_all_submissions && (
+
+                            <Chip size="small" color="secondary" label="Shared view on" />
 
                         )}
 

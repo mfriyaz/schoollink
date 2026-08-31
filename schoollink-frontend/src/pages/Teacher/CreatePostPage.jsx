@@ -69,6 +69,8 @@ function CreatePostPage() {
 
     const [allowVoiceSubmission, setAllowVoiceSubmission] = useState(false);
 
+    const [allowViewAllSubmissions, setAllowViewAllSubmissions] = useState(false);
+
     const [homeworkDate, setHomeworkDate] = useState(
         new Date().toISOString().slice(0, 10)
     );
@@ -556,6 +558,8 @@ function CreatePostPage() {
 
                 allow_voice_submission: allowVoiceSubmission,
 
+                allow_view_all_submissions: allowViewAllSubmissions,
+
                 voice_note_url: voiceNote ? voiceNote.url : null
 
             });
@@ -583,6 +587,8 @@ function CreatePostPage() {
                 setAllowPhotoSubmission(true);
 
                 setAllowVoiceSubmission(false);
+
+                setAllowViewAllSubmissions(false);
 
                 setTimeout(() => {
 
@@ -1164,6 +1170,18 @@ function CreatePostPage() {
 
                                     }
                                     label="Allow voice recording submission"
+                                />
+
+                                <FormControlLabel
+                                    control={
+
+                                        <Switch
+                                            checked={allowViewAllSubmissions}
+                                            onChange={(e) => setAllowViewAllSubmissions(e.target.checked)}
+                                        />
+
+                                    }
+                                    label="Let parents see everyone's submissions for this post (like a WhatsApp group)"
                                 />
 
                             </Box>

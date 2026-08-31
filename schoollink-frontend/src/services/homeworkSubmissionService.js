@@ -28,6 +28,16 @@ export async function getSubmissionsByHomework(homeworkId) {
 
 }
 
+export async function getSharedSubmissions(homeworkId) {
+
+    const response = await api.get(
+        `/homework-submissions/homework/${homeworkId}/shared`
+    );
+
+    return response.data;
+
+}
+
 export async function getSubmissionCount(homeworkId) {
 
     const response = await api.get(

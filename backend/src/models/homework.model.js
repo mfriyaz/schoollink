@@ -19,11 +19,12 @@ async function createHomework(data) {
             voice_note_url,
             image_urls,
             allow_photo_submission,
-            allow_voice_submission
+            allow_voice_submission,
+            allow_view_all_submissions
         )
         VALUES
         (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
         )
         RETURNING *;
     `;
@@ -41,7 +42,8 @@ async function createHomework(data) {
         data.voice_note_url || null,
         data.image_urls && data.image_urls.length > 0 ? data.image_urls : null,
         data.allow_photo_submission !== undefined ? data.allow_photo_submission : true,
-        data.allow_voice_submission !== undefined ? data.allow_voice_submission : false
+        data.allow_voice_submission !== undefined ? data.allow_voice_submission : false,
+        data.allow_view_all_submissions !== undefined ? data.allow_view_all_submissions : false
 
     ];
 
@@ -170,8 +172,9 @@ async function updateHomework(id, data) {
             image_urls = $6,
             allow_photo_submission = COALESCE($7, allow_photo_submission),
             allow_voice_submission = COALESCE($8, allow_voice_submission),
+            allow_view_all_submissions = COALESCE($9, allow_view_all_submissions),
             updated_at = NOW()
-        WHERE id = $9
+        WHERE id = $10
         RETURNING *;
     `;
 
@@ -185,6 +188,7 @@ async function updateHomework(id, data) {
         data.image_urls && data.image_urls.length > 0 ? data.image_urls : null,
         data.allow_photo_submission !== undefined ? data.allow_photo_submission : null,
         data.allow_voice_submission !== undefined ? data.allow_voice_submission : null,
+        data.allow_view_all_submissions !== undefined ? data.allow_view_all_submissions : null,
         id
 
     ];

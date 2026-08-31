@@ -34,7 +34,8 @@ import {
 
 import {
     submitHomeworkPhoto,
-    getSubmission
+    getSubmission,
+    getSharedSubmissions
 } from "../../services/homeworkSubmissionService";
 
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
@@ -80,6 +81,10 @@ function ViewPostPage() {
     const [existingSubmission, setExistingSubmission] = useState(null);
 
     const [loadingSubmission, setLoadingSubmission] = useState(true);
+
+    const [sharedSubmissions, setSharedSubmissions] = useState([]);
+
+    const [loadingShared, setLoadingShared] = useState(false);
 
     const [submissionPhotos, setSubmissionPhotos] = useState([]);
 
@@ -158,6 +163,42 @@ function ViewPostPage() {
         } finally {
 
             setLoadingSubmission(false);
+
+        }
+
+    }
+
+    useEffect(() => {
+
+        if (post && post.post_type !== "announcement" && post.allow_view_all_submissions) {
+
+            loadSharedSubmissions();
+
+        }
+
+    }, [post]);
+
+    async function loadSharedSubmissions() {
+
+        try {
+
+            setLoadingShared(true);
+
+            const response = await getSharedSubmissions(post.id);
+
+            if (response.success) {
+
+                setSharedSubmissions(response.data);
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        } finally {
+
+            setLoadingShared(false);
 
         }
 
@@ -1233,6 +1274,126 @@ function ViewPostPage() {
                         </Box>
 
                     )}
+
+                </Card>
+
+            )}
+
+            {!isAnnouncement && post.allow_view_all_submissions && (
+
+                <Card sx={{ p: 3, mt: 3 }}>
+
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+
+                        What Other Students Submitted
+
+                    </Typography>
+
+                    <Typography sx={{ color: "#64748B", fontSize: "0.85rem", mb: 2 }}>
+
+                        Your teacher has made everyone's submissions for this post visible to the whole class.
+
+                    </Typography>
+
+                    {loadingShared && (
+
+                        <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
+
+                            <CircularProgress size={24} />
+
+                        </Box>
+
+                    )}
+
+                    {!loadingShared && sharedSubmissions.length === 0 && (
+
+                        <Typography color="text.secondary" sx={{ fontSize: "0.9rem" }}>
+
+                            No one has submitted yet.
+
+                        </Typography>
+
+                    )}
+
+                    {!loadingShared && sharedSubmissions.map((s) => (
+
+                        <Box
+
+                            key={s.id}
+
+                            sx={{
+
+                                py: 2,
+
+                                borderBottom: "1px solid #F1F5F9",
+
+                                "&:last-of-type": { borderBottom: "none" }
+
+                            }}
+
+                        >
+
+                            <Typography sx={{ fontWeight: 600, fontSize: "0.9rem", mb: 1 }}>
+
+                                {s.first_name} {s.last_name}
+
+                            </Typography>
+
+                            {s.photo_urls && s.photo_urls.length > 0 && (
+
+                                <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: s.voice_url ? 1.5 : 0 }}>
+
+                                    {s.photo_urls.map((url, i) => (
+
+                                        <Box
+                                            key={i}
+                                            component="a"
+                                            href={resolveFileUrl(url)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+
+                                            <Box
+
+                                                component="img"
+
+                                                src={resolveFileUrl(url)}
+
+                                                sx={{
+
+                                                    width: 90,
+
+                                                    height: 90,
+
+                                                    objectFit: "cover",
+
+                                                    borderRadius: 2,
+
+                                                    border: "1px solid #E2E8F0",
+
+                                                    display: "block"
+
+                                                }}
+
+                                            />
+
+                                        </Box>
+
+                                    ))}
+
+                                </Box>
+
+                            )}
+
+                            {s.voice_url && (
+
+                                <audio controls src={resolveFileUrl(s.voice_url)} style={{ height: 32, maxWidth: 240 }} />
+
+                            )}
+
+                        </Box>
+
+                    ))}
 
                 </Card>
 
