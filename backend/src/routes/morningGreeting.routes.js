@@ -62,4 +62,34 @@ router.patch(
     morningGreetingController.bulkReactToGreetings
 );
 
+/**
+ * Turn shared greeting viewing on/off for the teacher's class
+ */
+router.patch(
+    "/class-teacher/shared-setting",
+    authenticate,
+    authorizeRoles("Teacher"),
+    morningGreetingController.setSharedGreetingsSetting
+);
+
+/**
+ * Get the current shared-greetings setting for the teacher
+ */
+router.get(
+    "/class-teacher/shared-setting",
+    authenticate,
+    authorizeRoles("Teacher"),
+    morningGreetingController.getSharedGreetingsSetting
+);
+
+/**
+ * Get today's classmate greetings for a Parent
+ */
+router.get(
+    "/student/:studentId/classmates-today",
+    authenticate,
+    authorizeRoles("Parent"),
+    morningGreetingController.getTodaysGreetingsForClassmates
+);
+
 module.exports = router;

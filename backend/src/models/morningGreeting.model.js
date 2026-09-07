@@ -154,6 +154,117 @@ async function bulkReactToGreetings(greetingIds, reaction) {
 
 }
 
+/**
+ * Turn shared greeting viewing on/off for all of a teacher's
+ * class-teacher classes at once (in practice, almost always
+ * just one class).
+ */
+async function setSharedGreetingsForTeacher(teacherUserId, allow) {
+
+    const result = await db.query(
+        `
+        UPDATE teacher_subjects ts
+        SET allow_shared_greetings = $1
+        FROM teachers t
+        WHERE ts.teacher_id = t.id
+        AND t.user_id = $2
+        AND ts.is_class_teacher = true
+        RETURNING ts.id;
+        `,
+        [allow, teacherUserId]
+    );
+
+    return result.rows.length > 0;
+
+}
+
+/**
+ * Get the current shared-greetings setting for a teacher's
+ * class-teacher class, to show the toggle's current state.
+ */
+async function getSharedGreetingsSetting(teacherUserId) {
+
+    const result = await db.query(
+        `
+        SELECT ts.allow_shared_greetings
+        FROM teacher_subjects ts
+        JOIN teachers t ON ts.teacher_id = t.id
+        WHERE t.user_id = $1
+        AND ts.is_class_teacher = true
+        LIMIT 1;
+        `,
+        [teacherUserId]
+    );
+
+    return result.rows[0] ? result.rows[0].allow_shared_greetings : false;
+
+}
+
+/**
+ * Get today's greetings for every classmate of a given
+ * student, but only if that class's teacher has turned on
+ * shared viewing. Includes the teacher's reaction on each.
+ */
+async function getTodaysGreetingsForClassmates(studentId) {
+
+    const result = await db.query(
+        `
+        SELECT
+            mg.id,
+            mg.voice_url,
+            mg.teacher_reaction,
+            st.id AS student_id,
+            st.first_name,
+            st.last_name
+        FROM students target
+        JOIN teacher_subjects ts
+            ON ts.class_id = target.class_id
+            AND ts.section_id = target.section_id
+            AND ts.is_class_teacher = true
+        JOIN students st
+            ON st.class_id = ts.class_id
+            AND st.section_id = ts.section_id
+            AND st.is_active = true
+        JOIN morning_greetings mg
+            ON mg.student_id = st.id
+            AND mg.greeting_date = CURRENT_DATE
+        WHERE target.id = $1
+        AND ts.allow_shared_greetings = true
+        ORDER BY st.first_name;
+        `,
+        [studentId]
+    );
+
+    return result.rows;
+
+}
+
+/**
+ * Check whether shared greetings are actually turned on for
+ * the class this student belongs to - used to give a clear
+ * error rather than just silently returning nothing.
+ */
+async function isSharedGreetingsEnabledForStudent(studentId) {
+
+    const result = await db.query(
+        `
+        SELECT 1
+        FROM students target
+        JOIN teacher_subjects ts
+            ON ts.class_id = target.class_id
+            AND ts.section_id = target.section_id
+            AND ts.is_class_teacher = true
+            AND ts.allow_shared_greetings = true
+        WHERE target.id = $1
+        LIMIT 1;
+        `,
+        [studentId]
+    );
+
+    return result.rows.length > 0;
+
+}
+
 module.exports = {
 
     submitGreeting,
@@ -166,6 +277,14 @@ module.exports = {
 
     bulkReactToGreetings,
 
-    teacherOwnsGreeting
+    teacherOwnsGreeting,
+
+    setSharedGreetingsForTeacher,
+
+    getSharedGreetingsSetting,
+
+    getTodaysGreetingsForClassmates,
+
+    isSharedGreetingsEnabledForStudent
 
 };

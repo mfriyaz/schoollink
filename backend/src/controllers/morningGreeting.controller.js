@@ -243,6 +243,116 @@ async function bulkReactToGreetings(req, res) {
 
 }
 
+/**
+ * Turn shared greeting viewing on/off for the teacher's class
+ */
+async function setSharedGreetingsSetting(req, res) {
+
+    try {
+
+        const { allow } = req.body;
+
+        if (typeof allow !== "boolean") {
+
+            return response.error(
+                res,
+                "allow must be true or false.",
+                400
+            );
+
+        }
+
+        await morningGreetingService.setSharedGreetingsForTeacher(
+
+            req.user.id,
+
+            allow
+
+        );
+
+        return response.success(
+            res,
+            { allow },
+            "Setting updated successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
+ * Get the current shared-greetings setting for a teacher
+ */
+async function getSharedGreetingsSetting(req, res) {
+
+    try {
+
+        const allow = await morningGreetingService.getSharedGreetingsSetting(
+            req.user.id
+        );
+
+        return response.success(
+            res,
+            { allow },
+            "Setting retrieved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
+ * Get today's classmate greetings for a Parent - only if the
+ * class teacher has turned on shared viewing
+ */
+async function getTodaysGreetingsForClassmates(req, res) {
+
+    try {
+
+        const { studentId } = req.params;
+
+        const greetings = await morningGreetingService.getTodaysGreetingsForClassmates(
+
+            req.user.id,
+
+            studentId
+
+        );
+
+        return response.success(
+            res,
+            greetings,
+            "Classmates' greetings retrieved successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            403
+        );
+
+    }
+
+}
+
 module.exports = {
 
     submitGreeting,
@@ -253,6 +363,12 @@ module.exports = {
 
     reactToGreeting,
 
-    bulkReactToGreetings
+    bulkReactToGreetings,
+
+    setSharedGreetingsSetting,
+
+    getSharedGreetingsSetting,
+
+    getTodaysGreetingsForClassmates
 
 };

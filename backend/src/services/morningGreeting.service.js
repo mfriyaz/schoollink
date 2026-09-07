@@ -123,6 +123,65 @@ async function bulkReactToGreetings(greetingIds, teacherUserId, reaction) {
 
 }
 
+/**
+ * Turn shared greeting viewing on/off for a teacher's class
+ */
+async function setSharedGreetingsForTeacher(teacherUserId, allow) {
+
+    const updated = await morningGreetingModel.setSharedGreetingsForTeacher(
+
+        teacherUserId,
+
+        allow
+
+    );
+
+    if (!updated) {
+
+        throw new Error("You aren't set as the class teacher for any class.");
+
+    }
+
+    return true;
+
+}
+
+/**
+ * Get the current shared-greetings setting for a teacher
+ */
+async function getSharedGreetingsSetting(teacherUserId) {
+
+    return await morningGreetingModel.getSharedGreetingsSetting(teacherUserId);
+
+}
+
+/**
+ * Get today's classmate greetings for a parent - verifies
+ * ownership of the student and that shared viewing is
+ * actually turned on for their class.
+ */
+async function getTodaysGreetingsForClassmates(userId, studentId) {
+
+    const owns = await parentOwnsStudent(userId, studentId);
+
+    if (!owns) {
+
+        throw new Error("This student is not linked to your account.");
+
+    }
+
+    const enabled = await morningGreetingModel.isSharedGreetingsEnabledForStudent(studentId);
+
+    if (!enabled) {
+
+        throw new Error("The class teacher hasn't turned on shared viewing yet.");
+
+    }
+
+    return await morningGreetingModel.getTodaysGreetingsForClassmates(studentId);
+
+}
+
 module.exports = {
 
     submitGreeting,
@@ -135,6 +194,12 @@ module.exports = {
 
     reactToGreeting,
 
-    bulkReactToGreetings
+    bulkReactToGreetings,
+
+    setSharedGreetingsForTeacher,
+
+    getSharedGreetingsSetting,
+
+    getTodaysGreetingsForClassmates
 
 };

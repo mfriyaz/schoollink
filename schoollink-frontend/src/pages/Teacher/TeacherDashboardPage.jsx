@@ -8,10 +8,12 @@ import {
     Button,
     Card,
     CircularProgress,
+    FormControlLabel,
     Grid,
     LinearProgress,
     Menu,
     MenuItem,
+    Switch,
     Tooltip,
     Typography
 } from "@mui/material";
@@ -37,7 +39,7 @@ import GreetingReactionPicker, { reactions } from "../../components/Teacher/Gree
 
 import { getSubmissionCount } from "../../services/homeworkSubmissionService";
 
-import { getTodaysGreetingsForClassTeacher, bulkReactToGreetings } from "../../services/morningGreetingService";
+import { getTodaysGreetingsForClassTeacher, bulkReactToGreetings, getSharedGreetingsSetting, setSharedGreetingsSetting } from "../../services/morningGreetingService";
 
 import { formatPostTime, toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
 
@@ -201,13 +203,65 @@ function TeacherDashboardPage() {
 
     const [bulkReacting, setBulkReacting] = useState(false);
 
+    const [sharedGreetingsAllowed, setSharedGreetingsAllowed] = useState(false);
+
+    const [savingSharedSetting, setSavingSharedSetting] = useState(false);
+
     const [selectedGreetingId, setSelectedGreetingId] = useState(null);
 
     useEffect(() => {
 
         loadDashboard();
 
+        loadSharedGreetingsSetting();
+
     }, []);
+
+    async function loadSharedGreetingsSetting() {
+
+        try {
+
+            const response = await getSharedGreetingsSetting();
+
+            if (response.success) {
+
+                setSharedGreetingsAllowed(response.data.allow);
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
+
+    }
+
+    async function handleToggleSharedGreetings(checked) {
+
+        setSavingSharedSetting(true);
+
+        try {
+
+            const response = await setSharedGreetingsSetting(checked);
+
+            if (response.success) {
+
+                setSharedGreetingsAllowed(checked);
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        } finally {
+
+            setSavingSharedSetting(false);
+
+        }
+
+    }
 
     async function loadDashboard() {
 
@@ -585,6 +639,38 @@ function TeacherDashboardPage() {
                             </Box>
 
                         </Box>
+
+                        <FormControlLabel
+
+                            sx={{ mb: 1.5, ml: 0 }}
+
+                            control={
+
+                                <Switch
+
+                                    size="small"
+
+                                    checked={sharedGreetingsAllowed}
+
+                                    disabled={savingSharedSetting}
+
+                                    onChange={(e) => handleToggleSharedGreetings(e.target.checked)}
+
+                                />
+
+                            }
+
+                            label={
+
+                                <Typography sx={{ fontSize: "0.8rem", color: "#64748B" }}>
+
+                                    Let parents see each other's Good Morning messages and reactions
+
+                                </Typography>
+
+                            }
+
+                        />
 
                         <Menu
 

@@ -55,3 +55,31 @@ export async function bulkReactToGreetings(greetingIds, reaction) {
     return response.data;
 
 }
+
+export async function getSharedGreetingsSetting() {
+
+    const response = await api.get("/morning-greetings/class-teacher/shared-setting");
+
+    return response.data;
+
+}
+
+export async function setSharedGreetingsSetting(allow) {
+
+    const response = await api.patch("/morning-greetings/class-teacher/shared-setting", {
+
+        allow
+
+    });
+
+    return response.data;
+
+}
+
+export async function getClassmatesGreetingsToday(studentId) {
+
+    const response = await api.get(`/morning-greetings/student/${studentId}/classmates-today`);
+
+    return response.data;
+
+}
