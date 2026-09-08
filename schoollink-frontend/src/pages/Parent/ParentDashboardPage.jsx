@@ -488,11 +488,25 @@ function ParentDashboardPage() {
         (c) => c.student_id === selectedStudentId
     );
 
-    const filteredPosts = postFilter === "all"
-        ? posts
-        : posts.filter((p) => p.post_type === postFilter);
+    function isToday(dateString) {
 
-    const displayedPosts = filteredPosts.slice(0, 5);
+        const dayFormatter = new Intl.DateTimeFormat("en-CA", {
+
+            timeZone: getSchoolTimezone()
+
+        });
+
+        return dayFormatter.format(toUtcDate(dateString)) === dayFormatter.format(new Date());
+
+    }
+
+    const todaysPosts = posts.filter((p) => isToday(p.created_at));
+
+    const filteredPosts = postFilter === "all"
+        ? todaysPosts
+        : todaysPosts.filter((p) => p.post_type === postFilter);
+
+    const displayedPosts = filteredPosts;
 
     // Posts that actually need action - excludes ones a teacher
     // marked as not requiring acknowledgement.
@@ -1276,7 +1290,7 @@ function ParentDashboardPage() {
 
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
 
-                        <Badge badgeContent={posts.length} color="primary" overlap="rectangular">
+                        <Badge badgeContent={todaysPosts.length} color="primary" overlap="rectangular">
 
                             <Button
                                 size="small"
@@ -1296,7 +1310,7 @@ function ParentDashboardPage() {
 
                         </Badge>
 
-                        <Badge badgeContent={posts.filter((p) => p.post_type !== "announcement").length} color="primary" overlap="rectangular">
+                        <Badge badgeContent={todaysPosts.filter((p) => p.post_type !== "announcement").length} color="primary" overlap="rectangular">
 
                             <Button
                                 size="small"
@@ -1316,7 +1330,7 @@ function ParentDashboardPage() {
 
                         </Badge>
 
-                        <Badge badgeContent={posts.filter((p) => p.post_type === "announcement").length} color="primary" overlap="rectangular">
+                        <Badge badgeContent={todaysPosts.filter((p) => p.post_type === "announcement").length} color="primary" overlap="rectangular">
 
                             <Button
                                 size="small"
@@ -1336,7 +1350,7 @@ function ParentDashboardPage() {
 
                         </Badge>
 
-                        {posts.length > 5 && (
+                        {posts.length > 0 && (
 
                             <Typography
                                 onClick={() => navigate(
@@ -1361,11 +1375,37 @@ function ParentDashboardPage() {
 
                 {filteredPosts.length === 0 && (
 
-                    <Typography color="text.secondary">
+                    <Box>
 
-                        No updates yet.
+                        <Typography color="text.secondary">
 
-                    </Typography>
+                            No updates for today yet.
+
+                        </Typography>
+
+                        {posts.length > 0 && (
+
+                            <Typography
+
+                                onClick={() => navigate(
+
+                                    "/parent/all-updates",
+
+                                    { state: { studentId: selectedStudentId } }
+
+                                )}
+
+                                sx={{ color: "#2563EB", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", mt: 0.5 }}
+
+                            >
+
+                                Looking for something older? View All Updates →
+
+                            </Typography>
+
+                        )}
+
+                    </Box>
 
                 )}
 
