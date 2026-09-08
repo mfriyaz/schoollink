@@ -794,7 +794,7 @@ function ParentDashboardPage() {
 
                     <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
 
-                        \ud83d\udc4b Classmates' Good Morning Messages
+                        👋 Classmates' Good Morning Messages
 
                     </Typography>
 
