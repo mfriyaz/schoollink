@@ -36,12 +36,25 @@ import {
 
 import {
     submitGreeting,
-    getTodaysGreeting
+    getTodaysGreeting,
+    getClassmatesGreetingsToday
 } from "../../services/morningGreetingService";
 
 import { toUtcDate, formatPostTime, getSchoolTimezone } from "../../utils/dateUtils";
 
 import { resolveFileUrl } from "../../config";
+
+const reactionEmojis = {
+
+    good: "👍",
+
+    nice: "⭐",
+
+    great: "🎉",
+
+    good_job: "💯"
+
+};
 
 function getGreeting() {
 
@@ -87,6 +100,10 @@ function ParentDashboardPage() {
 
     const [todaysGreeting, setTodaysGreeting] = useState(null);
 
+    const [classmatesGreetings, setClassmatesGreetings] = useState([]);
+
+    const [classmatesSharingEnabled, setClassmatesSharingEnabled] = useState(true);
+
     const [isRecordingGreeting, setIsRecordingGreeting] = useState(false);
 
     const [greetingSeconds, setGreetingSeconds] = useState(0);
@@ -123,6 +140,8 @@ function ParentDashboardPage() {
 
 
                 await loadTodaysGreeting(response.data[0].student_id);
+
+                await loadClassmatesGreetings(response.data[0].student_id);
 
             }
 
@@ -208,6 +227,33 @@ function ParentDashboardPage() {
         } catch (err) {
 
             console.error(err);
+
+        }
+
+    }
+
+    async function loadClassmatesGreetings(studentId) {
+
+        try {
+
+            const response = await getClassmatesGreetingsToday(studentId);
+
+            if (response.success) {
+
+                setClassmatesGreetings(response.data);
+
+                setClassmatesSharingEnabled(true);
+
+            }
+
+        } catch (err) {
+
+            // The class teacher simply hasn't turned this on for
+            // their class yet - a normal, expected state, not an
+            // error worth showing the parent.
+            setClassmatesGreetings([]);
+
+            setClassmatesSharingEnabled(false);
 
         }
 
@@ -427,6 +473,8 @@ function ParentDashboardPage() {
 
         await loadTodaysGreeting(studentId);
 
+        await loadClassmatesGreetings(studentId);
+
         setLoading(false);
 
     }
@@ -616,6 +664,16 @@ function ParentDashboardPage() {
 
                             </Typography>
 
+                            {todaysGreeting.teacher_reaction && (
+
+                                <Typography sx={{ color: "#166534", fontSize: "0.85rem", fontWeight: 600, mt: 0.5 }}>
+
+                                    Teacher reacted: {reactionEmojis[todaysGreeting.teacher_reaction] || ""}
+
+                                </Typography>
+
+                            )}
+
                         </Box>
 
                         <audio controls src={resolveFileUrl(todaysGreeting.voice_url)} style={{ height: 36 }} />
@@ -718,6 +776,80 @@ function ParentDashboardPage() {
                 )}
 
             </Card>
+
+            {classmatesSharingEnabled && classmatesGreetings.filter((g) => g.student_id !== selectedStudentId).length > 0 && (
+
+                <Card sx={{ p: 3, mb: 3 }}>
+
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+
+                        👋 Classmates' Good Morning Messages
+
+                    </Typography>
+
+                    <Typography sx={{ color: "#64748B", fontSize: "0.82rem", mb: 2 }}>
+
+                        Your class teacher has turned on sharing for the class - everyone can hear each other's messages today.
+
+                    </Typography>
+
+                    {classmatesGreetings.filter((g) => g.student_id !== selectedStudentId).map((g) => (
+
+                        <Box
+
+                            key={g.student_id}
+
+                            sx={{
+
+                                display: "flex",
+
+                                alignItems: "center",
+
+                                justifyContent: "space-between",
+
+                                flexWrap: "wrap",
+
+                                gap: 1.5,
+
+                                py: 1.5,
+
+                                borderBottom: "1px solid #F1F5F9",
+
+                                "&:last-of-type": { borderBottom: "none" }
+
+                            }}
+
+                        >
+
+                            <Box>
+
+                                <Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
+
+                                    {g.first_name} {g.last_name}
+
+                                </Typography>
+
+                                {g.teacher_reaction && (
+
+                                    <Typography sx={{ color: "#166534", fontSize: "0.8rem", fontWeight: 600 }}>
+
+                                        Teacher reacted: {reactionEmojis[g.teacher_reaction] || ""}
+
+                                    </Typography>
+
+                                )}
+
+                            </Box>
+
+                            <audio controls src={resolveFileUrl(g.voice_url)} style={{ height: 32, maxWidth: 220 }} />
+
+                        </Box>
+
+                    ))}
+
+                </Card>
+
+            )}
 
             {attendance.length > 0 && (() => {
 
