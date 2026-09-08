@@ -14,6 +14,7 @@ import {
     Tab,
     Tabs,
     TextField,
+    Tooltip,
     Typography
 } from "@mui/material";
 
@@ -103,6 +104,8 @@ function ParentDashboardPage() {
     const [classmatesGreetings, setClassmatesGreetings] = useState([]);
 
     const [classmatesSharingEnabled, setClassmatesSharingEnabled] = useState(true);
+
+    const [selectedClassmateId, setSelectedClassmateId] = useState(null);
 
     const [isRecordingGreeting, setIsRecordingGreeting] = useState(false);
 
@@ -473,6 +476,8 @@ function ParentDashboardPage() {
 
         await loadTodaysGreeting(studentId);
 
+        setSelectedClassmateId(null);
+
         await loadClassmatesGreetings(studentId);
 
         setLoading(false);
@@ -525,6 +530,12 @@ function ParentDashboardPage() {
         );
 
     }
+
+    const selectedClassmate = classmatesGreetings.find(
+
+        (g) => g.student_id === selectedClassmateId
+
+    );
 
     return (
 
@@ -783,21 +794,82 @@ function ParentDashboardPage() {
 
                     <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
 
-                        👋 Classmates' Good Morning Messages
+                        \ud83d\udc4b Classmates' Good Morning Messages
 
                     </Typography>
 
                     <Typography sx={{ color: "#64748B", fontSize: "0.82rem", mb: 2 }}>
 
-                        Your class teacher has turned on sharing for the class - everyone can hear each other's messages today.
+                        Tap a classmate to listen. Your class teacher has turned on sharing for the class today.
 
                     </Typography>
 
-                    {classmatesGreetings.filter((g) => g.student_id !== selectedStudentId).map((g) => (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: selectedClassmate ? 2 : 0 }}>
+
+                        {classmatesGreetings
+
+                            .filter((g) => g.student_id !== selectedStudentId)
+
+                            .map((g) => {
+
+                                const isSelected = selectedClassmateId === g.student_id;
+
+                                return (
+
+                                    <Tooltip key={g.student_id} title={`${g.first_name} ${g.last_name}`}>
+
+                                        <Badge
+
+                                            overlap="circular"
+
+                                            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+
+                                            badgeContent={g.teacher_reaction ? reactionEmojis[g.teacher_reaction] : null}
+                                        >
+
+                                            <Avatar
+
+                                                onClick={() => setSelectedClassmateId(isSelected ? null : g.student_id)}
+
+                                                sx={{
+
+                                                    width: 46,
+
+                                                    height: 46,
+
+                                                    fontSize: "0.85rem",
+
+                                                    fontWeight: 700,
+
+                                                    cursor: "pointer",
+
+                                                    bgcolor: "#DBEAFE",
+
+                                                    color: "#2563EB",
+
+                                                    border: isSelected ? "3px solid #2563EB" : "2px solid #BFDBFE"
+
+                                                }}
+
+                                            >
+
+                                                {g.first_name[0]}{g.last_name ? g.last_name[0] : ""}
+
+                                            </Avatar>
+
+                                        </Badge>
+
+                                    </Tooltip>
+
+                                );
+
+                            })}
+
+                    </Box>
+
+                    {selectedClassmate && (
 
                         <Box
-
-                            key={g.student_id}
 
                             sx={{
 
@@ -811,11 +883,11 @@ function ParentDashboardPage() {
 
                                 gap: 1.5,
 
-                                py: 1.5,
+                                p: 1.5,
 
-                                borderBottom: "1px solid #F1F5F9",
+                                borderRadius: 2,
 
-                                "&:last-of-type": { borderBottom: "none" }
+                                bgcolor: "#F8FAFC"
 
                             }}
 
@@ -825,15 +897,15 @@ function ParentDashboardPage() {
 
                                 <Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
 
-                                    {g.first_name} {g.last_name}
+                                    {selectedClassmate.first_name} {selectedClassmate.last_name}
 
                                 </Typography>
 
-                                {g.teacher_reaction && (
+                                {selectedClassmate.teacher_reaction && (
 
                                     <Typography sx={{ color: "#166534", fontSize: "0.8rem", fontWeight: 600 }}>
 
-                                        Teacher reacted: {reactionEmojis[g.teacher_reaction] || ""}
+                                        Teacher reacted: {reactionEmojis[selectedClassmate.teacher_reaction] || ""}
 
                                     </Typography>
 
@@ -841,15 +913,16 @@ function ParentDashboardPage() {
 
                             </Box>
 
-                            <audio controls src={resolveFileUrl(g.voice_url)} style={{ height: 32, maxWidth: 220 }} />
+                            <audio controls autoPlay src={resolveFileUrl(selectedClassmate.voice_url)} style={{ height: 32, maxWidth: 220 }} />
 
                         </Box>
 
-                    ))}
+                    )}
 
                 </Card>
 
             )}
+
 
             {attendance.length > 0 && (() => {
 
