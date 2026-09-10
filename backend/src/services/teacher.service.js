@@ -195,6 +195,37 @@ async function addLoginToExistingTeacher(teacherId, schoolId, email, password, u
 }
 
 /**
+ * Set or change the username for a teacher who already has a
+ * login - covers teachers created before this feature existed,
+ * or who skipped it when their login was first created.
+ */
+async function setTeacherUsername(teacherId, schoolId, username) {
+
+    const teacher = await teacherModel.getTeacherById(teacherId, schoolId);
+
+    if (!teacher) {
+
+        throw new Error("Teacher not found.");
+
+    }
+
+    if (!teacher.user_id) {
+
+        throw new Error("This teacher doesn't have a login yet - add one first.");
+
+    }
+
+    if (await userModel.usernameExists(username)) {
+
+        throw new Error("This username is already taken. Please choose another.");
+
+    }
+
+    return await userModel.updateUsername(teacher.user_id, username);
+
+}
+
+/**
  * Get Teachers By School
  */
 async function getTeachersBySchool(schoolId) {
@@ -253,6 +284,8 @@ module.exports = {
     createTeacher,
 
     addLoginToExistingTeacher,
+
+    setTeacherUsername,
 
     getTeachersBySchool,
 

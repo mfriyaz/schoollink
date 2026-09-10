@@ -117,6 +117,56 @@ async function createOrLinkParent(req, res) {
 }
 
 /**
+ * Set or change the username for a parent who already has an
+ * account
+ */
+async function setParentUsername(req, res) {
+
+    try {
+
+        const { parentUserId } = req.params;
+
+        const { username } = req.body;
+
+        if (!username) {
+
+            return response.error(
+                res,
+                "username is required",
+                400
+            );
+
+        }
+
+        const result = await parentService.setParentUsername(
+
+            parentUserId,
+
+            req.user.school_id,
+
+            username
+
+        );
+
+        return response.success(
+            res,
+            result,
+            "Username updated successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
  * Get every parent linked to a student
  */
 async function getParentsForStudent(req, res) {
@@ -165,6 +215,8 @@ module.exports = {
     getMyChildren,
 
     createOrLinkParent,
+
+    setParentUsername,
 
     getParentsForStudent
 

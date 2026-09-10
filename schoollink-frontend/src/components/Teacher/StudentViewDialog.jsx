@@ -8,6 +8,7 @@ import {
     Chip,
     CircularProgress,
     Dialog,
+    DialogActions,
     DialogContent,
     DialogTitle,
     Divider,
@@ -26,7 +27,8 @@ import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroomOutlined";
 
 import {
     createOrLinkParent,
-    getParentsForStudent
+    getParentsForStudent,
+    setParentUsername
 } from "../../services/parentService";
 
 function Field({ label, value }) {
@@ -85,6 +87,18 @@ function StudentViewDialog({ open, student, onClose }) {
 
     const [linkSuccess, setLinkSuccess] = useState("");
 
+    const [usernameDialogOpen, setUsernameDialogOpen] = useState(false);
+
+    const [usernameParent, setUsernameParent] = useState(null);
+
+    const [usernameValue, setUsernameValue] = useState("");
+
+    const [settingUsername, setSettingUsername] = useState(false);
+
+    const [usernameError, setUsernameError] = useState("");
+
+    const [usernameSuccess, setUsernameSuccess] = useState("");
+
     useEffect(() => {
 
         if (open && student) {
@@ -122,6 +136,69 @@ function StudentViewDialog({ open, student, onClose }) {
         } finally {
 
             setLoadingParents(false);
+
+        }
+
+    }
+
+    function openUsernameDialog(parent) {
+
+        setUsernameParent(parent);
+
+        setUsernameValue(parent.username || "");
+
+        setUsernameError("");
+
+        setUsernameSuccess("");
+
+        setUsernameDialogOpen(true);
+
+    }
+
+    async function handleSetUsername() {
+
+        setUsernameError("");
+
+        setUsernameSuccess("");
+
+        if (!usernameValue) {
+
+            setUsernameError("Enter a username.");
+
+            return;
+
+        }
+
+        try {
+
+            setSettingUsername(true);
+
+            const response = await setParentUsername(usernameParent.parent_user_id, usernameValue);
+
+            if (response.success) {
+
+                setUsernameSuccess("Username saved!");
+
+                await loadParents();
+
+            } else {
+
+                setUsernameError(response.message);
+
+            }
+
+        } catch (err) {
+
+            setUsernameError(
+
+                err.response?.data?.message ||
+                "Unable to save this username."
+
+            );
+
+        } finally {
+
+            setSettingUsername(false);
 
         }
 
@@ -236,6 +313,8 @@ function StudentViewDialog({ open, student, onClose }) {
     }
 
     return (
+
+        <>
 
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
 
@@ -427,9 +506,23 @@ function StudentViewDialog({ open, student, onClose }) {
 
                                 {p.email}
 
+                                {p.username && ` · @${p.username}`}
+
                             </Typography>
 
                         </Box>
+
+                        <Button
+
+                            size="small"
+
+                            onClick={() => openUsernameDialog(p)}
+
+                        >
+
+                            {p.username ? "Edit Username" : "Set Username"}
+
+                        </Button>
 
                     </Box>
 
@@ -564,6 +657,55 @@ function StudentViewDialog({ open, student, onClose }) {
             </DialogContent>
 
         </Dialog>
+
+        <Dialog open={usernameDialogOpen} onClose={() => setUsernameDialogOpen(false)} maxWidth="xs" fullWidth>
+
+            <DialogTitle>
+
+                {usernameParent && usernameParent.username ? "Edit" : "Set"} Username for {usernameParent ? usernameParent.full_name : "Parent"}
+
+            </DialogTitle>
+
+            <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+
+                {usernameError && <Alert severity="error">{usernameError}</Alert>}
+
+                {usernameSuccess && <Alert severity="success">{usernameSuccess}</Alert>}
+
+                <TextField
+                    label="Username"
+                    size="small"
+                    fullWidth
+                    value={usernameValue}
+                    onChange={(e) => setUsernameValue(e.target.value)}
+                    helperText="Lets this parent log in with a username instead of email. Must be unique across all schools."
+                />
+
+            </DialogContent>
+
+            <DialogActions>
+
+                <Button onClick={() => setUsernameDialogOpen(false)}>
+
+                    Close
+
+                </Button>
+
+                <Button
+                    variant="contained"
+                    onClick={handleSetUsername}
+                    disabled={settingUsername}
+                >
+
+                    {settingUsername ? "Saving..." : "Save"}
+
+                </Button>
+
+            </DialogActions>
+
+        </Dialog>
+
+        </>
 
     );
 

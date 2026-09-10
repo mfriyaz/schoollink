@@ -86,6 +86,17 @@ router.patch(
 );
 
 /**
+ * Set or change the username for a teacher who already has a
+ * login
+ */
+router.patch(
+    "/:id/set-username",
+    authenticate,
+    authorizeRoles("School Admin"),
+    teacherController.setTeacherUsername
+);
+
+/**
  * Reactivate Teacher
  */
 router.patch(

@@ -47,3 +47,15 @@ export async function addLoginToExistingTeacher(id, data) {
     return response.data;
 
 }
+
+export async function setTeacherUsername(id, username) {
+
+    const response = await api.patch(`/teachers/${id}/set-username`, {
+
+        username
+
+    });
+
+    return response.data;
+
+}

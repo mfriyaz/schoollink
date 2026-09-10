@@ -15,3 +15,15 @@ export async function getParentsForStudent(studentId) {
     return response.data;
 
 }
+
+export async function setParentUsername(parentUserId, username) {
+
+    const response = await api.patch(`/parents/${parentUserId}/set-username`, {
+
+        username
+
+    });
+
+    return response.data;
+
+}

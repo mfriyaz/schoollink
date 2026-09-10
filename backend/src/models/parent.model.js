@@ -106,6 +106,7 @@ async function getParentsForStudent(studentId) {
             u.id AS parent_user_id,
             u.full_name,
             u.email,
+            u.username,
             u.mobile,
             ps.relationship,
             ps.created_at AS linked_at

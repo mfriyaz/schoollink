@@ -93,6 +93,56 @@ async function addLoginToExistingTeacher(req, res) {
 }
 
 /**
+ * Set or change the username for a teacher who already has
+ * a login
+ */
+async function setTeacherUsername(req, res) {
+
+    try {
+
+        const { id } = req.params;
+
+        const { username } = req.body;
+
+        if (!username) {
+
+            return response.error(
+                res,
+                "username is required",
+                400
+            );
+
+        }
+
+        const teacher = await teacherService.setTeacherUsername(
+
+            id,
+
+            req.user.school_id,
+
+            username
+
+        );
+
+        return response.success(
+            res,
+            teacher,
+            "Username updated successfully"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
+/**
  * Get Teachers By School
  * (self-scoped from the JWT, not a client-supplied ID)
  */
@@ -335,6 +385,8 @@ module.exports = {
     createTeacher,
 
     addLoginToExistingTeacher,
+
+    setTeacherUsername,
 
     getTeachersBySchool,
 

@@ -42,4 +42,15 @@ router.get(
     parentController.getParentsForStudent
 );
 
+/**
+ * Set or change the username for a parent who already has an
+ * account
+ */
+router.patch(
+    "/:parentUserId/set-username",
+    authenticate,
+    authorizeRoles("School Admin"),
+    parentController.setParentUsername
+);
+
 module.exports = router;

@@ -258,6 +258,26 @@ async function updateUserPassword(id, passwordHash, db = pool) {
 
 }
 
+/**
+ * Set or change a user's username - for an account that
+ * already exists (created before this feature, or created
+ * without one at the time).
+ */
+async function updateUsername(id, username, db = pool) {
+
+    const query = `
+        UPDATE users
+        SET username = $1
+        WHERE id = $2
+        RETURNING id, username;
+    `;
+
+    const result = await db.query(query, [username, id]);
+
+    return result.rows[0];
+
+}
+
 module.exports = {
 
     findUserByEmail,
@@ -278,6 +298,8 @@ module.exports = {
 
     updateUserProfile,
 
-    updateUserPassword
+    updateUserPassword,
+
+    updateUsername
 
 };

@@ -154,6 +154,33 @@ async function createOrLinkParent(data) {
 
 }
 
+/**
+ * Set or change the username for a parent who already has an
+ * account - covers accounts created before this feature
+ * existed. Verifies the target user actually belongs to this
+ * school and is a Parent, so a School Admin can't touch an
+ * account outside their own school.
+ */
+async function setParentUsername(parentUserId, schoolId, username) {
+
+    const user = await userModel.findUserById(parentUserId);
+
+    if (!user || user.school_id !== schoolId || user.role_name !== "Parent") {
+
+        throw new Error("This parent account was not found at your school.");
+
+    }
+
+    if (await userModel.usernameExists(username)) {
+
+        throw new Error("This username is already taken. Please choose another.");
+
+    }
+
+    return await userModel.updateUsername(parentUserId, username);
+
+}
+
 async function getParentsForStudent(studentId) {
 
     return await parentModel.getParentsForStudent(studentId);
@@ -165,6 +192,8 @@ module.exports = {
     getMyChildren,
 
     createOrLinkParent,
+
+    setParentUsername,
 
     getParentsForStudent
 

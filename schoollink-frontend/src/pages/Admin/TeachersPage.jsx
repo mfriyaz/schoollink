@@ -36,7 +36,8 @@ import {
     updateTeacherRecord,
     deactivateTeacherRecord,
     reactivateTeacherRecord,
-    addLoginToExistingTeacher
+    addLoginToExistingTeacher,
+    setTeacherUsername
 } from "../../services/teacherManagementService";
 
 import { getAllSubjectsForManagement } from "../../services/subjectManagementService";
@@ -133,6 +134,18 @@ function TeachersPage() {
     const [loginEmail, setLoginEmail] = useState("");
 
     const [loginUsername, setLoginUsername] = useState("");
+
+    const [usernameDialogOpen, setUsernameDialogOpen] = useState(false);
+
+    const [usernameTeacher, setUsernameTeacher] = useState(null);
+
+    const [usernameValue, setUsernameValue] = useState("");
+
+    const [settingUsername, setSettingUsername] = useState(false);
+
+    const [usernameError, setUsernameError] = useState("");
+
+    const [usernameSuccess, setUsernameSuccess] = useState("");
 
     const [loginPassword, setLoginPassword] = useState("");
 
@@ -455,6 +468,69 @@ function TeachersPage() {
 
     }
 
+    function openUsernameDialog(teacher) {
+
+        setUsernameTeacher(teacher);
+
+        setUsernameValue(teacher.username || "");
+
+        setUsernameError("");
+
+        setUsernameSuccess("");
+
+        setUsernameDialogOpen(true);
+
+    }
+
+    async function handleSetUsername() {
+
+        setUsernameError("");
+
+        setUsernameSuccess("");
+
+        if (!usernameValue) {
+
+            setUsernameError("Enter a username.");
+
+            return;
+
+        }
+
+        try {
+
+            setSettingUsername(true);
+
+            const response = await setTeacherUsername(usernameTeacher.id, usernameValue);
+
+            if (response.success) {
+
+                setUsernameSuccess("Username saved!");
+
+                await loadTeachers();
+
+            } else {
+
+                setUsernameError(response.message);
+
+            }
+
+        } catch (err) {
+
+            setUsernameError(
+
+                err.response?.data?.message ||
+                "Unable to save this username."
+
+            );
+
+        } finally {
+
+            setSettingUsername(false);
+
+        }
+
+    }
+
     async function handleAddLogin() {
 
         setLoginError("");
@@ -751,6 +827,20 @@ function TeachersPage() {
                                 >
 
                                     Add Login
+
+                                </Button>
+
+                            )}
+
+                            {teacher.user_id && (
+
+                                <Button
+                                    size="small"
+                                    startIcon={<VpnKeyIcon fontSize="small" />}
+                                    onClick={() => openUsernameDialog(teacher)}
+                                >
+
+                                    {teacher.username ? "Edit Username" : "Set Username"}
 
                                 </Button>
 
@@ -1288,6 +1378,53 @@ function TeachersPage() {
                     >
 
                         {addingLogin ? "Adding..." : "Add Login"}
+
+                    </Button>
+
+                </DialogActions>
+
+            </Dialog>
+
+            <Dialog open={usernameDialogOpen} onClose={() => setUsernameDialogOpen(false)} maxWidth="xs" fullWidth>
+
+                <DialogTitle>
+
+                    {usernameTeacher && usernameTeacher.username ? "Edit" : "Set"} Username for {usernameTeacher ? `${usernameTeacher.first_name} ${usernameTeacher.last_name}` : "Teacher"}
+
+                </DialogTitle>
+
+                <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+
+                    {usernameError && <Alert severity="error">{usernameError}</Alert>}
+
+                    {usernameSuccess && <Alert severity="success">{usernameSuccess}</Alert>}
+
+                    <TextField
+                        label="Username"
+                        size="small"
+                        fullWidth
+                        value={usernameValue}
+                        onChange={(e) => setUsernameValue(e.target.value)}
+                        helperText="Lets this teacher log in with a username instead of email. Must be unique across all schools."
+                    />
+
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button onClick={() => setUsernameDialogOpen(false)}>
+
+                        Close
+
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        onClick={handleSetUsername}
+                        disabled={settingUsername}
+                    >
+
+                        {settingUsername ? "Saving..." : "Save"}
 
                     </Button>
 
