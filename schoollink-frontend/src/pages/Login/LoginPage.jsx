@@ -70,7 +70,7 @@ function LoginPage() {
 
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState("");
+    const [identifier, setIdentifier] = useState("");
 
     const [password, setPassword] = useState("");
 
@@ -84,9 +84,9 @@ function LoginPage() {
 
         setError("");
 
-        if (!email || !password) {
+        if (!identifier || !password) {
 
-            setError("Please enter email and password.");
+            setError("Please enter your email/username and password.");
 
             return;
 
@@ -96,7 +96,7 @@ function LoginPage() {
 
             setLoading(true);
 
-            const response = await login(email, password);
+            const response = await login(identifier, password);
 
             if (response.success) {
 
@@ -295,10 +295,10 @@ function LoginPage() {
 
                     <TextField
                         fullWidth
-                        label="Email"
+                        label="Email or Username"
                         margin="normal"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
                         onKeyDown={handleKeyDown}
                     />
 

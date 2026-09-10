@@ -9,16 +9,21 @@ async function login(req, res) {
 
     try {
 
-        const { email, password } = req.body;
+        const { identifier, email, password } = req.body;
 
-        if (!email || !password) {
+        // Accept the older "email" field name too, so any
+        // client that hasn't picked up the new field yet keeps
+        // working without a forced simultaneous frontend deploy.
+        const loginIdentifier = identifier || email;
+
+        if (!loginIdentifier || !password) {
             return res.status(400).json({
                 success: false,
-                message: "Email and password are required"
+                message: "Email/username and password are required"
             });
         }
 
-        const result = await authService.login(email, password);
+        const result = await authService.login(loginIdentifier, password);
 
         return res.json({
             success: true,

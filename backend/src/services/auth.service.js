@@ -3,13 +3,16 @@ const jwt = require("jsonwebtoken");
 
 const userModel = require("../models/user.model");
 
-async function login(email, password) {
+async function login(identifier, password) {
 
-    // Find user by email
-    const user = await userModel.findUserByEmail(email);
+    // Find user by email OR username - whichever the person
+    // typed. Username is unique platform-wide (not just within
+    // a school), so this always resolves to at most one account
+    // without needing to know which school first.
+    const user = await userModel.findUserByEmailOrUsername(identifier);
 
     if (!user) {
-        throw new Error("Invalid email or password");
+        throw new Error("Invalid email/username or password");
     }
 
     // Check account status
@@ -24,7 +27,7 @@ async function login(email, password) {
     );
 
     if (!passwordMatch) {
-        throw new Error("Invalid email or password");
+        throw new Error("Invalid email/username or password");
     }
 
     // Generate JWT Token
@@ -46,6 +49,7 @@ async function login(email, password) {
             id: user.id,
             full_name: user.full_name,
             email: user.email,
+            username: user.username,
             role: user.role_name,
             school: user.school_name,
             school_timezone: user.school_timezone || "Asia/Singapore"

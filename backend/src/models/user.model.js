@@ -33,6 +33,42 @@ async function findUserByEmail(email, db = pool) {
 }
 
 /**
+ * Find user by email OR username - whichever the person typed
+ * into the single login field. Username is unique platform-wide,
+ * so matching on it alone (without a school_id) is always safe.
+ */
+async function findUserByEmailOrUsername(identifier, db = pool) {
+
+    const query = `
+        SELECT
+            u.id,
+            u.school_id,
+            u.role_id,
+            u.full_name,
+            u.email,
+            u.username,
+            u.mobile,
+            u.password_hash,
+            u.is_active,
+            r.role_name,
+            s.school_name,
+            s.timezone AS school_timezone
+        FROM users u
+        INNER JOIN roles r
+            ON u.role_id = r.id
+        LEFT JOIN schools s
+            ON u.school_id = s.id
+        WHERE LOWER(u.email) = LOWER($1)
+        OR LOWER(u.username) = LOWER($1)
+        LIMIT 1;
+    `;
+
+    const result = await db.query(query, [identifier]);
+
+    return result.rows[0];
+}
+
+/**
  * Check email exists
  */
 async function emailExists(email) {
@@ -40,6 +76,20 @@ async function emailExists(email) {
     const result = await pool.query(
         "SELECT id FROM users WHERE LOWER(email)=LOWER($1)",
         [email]
+    );
+
+    return result.rows.length > 0;
+}
+
+/**
+ * Check username exists (unique platform-wide, not just within
+ * a school - see the migration comment for why).
+ */
+async function usernameExists(username) {
+
+    const result = await pool.query(
+        "SELECT id FROM users WHERE LOWER(username)=LOWER($1)",
+        [username]
     );
 
     return result.rows.length > 0;
@@ -70,13 +120,14 @@ async function createUser(data, db = pool) {
             role_id,
             full_name,
             email,
+            username,
             mobile,
             password_hash,
             is_active
         )
         VALUES
         (
-            $1,$2,$3,$4,$5,$6,true
+            $1,$2,$3,$4,$5,$6,$7,true
         )
         RETURNING
             id,
@@ -84,6 +135,7 @@ async function createUser(data, db = pool) {
             role_id,
             full_name,
             email,
+            username,
             mobile,
             is_active,
             created_at;
@@ -98,6 +150,8 @@ async function createUser(data, db = pool) {
         data.full_name,
 
         data.email,
+
+        data.username || null,
 
         data.mobile,
 
@@ -208,7 +262,11 @@ module.exports = {
 
     findUserByEmail,
 
+    findUserByEmailOrUsername,
+
     emailExists,
+
+    usernameExists,
 
     mobileExists,
 
