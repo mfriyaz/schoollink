@@ -27,6 +27,16 @@ async function createTeacher(data) {
 
         }
 
+        if (data.username) {
+
+            if (await userModel.usernameExists(data.username)) {
+
+                throw new Error("This username is already taken. Please choose another.");
+
+            }
+
+        }
+
         const teacherRole = await roleModel.getRoleByName("Teacher");
 
         const hashedPassword = await bcrypt.hash(data.temporary_password, 10);
@@ -40,6 +50,8 @@ async function createTeacher(data) {
             full_name: `${data.first_name} ${data.last_name}`,
 
             email: data.email,
+
+            username: data.username,
 
             mobile: data.phone,
 
@@ -93,7 +105,7 @@ async function createTeacher(data) {
  * one yet - covers teachers created before this feature
  * existed, or created without a password originally.
  */
-async function addLoginToExistingTeacher(teacherId, schoolId, email, password) {
+async function addLoginToExistingTeacher(teacherId, schoolId, email, password, username) {
 
     const teacher = await teacherModel.getTeacherById(teacherId, schoolId);
 
@@ -115,6 +127,16 @@ async function addLoginToExistingTeacher(teacherId, schoolId, email, password) {
 
     }
 
+    if (username) {
+
+        if (await userModel.usernameExists(username)) {
+
+            throw new Error("This username is already taken. Please choose another.");
+
+        }
+
+    }
+
     const teacherRole = await roleModel.getRoleByName("Teacher");
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -128,6 +150,8 @@ async function addLoginToExistingTeacher(teacherId, schoolId, email, password) {
         full_name: `${teacher.first_name} ${teacher.last_name}`,
 
         email,
+
+        username,
 
         mobile: teacher.phone,
 

@@ -57,6 +57,16 @@ async function createOrLinkParent(data) {
 
         }
 
+        if (data.username) {
+
+            if (await userModel.usernameExists(data.username)) {
+
+                throw new Error("This username is already taken. Please choose another.");
+
+            }
+
+        }
+
         const parentRole = await roleModel.getRoleByName("Parent");
 
         const hashedPassword = await bcrypt.hash(data.temporary_password, 10);
@@ -70,6 +80,8 @@ async function createOrLinkParent(data) {
             full_name: data.full_name,
 
             email: data.email,
+
+            username: data.username,
 
             mobile: data.mobile,
 
