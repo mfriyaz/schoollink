@@ -66,6 +66,8 @@ const emptyForm = {
 
     email: "",
 
+    username: "",
+
     qualification: "",
 
     experience_years: "",
@@ -129,6 +131,8 @@ function TeachersPage() {
     const [loginTeacher, setLoginTeacher] = useState(null);
 
     const [loginEmail, setLoginEmail] = useState("");
+
+    const [loginUsername, setLoginUsername] = useState("");
 
     const [loginPassword, setLoginPassword] = useState("");
 
@@ -439,6 +443,8 @@ function TeachersPage() {
 
         setLoginEmail(teacher.email || "");
 
+        setLoginUsername("");
+
         setLoginPassword("");
 
         setLoginError("");
@@ -470,6 +476,8 @@ function TeachersPage() {
             const response = await addLoginToExistingTeacher(loginTeacher.id, {
 
                 email: loginEmail,
+
+                username: loginUsername || undefined,
 
                 temporary_password: loginPassword
 
@@ -905,6 +913,23 @@ function TeachersPage() {
                             <Grid size={{ xs: 12, sm: 6 }}>
 
                                 <TextField
+                                    label="Username (optional)"
+                                    value={form.username}
+                                    onChange={(e) => setForm({ ...form, username: e.target.value })}
+                                    fullWidth
+                                    size="small"
+                                    helperText="Lets this teacher log in with a username instead of email"
+                                />
+
+                            </Grid>
+
+                        )}
+
+                        {!editingId && (
+
+                            <Grid size={{ xs: 12, sm: 6 }}>
+
+                                <TextField
                                     label="Temporary Password (optional)"
                                     value={form.temporary_password}
                                     onChange={(e) => setForm({ ...form, temporary_password: e.target.value })}
@@ -1227,6 +1252,15 @@ function TeachersPage() {
                         fullWidth
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
+                    />
+
+                    <TextField
+                        label="Username (optional)"
+                        size="small"
+                        fullWidth
+                        value={loginUsername}
+                        onChange={(e) => setLoginUsername(e.target.value)}
+                        helperText="Lets this teacher log in with a username instead of their email. Must be unique across all schools."
                     />
 
                     <TextField

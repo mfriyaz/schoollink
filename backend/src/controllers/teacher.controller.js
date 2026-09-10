@@ -48,7 +48,7 @@ async function addLoginToExistingTeacher(req, res) {
 
         const { id } = req.params;
 
-        const { email, temporary_password } = req.body;
+        const { email, username, temporary_password } = req.body;
 
         if (!email || !temporary_password) {
 
@@ -68,7 +68,9 @@ async function addLoginToExistingTeacher(req, res) {
 
             email,
 
-            temporary_password
+            temporary_password,
+
+            username
 
         );
 

@@ -45,6 +45,7 @@ async function createOrLinkParent(req, res) {
             existing_parent_email,
             full_name,
             email,
+            username,
             mobile,
             temporary_password
         } = req.body;
@@ -87,6 +88,8 @@ async function createOrLinkParent(req, res) {
             full_name,
 
             email,
+
+            username,
 
             mobile,
 
