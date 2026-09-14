@@ -5,6 +5,10 @@ import {
 
 function HeroCard() {
 
+    const storedUser = localStorage.getItem("user");
+
+    const user = storedUser ? JSON.parse(storedUser) : null;
+
     const hour = new Date().getHours();
 
     let greeting = "Good Evening";
@@ -41,7 +45,7 @@ function HeroCard() {
                 fontWeight={700}
                 sx={{ fontSize: { xs: "1.5rem", md: "2.125rem" } }}
             >
-                {greeting}, Riyaz 👋
+                {greeting}{user ? `, ${user.full_name}` : ""} 👋
             </Typography>
 
             <Typography
