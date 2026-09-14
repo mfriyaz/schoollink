@@ -76,6 +76,8 @@ function LoginPage() {
 
     const [showPassword, setShowPassword] = useState(false);
 
+    const [rememberMe, setRememberMe] = useState(false);
+
     const [loading, setLoading] = useState(false);
 
     const [error, setError] = useState("");
@@ -96,7 +98,7 @@ function LoginPage() {
 
             setLoading(true);
 
-            const response = await login(identifier, password);
+            const response = await login(identifier, password, rememberMe);
 
             if (response.success) {
 
@@ -351,7 +353,15 @@ function LoginPage() {
                     >
 
                         <FormControlLabel
-                            control={<Checkbox size="small" />}
+                            control={
+
+                                <Checkbox
+                                    size="small"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                />
+
+                            }
                             label={
 
                                 <Typography sx={{ fontSize: "0.85rem", color: "#64748B" }}>

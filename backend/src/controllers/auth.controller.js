@@ -9,7 +9,7 @@ async function login(req, res) {
 
     try {
 
-        const { identifier, email, password } = req.body;
+        const { identifier, email, password, remember } = req.body;
 
         // Accept the older "email" field name too, so any
         // client that hasn't picked up the new field yet keeps
@@ -23,7 +23,7 @@ async function login(req, res) {
             });
         }
 
-        const result = await authService.login(loginIdentifier, password);
+        const result = await authService.login(loginIdentifier, password, remember);
 
         return res.json({
             success: true,

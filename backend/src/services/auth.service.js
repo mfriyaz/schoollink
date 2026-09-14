@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const userModel = require("../models/user.model");
 
-async function login(identifier, password) {
+async function login(identifier, password, remember) {
 
     // Find user by email OR username - whichever the person
     // typed. Username is unique platform-wide (not just within
@@ -30,6 +30,11 @@ async function login(identifier, password) {
         throw new Error("Invalid email/username or password");
     }
 
+    // "Remember me" keeps someone logged in for a month instead
+    // of getting signed out after 8 hours - useful for a parent
+    // or teacher checking the app from their own regular device.
+    const tokenLifetime = remember ? "30d" : "8h";
+
     // Generate JWT Token
     const token = jwt.sign(
         {
@@ -39,7 +44,7 @@ async function login(identifier, password) {
         },
         process.env.JWT_SECRET,
         {
-            expiresIn: "8h"
+            expiresIn: tokenLifetime
         }
     );
 

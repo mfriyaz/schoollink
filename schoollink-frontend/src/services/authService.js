@@ -1,6 +1,6 @@
 import api from "./api";
 
-export async function login(email, password) {
+export async function login(identifier, password, remember) {
 
     const response = await api.post(
 
@@ -8,9 +8,11 @@ export async function login(email, password) {
 
         {
 
-            email,
+            identifier,
 
-            password
+            password,
+
+            remember
 
         }
 
