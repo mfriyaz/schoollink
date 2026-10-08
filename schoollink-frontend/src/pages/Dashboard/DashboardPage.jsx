@@ -18,7 +18,6 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import KpiCard from "../../components/Dashboard/KpiCard";
 import QuickActionCard from "../../components/Dashboard/QuickActionCard";
 
-import DashboardCharts from "../../components/Dashboard/DashboardCharts";
 
 import CalendarCard from "../../components/Dashboard/CalendarCard";
 import AnnouncementCard from "../../components/Dashboard/AnnouncementCard";
@@ -280,8 +279,6 @@ function DashboardPage() {
 
                 <Box>
 
-                    <DashboardCharts />
-
                     <DashboardSection
 
                         left={
@@ -312,17 +309,17 @@ function DashboardPage() {
 
                     <Grid
                         container
-                        spacing={3}
-                        sx={{ mb: 4 }}
+                        spacing={{ xs: 2, md: 3 }}
+                        sx={{ mb: 3 }}
                     >
 
-                        <Grid size={{ xs: 12, md: 6 }}>
+                        <Grid size={{ xs: 12, md: 5 }}>
 
                             <CalendarCard />
 
                         </Grid>
 
-                        <Grid size={{ xs: 12, md: 6 }}>
+                        <Grid size={{ xs: 12, md: 7 }}>
 
                             <AnnouncementCard
                                 announcements={dashboard.announcements || []}

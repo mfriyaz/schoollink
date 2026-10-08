@@ -1,170 +1,146 @@
 import { useNavigate } from "react-router-dom";
-
-import {
-    Avatar,
-    Box,
-    Chip,
-    List,
-    ListItem,
-    ListItemAvatar,
-    ListItemText,
-    Typography
-} from "@mui/material";
-
+import { Box, Chip, Typography } from "@mui/material";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-
+import CampaignIcon from "@mui/icons-material/Campaign";
+import EventNoteIcon from "@mui/icons-material/EventNote";
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
-
-import AppCard from "../ui/AppCard";
+import PanelCard, { EmptyState } from "./PanelCard";
 
 function RecentPostsCard({ posts }) {
-
     const navigate = useNavigate();
+    const list = posts || [];
 
     return (
-
-        <AppCard>
-
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-
+        <PanelCard
+            title="Recent Posts"
+            subtitle="Latest posts and announcements"
+            action={
                 <Typography
-                    variant="h6"
-                    sx={{
-                        fontWeight: 700
-                    }}
-                >
-                    Recent Posts
-                </Typography>
-
-                <Typography
-
                     onClick={() => navigate("/posts")}
-
                     sx={{
-
                         color: "#2563EB",
-
                         fontWeight: 600,
-
-                        fontSize: "0.85rem",
-
-                        cursor: "pointer"
-
+                        fontSize: "0.82rem",
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        "&:hover": { textDecoration: "underline" }
                     }}
-
                 >
-
-                    View All
-
+                    View all
                 </Typography>
-
-            </Box>
-
-            {(!posts || posts.length === 0) && (
-
-                <Typography color="text.secondary">
-
-                    No posts yet.
-
-                </Typography>
-
+            }
+        >
+            {list.length === 0 && (
+                <EmptyState icon={<EventNoteIcon />} text="No posts yet." />
             )}
 
-            <List>
+            {list.map((post, index) => {
+                const isAnnouncement = post.post_type === "announcement";
 
-                {
+                return (
+                    <Box
+                        key={`${post.post_type}-${post.id}`}
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
+                            py: 1.25,
+                            borderTop: index === 0 ? "none" : "1px solid #F1F5F9"
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                width: 36,
+                                height: 36,
+                                minWidth: 36,
+                                borderRadius: "10px",
+                                bgcolor: isAnnouncement ? "#FCE7F3" : "#DBEAFE",
+                                color: isAnnouncement ? "#DB2777" : "#2563EB",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                "& svg": { fontSize: 19 }
+                            }}
+                        >
+                            {isAnnouncement ? <CampaignIcon /> : <MenuBookIcon />}
+                        </Box>
 
-                    (posts || []).map((post) => (
+                        <Box sx={{ minWidth: 0, flex: 1 }}>
+                            <Typography
+                                sx={{
+                                    fontWeight: 600,
+                                    fontSize: "0.9rem",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis"
+                                }}
+                            >
+                                {post.title}
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    color: "#64748B",
+                                    fontSize: "0.76rem",
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis"
+                                }}
+                            >
+                                {isAnnouncement
+                                    ? "Announcement · All Classes"
+                                    : `${post.class_name} - ${post.section_name} · ${post.subject_name}`}
+                            </Typography>
+                        </Box>
 
-                        <ListItem
-                            key={`${post.post_type}-${post.id}`}
-                            disableGutters
-                            secondaryAction={
-
-                                <Box sx={{ textAlign: "right" }}>
-
-                                    {post.total_students === null ? (
-
+                        <Box sx={{ textAlign: "right", flexShrink: 0 }}>
+                            {post.total_students === null ? (
+                                <Chip
+                                    size="small"
+                                    label={post.target_audience}
+                                    sx={{ height: 22, fontSize: "0.72rem" }}
+                                />
+                            ) : (
+                                <Box sx={{ display: "flex", gap: 0.5, justifyContent: "flex-end" }}>
+                                    <Chip
+                                        size="small"
+                                        label={`${post.acknowledged_count}/${post.total_students}`}
+                                        sx={{
+                                            height: 22,
+                                            fontSize: "0.72rem",
+                                            fontWeight: 600,
+                                            bgcolor: "#DCFCE7",
+                                            color: "#15803D"
+                                        }}
+                                    />
+                                    {post.pending_count > 0 && (
                                         <Chip
                                             size="small"
-                                            label={post.target_audience}
+                                            label={`${post.pending_count} pending`}
+                                            sx={{
+                                                height: 22,
+                                                fontSize: "0.72rem",
+                                                fontWeight: 600,
+                                                bgcolor: "#FFEDD5",
+                                                color: "#C2410C",
+                                                display: { xs: "none", sm: "inline-flex" }
+                                            }}
                                         />
-
-                                    ) : (
-
-                                        <Box sx={{ display: "flex", gap: 1 }}>
-
-                                            <Chip
-                                                size="small"
-                                                color="success"
-                                                label={`${post.acknowledged_count}/${post.total_students}`}
-                                            />
-
-                                            <Chip
-                                                size="small"
-                                                color="warning"
-                                                label={`${post.pending_count} Pending`}
-                                            />
-
-                                        </Box>
-
                                     )}
-
-                                    <Typography sx={{ color: "#94A3B8", fontSize: "0.72rem", mt: 0.5 }}>
-
-                                        {toUtcDate(post.created_at).toLocaleDateString(undefined, {
-
-                                            timeZone: getSchoolTimezone(),
-
-                                            month: "short",
-
-                                            day: "numeric"
-
-                                        })}
-
-                                    </Typography>
-
                                 </Box>
-
-                            }
-                        >
-
-                            <ListItemAvatar>
-
-                                <Avatar>
-
-                                    <MenuBookIcon fontSize="small" />
-
-                                </Avatar>
-
-                            </ListItemAvatar>
-
-                            <ListItemText
-
-                                primary={post.title}
-
-                                secondary={
-
-                                    post.post_type === "announcement"
-                                        ? "Announcement · All Classes"
-                                        : `${post.class_name} - ${post.section_name} · ${post.subject_name}`
-
-                                }
-
-                            />
-
-                        </ListItem>
-
-                    ))
-
-                }
-
-            </List>
-
-        </AppCard>
-
+                            )}
+                            <Typography sx={{ color: "#94A3B8", fontSize: "0.7rem", mt: 0.5 }}>
+                                {toUtcDate(post.created_at).toLocaleDateString(undefined, {
+                                    timeZone: getSchoolTimezone(),
+                                    month: "short",
+                                    day: "numeric"
+                                })}
+                            </Typography>
+                        </Box>
+                    </Box>
+                );
+            })}
+        </PanelCard>
     );
-
 }
 
 export default RecentPostsCard;

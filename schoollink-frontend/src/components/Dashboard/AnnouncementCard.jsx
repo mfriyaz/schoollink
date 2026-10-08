@@ -1,91 +1,63 @@
-import {
-    Paper,
-    Typography,
-    List,
-    ListItem,
-    Divider,
-    Box
-} from "@mui/material";
-
+import { Box, Typography } from "@mui/material";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import PanelCard, { EmptyState } from "./PanelCard";
 
 function AnnouncementCard({ announcements = [] }) {
-
     return (
+        <PanelCard title="Announcements" subtitle="Active school announcements">
+            {announcements.length === 0 && (
+                <EmptyState icon={<CampaignIcon />} text="No announcements right now." />
+            )}
 
-        <Paper
-            sx={{
-                p: 3,
-                borderRadius: 4,
-                boxShadow: "0 10px 30px rgba(0,0,0,.05)",
-                height: "100%"
-            }}
-        >
+            {announcements.map((item, index) => (
+                <Box
+                    key={item.id}
+                    sx={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 1.5,
+                        py: 1.25,
+                        borderTop: index === 0 ? "none" : "1px solid #F1F5F9"
+                    }}
+                >
+                    <Box
+                        sx={{
+                            width: 36,
+                            height: 36,
+                            minWidth: 36,
+                            borderRadius: "10px",
+                            bgcolor: "#DBEAFE",
+                            color: "#2563EB",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            "& svg": { fontSize: 19 }
+                        }}
+                    >
+                        <CampaignIcon />
+                    </Box>
 
-            <Typography
-                variant="h6"
-                fontWeight={700}
-                mb={2}
-            >
-                Announcements
-            </Typography>
-
-            <List>
-
-                {
-                    announcements.map((item, index) => (
-
-                        <Box key={item.id}>
-
-                            <ListItem
-                                sx={{
-                                    alignItems: "flex-start"
-                                }}
-                            >
-
-                                <CampaignIcon
-                                    sx={{
-                                        color: "#2563EB",
-                                        mr: 2,
-                                        mt: .5
-                                    }}
-                                />
-
-                                <Box>
-
-                                    <Typography
-                                        fontWeight={700}
-                                    >
-                                        {item.title}
-                                    </Typography>
-
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                    >
-                                        {item.description}
-                                    </Typography>
-
-                                </Box>
-
-                            </ListItem>
-
-                            {
-                                index !== announcements.length - 1 &&
-                                <Divider />
-                            }
-
-                        </Box>
-
-                    ))
-                }
-
-            </List>
-
-        </Paper>
-
+                    <Box sx={{ minWidth: 0 }}>
+                        <Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
+                            {item.title}
+                        </Typography>
+                        <Typography
+                            sx={{
+                                color: "#64748B",
+                                fontSize: "0.8rem",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden"
+                            }}
+                        >
+                            {item.description}
+                        </Typography>
+                    </Box>
+                </Box>
+            ))}
+        </PanelCard>
     );
-
 }
 
 export default AnnouncementCard;
