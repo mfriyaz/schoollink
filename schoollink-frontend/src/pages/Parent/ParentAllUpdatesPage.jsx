@@ -2,10 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
-    Badge,
     Box,
-    Button,
-    Card,
     Chip,
     CircularProgress,
     InputAdornment,
@@ -16,6 +13,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBackOutlined";
 import SearchIcon from "@mui/icons-material/SearchOutlined";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CampaignIcon from "@mui/icons-material/CampaignOutlined";
 
 import {
@@ -25,13 +23,6 @@ import {
 } from "../../services/postService";
 
 import { toUtcDate, formatPostTime, getSchoolTimezone } from "../../utils/dateUtils";
-
-const panelSx = {
-    p: { xs: 2, md: 2.5 },
-    borderRadius: 3,
-    border: "1px solid #EEF2F7",
-    boxShadow: "0 1px 3px rgba(15,23,42,.06)"
-};
 
 function ParentAllUpdatesPage() {
 
@@ -138,249 +129,288 @@ function ParentAllUpdatesPage() {
         .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()));
 
     if (loading) {
-
         return (
-
             <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
-
                 <CircularProgress />
-
             </Box>
-
         );
-
     }
 
-    return (
+    const schoolTz = getSchoolTimezone();
 
-        <Box sx={{ maxWidth: 800 }}>
+    function dayLabel(dateValue) {
+        const d = toUtcDate(dateValue);
+        const key = (x) => x.toLocaleDateString("en-CA", { timeZone: schoolTz });
+        const now = new Date();
+        const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+        if (key(d) === key(now)) return "Today";
+        if (key(d) === key(yesterday)) return "Yesterday";
+
+        return d.toLocaleDateString(undefined, {
+            timeZone: schoolTz,
+            weekday: "short",
+            day: "numeric",
+            month: "short"
+        });
+    }
+
+    const filters = [
+        { value: "all", label: "All", count: posts.length },
+        { value: "homework", label: "Homework", count: posts.filter((p) => p.post_type !== "announcement").length },
+        { value: "announcement", label: "Announcements", count: posts.filter((p) => p.post_type === "announcement").length }
+    ];
+
+    // Group the (already newest-first) list by day
+    const groups = [];
+    filteredPosts.forEach((post) => {
+        const label = dayLabel(post.created_at);
+        const last = groups[groups.length - 1];
+        if (last && last.label === label) {
+            last.items.push(post);
+        } else {
+            groups.push({ label, items: [post] });
+        }
+    });
+
+    const selectedChild = children.find((c) => c.student_id === selectedStudentId);
+
+    return (
+        <Box sx={{ maxWidth: 820 }}>
 
             <Box
                 onClick={() => navigate("/parent/dashboard")}
-                sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#64748B", cursor: "pointer", mb: 2, width: "fit-content" }}
+                sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    color: "#475569",
+                    cursor: "pointer",
+                    mb: 1.5,
+                    px: 1.25,
+                    py: 0.5,
+                    borderRadius: 5,
+                    bgcolor: "#F1F5F9",
+                    "&:hover": { bgcolor: "#E2E8F0" }
+                }}
             >
-
-                <ArrowBackIcon fontSize="small" />
-
-                <Typography sx={{ fontSize: "0.9rem" }}>Back to Dashboard</Typography>
-
+                <ArrowBackIcon sx={{ fontSize: 18 }} />
+                <Typography sx={{ fontSize: "0.82rem", fontWeight: 600 }}>
+                    Dashboard
+                </Typography>
             </Box>
 
-            <Typography sx={{ fontWeight: 700, fontSize: { xs: "1.3rem", md: "1.5rem" }, mb: 2.5 }}>
-
-                All Updates
-
-            </Typography>
-
-            <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 3 }}>
-
-                <TextField
-                    size="small"
-                    placeholder="Search by title..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    InputProps={{
-
-                        startAdornment: (
-
-                            <InputAdornment position="start">
-
-                                <SearchIcon fontSize="small" />
-
-                            </InputAdornment>
-
-                        )
-
-                    }}
-                    sx={{ minWidth: 220 }}
-                />
-
-                <Badge badgeContent={posts.length} color="primary" overlap="rectangular">
-
-                    <Button
-                        size="small"
-                        variant={postFilter === "all" ? "contained" : "outlined"}
-                        onClick={() => setPostFilter("all")}
-                        sx={{ pr: 2 }}
-                    >
-
-                        All
-
-                    </Button>
-
-                </Badge>
-
-                <Badge badgeContent={posts.filter((p) => p.post_type !== "announcement").length} color="primary" overlap="rectangular">
-
-                    <Button
-                        size="small"
-                        variant={postFilter === "homework" ? "contained" : "outlined"}
-                        onClick={() => setPostFilter("homework")}
-                        sx={{ pr: 2 }}
-                    >
-
-                        Homework
-
-                    </Button>
-
-                </Badge>
-
-                <Badge badgeContent={posts.filter((p) => p.post_type === "announcement").length} color="primary" overlap="rectangular">
-
-                    <Button
-                        size="small"
-                        variant={postFilter === "announcement" ? "contained" : "outlined"}
-                        onClick={() => setPostFilter("announcement")}
-                        sx={{ pr: 2 }}
-                    >
-
-                        Announcements
-
-                    </Button>
-
-                </Badge>
-
-            </Box>
-
-            <Card sx={{ ...panelSx }}>
-
-                {filteredPosts.length === 0 && (
-
-                    <Typography color="text.secondary">
-
-                        No updates found.
-
+            <Box sx={{ display: "flex", alignItems: "baseline", gap: 1.5, flexWrap: "wrap", mb: 2 }}>
+                <Typography sx={{ fontWeight: 700, fontSize: { xs: "1.4rem", md: "1.7rem" }, lineHeight: 1.2 }}>
+                    All Updates
+                </Typography>
+                {selectedChild && (
+                    <Typography sx={{ color: "#64748B", fontSize: "0.88rem" }}>
+                        {selectedChild.first_name} {selectedChild.last_name} · {selectedChild.class_name} - {selectedChild.section_name}
                     </Typography>
-
                 )}
+            </Box>
 
-                {filteredPosts.map((post) => {
+            <TextField
+                fullWidth
+                size="small"
+                placeholder="Search updates by title"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon fontSize="small" />
+                        </InputAdornment>
+                    )
+                }}
+                sx={{
+                    mb: 1.5,
+                    "& .MuiOutlinedInput-root": {
+                        borderRadius: 3,
+                        bgcolor: "#FFFFFF"
+                    }
+                }}
+            />
 
-                    const isAnnouncement = post.post_type === "announcement";
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2.5 }}>
+                {filters.map((f) => {
+                    const active = postFilter === f.value;
 
                     return (
-
-                        <Box
-
-                            key={`${post.post_type}-${post.id}`}
-
-                            onClick={() => navigate(
-
-                                `/parent/post/${post.post_type}/${post.id}/${selectedStudentId}`,
-
-                                { state: { post, student: children.find((c) => c.student_id === selectedStudentId) } }
-
-                            )}
-
+                        <Chip
+                            key={f.value}
+                            clickable
+                            onClick={() => setPostFilter(f.value)}
+                            label={`${f.label} · ${f.count}`}
                             sx={{
-
-                                display: "flex",
-
-                                alignItems: "center",
-
-                                justifyContent: "space-between",
-
-                                py: 2,
-
-                                px: 1,
-
-                                cursor: "pointer",
-
-                                borderRadius: 2,
-
-                                borderBottom: "1px solid #F1F5F9",
-
-                                "&:hover": { bgcolor: "#F8FAFC" },
-
-                                "&:last-of-type": { borderBottom: "none" }
-
+                                fontWeight: 600,
+                                fontSize: "0.82rem",
+                                height: 32,
+                                bgcolor: active ? "#2563EB" : "#FFFFFF",
+                                color: active ? "#FFFFFF" : "#475569",
+                                border: active ? "1px solid #2563EB" : "1px solid #E2E8F0",
+                                "&:hover": { bgcolor: active ? "#1D4ED8" : "#F8FAFC" }
                             }}
-
-                        >
-
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-
-                                <Box
-
-                                    sx={{
-
-                                        width: 40,
-
-                                        height: 40,
-
-                                        borderRadius: "10px",
-
-                                        bgcolor: isAnnouncement ? "#EDE9FE" : "#DBEAFE",
-
-                                        display: "flex",
-
-                                        alignItems: "center",
-
-                                        justifyContent: "center",
-
-                                        flexShrink: 0
-
-                                    }}
-
-                                >
-
-                                    {isAnnouncement
-
-                                        ? <CampaignIcon sx={{ color: "#7C3AED", fontSize: 20 }} />
-
-                                        : <MenuBookIcon sx={{ color: "#2563EB", fontSize: 20 }} />}
-
-                                </Box>
-
-                                <Box>
-
-                                    <Typography sx={{ fontWeight: 600 }}>
-
-                                        {post.title}
-
-                                    </Typography>
-
-                                    <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
-
-                                        {isAnnouncement
-                                            ? `Announcement · ${post.target_audience}`
-                                            : `${post.teacher_first_name} ${post.teacher_last_name} · ${post.subject_name}`}
-
-                                    </Typography>
-
-                                </Box>
-
-                            </Box>
-
-                            <Box sx={{ textAlign: "right" }}>
-
-                                <Chip
-                                    size="small"
-                                    color={post.is_acknowledged ? "success" : post.require_acknowledgement === false ? "default" : "warning"}
-                                    label={post.is_acknowledged ? "Acknowledged" : post.require_acknowledgement === false ? "No Action Needed" : "Pending"}
-                                    sx={{ fontWeight: 600 }}
-                                />
-
-                                <Typography sx={{ color: "#94A3B8", fontSize: "0.72rem", mt: 0.5 }}>
-
-                                    {formatPostTime(post.created_at)}
-
-                                </Typography>
-
-                            </Box>
-
-                        </Box>
-
+                        />
                     );
-
                 })}
+            </Box>
 
-            </Card>
+            {filteredPosts.length === 0 && (
+                <Box
+                    sx={{
+                        py: 6,
+                        textAlign: "center",
+                        color: "#94A3B8",
+                        bgcolor: "#FFFFFF",
+                        border: "1px solid #EEF2F7",
+                        borderRadius: 3
+                    }}
+                >
+                    <MenuBookIcon sx={{ fontSize: 36, mb: 0.5 }} />
+                    <Typography sx={{ fontSize: "0.9rem" }}>
+                        No updates found.
+                    </Typography>
+                </Box>
+            )}
+
+            {groups.map((group) => (
+                <Box key={group.label} sx={{ mb: 2.5 }}>
+
+                    <Typography
+                        sx={{
+                            color: "#64748B",
+                            fontSize: "0.74rem",
+                            fontWeight: 700,
+                            letterSpacing: 0.6,
+                            textTransform: "uppercase",
+                            mb: 1,
+                            px: 0.5
+                        }}
+                    >
+                        {group.label}
+                    </Typography>
+
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+
+                        {group.items.map((post) => {
+                            const isAnnouncement = post.post_type === "announcement";
+
+                            const statusLabel = post.is_acknowledged
+                                ? "Acknowledged"
+                                : post.require_acknowledgement === false
+                                    ? "No action needed"
+                                    : "Pending";
+
+                            const statusStyle = post.is_acknowledged
+                                ? { bgcolor: "#DCFCE7", color: "#15803D" }
+                                : post.require_acknowledgement === false
+                                    ? { bgcolor: "#F1F5F9", color: "#64748B" }
+                                    : { bgcolor: "#FFEDD5", color: "#C2410C" };
+
+                            return (
+                                <Box
+                                    key={`${post.post_type}-${post.id}`}
+                                    onClick={() => navigate(
+                                        `/parent/post/${post.post_type}/${post.id}/${selectedStudentId}`,
+                                        { state: { post, student: selectedChild } }
+                                    )}
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1.5,
+                                        px: { xs: 1.5, md: 2 },
+                                        py: 1.5,
+                                        bgcolor: "#FFFFFF",
+                                        border: "1px solid #EEF2F7",
+                                        borderRadius: 3,
+                                        boxShadow: "0 1px 3px rgba(15,23,42,.05)",
+                                        cursor: "pointer",
+                                        transition: ".15s",
+                                        "&:hover": {
+                                            boxShadow: "0 4px 12px rgba(15,23,42,.08)",
+                                            borderColor: "#DBEAFE"
+                                        }
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            width: 40,
+                                            height: 40,
+                                            minWidth: 40,
+                                            borderRadius: "10px",
+                                            bgcolor: isAnnouncement ? "#EDE9FE" : "#DBEAFE",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center"
+                                        }}
+                                    >
+                                        {isAnnouncement
+                                            ? <CampaignIcon sx={{ color: "#7C3AED", fontSize: 21 }} />
+                                            : <MenuBookIcon sx={{ color: "#2563EB", fontSize: 21 }} />}
+                                    </Box>
+
+                                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                                        <Typography
+                                            sx={{
+                                                fontWeight: 600,
+                                                fontSize: "0.92rem",
+                                                lineHeight: 1.3,
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 2,
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: "hidden"
+                                            }}
+                                        >
+                                            {post.title}
+                                        </Typography>
+
+                                        <Typography
+                                            sx={{
+                                                color: "#64748B",
+                                                fontSize: "0.78rem",
+                                                mt: 0.25,
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis"
+                                            }}
+                                        >
+                                            {isAnnouncement
+                                                ? `Announcement · ${post.target_audience}`
+                                                : `${post.teacher_first_name} ${post.teacher_last_name} · ${post.subject_name}`}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box sx={{ textAlign: "right", flexShrink: 0 }}>
+                                        <Chip
+                                            size="small"
+                                            label={statusLabel}
+                                            sx={{
+                                                height: 22,
+                                                fontSize: "0.72rem",
+                                                fontWeight: 600,
+                                                ...statusStyle
+                                            }}
+                                        />
+                                        <Typography sx={{ color: "#94A3B8", fontSize: "0.7rem", mt: 0.5 }}>
+                                            {formatPostTime(post.created_at)}
+                                        </Typography>
+                                    </Box>
+
+                                    <ChevronRightIcon
+                                        sx={{ color: "#CBD5E1", fontSize: 20, display: { xs: "none", sm: "block" } }}
+                                    />
+                                </Box>
+                            );
+                        })}
+
+                    </Box>
+                </Box>
+            ))}
 
         </Box>
-
     );
-
 }
 
 export default ParentAllUpdatesPage;
