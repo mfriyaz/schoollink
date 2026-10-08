@@ -16,6 +16,13 @@ import { getMyChildren } from "../../services/postService";
 
 import { getMarksForStudent } from "../../services/examService";
 
+const panelSx = {
+    p: { xs: 2, md: 2.5 },
+    borderRadius: 3,
+    border: "1px solid #EEF2F7",
+    boxShadow: "0 1px 3px rgba(15,23,42,.06)"
+};
+
 function ParentExamResultsPage() {
 
     const [children, setChildren] = useState([]);
@@ -141,7 +148,7 @@ function ParentExamResultsPage() {
 
                     </Box>
 
-                    <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: { xs: "1.3rem", md: "1.5rem" } }}>
 
                         Exam Results
 
@@ -183,7 +190,7 @@ function ParentExamResultsPage() {
 
             {!loading && marks.length === 0 && (
 
-                <Card sx={{ p: 3 }}>
+                <Card sx={{ ...panelSx }}>
 
                     <Typography color="text.secondary">
 
@@ -197,9 +204,9 @@ function ParentExamResultsPage() {
 
             {!loading && Object.entries(marksByExam).map(([examName, examMarks]) => (
 
-                <Card key={examName} sx={{ p: 3, mb: 3 }}>
+                <Card key={examName} sx={{ ...panelSx, mb: 2.5 }}>
 
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: "1.05rem", mb: 1.5 }}>
 
                         {examName}
 

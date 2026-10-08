@@ -26,6 +26,13 @@ import {
 
 import { toUtcDate, formatPostTime, getSchoolTimezone } from "../../utils/dateUtils";
 
+const panelSx = {
+    p: { xs: 2, md: 2.5 },
+    borderRadius: 3,
+    border: "1px solid #EEF2F7",
+    boxShadow: "0 1px 3px rgba(15,23,42,.06)"
+};
+
 function ParentAllUpdatesPage() {
 
     const navigate = useNavigate();
@@ -159,7 +166,7 @@ function ParentAllUpdatesPage() {
 
             </Box>
 
-            <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
+            <Typography sx={{ fontWeight: 700, fontSize: { xs: "1.3rem", md: "1.5rem" }, mb: 2.5 }}>
 
                 All Updates
 
@@ -235,7 +242,7 @@ function ParentAllUpdatesPage() {
 
             </Box>
 
-            <Card sx={{ p: 3 }}>
+            <Card sx={{ ...panelSx }}>
 
                 {filteredPosts.length === 0 && (
 

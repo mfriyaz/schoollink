@@ -45,6 +45,13 @@ import { toUtcDate, formatPostTime, getSchoolTimezone } from "../../utils/dateUt
 
 import { resolveFileUrl } from "../../config";
 
+const panelSx = {
+    p: { xs: 2, md: 2.5 },
+    borderRadius: 3,
+    border: "1px solid #EEF2F7",
+    boxShadow: "0 1px 3px rgba(15,23,42,.06)"
+};
+
 const reactionEmojis = {
 
     good: "👍",
@@ -562,10 +569,10 @@ function ParentDashboardPage() {
                     display: "flex",
 
                     justifyContent: "space-between",
-
-                    alignItems: "flex-start",
-
-                    mb: 4
+alignItems: "flex-start",
+flexWrap: "wrap",
+gap: 2,
+mb: 3
 
                 }}
 
@@ -579,7 +586,7 @@ function ParentDashboardPage() {
 
                     </Typography>
 
-                    <Typography variant="h4" sx={{ fontWeight: 700, mt: 0.3 }}>
+                    <Typography sx={{ fontWeight: 700, mt: 0.2, fontSize: { xs: "1.4rem", md: "1.7rem" }, lineHeight: 1.2 }}>
 
                         {user ? user.full_name : "Parent"} 🤝
 
@@ -623,15 +630,14 @@ function ParentDashboardPage() {
 
                             sx={{
 
-                                px: 2.5,
-
-                                py: 1.5,
-
-                                display: "flex",
-
-                                alignItems: "center",
-
-                                gap: 1.5
+                                px: 2,
+py: 1.25,
+display: "flex",
+alignItems: "center",
+gap: 1.5,
+borderRadius: 3,
+border: "1px solid #EEF2F7",
+boxShadow: "0 1px 3px rgba(15,23,42,.06)"
 
                             }}
 
@@ -667,7 +673,7 @@ function ParentDashboardPage() {
 
             </Box>
 
-            <Card sx={{ p: 3, mb: 3, bgcolor: todaysGreeting ? "#F0FDF4" : "#FFFBEB", border: todaysGreeting ? "1px solid #BBF7D0" : "1px solid #FDE68A" }}>
+            <Card sx={{ ...panelSx, mb: 3, bgcolor: todaysGreeting ? "#F0FDF4" : "#FFFBEB", border: todaysGreeting ? "1px solid #BBF7D0" : "1px solid #FDE68A" }}>
 
                 {greetingError && <Alert severity="error" sx={{ mb: 2 }}>{greetingError}</Alert>}
 
@@ -804,9 +810,9 @@ function ParentDashboardPage() {
 
             {classmatesSharingEnabled && classmatesGreetings.filter((g) => g.student_id !== selectedStudentId).length > 0 && (
 
-                <Card sx={{ p: 3, mb: 3 }}>
+                <Card sx={{ ...panelSx, mb: 3 }}>
 
-                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: "1.05rem", mb: 0.5 }}>
 
                         👋 Classmates' Good Morning Messages
 
@@ -1078,11 +1084,11 @@ function ParentDashboardPage() {
 
                 return (
 
-                    <Card sx={{ p: 3, mb: 3 }}>
+                    <Card sx={{ ...panelSx, mb: 3 }}>
 
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
 
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                            <Typography sx={{ fontWeight: 700, fontSize: "1.05rem" }}>
 
                                 Attendance
 
@@ -1176,11 +1182,12 @@ function ParentDashboardPage() {
 
                     sx={{
 
-                        p: 3,
-
-                        mb: 3,
-
-                        display: "flex",
+                        px: { xs: 2, md: 2.5 },
+py: { xs: 1.75, md: 2 },
+mb: 3,
+borderRadius: 3,
+boxShadow: "none",
+display: "flex",
 
                         alignItems: "center",
 
@@ -1204,9 +1211,8 @@ function ParentDashboardPage() {
 
                             sx={{
 
-                                width: 56,
-
-                                height: 56,
+                                width: 40,
+height: 40,
 
                                 borderRadius: "50%",
 
@@ -1222,7 +1228,7 @@ function ParentDashboardPage() {
 
                                 fontWeight: 700,
 
-                                fontSize: "1.4rem",
+                                fontSize: "1.1rem",
 
                                 flexShrink: 0
 
@@ -1236,7 +1242,7 @@ function ParentDashboardPage() {
 
                         <Box>
 
-                            <Typography sx={{ fontWeight: 700, fontSize: "1.05rem" }}>
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.95rem" }}>
 
                                 🔔 You have {pendingCount} post{pendingCount !== 1 ? "s" : ""} waiting for your response!
 
@@ -1278,11 +1284,11 @@ function ParentDashboardPage() {
 
             )}
 
-            <Card sx={{ p: 3 }}>
+            <Card sx={{ ...panelSx }}>
 
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 1.5 }}>
 
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: "1.05rem" }}>
 
                         Today's Updates
 
@@ -1301,7 +1307,7 @@ function ParentDashboardPage() {
 
 
                                 }}
-                                sx={{ pr: 2 }}
+                                sx={{ pr: 2, borderRadius: 5, textTransform: "none", fontWeight: 600 }}
                             >
 
                                 All Updates
@@ -1321,7 +1327,7 @@ function ParentDashboardPage() {
 
 
                                 }}
-                                sx={{ pr: 2 }}
+                                sx={{ pr: 2, borderRadius: 5, textTransform: "none", fontWeight: 600 }}
                             >
 
                                 Homework
@@ -1341,7 +1347,7 @@ function ParentDashboardPage() {
 
 
                                 }}
-                                sx={{ pr: 2 }}
+                                sx={{ pr: 2, borderRadius: 5, textTransform: "none", fontWeight: 600 }}
                             >
 
                                 Announcements
@@ -1428,9 +1434,8 @@ function ParentDashboardPage() {
 
                             justifyContent: "space-between",
 
-                            py: 2,
-
-                            cursor: "pointer",
+                            py: 1.5,
+cursor: "pointer",
 
                             borderBottom: "1px solid #F1F5F9",
 
