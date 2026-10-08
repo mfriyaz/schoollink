@@ -18,6 +18,7 @@ jobs:
       - name: Pull latest code
         run: |
           cd ~/schoollink
+          git restore schoollink-frontend/package-lock.json
           git pull
 
       - name: Rebuild backend
