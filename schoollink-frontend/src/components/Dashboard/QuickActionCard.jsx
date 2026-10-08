@@ -6,101 +6,61 @@ import {
 } from "@mui/material";
 
 function QuickActionCard({
-
     title,
-
     icon,
-
     color,
-
     onClick
-
 }) {
-
     return (
-
         <Card
-
             sx={{
-
-                borderRadius: 4,
-
-                boxShadow: "0 8px 30px rgba(0,0,0,.06)",
-
-                transition: ".25s",
-
+                height: "100%",
+                borderRadius: 3,
+                boxShadow: "0 1px 3px rgba(15,23,42,.06)",
+                border: "1px solid #EEF2F7",
+                transition: ".2s",
                 "&:hover": {
-
-                    transform: "translateY(-5px)"
-
+                    boxShadow: "0 4px 12px rgba(15,23,42,.08)"
                 }
-
             }}
-
         >
-
             <CardActionArea
-
                 onClick={onClick}
-
                 sx={{
-
-                    p: 3,
-
-                    textAlign: "center"
-
+                    height: "100%",
+                    px: 1.75,
+                    py: 1.5,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    gap: 1.5
                 }}
-
             >
-
                 <Box
-
                     sx={{
-
-                        width: 60,
-
-                        height: 60,
-
-                        mx: "auto",
-
-                        mb: 2,
-
-                        borderRadius: "50%",
-
+                        width: 36,
+                        height: 36,
+                        minWidth: 36,
+                        borderRadius: "10px",
                         bgcolor: color,
-
                         color: "white",
-
                         display: "flex",
-
                         alignItems: "center",
-
-                        justifyContent: "center"
-
+                        justifyContent: "center",
+                        "& svg": { fontSize: 20 }
                     }}
-
                 >
-
                     {icon}
-
                 </Box>
 
                 <Typography
-
-                    fontWeight={700}
-
+                    sx={{ fontWeight: 600, fontSize: "0.85rem", lineHeight: 1.25 }}
                 >
-
                     {title}
-
                 </Typography>
-
             </CardActionArea>
-
         </Card>
-
     );
-
 }
 
 export default QuickActionCard;
