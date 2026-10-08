@@ -8,8 +8,12 @@ import {
     Button,
     Card,
     CircularProgress,
+    FormControlLabel,
     Grid,
     LinearProgress,
+    Menu,
+    MenuItem,
+    Switch,
     Tooltip,
     Typography
 } from "@mui/material";
@@ -29,11 +33,13 @@ import {
 } from "../../services/postService";
 
 import PendingStudentsDialog from "../../components/Teacher/PendingStudentsDialog";
+import AcknowledgedStudentsDialog from "../../components/Teacher/AcknowledgedStudentsDialog";
 import SubmissionsDialog from "../../components/Teacher/SubmissionsDialog";
+import GreetingReactionPicker, { reactions } from "../../components/Teacher/GreetingReactionPicker";
 
 import { getSubmissionCount } from "../../services/homeworkSubmissionService";
 
-import { getTodaysGreetingsForClassTeacher } from "../../services/morningGreetingService";
+import { getTodaysGreetingsForClassTeacher, bulkReactToGreetings, getSharedGreetingsSetting, setSharedGreetingsSetting } from "../../services/morningGreetingService";
 
 import { formatPostTime, toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
 
@@ -74,133 +80,69 @@ function getTitledName(teacher, user) {
 }
 
 function KpiCard({ icon, iconBg, label, value, linkLabel, onLinkClick }) {
-
     return (
-
         <Card
-
             sx={{
-
                 px: 1.75,
-
                 py: 1.5,
-
                 height: "100%",
-
                 display: "flex",
-
                 flexDirection: "row",
-
                 alignItems: "center",
-
                 gap: 1.5,
-
                 borderRadius: 3,
-
                 boxShadow: "0 1px 3px rgba(15,23,42,.06)",
-
                 border: "1px solid #EEF2F7"
-
             }}
-
         >
-
             <Box
-
                 sx={{
-
                     width: 40,
-
                     height: 40,
-
                     minWidth: 40,
-
                     borderRadius: "10px",
-
                     bgcolor: iconBg,
-
                     display: "flex",
-
                     alignItems: "center",
-
                     justifyContent: "center",
-
                     "& svg": { fontSize: 20 }
-
                 }}
-
             >
-
                 {icon}
-
             </Box>
-
             <Box sx={{ minWidth: 0, flex: 1 }}>
-
                 <Typography sx={{ fontWeight: 700, fontSize: "1.4rem", lineHeight: 1.1 }}>
-
                     {value}
-
                 </Typography>
-
                 <Typography
-
                     sx={{
-
                         color: "#64748B",
-
                         fontSize: "0.76rem",
-
                         lineHeight: 1.25,
-
                         mt: 0.25
-
                     }}
-
                 >
-
                     {label}
-
                 </Typography>
-
                 {linkLabel && (
-
                     <Typography
-
                         onClick={onLinkClick}
-
                         sx={{
-
                             color: "#2563EB",
-
                             fontSize: "0.74rem",
-
                             fontWeight: 600,
-
                             cursor: "pointer",
-
                             mt: 0.25,
-
                             width: "fit-content",
-
                             "&:hover": { textDecoration: "underline" }
-
                         }}
-
                     >
-
                         {linkLabel}
-
                     </Typography>
-
                 )}
-
             </Box>
-
         </Card>
-
     );
-
 }
 
 function TeacherDashboardPage() {
@@ -221,11 +163,21 @@ function TeacherDashboardPage() {
 
     const [pendingDialogPost, setPendingDialogPost] = useState(null);
 
+    const [acknowledgedDialogPost, setAcknowledgedDialogPost] = useState(null);
+
     const [submissionsDialogPost, setSubmissionsDialogPost] = useState(null);
 
     const [submissionCounts, setSubmissionCounts] = useState({});
 
     const [greetings, setGreetings] = useState([]);
+
+    const [bulkReactAnchor, setBulkReactAnchor] = useState(null);
+
+    const [bulkReacting, setBulkReacting] = useState(false);
+
+    const [sharedGreetingsAllowed, setSharedGreetingsAllowed] = useState(false);
+
+    const [savingSharedSetting, setSavingSharedSetting] = useState(false);
 
     const [selectedGreetingId, setSelectedGreetingId] = useState(null);
 
@@ -233,7 +185,55 @@ function TeacherDashboardPage() {
 
         loadDashboard();
 
+        loadSharedGreetingsSetting();
+
     }, []);
+
+    async function loadSharedGreetingsSetting() {
+
+        try {
+
+            const response = await getSharedGreetingsSetting();
+
+            if (response.success) {
+
+                setSharedGreetingsAllowed(response.data.allow);
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        }
+
+    }
+
+    async function handleToggleSharedGreetings(checked) {
+
+        setSavingSharedSetting(true);
+
+        try {
+
+            const response = await setSharedGreetingsSetting(checked);
+
+            if (response.success) {
+
+                setSharedGreetingsAllowed(checked);
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        } finally {
+
+            setSavingSharedSetting(false);
+
+        }
+
+    }
 
     async function loadDashboard() {
 
@@ -362,6 +362,56 @@ function TeacherDashboardPage() {
         } finally {
 
             setLoading(false);
+
+        }
+
+    }
+
+    const unreactedIds = greetings
+
+        .filter((g) => g.voice_url && !g.teacher_reaction)
+
+        .map((g) => g.id)
+
+        .filter(Boolean);
+
+    async function handleBulkReact(reactionKey) {
+
+        setBulkReactAnchor(null);
+
+        if (unreactedIds.length === 0) {
+
+            return;
+
+        }
+
+        try {
+
+            setBulkReacting(true);
+
+            const response = await bulkReactToGreetings(unreactedIds, reactionKey);
+
+            if (response.success) {
+
+                setGreetings((prev) =>
+                    prev.map((g) => {
+
+                        const updated = response.data.find((u) => u.id === g.id);
+
+                        return updated ? { ...g, teacher_reaction: updated.teacher_reaction } : g;
+
+                    })
+                );
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        } finally {
+
+            setBulkReacting(false);
 
         }
 
@@ -522,7 +572,7 @@ function TeacherDashboardPage() {
 
                     <Card sx={{ p: 3, mb: 3 }}>
 
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5, flexWrap: "wrap", gap: 1 }}>
 
                             <Typography variant="h6" sx={{ fontWeight: 700 }}>
 
@@ -530,13 +580,91 @@ function TeacherDashboardPage() {
 
                             </Typography>
 
-                            <Typography sx={{ color: "#64748B", fontSize: "0.85rem", fontWeight: 600 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
 
-                                {sentCount}/{greetings.length} sent
+                                {unreactedIds.length > 0 && (
 
-                            </Typography>
+                                    <Button
+
+                                        size="small"
+
+                                        variant="outlined"
+
+                                        disabled={bulkReacting}
+
+                                        onClick={(e) => setBulkReactAnchor(e.currentTarget)}
+
+                                    >
+
+                                        {bulkReacting ? "Reacting..." : `React to All (${unreactedIds.length})`}
+
+                                    </Button>
+
+                                )}
+
+                                <Typography sx={{ color: "#64748B", fontSize: "0.85rem", fontWeight: 600 }}>
+
+                                    {sentCount}/{greetings.length} sent
+
+                                </Typography>
+
+                            </Box>
 
                         </Box>
+
+                        <FormControlLabel
+
+                            sx={{ mb: 1.5, ml: 0 }}
+
+                            control={
+
+                                <Switch
+
+                                    size="small"
+
+                                    checked={sharedGreetingsAllowed}
+
+                                    disabled={savingSharedSetting}
+
+                                    onChange={(e) => handleToggleSharedGreetings(e.target.checked)}
+
+                                />
+
+                            }
+
+                            label={
+
+                                <Typography sx={{ fontSize: "0.8rem", color: "#64748B" }}>
+
+                                    Let parents see each other's Good Morning messages and reactions
+
+                                </Typography>
+
+                            }
+
+                        />
+
+                        <Menu
+
+                            anchorEl={bulkReactAnchor}
+
+                            open={Boolean(bulkReactAnchor)}
+
+                            onClose={() => setBulkReactAnchor(null)}
+
+                        >
+
+                            {reactions.map((r) => (
+
+                                <MenuItem key={r.key} onClick={() => handleBulkReact(r.key)}>
+
+                                    {r.emoji} &nbsp; {r.label}
+
+                                </MenuItem>
+
+                            ))}
+
+                        </Menu>
 
                         <LinearProgress
 
@@ -579,43 +707,62 @@ function TeacherDashboardPage() {
                                         title={`${g.first_name} ${g.last_name}${sent ? "" : " - not sent yet"}`}
                                     >
 
-                                        <Avatar
+                                        <Badge
 
-                                            onClick={() => sent && setSelectedGreetingId(isSelected ? null : key)}
+                                            overlap="circular"
 
-                                            sx={{
+                                            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
 
-                                                width: 44,
+                                            badgeContent={
 
-                                                height: 44,
+                                                g.teacher_reaction
 
-                                                fontSize: "0.85rem",
+                                                    ? reactions.find((r) => r.key === g.teacher_reaction)?.emoji
 
-                                                fontWeight: 700,
+                                                    : null
 
-                                                cursor: sent ? "pointer" : "default",
-
-                                                bgcolor: sent ? "#DCFCE7" : "#F1F5F9",
-
-                                                color: sent ? "#16A34A" : "#CBD5E1",
-
-                                                border: isSelected
-
-                                                    ? "3px solid #16A34A"
-
-                                                    : sent
-
-                                                        ? "2px solid #86EFAC"
-
-                                                        : "2px dashed #E2E8F0"
-
-                                            }}
-
+                                            }
                                         >
 
-                                            {g.first_name[0]}{g.last_name ? g.last_name[0] : ""}
+                                            <Avatar
 
-                                        </Avatar>
+                                                onClick={() => sent && setSelectedGreetingId(isSelected ? null : key)}
+
+                                                sx={{
+
+                                                    width: 44,
+
+                                                    height: 44,
+
+                                                    fontSize: "0.85rem",
+
+                                                    fontWeight: 700,
+
+                                                    cursor: sent ? "pointer" : "default",
+
+                                                    bgcolor: sent ? "#DCFCE7" : "#F1F5F9",
+
+                                                    color: sent ? "#16A34A" : "#CBD5E1",
+
+                                                    border: isSelected
+
+                                                        ? "3px solid #16A34A"
+
+                                                        : sent
+
+                                                            ? "2px solid #86EFAC"
+
+                                                            : "2px dashed #E2E8F0"
+
+                                                }}
+
+                                            >
+
+                                                {g.first_name[0]}{g.last_name ? g.last_name[0] : ""}
+
+                                            </Avatar>
+
+                                        </Badge>
 
                                     </Tooltip>
 
@@ -637,6 +784,10 @@ function TeacherDashboardPage() {
 
                                     justifyContent: "space-between",
 
+                                    flexWrap: "wrap",
+
+                                    gap: 1.5,
+
                                     mt: 2.5,
 
                                     p: 1.5,
@@ -656,6 +807,22 @@ function TeacherDashboardPage() {
                                 </Typography>
 
                                 <audio controls autoPlay src={resolveFileUrl(selectedGreeting.voice_url)} style={{ height: 32, maxWidth: 220 }} />
+
+                                <GreetingReactionPicker
+
+                                    greeting={selectedGreeting}
+
+                                    onReacted={(updated) => {
+
+                                        setGreetings((prev) =>
+                                            prev.map((g) =>
+                                                g.id === updated.id ? { ...g, teacher_reaction: updated.teacher_reaction } : g
+                                            )
+                                        );
+
+                                    }}
+
+                                />
 
                             </Box>
 
@@ -852,9 +1019,29 @@ function TeacherDashboardPage() {
 
                             <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 2.5, sm: 4 }, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
 
-                                <Box sx={{ textAlign: "center" }}>
+                                <Box
 
-                                    <Typography sx={{ color: "#16A34A", fontWeight: 700 }}>
+                                    sx={{
+
+                                        textAlign: "center",
+
+                                        cursor: post.summary.acknowledged_count > 0 ? "pointer" : "default"
+
+                                    }}
+
+                                    onClick={() => {
+
+                                        if (post.summary.acknowledged_count > 0) {
+
+                                            setAcknowledgedDialogPost(post);
+
+                                        }
+
+                                    }}
+
+                                >
+
+                                    <Typography sx={{ color: "#16A34A", fontWeight: 700, textDecoration: post.summary.acknowledged_count > 0 ? "underline" : "none" }}>
 
                                         {post.summary.acknowledged_count}/{post.summary.total_students}
 
@@ -996,6 +1183,12 @@ function TeacherDashboardPage() {
                 open={Boolean(pendingDialogPost)}
                 post={pendingDialogPost}
                 onClose={() => setPendingDialogPost(null)}
+            />
+
+            <AcknowledgedStudentsDialog
+                open={Boolean(acknowledgedDialogPost)}
+                post={acknowledgedDialogPost}
+                onClose={() => setAcknowledgedDialogPost(null)}
             />
 
         </Box>
