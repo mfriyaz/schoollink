@@ -210,6 +210,31 @@ const superAdminMenus = [
 
 ];
 
+// Icon colour per menu item (bright enough for the dark sidebar).
+// The active item stays white on the accent background.
+const iconColors = {
+    "Dashboard": "#60A5FA",
+    "Teachers": "#34D399",
+    "Students": "#FBBF24",
+    "Classes": "#A78BFA",
+    "Subjects": "#2DD4BF",
+    "Posts": "#38BDF8",
+    "Expired Announcements": "#FB923C",
+    "Create Announcement": "#F472B6",
+    "Exams": "#FB7185",
+    "Grading Scale": "#FACC15",
+    "Reports": "#818CF8",
+    "Profile": "#22D3EE",
+    "Settings": "#CBD5E1",
+    "Create Post": "#4ADE80",
+    "Attendance": "#34D399",
+    "Enter Marks": "#FACC15",
+    "Home": "#60A5FA",
+    "Exam Results": "#FB7185",
+    "Schools": "#A78BFA",
+    "Onboard School": "#4ADE80"
+};
+
 function getMenus() {
 
     const storedUser = localStorage.getItem("user");
@@ -510,7 +535,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
                                     sx={{
 
-                                        color: "inherit",
+                                        color: active ? "white" : (iconColors[menu.title] || "inherit"),
 
                                         minWidth: collapsed ? "auto" : 36,
 
