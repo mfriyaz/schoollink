@@ -633,594 +633,490 @@ function CreatePostPage() {
 
     return (
 
-        <Box sx={{ maxWidth: 760 }}>
+        <Box sx={{ maxWidth: 1100 }}>
 
+            {/* ---------- Page header ---------- */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
 
                 <Box
-
                     sx={{
-
                         width: 40,
-
                         height: 40,
-
                         borderRadius: "10px",
-
                         bgcolor: "#DBEAFE",
-
                         display: "flex",
-
                         alignItems: "center",
-
                         justifyContent: "center"
-
                     }}
-
                 >
-
                     <EditNoteIcon sx={{ color: "#2563EB" }} />
-
                 </Box>
 
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>
-
-                    Create New Post
-
-                </Typography>
+                <Box>
+                    <Typography sx={{ fontWeight: 700, fontSize: { xs: "1.3rem", md: "1.5rem" }, lineHeight: 1.2 }}>
+                        Create New Post
+                    </Typography>
+                    <Typography sx={{ color: "#64748B", fontSize: "0.85rem" }}>
+                        Share homework with your class and keep parents informed.
+                    </Typography>
+                </Box>
 
             </Box>
 
-            <Card sx={{ p: 3.5 }}>
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+            {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            {assignments.length === 0 ? (
 
-                    {error && <Alert severity="error">{error}</Alert>}
+                <Alert severity="warning">
+                    You don't have any classes/subjects assigned yet.
+                    Please contact your School Admin.
+                </Alert>
 
-                    {success && <Alert severity="success">{success}</Alert>}
+            ) : (
 
-                    {assignments.length === 0 ? (
+                <Box
+                    sx={{
+                        display: "grid",
+                        gridTemplateColumns: { xs: "1fr", md: "minmax(0, 3fr) minmax(0, 2fr)" },
+                        gap: 3,
+                        alignItems: "start"
+                    }}
+                >
 
-                        <Alert severity="warning">
+                    {/* ================= LEFT: content ================= */}
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
 
-                            You don't have any classes/subjects assigned yet.
-                            Please contact your School Admin.
+                        {/* ----- Post details ----- */}
+                        <PostSection title="Post details" subtitle="Who is this for, and what is it about?">
 
-                        </Alert>
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
 
-                    ) : (
+                                <Grid container spacing={2}>
 
-                        <>
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <TextField
+                                            select
+                                            label="Class"
+                                            value={classKey}
+                                            onChange={(e) => handleClassChange(e.target.value)}
+                                            fullWidth
+                                        >
+                                            {classOptions.map((c) => (
+                                                <MenuItem key={c.key} value={c.key}>{c.label}</MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
 
-                            <Grid container spacing={2}>
-
-                                <Grid size={{ xs: 12, sm: 6 }}>
-
-                                    <TextField
-                                        select
-                                        label="Post Type"
-                                        value="Homework"
-                                        fullWidth
-                                        disabled
-                                        helperText="Teachers can post Homework. Admins post Announcements."
-                                    >
-
-                                        <MenuItem value="Homework">Homework</MenuItem>
-
-                                    </TextField>
-
-                                </Grid>
-
-                                <Grid size={{ xs: 12, sm: 6 }}>
-
-                                    <TextField
-                                        select
-                                        label="Class"
-                                        value={classKey}
-                                        onChange={(e) => handleClassChange(e.target.value)}
-                                        fullWidth
-                                    >
-
-                                        {classOptions.map((c) => (
-
-                                            <MenuItem key={c.key} value={c.key}>{c.label}</MenuItem>
-
-                                        ))}
-
-                                    </TextField>
-
-                                </Grid>
-
-                                <Grid size={{ xs: 12, sm: 6 }}>
-
-                                    <TextField
-                                        select
-                                        label="Subject"
-                                        value={subjectId}
-                                        onChange={(e) => setSubjectId(e.target.value)}
-                                        fullWidth
-                                    >
-
-                                        {subjectOptions.map((a) => (
-
-                                            <MenuItem key={a.subject_id} value={a.subject_id}>{a.subject_name}</MenuItem>
-
-                                        ))}
-
-                                    </TextField>
+                                    <Grid size={{ xs: 12, sm: 6 }}>
+                                        <TextField
+                                            select
+                                            label="Subject"
+                                            value={subjectId}
+                                            onChange={(e) => setSubjectId(e.target.value)}
+                                            fullWidth
+                                        >
+                                            {subjectOptions.map((a) => (
+                                                <MenuItem key={a.subject_id} value={a.subject_id}>{a.subject_name}</MenuItem>
+                                            ))}
+                                        </TextField>
+                                    </Grid>
 
                                 </Grid>
 
-                            </Grid>
+                                <TextField
+                                    label="Title"
+                                    placeholder="e.g. Math Exercise 4"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    fullWidth
+                                />
 
-                            <TextField
-                                label="Title"
-                                placeholder="e.g. Math Exercise 4"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                fullWidth
-                            />
+                                <TextField
+                                    label="Description"
+                                    placeholder="What should students/parents know about this?"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    multiline
+                                    minRows={5}
+                                    fullWidth
+                                />
 
-                            <TextField
-                                label="Description"
-                                placeholder="What should students/parents know about this?"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                multiline
-                                minRows={4}
-                                fullWidth
-                            />
+                            </Box>
 
-                            <Grid container spacing={2}>
+                        </PostSection>
 
-                                <Grid size={{ xs: 12, sm: 6 }}>
+                        {/* ----- Attachments ----- */}
+                        <PostSection title="Attachments" subtitle="Optional. Add a file, photos or a voice note.">
 
-                                    <Typography sx={{ fontSize: "0.85rem", color: "#334155", mb: 1, fontWeight: 500 }}>
+                            {uploadError && <Alert severity="error" sx={{ mb: 1.5 }}>{uploadError}</Alert>}
+                            {imageError && <Alert severity="error" sx={{ mb: 1.5 }}>{imageError}</Alert>}
+                            {voiceError && <Alert severity="error" sx={{ mb: 1.5 }}>{voiceError}</Alert>}
 
-                                        Attachment
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 
+                                {/* File */}
+                                <Box>
+                                    <Typography sx={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", mb: 0.75 }}>
+                                        PDF or image file
                                     </Typography>
 
-                                    {uploadError && <Alert severity="error" sx={{ mb: 1.5 }}>{uploadError}</Alert>}
-
                                     {attachment ? (
-
                                         <Box
-
                                             sx={{
-
                                                 display: "flex",
-
                                                 alignItems: "center",
-
                                                 justifyContent: "space-between",
-
+                                                bgcolor: "#F8FAFC",
                                                 border: "1px solid #E2E8F0",
-
                                                 borderRadius: 2,
-
-                                                p: 1.5
-
+                                                p: 1.25
                                             }}
-
                                         >
-
-                                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-
-                                                <InsertDriveFileIcon sx={{ color: "#2563EB" }} />
-
-                                                <Box>
-
-                                                    <Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
-
-                                                        {attachment.name}
-
-                                                    </Typography>
-
-                                                    <Typography sx={{ color: "#64748B", fontSize: "0.78rem" }}>
-
-                                                        {formatFileSize(attachment.size)}
-
-                                                    </Typography>
-
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0 }}>
+                                                <Box
+                                                    sx={{
+                                                        width: 36, height: 36, minWidth: 36, borderRadius: "10px",
+                                                        bgcolor: "#DBEAFE", color: "#2563EB",
+                                                        display: "flex", alignItems: "center", justifyContent: "center"
+                                                    }}
+                                                >
+                                                    <InsertDriveFileIcon fontSize="small" />
                                                 </Box>
-
+                                                <Box sx={{ minWidth: 0 }}>
+                                                    <Typography sx={{ fontWeight: 600, fontSize: "0.88rem" }} noWrap>
+                                                        {attachment.name}
+                                                    </Typography>
+                                                    <Typography sx={{ color: "#64748B", fontSize: "0.76rem" }}>
+                                                        {formatFileSize(attachment.size)}
+                                                    </Typography>
+                                                </Box>
                                             </Box>
-
                                             <Button
                                                 size="small"
                                                 onClick={() => setAttachment(null)}
-                                                sx={{ minWidth: "auto", p: 0.5 }}
+                                                sx={{ minWidth: "auto", p: 0.5, color: "#64748B" }}
                                             >
-
                                                 <CloseIcon fontSize="small" />
-
                                             </Button>
-
                                         </Box>
-
                                     ) : (
-
-                                        <Button
+                                        <Box
                                             component="label"
-                                            variant="outlined"
-                                            startIcon={uploadingFile ? <CircularProgress size={16} /> : <CloudUploadIcon />}
-                                            disabled={uploadingFile}
-                                            fullWidth
-                                            sx={{ justifyContent: "flex-start", color: "#64748B", borderColor: "#E2E8F0", py: 1.5 }}
+                                            sx={{
+                                                display: "flex", alignItems: "center", gap: 1.25,
+                                                border: "2px dashed #CBD5E1", borderRadius: 2, px: 2, py: 1.5,
+                                                color: "#64748B", cursor: uploadingFile ? "default" : "pointer",
+                                                "&:hover": { borderColor: "#2563EB", color: "#2563EB", bgcolor: "#F8FAFC" }
+                                            }}
                                         >
-
-                                            {uploadingFile ? "Uploading..." : "Upload PDF or image"}
-
+                                            {uploadingFile ? <CircularProgress size={20} /> : <CloudUploadIcon />}
+                                            <Typography sx={{ fontSize: "0.88rem", fontWeight: 600 }}>
+                                                {uploadingFile ? "Uploading..." : "Upload PDF or image"}
+                                            </Typography>
                                             <input
                                                 type="file"
                                                 hidden
+                                                disabled={uploadingFile}
                                                 accept=".pdf,image/jpeg,image/png,image/webp"
                                                 onChange={handleFileSelect}
                                             />
-
-                                        </Button>
-
+                                        </Box>
                                     )}
+                                </Box>
 
-                                </Grid>
+                                {/* Photos */}
+                                <Box>
+                                    <Typography sx={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", mb: 0.75 }}>
+                                        Photos (up to {MAX_IMAGES})
+                                    </Typography>
 
-                                <Grid size={{ xs: 12, sm: 6 }}>
-
-                                    <TextField
-                                        select
-                                        label="Priority"
-                                        value={priority}
-                                        onChange={(e) => setPriority(e.target.value)}
-                                        fullWidth
-                                        InputProps={{
-
-                                            startAdornment: (
-
-                                                <FlagIcon sx={{ color: priorityColors[priority], mr: 1, fontSize: 20 }} />
-
-                                            )
-
-                                        }}
-                                    >
-
-                                        {priorities.map((p) => (
-
-                                            <MenuItem key={p} value={p}>{p}</MenuItem>
-
-                                        ))}
-
-                                    </TextField>
-
-                                </Grid>
-
-                            </Grid>
-
-                            <Box>
-
-                                <Typography sx={{ fontSize: "0.85rem", color: "#334155", mb: 1, fontWeight: 500 }}>
-
-                                    Images (optional, up to {MAX_IMAGES})
-
-                                </Typography>
-
-                                {imageError && <Alert severity="error" sx={{ mb: 1.5 }}>{imageError}</Alert>}
-
-                                {images.length > 0 && (
-
-                                    <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 1.5 }}>
+                                    <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
 
                                         {images.map((img, i) => (
-
-                                            <Box key={i} sx={{ position: "relative" }}>
-
+                                            <Box key={i} sx={{ position: "relative", width: 96, height: 96 }}>
                                                 <Box
-
                                                     component="img"
-
                                                     src={resolveFileUrl(img.url)}
-
                                                     sx={{
-
-                                                        width: 90,
-
-                                                        height: 90,
-
-                                                        objectFit: "cover",
-
-                                                        borderRadius: 2,
-
-                                                        border: "1px solid #E2E8F0"
-
+                                                        width: "100%", height: "100%", objectFit: "cover",
+                                                        borderRadius: 2, border: "1px solid #E2E8F0"
                                                     }}
-
                                                 />
-
                                                 <Button
                                                     onClick={() => handleRemoveImage(i)}
                                                     sx={{
-
-                                                        position: "absolute",
-
-                                                        top: -8,
-
-                                                        right: -8,
-
-                                                        minWidth: "auto",
-
-                                                        width: 22,
-
-                                                        height: 22,
-
-                                                        borderRadius: "50%",
-
-                                                        bgcolor: "#DC2626",
-
-                                                        color: "white",
-
-                                                        fontSize: "0.65rem",
-
-                                                        p: 0,
-
-                                                        "&:hover": { bgcolor: "#B91C1C" }
-
+                                                        position: "absolute", top: -8, right: -8,
+                                                        minWidth: "auto", width: 22, height: 22, borderRadius: "50%",
+                                                        bgcolor: "#0F172A", color: "white", fontSize: "0.65rem", p: 0,
+                                                        "&:hover": { bgcolor: "#DC2626" }
                                                     }}
                                                 >
-
                                                     ✕
-
                                                 </Button>
-
                                             </Box>
-
                                         ))}
 
+                                        {images.length < MAX_IMAGES && (
+                                            <Box
+                                                component="label"
+                                                sx={{
+                                                    width: 96, height: 96, borderRadius: 2, border: "2px dashed #CBD5E1",
+                                                    display: "flex", flexDirection: "column", alignItems: "center",
+                                                    justifyContent: "center", gap: 0.5, color: "#64748B",
+                                                    cursor: uploadingImages ? "default" : "pointer",
+                                                    "&:hover": { borderColor: "#2563EB", color: "#2563EB", bgcolor: "#F8FAFC" }
+                                                }}
+                                            >
+                                                {uploadingImages ? (
+                                                    <CircularProgress size={22} />
+                                                ) : (
+                                                    <>
+                                                        <ImageIcon />
+                                                        <Typography sx={{ fontSize: "0.72rem", fontWeight: 600 }}>
+                                                            Add ({images.length}/{MAX_IMAGES})
+                                                        </Typography>
+                                                    </>
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    hidden
+                                                    multiple
+                                                    disabled={uploadingImages}
+                                                    accept="image/jpeg,image/png,image/webp"
+                                                    onChange={handleImageSelect}
+                                                />
+                                            </Box>
+                                        )}
+
                                     </Box>
+                                </Box>
 
-                                )}
+                                {/* Voice note */}
+                                <Box>
+                                    <Typography sx={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", mb: 0.75 }}>
+                                        Voice note
+                                    </Typography>
 
-                                {images.length < MAX_IMAGES && (
-
-                                    <Button
-                                        component="label"
-                                        variant="outlined"
-                                        startIcon={uploadingImages ? <CircularProgress size={16} /> : <ImageIcon />}
-                                        disabled={uploadingImages}
-                                        fullWidth
-                                        sx={{ justifyContent: "flex-start", color: "#64748B", borderColor: "#E2E8F0", py: 1.5 }}
-                                    >
-
-                                        {uploadingImages ? "Uploading..." : `Add Image${images.length > 0 ? "s" : ""} (${images.length}/${MAX_IMAGES})`}
-
-                                        <input
-                                            type="file"
-                                            hidden
-                                            multiple
-                                            accept="image/jpeg,image/png,image/webp"
-                                            onChange={handleImageSelect}
-                                        />
-
-                                    </Button>
-
-                                )}
-
-                            </Box>
-
-                            <Box>
-
-                                <Typography sx={{ fontSize: "0.85rem", color: "#334155", mb: 1, fontWeight: 500 }}>
-
-                                    Voice Note (optional)
-
-                                </Typography>
-
-                                {voiceError && <Alert severity="error" sx={{ mb: 1.5 }}>{voiceError}</Alert>}
-
-                                {voiceNote ? (
-
-                                    <Box
-
-                                        sx={{
-
-                                            display: "flex",
-
-                                            alignItems: "center",
-
-                                            justifyContent: "space-between",
-
-                                            border: "1px solid #E2E8F0",
-
-                                            borderRadius: 2,
-
-                                            p: 1.5
-
-                                        }}
-
-                                    >
-
-                                        <audio controls src={resolveFileUrl(voiceNote.url)} style={{ height: 36, maxWidth: 260 }} />
-
-                                        <Button
-                                            size="small"
-                                            onClick={() => setVoiceNote(null)}
-                                            sx={{ minWidth: "auto", p: 0.5, ml: 1 }}
+                                    {voiceNote ? (
+                                        <Box
+                                            sx={{
+                                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                                bgcolor: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 2, p: 1.25
+                                            }}
                                         >
-
-                                            <CloseIcon fontSize="small" />
-
+                                            <audio controls src={resolveFileUrl(voiceNote.url)} style={{ height: 36, maxWidth: "100%", flex: 1, minWidth: 0 }} />
+                                            <Button
+                                                size="small"
+                                                onClick={() => setVoiceNote(null)}
+                                                sx={{ minWidth: "auto", p: 0.5, ml: 1, color: "#64748B" }}
+                                            >
+                                                <CloseIcon fontSize="small" />
+                                            </Button>
+                                        </Box>
+                                    ) : isRecording ? (
+                                        <Button
+                                            variant="contained"
+                                            color="error"
+                                            startIcon={<StopCircleIcon />}
+                                            onClick={handleStopRecording}
+                                            fullWidth
+                                            sx={{ py: 1.25 }}
+                                        >
+                                            Recording... {formatDuration(recordingSeconds)} (tap to stop)
                                         </Button>
-
-                                    </Box>
-
-                                ) : isRecording ? (
-
-                                    <Button
-                                        variant="outlined"
-                                        color="error"
-                                        startIcon={<StopCircleIcon />}
-                                        onClick={handleStopRecording}
-                                        fullWidth
-                                        sx={{ py: 1.5 }}
-                                    >
-
-                                        Recording... {formatDuration(recordingSeconds)} (tap to stop)
-
-                                    </Button>
-
-                                ) : (
-
-                                    <Button
-                                        variant="outlined"
-                                        startIcon={uploadingVoice ? <CircularProgress size={16} /> : <MicIcon />}
-                                        onClick={handleStartRecording}
-                                        disabled={uploadingVoice}
-                                        fullWidth
-                                        sx={{ justifyContent: "flex-start", color: "#64748B", borderColor: "#E2E8F0", py: 1.5 }}
-                                    >
-
-                                        {uploadingVoice ? "Uploading..." : "Record a voice note"}
-
-                                    </Button>
-
-                                )}
+                                    ) : (
+                                        <Box
+                                            onClick={() => !uploadingVoice && handleStartRecording()}
+                                            sx={{
+                                                display: "flex", alignItems: "center", gap: 1.25,
+                                                border: "2px dashed #CBD5E1", borderRadius: 2, px: 2, py: 1.5,
+                                                color: "#64748B", cursor: uploadingVoice ? "default" : "pointer",
+                                                "&:hover": { borderColor: "#2563EB", color: "#2563EB", bgcolor: "#F8FAFC" }
+                                            }}
+                                        >
+                                            {uploadingVoice ? <CircularProgress size={20} /> : <MicIcon />}
+                                            <Typography sx={{ fontSize: "0.88rem", fontWeight: 600 }}>
+                                                {uploadingVoice ? "Uploading..." : "Record a voice note"}
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                </Box>
 
                             </Box>
 
-                            <Grid container spacing={2}>
+                        </PostSection>
 
-                                <Grid size={{ xs: 12, sm: 6 }}>
+                    </Box>
 
-                                    <SchoolDatePicker
-                                        label="Homework Date"
-                                        value={homeworkDate}
-                                        onChange={setHomeworkDate}
-                                        fullWidth
-                                    />
+                    {/* ================= RIGHT: settings ================= */}
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 3,
+                            position: { md: "sticky" },
+                            top: { md: 16 }
+                        }}
+                    >
 
-                                </Grid>
+                        <PostSection title="Schedule" subtitle="When it is set and when it is due.">
 
-                                <Grid size={{ xs: 12, sm: 6 }}>
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
 
-                                    <SchoolDatePicker
-                                        label="Due Date"
-                                        value={dueDate}
-                                        onChange={setDueDate}
-                                        fullWidth
-                                    />
-
-                                </Grid>
-
-                            </Grid>
-
-                            <Box>
-
-                                <Typography sx={{ fontSize: "0.85rem", color: "#334155", mb: 0.5, fontWeight: 500 }}>
-
-                                    Require Acknowledgement
-
-                                </Typography>
-
-                                <FormControlLabel
-                                    control={
-
-                                        <Switch
-                                            checked={requireAck}
-                                            onChange={(e) => setRequireAck(e.target.checked)}
-                                        />
-
-                                    }
-                                    label={requireAck ? "Yes, require acknowledgement" : "No, this is informational only"}
+                                <SchoolDatePicker
+                                    label="Homework Date"
+                                    value={homeworkDate}
+                                    onChange={setHomeworkDate}
+                                    fullWidth
                                 />
+
+                                <SchoolDatePicker
+                                    label="Due Date"
+                                    value={dueDate}
+                                    onChange={setDueDate}
+                                    fullWidth
+                                />
+
+                                <TextField
+                                    select
+                                    label="Priority"
+                                    value={priority}
+                                    onChange={(e) => setPriority(e.target.value)}
+                                    fullWidth
+                                    InputProps={{
+                                        startAdornment: (
+                                            <FlagIcon sx={{ color: priorityColors[priority], mr: 1, fontSize: 20 }} />
+                                        )
+                                    }}
+                                >
+                                    {priorities.map((p) => (
+                                        <MenuItem key={p} value={p}>{p}</MenuItem>
+                                    ))}
+                                </TextField>
 
                             </Box>
 
-                            <Box>
+                        </PostSection>
 
-                                <Typography sx={{ fontSize: "0.85rem", color: "#334155", mb: 0.5, fontWeight: 500 }}>
+                        <PostSection title="Options" subtitle="How parents and students respond.">
 
-                                    Student Submission Options
+                            <ToggleRow
+                                title="Require acknowledgement"
+                                description={requireAck ? "Parents must confirm they have seen this." : "Informational only. No action needed."}
+                                checked={requireAck}
+                                onChange={setRequireAck}
+                            />
 
-                                </Typography>
+                            <ToggleRow
+                                title="Allow photo submission"
+                                description="Students can upload a photo of completed work."
+                                checked={allowPhotoSubmission}
+                                onChange={setAllowPhotoSubmission}
+                            />
 
-                                <Typography sx={{ fontSize: "0.78rem", color: "#94A3B8", mb: 0.5 }}>
+                            <ToggleRow
+                                title="Allow voice submission"
+                                description="Good for reading homework."
+                                checked={allowVoiceSubmission}
+                                onChange={setAllowVoiceSubmission}
+                            />
 
-                                    Turn on whichever ways of submitting this homework make sense - e.g. a photo of completed written work, or a voice recording for reading homework.
+                            <ToggleRow
+                                title="Show everyone's submissions"
+                                description="Parents can see all submissions for this post, like a group chat."
+                                checked={allowViewAllSubmissions}
+                                onChange={setAllowViewAllSubmissions}
+                                last
+                            />
 
-                                </Typography>
+                        </PostSection>
 
-                                <FormControlLabel
-                                    control={
+                        <Box sx={{ display: "flex", gap: 1.5 }}>
 
-                                        <Switch
-                                            checked={allowPhotoSubmission}
-                                            onChange={(e) => setAllowPhotoSubmission(e.target.checked)}
-                                        />
+                            <Button
+                                variant="outlined"
+                                onClick={() => navigate("/teacher/dashboard")}
+                                sx={{ flex: 1 }}
+                            >
+                                Cancel
+                            </Button>
 
-                                    }
-                                    label="Allow photo submission"
-                                />
+                            <Button
+                                variant="contained"
+                                onClick={handleSubmit}
+                                disabled={submitting}
+                                sx={{ flex: 2 }}
+                            >
+                                {submitting ? "Publishing..." : "Publish Post"}
+                            </Button>
 
-                                <FormControlLabel
-                                    control={
-
-                                        <Switch
-                                            checked={allowVoiceSubmission}
-                                            onChange={(e) => setAllowVoiceSubmission(e.target.checked)}
-                                        />
-
-                                    }
-                                    label="Allow voice recording submission"
-                                />
-
-                                <FormControlLabel
-                                    control={
-
-                                        <Switch
-                                            checked={allowViewAllSubmissions}
-                                            onChange={(e) => setAllowViewAllSubmissions(e.target.checked)}
-                                        />
-
-                                    }
-                                    label="Let parents see everyone's submissions for this post (like a WhatsApp group)"
-                                />
-
-                            </Box>
-
-                        </>
-
-                    )}
-
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, pt: 1 }}>
-
-                        <Button
-                            variant="outlined"
-                            onClick={() => navigate("/teacher/dashboard")}
-                        >
-
-                            Cancel
-
-                        </Button>
-
-                        <Button
-                            variant="contained"
-                            onClick={handleSubmit}
-                            disabled={submitting || assignments.length === 0}
-                        >
-
-                            {submitting ? "Publishing..." : "Publish Post"}
-
-                        </Button>
+                        </Box>
 
                     </Box>
 
                 </Box>
-
-            </Card>
+            )}
 
         </Box>
-
     );
+}
 
+// ---------- Small layout helpers (styling only) ----------
+
+function PostSection({ title, subtitle, children }) {
+    return (
+        <Card
+            sx={{
+                p: { xs: 2, md: 2.5 },
+                borderRadius: 3,
+                border: "1px solid #EEF2F7",
+                boxShadow: "0 1px 3px rgba(15,23,42,.06)"
+            }}
+        >
+            <Box sx={{ mb: 2 }}>
+                <Typography sx={{ fontWeight: 700, fontSize: "1rem", lineHeight: 1.3 }}>
+                    {title}
+                </Typography>
+                {subtitle && (
+                    <Typography sx={{ color: "#64748B", fontSize: "0.78rem", mt: 0.25 }}>
+                        {subtitle}
+                    </Typography>
+                )}
+            </Box>
+
+            {children}
+        </Card>
+    );
+}
+
+function ToggleRow({ title, description, checked, onChange, last }) {
+    return (
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 2,
+                py: 1.25,
+                borderBottom: last ? "none" : "1px solid #F1F5F9"
+            }}
+        >
+            <Box sx={{ minWidth: 0 }}>
+                <Typography sx={{ fontWeight: 600, fontSize: "0.88rem" }}>
+                    {title}
+                </Typography>
+                <Typography sx={{ color: "#64748B", fontSize: "0.76rem", mt: 0.25 }}>
+                    {description}
+                </Typography>
+            </Box>
+
+            <Switch
+                checked={checked}
+                onChange={(e) => onChange(e.target.checked)}
+            />
+        </Box>
+    );
 }
 
 export default CreatePostPage;
