@@ -562,116 +562,203 @@ function ParentDashboardPage() {
 
         <Box>
 
+            {/* ---------- Banner: greeting + child ---------- */}
             <Box
-
                 sx={{
-
+                    mb: 2,
+                    px: { xs: 2, md: 3 },
+                    py: { xs: 2, md: 2.5 },
+                    borderRadius: 3,
+                    color: "#FFFFFF",
+                    background: "linear-gradient(135deg,#2563EB,#4F46E5)",
+                    boxShadow: "0 8px 20px rgba(37,99,235,.18)",
                     display: "flex",
-
+                    alignItems: "center",
                     justifyContent: "space-between",
-alignItems: "flex-start",
-flexWrap: "wrap",
-gap: 2,
-mb: 3
-
+                    flexWrap: "wrap",
+                    gap: 2
                 }}
-
             >
 
-                <Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.75, minWidth: 0 }}>
 
-                    <Typography sx={{ color: "#64748B", fontSize: "0.95rem" }}>
+                    <Avatar
+                        sx={{
+                            width: { xs: 48, md: 56 },
+                            height: { xs: 48, md: 56 },
+                            bgcolor: "rgba(255,255,255,0.2)",
+                            color: "#FFFFFF",
+                            fontWeight: 700,
+                            fontSize: "1.3rem"
+                        }}
+                    >
+                        {selectedChild ? selectedChild.first_name[0] : "?"}
+                    </Avatar>
 
-                        {getGreeting()},
+                    <Box sx={{ minWidth: 0 }}>
+                        <Typography sx={{ opacity: 0.85, fontSize: "0.82rem" }}>
+                            {getGreeting()}, {user ? user.full_name : "Parent"} 🤝
+                        </Typography>
 
-                    </Typography>
+                        <Typography
+                            sx={{
+                                fontWeight: 700,
+                                fontSize: { xs: "1.25rem", md: "1.6rem" },
+                                lineHeight: 1.2
+                            }}
+                            noWrap
+                        >
+                            {selectedChild
+                                ? `${selectedChild.first_name} ${selectedChild.last_name}`
+                                : "Your child"}
+                        </Typography>
 
-                    <Typography sx={{ fontWeight: 700, mt: 0.2, fontSize: { xs: "1.4rem", md: "1.7rem" }, lineHeight: 1.2 }}>
-
-                        {user ? user.full_name : "Parent"} 🤝
-
-                    </Typography>
-
-                    <Typography sx={{ color: "#64748B", mt: 0.5 }}>
-
-                        Here's what's new for today.
-
-                    </Typography>
+                        {selectedChild && (
+                            <Typography sx={{ opacity: 0.85, fontSize: "0.82rem", mt: 0.25 }}>
+                                Class {selectedChild.class_name} - {selectedChild.section_name}
+                            </Typography>
+                        )}
+                    </Box>
 
                 </Box>
 
-                {children.length > 1 ? (
-
+                {children.length > 1 && (
                     <TextField
                         select
                         size="small"
                         value={selectedStudentId}
                         onChange={(e) => handleChildChange(e.target.value)}
-                        sx={{ minWidth: 220 }}
+                        sx={{
+                            minWidth: 200,
+                            "& .MuiOutlinedInput-root": {
+                                bgcolor: "rgba(255,255,255,0.95)",
+                                borderRadius: 2
+                            }
+                        }}
                     >
-
                         {children.map((c) => (
-
                             <MenuItem key={c.student_id} value={c.student_id}>
-
                                 {c.first_name} {c.last_name}
-
                             </MenuItem>
-
                         ))}
-
                     </TextField>
-
-                ) : (
-
-                    selectedChild && (
-
-                        <Card
-
-                            sx={{
-
-                                px: 2,
-py: 1.25,
-display: "flex",
-alignItems: "center",
-gap: 1.5,
-borderRadius: 3,
-border: "1px solid #EEF2F7",
-boxShadow: "0 1px 3px rgba(15,23,42,.06)"
-
-                            }}
-
-                        >
-
-                            <Avatar sx={{ bgcolor: "#2563EB" }}>
-
-                                {selectedChild.first_name[0]}
-
-                            </Avatar>
-
-                            <Box>
-
-                                <Typography sx={{ fontWeight: 600 }}>
-
-                                    {selectedChild.first_name} {selectedChild.last_name}
-
-                                </Typography>
-
-                                <Typography sx={{ color: "#64748B", fontSize: "0.8rem" }}>
-
-                                    {selectedChild.class_name} - {selectedChild.section_name}
-
-                                </Typography>
-
-                            </Box>
-
-                        </Card>
-
-                    )
-
                 )}
 
             </Box>
+
+            {/* ---------- At-a-glance tiles ---------- */}
+            {(() => {
+
+                const dayFmt = new Intl.DateTimeFormat("en-CA", { timeZone: getSchoolTimezone() });
+                const todayStr = dayFmt.format(new Date());
+                const todayAtt = attendance.find(
+                    (r) => dayFmt.format(toUtcDate(r.attendance_date)) === todayStr
+                );
+
+                const attStatus = todayAtt ? todayAtt.status : "Not marked";
+                const attColor =
+                    !todayAtt ? { fg: "#64748B", bg: "#F1F5F9" } :
+                    todayAtt.status === "Present" ? { fg: "#16A34A", bg: "#DCFCE7" } :
+                    todayAtt.status === "Late" ? { fg: "#EA580C", bg: "#FFEDD5" } :
+                    { fg: "#DC2626", bg: "#FEE2E2" };
+
+                const tiles = [
+                    {
+                        label: "Today's attendance",
+                        value: attStatus,
+                        fg: attColor.fg,
+                        bg: attColor.bg,
+                        icon: <CheckCircleIcon />,
+                        small: true
+                    },
+                    {
+                        label: "Waiting for response",
+                        value: pendingCount,
+                        fg: "#EA580C",
+                        bg: "#FFEDD5",
+                        icon: <AccessTimeIcon />,
+                        onClick: () => navigate("/parent/all-updates", { state: { studentId: selectedStudentId } })
+                    },
+                    {
+                        label: "Acknowledged",
+                        value: `${acknowledgedCount}/${actionablePosts.length}`,
+                        fg: "#16A34A",
+                        bg: "#DCFCE7",
+                        icon: <CheckCircleIcon />
+                    },
+                    {
+                        label: "Updates today",
+                        value: todaysPosts.length,
+                        fg: "#2563EB",
+                        bg: "#DBEAFE",
+                        icon: <MenuBookIcon />
+                    }
+                ];
+
+                return (
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" },
+                            gap: { xs: 1.5, md: 2 },
+                            mb: 3
+                        }}
+                    >
+                        {tiles.map((t) => (
+                            <Card
+                                key={t.label}
+                                onClick={t.onClick}
+                                sx={{
+                                    px: 1.75,
+                                    py: 1.5,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1.5,
+                                    borderRadius: 3,
+                                    border: "1px solid #EEF2F7",
+                                    boxShadow: "0 1px 3px rgba(15,23,42,.06)",
+                                    cursor: t.onClick ? "pointer" : "default",
+                                    "&:hover": t.onClick ? { boxShadow: "0 4px 12px rgba(15,23,42,.08)" } : {}
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        width: 40,
+                                        height: 40,
+                                        minWidth: 40,
+                                        borderRadius: "10px",
+                                        bgcolor: t.bg,
+                                        color: t.fg,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        "& svg": { fontSize: 21 }
+                                    }}
+                                >
+                                    {t.icon}
+                                </Box>
+
+                                <Box sx={{ minWidth: 0 }}>
+                                    <Typography
+                                        sx={{
+                                            fontWeight: 700,
+                                            fontSize: t.small ? "1rem" : "1.4rem",
+                                            lineHeight: 1.15,
+                                            color: t.small ? t.fg : "inherit"
+                                        }}
+                                        noWrap
+                                    >
+                                        {t.value}
+                                    </Typography>
+                                    <Typography sx={{ color: "#64748B", fontSize: "0.74rem", lineHeight: 1.25, mt: 0.25 }}>
+                                        {t.label}
+                                    </Typography>
+                                </Box>
+                            </Card>
+                        ))}
+                    </Box>
+                );
+            })()}
 
             <Card sx={{ ...panelSx, mb: 3, bgcolor: todaysGreeting ? "#F0FDF4" : "#FFFBEB", border: todaysGreeting ? "1px solid #BBF7D0" : "1px solid #FDE68A" }}>
 
