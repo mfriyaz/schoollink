@@ -562,63 +562,57 @@ function ParentDashboardPage() {
 
         <Box>
 
-            {/* ---------- Banner: greeting + child ---------- */}
+            {/* ---------- Slim child bar ---------- */}
             <Box
                 sx={{
-                    mb: 2,
-                    px: { xs: 2, md: 3 },
-                    py: { xs: 2, md: 2.5 },
+                    mb: 1.5,
+                    px: { xs: 1.5, md: 2 },
+                    py: { xs: 1, md: 1.1 },
                     borderRadius: 3,
                     color: "#FFFFFF",
                     background: "linear-gradient(135deg,#2563EB,#4F46E5)",
-                    boxShadow: "0 8px 20px rgba(37,99,235,.18)",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: 2
+                    gap: 1.25,
+                    flexWrap: "wrap"
                 }}
             >
 
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.75, minWidth: 0 }}>
+                <Avatar
+                    sx={{
+                        width: 34,
+                        height: 34,
+                        bgcolor: "rgba(255,255,255,0.22)",
+                        color: "#FFFFFF",
+                        fontWeight: 700,
+                        fontSize: "0.95rem"
+                    }}
+                >
+                    {selectedChild ? selectedChild.first_name[0] : "?"}
+                </Avatar>
 
-                    <Avatar
-                        sx={{
-                            width: { xs: 48, md: 56 },
-                            height: { xs: 48, md: 56 },
-                            bgcolor: "rgba(255,255,255,0.2)",
-                            color: "#FFFFFF",
-                            fontWeight: 700,
-                            fontSize: "1.3rem"
-                        }}
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+
+                    <Typography
+                        sx={{ fontWeight: 700, fontSize: { xs: "0.95rem", md: "1rem" }, lineHeight: 1.2 }}
+                        noWrap
                     >
-                        {selectedChild ? selectedChild.first_name[0] : "?"}
-                    </Avatar>
-
-                    <Box sx={{ minWidth: 0 }}>
-                        <Typography sx={{ opacity: 0.85, fontSize: "0.82rem" }}>
-                            {getGreeting()}, {user ? user.full_name : "Parent"} 🤝
-                        </Typography>
-
-                        <Typography
-                            sx={{
-                                fontWeight: 700,
-                                fontSize: { xs: "1.25rem", md: "1.6rem" },
-                                lineHeight: 1.2
-                            }}
-                            noWrap
-                        >
-                            {selectedChild
-                                ? `${selectedChild.first_name} ${selectedChild.last_name}`
-                                : "Your child"}
-                        </Typography>
-
+                        {selectedChild
+                            ? `${selectedChild.first_name} ${selectedChild.last_name}`
+                            : "Your child"}
                         {selectedChild && (
-                            <Typography sx={{ opacity: 0.85, fontSize: "0.82rem", mt: 0.25 }}>
-                                Class {selectedChild.class_name} - {selectedChild.section_name}
-                            </Typography>
+                            <Box
+                                component="span"
+                                sx={{ fontWeight: 500, opacity: 0.85, fontSize: "0.8rem", ml: 1 }}
+                            >
+                                {selectedChild.class_name} - {selectedChild.section_name}
+                            </Box>
                         )}
-                    </Box>
+                    </Typography>
+
+                    <Typography sx={{ opacity: 0.85, fontSize: "0.74rem", lineHeight: 1.3 }} noWrap>
+                        {getGreeting()}, {user ? user.full_name : "Parent"} 🤝
+                    </Typography>
 
                 </Box>
 
@@ -629,11 +623,13 @@ function ParentDashboardPage() {
                         value={selectedStudentId}
                         onChange={(e) => handleChildChange(e.target.value)}
                         sx={{
-                            minWidth: 200,
+                            minWidth: { xs: "100%", sm: 170 },
                             "& .MuiOutlinedInput-root": {
                                 bgcolor: "rgba(255,255,255,0.95)",
-                                borderRadius: 2
-                            }
+                                borderRadius: 2,
+                                fontSize: "0.85rem"
+                            },
+                            "& .MuiSelect-select": { py: 0.6 }
                         }}
                     >
                         {children.map((c) => (
@@ -700,8 +696,8 @@ function ParentDashboardPage() {
                         sx={{
                             display: "grid",
                             gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" },
-                            gap: { xs: 1.5, md: 2 },
-                            mb: 3
+                            gap: { xs: 1, md: 1.5 },
+                            mb: 2.5
                         }}
                     >
                         {tiles.map((t) => (
@@ -709,11 +705,11 @@ function ParentDashboardPage() {
                                 key={t.label}
                                 onClick={t.onClick}
                                 sx={{
-                                    px: 1.75,
-                                    py: 1.5,
+                                    px: { xs: 1.25, md: 1.5 },
+                                    py: { xs: 1, md: 1.25 },
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: 1.5,
+                                    gap: { xs: 1, md: 1.25 },
                                     borderRadius: 3,
                                     border: "1px solid #EEF2F7",
                                     boxShadow: "0 1px 3px rgba(15,23,42,.06)",
@@ -723,16 +719,16 @@ function ParentDashboardPage() {
                             >
                                 <Box
                                     sx={{
-                                        width: 40,
-                                        height: 40,
-                                        minWidth: 40,
+                                        width: { xs: 32, md: 36 },
+                                        height: { xs: 32, md: 36 },
+                                        minWidth: { xs: 32, md: 36 },
                                         borderRadius: "10px",
                                         bgcolor: t.bg,
                                         color: t.fg,
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        "& svg": { fontSize: 21 }
+                                        "& svg": { fontSize: 19 }
                                     }}
                                 >
                                     {t.icon}
@@ -742,7 +738,7 @@ function ParentDashboardPage() {
                                     <Typography
                                         sx={{
                                             fontWeight: 700,
-                                            fontSize: t.small ? "1rem" : "1.4rem",
+                                            fontSize: t.small ? { xs: "0.85rem", md: "0.95rem" } : { xs: "1.1rem", md: "1.25rem" },
                                             lineHeight: 1.15,
                                             color: t.small ? t.fg : "inherit"
                                         }}
@@ -750,7 +746,7 @@ function ParentDashboardPage() {
                                     >
                                         {t.value}
                                     </Typography>
-                                    <Typography sx={{ color: "#64748B", fontSize: "0.74rem", lineHeight: 1.25, mt: 0.25 }}>
+                                    <Typography sx={{ color: "#64748B", fontSize: "0.7rem", lineHeight: 1.25, mt: 0.25 }}>
                                         {t.label}
                                     </Typography>
                                 </Box>
