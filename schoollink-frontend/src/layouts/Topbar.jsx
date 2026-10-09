@@ -18,6 +18,7 @@ import {
     Badge,
 
     Menu,
+    Drawer,
 
     MenuItem,
 
@@ -31,6 +32,15 @@ import {
 
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import CloseIcon from "@mui/icons-material/Close";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import CampaignOutlinedIcon from "@mui/icons-material/CampaignOutlined";
+import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
+import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
+import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
+import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
+import NotificationsActiveOutlinedIcon from "@mui/icons-material/NotificationsActiveOutlined";
+import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import LogoutIcon from "@mui/icons-material/LogoutOutlined";
 import PersonIcon from "@mui/icons-material/PersonOutlineOutlined";
 
@@ -69,6 +79,35 @@ function timeAgo(dateString) {
 
 }
 
+// The notifications table has no "type" column, so pick an icon and
+// colour from the wording / link of each notification.
+function notificationStyle(n) {
+
+    const text = `${n.title || ""} ${n.message || ""} ${n.link || ""}`.toLowerCase();
+
+    if (text.includes("announcement")) {
+        return { icon: <CampaignOutlinedIcon />, color: "#DB2777", bg: "#FCE7F3" };
+    }
+
+    if (text.includes("good morning") || text.includes("greeting") || text.includes("react")) {
+        return { icon: <EmojiEmotionsOutlinedIcon />, color: "#D97706", bg: "#FEF3C7" };
+    }
+
+    if (text.includes("acknowledg")) {
+        return { icon: <TaskAltOutlinedIcon />, color: "#16A34A", bg: "#DCFCE7" };
+    }
+
+    if (text.includes("review") || text.includes("submission") || text.includes("marks") || text.includes("exam")) {
+        return { icon: <RateReviewOutlinedIcon />, color: "#7C3AED", bg: "#EDE9FE" };
+    }
+
+    if (text.includes("homework") || text.includes("post")) {
+        return { icon: <MenuBookOutlinedIcon />, color: "#2563EB", bg: "#DBEAFE" };
+    }
+
+    return { icon: <NotificationsActiveOutlinedIcon />, color: "#475569", bg: "#F1F5F9" };
+}
+
 function Topbar({ onToggleSidebar }) {
 
     const navigate = useNavigate();
@@ -84,6 +123,7 @@ function Topbar({ onToggleSidebar }) {
     const [notifications, setNotifications] = useState([]);
 
     const [loadingList, setLoadingList] = useState(false);
+    const [notifTab, setNotifTab] = useState("all");
 
     useEffect(() => {
 
@@ -221,6 +261,10 @@ function Topbar({ onToggleSidebar }) {
 
     }
 
+    const visibleNotifications = notifTab === "unread"
+        ? notifications.filter((n) => !n.is_read)
+        : notifications;
+
     return (
 
         <AppBar
@@ -253,151 +297,256 @@ function Topbar({ onToggleSidebar }) {
 
                 <Box sx={{ flexGrow: 1 }} />
 
-                <IconButton onClick={handleOpenMenu}>
-
+                <IconButton
+                    onClick={handleOpenMenu}
+                    sx={{
+                        bgcolor: unreadCount > 0 ? "#EFF6FF" : "#F1F5F9",
+                        "&:hover": { bgcolor: "#E2E8F0" }
+                    }}
+                >
                     <Badge
-
                         badgeContent={unreadCount}
-
+                        max={9}
                         color="error"
-
                         overlap="circular"
-
                     >
-
-                        <NotificationsNoneIcon sx={{ color: "#64748B" }} />
-
+                        {unreadCount > 0
+                            ? <NotificationsActiveOutlinedIcon sx={{ color: "#2563EB" }} />
+                            : <NotificationsNoneIcon sx={{ color: "#64748B" }} />}
                     </Badge>
-
                 </IconButton>
 
-                <Menu
-                    anchorEl={anchorEl}
+                <Drawer
+                    anchor="right"
                     open={Boolean(anchorEl)}
                     onClose={handleCloseMenu}
-                    slotProps={{ paper: { sx: { width: 360, maxHeight: 420 } } }}
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                width: { xs: "100%", sm: 400 },
+                                maxWidth: "100%",
+                                bgcolor: "#F8FAFC",
+                                borderTopLeftRadius: { xs: 0, sm: 20 },
+                                borderBottomLeftRadius: { xs: 0, sm: 20 }
+                            }
+                        }
+                    }}
                 >
-
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2, py: 1 }}>
-
-                        <Typography sx={{ fontWeight: 700 }}>
-
-                            Notifications
-
-                        </Typography>
-
-                        {unreadCount > 0 && (
-
-                            <Typography
-
-                                onClick={handleMarkAllAsRead}
-
-                                sx={{ color: "#2563EB", fontSize: "0.8rem", cursor: "pointer" }}
-
-                            >
-
-                                Mark all as read
-
-                            </Typography>
-
-                        )}
-
-                    </Box>
-
-                    <Divider />
-
-                    {loadingList && (
-
-                        <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
-
-                            <CircularProgress size={24} />
-
-                        </Box>
-
-                    )}
-
-                    {!loadingList && notifications.length === 0 && (
-
-                        <Box sx={{ px: 2, py: 3 }}>
-
-                            <Typography color="text.secondary" sx={{ fontSize: "0.9rem" }}>
-
-                                No notifications yet.
-
-                            </Typography>
-
-                        </Box>
-
-                    )}
-
-                    {!loadingList && notifications.map((n) => (
-
-                        <MenuItem
-                            key={n.id}
-                            onClick={() => handleNotificationClick(n)}
-                            sx={{
-
-                                whiteSpace: "normal",
-
-                                alignItems: "flex-start",
-
-                                bgcolor: n.is_read ? "transparent" : "#EFF6FF",
-
-                                py: 1.2
-
-                            }}
-                        >
-
-                            <Box>
-
-                                <Typography sx={{ fontWeight: 600, fontSize: "0.88rem" }}>
-
-                                    {n.title}
-
+                    {/* Header */}
+                    <Box
+                        sx={{
+                            px: 2.5,
+                            pt: 2.5,
+                            pb: 1.5,
+                            bgcolor: "#FFFFFF",
+                            borderBottom: "1px solid #EEF2F7"
+                        }}
+                    >
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "1.2rem" }}>
+                                    Notifications
                                 </Typography>
-
-                                <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
-
-                                    {n.message}
-
-                                </Typography>
-
-                                <Typography sx={{ color: "#94A3B8", fontSize: "0.75rem", mt: 0.3 }}>
-
-                                    {timeAgo(n.created_at)}
-
-                                </Typography>
-
+                                {unreadCount > 0 && (
+                                    <Box
+                                        sx={{
+                                            px: 1,
+                                            py: 0.1,
+                                            borderRadius: 5,
+                                            bgcolor: "#2563EB",
+                                            color: "white",
+                                            fontSize: "0.74rem",
+                                            fontWeight: 700
+                                        }}
+                                    >
+                                        {unreadCount} new
+                                    </Box>
+                                )}
                             </Box>
 
-                        </MenuItem>
+                            <IconButton size="small" onClick={handleCloseMenu}>
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Box>
 
-                    ))}
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1.5 }}>
+                            <Box sx={{ display: "flex", gap: 0.75 }}>
+                                {[
+                                    { value: "all", label: "All" },
+                                    { value: "unread", label: "Unread" }
+                                ].map((t) => (
+                                    <Box
+                                        key={t.value}
+                                        onClick={() => setNotifTab(t.value)}
+                                        sx={{
+                                            px: 1.5,
+                                            py: 0.5,
+                                            borderRadius: 5,
+                                            cursor: "pointer",
+                                            fontSize: "0.8rem",
+                                            fontWeight: 600,
+                                            bgcolor: notifTab === t.value ? "#2563EB" : "#F1F5F9",
+                                            color: notifTab === t.value ? "#FFFFFF" : "#475569"
+                                        }}
+                                    >
+                                        {t.label}
+                                    </Box>
+                                ))}
+                            </Box>
 
-                    <Divider />
+                            {unreadCount > 0 && (
+                                <Box
+                                    onClick={handleMarkAllAsRead}
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 0.5,
+                                        color: "#2563EB",
+                                        fontSize: "0.8rem",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                        "&:hover": { textDecoration: "underline" }
+                                    }}
+                                >
+                                    <DoneAllIcon sx={{ fontSize: 16 }} />
+                                    Mark all read
+                                </Box>
+                            )}
+                        </Box>
+                    </Box>
 
-                    <MenuItem
+                    {/* List */}
+                    <Box sx={{ flex: 1, overflowY: "auto", p: 1.5 }}>
 
+                        {loadingList && (
+                            <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+                                <CircularProgress size={26} />
+                            </Box>
+                        )}
+
+                        {!loadingList && visibleNotifications.length === 0 && (
+                            <Box sx={{ textAlign: "center", py: 8, color: "#94A3B8" }}>
+                                <NotificationsNoneIcon sx={{ fontSize: 48, mb: 1 }} />
+                                <Typography sx={{ fontWeight: 600, color: "#64748B" }}>
+                                    {notifTab === "unread" ? "You're all caught up" : "No notifications yet"}
+                                </Typography>
+                                <Typography sx={{ fontSize: "0.82rem", mt: 0.5 }}>
+                                    New updates from school will show up here.
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {!loadingList && visibleNotifications.map((n) => {
+                            const st = notificationStyle(n);
+
+                            return (
+                                <Box
+                                    key={n.id}
+                                    onClick={() => handleNotificationClick(n)}
+                                    sx={{
+                                        display: "flex",
+                                        gap: 1.5,
+                                        p: 1.5,
+                                        mb: 1,
+                                        borderRadius: 3,
+                                        cursor: "pointer",
+                                        bgcolor: "#FFFFFF",
+                                        border: "1px solid",
+                                        borderColor: n.is_read ? "#EEF2F7" : "#BFDBFE",
+                                        boxShadow: n.is_read ? "none" : "0 2px 8px rgba(37,99,235,.08)",
+                                        transition: ".15s",
+                                        "&:hover": { boxShadow: "0 4px 12px rgba(15,23,42,.08)" }
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            width: 40,
+                                            height: 40,
+                                            minWidth: 40,
+                                            borderRadius: "12px",
+                                            bgcolor: st.bg,
+                                            color: st.color,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            "& svg": { fontSize: 21 }
+                                        }}
+                                    >
+                                        {st.icon}
+                                    </Box>
+
+                                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                                        <Typography
+                                            sx={{
+                                                fontWeight: n.is_read ? 600 : 700,
+                                                fontSize: "0.88rem",
+                                                lineHeight: 1.3
+                                            }}
+                                        >
+                                            {n.title}
+                                        </Typography>
+
+                                        <Typography
+                                            sx={{
+                                                color: "#64748B",
+                                                fontSize: "0.8rem",
+                                                mt: 0.25,
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: 2,
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: "hidden"
+                                            }}
+                                        >
+                                            {n.message}
+                                        </Typography>
+
+                                        <Typography sx={{ color: "#94A3B8", fontSize: "0.72rem", mt: 0.5 }}>
+                                            {timeAgo(n.created_at)}
+                                        </Typography>
+                                    </Box>
+
+                                    {!n.is_read && (
+                                        <Box
+                                            sx={{
+                                                width: 9,
+                                                height: 9,
+                                                minWidth: 9,
+                                                mt: 0.75,
+                                                borderRadius: "50%",
+                                                bgcolor: "#2563EB"
+                                            }}
+                                        />
+                                    )}
+                                </Box>
+                            );
+                        })}
+                    </Box>
+
+                    {/* Footer */}
+                    <Box
                         onClick={() => {
-
                             handleCloseMenu();
-
                             navigate("/notifications/expired");
-
                         }}
-
-                        sx={{ justifyContent: "center" }}
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 0.75,
+                            py: 1.75,
+                            bgcolor: "#FFFFFF",
+                            borderTop: "1px solid #EEF2F7",
+                            color: "#2563EB",
+                            fontSize: "0.85rem",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            "&:hover": { bgcolor: "#F8FAFC" }
+                        }}
                     >
-
-                        <Typography sx={{ color: "#2563EB", fontSize: "0.85rem", fontWeight: 600 }}>
-
-                            View Expired Notifications
-
-                        </Typography>
-
-                    </MenuItem>
-
-                </Menu>
+                        <ArchiveOutlinedIcon sx={{ fontSize: 18 }} />
+                        View expired notifications
+                    </Box>
+                </Drawer>
 
                 <Box
 
