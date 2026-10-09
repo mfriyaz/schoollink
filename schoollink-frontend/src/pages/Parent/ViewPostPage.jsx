@@ -740,48 +740,50 @@ function ViewPostPage() {
                         {post.image_urls.map((url, i) => (
 
                             <Box
-
                                 key={i}
-
                                 component="a"
-
                                 href={resolveFileUrl(url)}
-
                                 target="_blank"
-
                                 rel="noopener noreferrer"
+                                sx={
+                                    isAnnouncement
+                                        ? {
+                                            display: "block",
+                                            width: post.image_urls.length === 1
+                                                ? "100%"
+                                                : { xs: "100%", sm: "calc(50% - 6px)" }
+                                        }
+                                        : {}
+                                }
                             >
-
                                 <Box
-
                                     component="img"
-
                                     src={resolveFileUrl(url)}
-
-                                    sx={{
-
-                                        width: 140,
-
-                                        height: 140,
-
-                                        objectFit: "cover",
-
-                                        borderRadius: 2,
-
-                                        border: "1px solid #E2E8F0",
-
-                                        display: "block"
-
-                                    }}
-
+                                    sx={
+                                        isAnnouncement
+                                            ? {
+                                                width: "100%",
+                                                maxHeight: 460,
+                                                objectFit: "contain",
+                                                bgcolor: "#F8FAFC",
+                                                borderRadius: 2,
+                                                border: "1px solid #E2E8F0",
+                                                display: "block"
+                                            }
+                                            : {
+                                                width: 140,
+                                                height: 140,
+                                                objectFit: "cover",
+                                                borderRadius: 2,
+                                                border: "1px solid #E2E8F0",
+                                                display: "block"
+                                            }
+                                    }
                                 />
-
                             </Box>
-
                         ))}
 
                     </Box>
-
                 )}
 
                 {post.attachment_url && (

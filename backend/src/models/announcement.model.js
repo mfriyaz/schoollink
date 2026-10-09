@@ -1,6 +1,23 @@
 const db = require("../config/database");
 
 /**
+ * Keep only real string URLs, max 3 images. Returns null when
+ * there are none so the column stays empty rather than "{}".
+ */
+function cleanImageUrls(urls) {
+
+    if (!Array.isArray(urls)) {
+        return null;
+    }
+
+    const cleaned = urls
+        .filter((u) => typeof u === "string" && u.trim() !== "")
+        .slice(0, 3);
+
+    return cleaned.length > 0 ? cleaned : null;
+}
+
+/**
  * Create Announcement
  */
 async function createAnnouncement(data) {
@@ -14,11 +31,12 @@ async function createAnnouncement(data) {
             target_audience,
             publish_date,
             expiry_date,
-            is_active
+            is_active,
+            image_urls
         )
         VALUES
         (
-            $1,$2,$3,$4,$5,$6,$7
+            $1,$2,$3,$4,$5,$6,$7,$8
         )
         RETURNING *;
     `;
@@ -31,8 +49,8 @@ async function createAnnouncement(data) {
         data.target_audience,
         data.publish_date,
         data.expiry_date,
-        data.is_active
-
+        data.is_active,
+        cleanImageUrls(data.image_urls)
     ];
 
     const result = await db.query(query, values);
@@ -92,8 +110,9 @@ async function updateAnnouncement(id, data) {
             publish_date = $4,
             expiry_date = $5,
             is_active = $6,
+            image_urls = $7,
             updated_at = CURRENT_TIMESTAMP
-        WHERE id = $7
+        WHERE id = $8
         RETURNING *;
     `;
 
@@ -105,8 +124,8 @@ async function updateAnnouncement(id, data) {
         data.publish_date,
         data.expiry_date,
         data.is_active,
+        cleanImageUrls(data.image_urls),
         id
-
     ];
 
     const result = await db.query(query, values);
