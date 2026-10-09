@@ -315,7 +315,7 @@ function DashboardPage() {
 
                         <Grid size={{ xs: 12, md: 5 }}>
 
-                            <CalendarCard />
+                            <CalendarCard announcements={dashboard.announcements || []} />
 
                         </Grid>
 
