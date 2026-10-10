@@ -5,11 +5,16 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import EventAvailableIcon from "@mui/icons-material/EventAvailableOutlined";
 import PanelCard from "./PanelCard";
 import { getAllExams } from "../../services/examService";
+import { getCalendar } from "../../services/calendarService";
+import { dayInfo } from "../../utils/calendarUtils";
 
 const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
 
 const EXAM_COLOR = "#EA580C";
 const ANNOUNCEMENT_COLOR = "#DB2777";
+const HOLIDAY_COLOR = "#7C3AED";
+
+const TYPE_COLOR = { exam: EXAM_COLOR, announcement: ANNOUNCEMENT_COLOR, holiday: HOLIDAY_COLOR, workday: "#16A34A" };
 
 function pad(n) {
     return String(n).padStart(2, "0");
@@ -51,6 +56,8 @@ function CalendarCard({ announcements = [] }) {
     const [view, setView] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
     const [selected, setSelected] = useState(todayKey);
     const [exams, setExams] = useState([]);
+    const [monthCal, setMonthCal] = useState(null);
+    const [upcomingCal, setUpcomingCal] = useState(null);
 
     useEffect(() => {
         async function loadExams() {
@@ -64,6 +71,23 @@ function CalendarCard({ announcements = [] }) {
             }
         }
         loadExams();
+    }, []);
+
+    // Holidays / weekly off days for the month being viewed
+    useEffect(() => {
+        const y = view.getFullYear();
+        const m = view.getMonth();
+        const last = new Date(y, m + 1, 0).getDate();
+        getCalendar(dateKey(y, m, 1), dateKey(y, m, last))
+            .then((r) => { if (r.success) setMonthCal(r.data); })
+            .catch((err) => console.error(err));
+    }, [view]);
+
+    // Holidays in the next 90 days (for "Coming up")
+    useEffect(() => {
+        getCalendar(todayKey, addDays(todayKey, 90))
+            .then((r) => { if (r.success) setUpcomingCal(r.data); })
+            .catch((err) => console.error(err));
     }, []);
 
     // Build { "2026-10-12": [ {type, title}, ... ] }
@@ -95,6 +119,31 @@ function CalendarCard({ announcements = [] }) {
             }
         });
 
+        [monthCal, upcomingCal].forEach((cal, calIndex) => {
+            if (!cal) return;
+            const seen = calIndex === 1 ? new Set() : null;
+            (cal.days || []).forEach((d) => {
+                let key = d.start_date;
+                let guard = 0;
+                while (key <= d.end_date && guard < 370) {
+                    const type = d.kind === "Holiday" ? "holiday" : "workday";
+                    const id = `${key}|${d.id}`;
+                    const already = (map[key] || []).some((e) => e.id === id);
+                    if (!already) {
+                        add(key, {
+                            id,
+                            calId: d.id,
+                            type,
+                            title: d.name,
+                            note: type === "holiday" ? "School closed" : "School open"
+                        });
+                    }
+                    key = addDays(key, 1);
+                    guard++;
+                }
+            });
+        });
+
         announcements.forEach((a) => {
             add(toKey(a.publish_date), {
                 type: "announcement",
@@ -105,7 +154,7 @@ function CalendarCard({ announcements = [] }) {
 
         return map;
 
-    }, [exams, announcements]);
+    }, [exams, announcements, monthCal, upcomingCal]);
 
     const year = view.getFullYear();
     const month = view.getMonth();
@@ -118,12 +167,28 @@ function CalendarCard({ announcements = [] }) {
 
     const monthLabel = view.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 
-    const selectedEvents = events[selected] || [];
+    const selectedInfo = dayInfo(selected, monthCal || upcomingCal);
+    const selectedEvents = [
+        ...(events[selected] || []),
+        ...(selectedInfo.off && selectedInfo.reason !== "Holiday"
+            ? [{ type: "weekend", title: selectedInfo.reason, note: "No school" }]
+            : [])
+    ];
+
+    // A multi-day holiday should appear once in "Coming up", not once per day
+    const seenCalIds = new Set();
 
     const upcoming = Object.keys(events)
         .filter((k) => k >= todayKey)
         .sort()
-        .slice(0, 3)
+        .filter((k) => {
+            const first = events[k][0];
+            if (!first.calId) return true;
+            if (seenCalIds.has(first.calId)) return false;
+            seenCalIds.add(first.calId);
+            return true;
+        })
+        .slice(0, 4)
         .map((k) => ({ key: k, ...events[k][0], extra: events[k].length - 1 }));
 
     return (
@@ -179,6 +244,10 @@ function CalendarCard({ announcements = [] }) {
                     const isToday = key === todayKey;
                     const isSelected = key === selected;
 
+                    const info = dayInfo(key, monthCal);
+                    const isHoliday = info.off && info.reason === "Holiday";
+                    const isOffDay = info.off && !isHoliday;
+
                     const hasExam = dayEvents.some((e) => e.type === "exam");
                     const hasAnnouncement = dayEvents.some((e) => e.type === "announcement");
 
@@ -204,8 +273,8 @@ function CalendarCard({ announcements = [] }) {
                                     justifyContent: "center",
                                     fontSize: "0.82rem",
                                     fontWeight: isToday || isSelected ? 700 : 500,
-                                    color: isToday ? "#FFFFFF" : "#334155",
-                                    bgcolor: isToday ? "#2563EB" : "transparent",
+                                    color: isToday ? "#FFFFFF" : isHoliday ? HOLIDAY_COLOR : isOffDay ? "#94A3B8" : "#334155",
+                                    bgcolor: isToday ? "#2563EB" : isHoliday ? "#EDE9FE" : "transparent",
                                     border: isSelected && !isToday ? "2px solid #2563EB" : "2px solid transparent",
                                     "&:hover": { bgcolor: isToday ? "#2563EB" : "#F1F5F9" }
                                 }}
@@ -227,7 +296,7 @@ function CalendarCard({ announcements = [] }) {
             </Box>
 
             {/* Legend */}
-            <Box sx={{ display: "flex", gap: 2, mt: 1, mb: 1.5 }}>
+            <Box sx={{ display: "flex", gap: 2, mt: 1, mb: 1.5, flexWrap: "wrap" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                     <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: EXAM_COLOR }} />
                     <Typography sx={{ fontSize: "0.72rem", color: "#64748B" }}>Exam</Typography>
@@ -235,6 +304,10 @@ function CalendarCard({ announcements = [] }) {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                     <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: ANNOUNCEMENT_COLOR }} />
                     <Typography sx={{ fontSize: "0.72rem", color: "#64748B" }}>Announcement</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                    <Box sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: HOLIDAY_COLOR }} />
+                    <Typography sx={{ fontSize: "0.72rem", color: "#64748B" }}>Holiday</Typography>
                 </Box>
             </Box>
 
@@ -262,7 +335,7 @@ function CalendarCard({ announcements = [] }) {
                                     height: 8,
                                     minWidth: 8,
                                     borderRadius: "50%",
-                                    bgcolor: e.type === "exam" ? EXAM_COLOR : ANNOUNCEMENT_COLOR
+                                    bgcolor: TYPE_COLOR[e.type] || "#94A3B8"
                                 }}
                             />
                             <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, flex: 1, minWidth: 0 }} noWrap>
@@ -302,7 +375,7 @@ function CalendarCard({ announcements = [] }) {
                             sx={{ display: "flex", alignItems: "center", gap: 1, py: 0.5, cursor: "pointer" }}
                         >
                             <EventAvailableIcon
-                                sx={{ fontSize: 18, color: u.type === "exam" ? EXAM_COLOR : ANNOUNCEMENT_COLOR }}
+                                sx={{ fontSize: 18, color: TYPE_COLOR[u.type] || ANNOUNCEMENT_COLOR }}
                             />
                             <Typography sx={{ fontSize: "0.82rem", flex: 1, minWidth: 0 }} noWrap>
                                 {u.title}{u.extra > 0 ? ` +${u.extra} more` : ""}
