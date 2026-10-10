@@ -133,6 +133,8 @@ export function PostViewDialog({ open, post, onClose, onEdit, onDeleted }) {
 
     const images = record?.image_urls || [];
 
+    if (!post) return null;
+
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
 
@@ -474,6 +476,8 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
             setSaving(false);
         }
     }
+
+    if (!post) return null;
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
