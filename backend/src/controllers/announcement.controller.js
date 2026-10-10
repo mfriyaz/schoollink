@@ -1,3 +1,15 @@
+const auditService = require("../services/audit.service");
+
+const ANNOUNCEMENT_FIELDS = {
+    title: "Title",
+    description: "Description",
+    target_audience: "Shared with",
+    publish_date: "Publish date",
+    expiry_date: "Expiry date",
+    is_active: "Active",
+    image_urls: "Photos"
+};
+
 const announcementService = require("../services/announcement.service");
 
 /**
@@ -15,6 +27,14 @@ async function createAnnouncement(req, res) {
                 school_id: req.user.school_id
 
             });
+
+        await auditService.logAudit(req, {
+            action: "Created",
+            entityType: "announcement",
+            entityId: announcement.id,
+            entityTitle: announcement.title,
+            summary: `Published to ${announcement.target_audience}`
+        });
 
         return res.status(201).json({
 
@@ -119,12 +139,29 @@ async function updateAnnouncement(req, res) {
 
         const { id } = req.params;
 
+        let before = null;
+
+        try {
+            before = await announcementService.getAnnouncementById(id, req.user.school_id);
+        } catch (e) {
+            before = null;
+        }
+
         const announcement =
             await announcementService.updateAnnouncement(
                 id,
                 req.body,
                 req.user.school_id
             );
+
+        await auditService.logAudit(req, {
+            action: "Edited",
+            entityType: "announcement",
+            entityId: Number(id),
+            entityTitle: announcement.title,
+            summary: "Announcement edited",
+            changes: auditService.diffFields(before, req.body, ANNOUNCEMENT_FIELDS)
+        });
 
         return res.status(200).json({
 
@@ -159,8 +196,24 @@ async function deleteAnnouncement(req, res) {
 
         const { id } = req.params;
 
+        let before = null;
+
+        try {
+            before = await announcementService.getAnnouncementById(id, req.user.school_id);
+        } catch (e) {
+            before = null;
+        }
+
         const announcement =
             await announcementService.deleteAnnouncement(id, req.user.school_id);
+
+        await auditService.logAudit(req, {
+            action: "Deleted",
+            entityType: "announcement",
+            entityId: Number(id),
+            entityTitle: before ? before.title : null,
+            summary: "Announcement deleted"
+        });
 
         return res.status(200).json({
 

@@ -1,3 +1,5 @@
+const auditService = require("../services/audit.service");
+
 const studentMarkService = require("../services/studentMark.service");
 const response = require("../utils/response");
 
@@ -29,6 +31,16 @@ async function createStudentMark(req, res) {
 
         const studentMark =
             await studentMarkService.createStudentMark(req.body);
+
+        const title = await auditService.describeExamSubject(req.body.exam_subject_id);
+
+        await auditService.logAudit(req, {
+            action: "Created",
+            entityType: "marks",
+            entityId: Number(req.body.exam_subject_id) || null,
+            entityTitle: title || "Student mark",
+            summary: `Mark entered: ${req.body.marks_obtained}`
+        });
 
         return response.success(
             res,
@@ -135,10 +147,69 @@ async function bulkMarkExam(req, res) {
 
         }
 
+        let roster = [];
+
+        try {
+            roster = await studentMarkService.getRosterWithMarks(exam_subject_id);
+        } catch (e) {
+            roster = [];
+        }
+
         const result = await studentMarkService.bulkMarkExam(
             exam_subject_id,
             records
         );
+
+        try {
+
+            const changes = [];
+            let entered = 0;
+            let changed = 0;
+
+            for (const record of records) {
+
+                const prior = roster.find(
+                    (r) => Number(r.student_id) === Number(record.student_id)
+                );
+
+                const name = prior
+                    ? `${prior.first_name || ""} ${prior.last_name || ""}`.trim()
+                    : `Student #${record.student_id}`;
+
+                const hadMark = prior && prior.marks_obtained !== null && prior.marks_obtained !== undefined;
+
+                if (!hadMark) {
+                    entered++;
+                    changes.push({ field: name, from: "(empty)", to: String(record.marks_obtained) });
+                } else if (Number(prior.marks_obtained) !== Number(record.marks_obtained)) {
+                    changed++;
+                    changes.push({ field: name, from: String(Number(prior.marks_obtained)), to: String(record.marks_obtained) });
+                }
+
+            }
+
+            if (entered > 0 || changed > 0) {
+
+                const title = await auditService.describeExamSubject(exam_subject_id);
+
+                const parts = [];
+                if (entered > 0) parts.push(`${entered} mark(s) entered`);
+                if (changed > 0) parts.push(`${changed} mark(s) changed`);
+
+                await auditService.logAudit(req, {
+                    action: changed > 0 ? "Edited" : "Created",
+                    entityType: "marks",
+                    entityId: Number(exam_subject_id),
+                    entityTitle: title || `Exam subject #${exam_subject_id}`,
+                    summary: parts.join(", "),
+                    changes
+                });
+
+            }
+
+        } catch (err) {
+            console.error("Audit (marks) failed:", err.message);
+        }
 
         return response.success(
             res,
@@ -285,6 +356,14 @@ async function updateStudentMark(req, res) {
 
     try {
 
+        let before = null;
+
+        try {
+            before = await studentMarkService.getStudentMarkById(req.params.id);
+        } catch (e) {
+            before = null;
+        }
+
         const studentMark =
             await studentMarkService.updateStudentMark(
                 req.params.id,
@@ -300,6 +379,17 @@ async function updateStudentMark(req, res) {
             );
 
         }
+
+        const title = await auditService.describeExamSubject(studentMark.exam_subject_id);
+
+        await auditService.logAudit(req, {
+            action: "Edited",
+            entityType: "marks",
+            entityId: studentMark.exam_subject_id,
+            entityTitle: title || "Student mark",
+            summary: "Mark edited",
+            changes: auditService.diffFields(before, req.body, { marks_obtained: "Marks" })
+        });
 
         return response.success(
             res,

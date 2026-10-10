@@ -31,6 +31,7 @@ import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 import DescriptionIcon from "@mui/icons-material/DescriptionOutlined";
 import AddBusinessIcon from "@mui/icons-material/AddBusinessOutlined";
 import ArchiveIcon from "@mui/icons-material/ArchiveOutlined";
+import HistoryIcon from "@mui/icons-material/History";
 
 const adminMenus = [
 
@@ -98,6 +99,12 @@ const adminMenus = [
         title: "Reports",
         path: "/reports",
         icon: <DescriptionIcon />
+    },
+
+    {
+        title: "Activity Log",
+        path: "/activity-log",
+        icon: <HistoryIcon />
     },
 
     {
@@ -230,6 +237,7 @@ const iconColors = {
     "Exams": "#FB7185",
     "Grading Scale": "#FACC15",
     "Reports": "#818CF8",
+    "Activity Log": "#F59E0B",
     "Profile": "#22D3EE",
     "Settings": "#CBD5E1",
     "Create Post": "#4ADE80",

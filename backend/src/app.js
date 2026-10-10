@@ -34,6 +34,7 @@ app.use("/uploads", express.static("uploads"));
 // ======================
 
 const healthRoutes = require("./routes/health.routes");
+const auditRoutes = require("./routes/audit.routes");
 const authRoutes = require("./routes/auth.routes");
 const profileRoutes = require("./routes/profile.routes");
 const schoolRoutes = require("./routes/school.routes");
@@ -102,6 +103,7 @@ app.use("/api/teacher-dashboard", teacherDashboardRoutes);
 app.use("/api/parent-dashboard", parentDashboardRoutes);
 app.use("/api/principal-dashboard", principalDashboardRoutes);
 app.use("/api/announcements", announcementRoutes);
+app.use("/api/audit-logs", auditRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/acknowledgements", acknowledgementRoutes);

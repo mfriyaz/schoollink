@@ -1,3 +1,17 @@
+const auditService = require("../services/audit.service");
+
+const HOMEWORK_FIELDS = {
+    title: "Title",
+    description: "Description",
+    homework_date: "Homework date",
+    due_date: "Due date",
+    attachment_url: "Attachment",
+    image_urls: "Photos",
+    allow_photo_submission: "Allow photo submission",
+    allow_voice_submission: "Allow voice submission",
+    allow_view_all_submissions: "Show submissions to all parents"
+};
+
 const homeworkService = require("../services/homework.service");
 const teacherService = require("../services/teacher.service");
 const response = require("../utils/response");
@@ -11,6 +25,16 @@ async function createHomework(req, res) {
 
         const homework =
             await homeworkService.createHomework(req.body);
+
+        const where = await auditService.describeTeacherSubject(homework.teacher_subject_id);
+
+        await auditService.logAudit(req, {
+            action: "Created",
+            entityType: "homework",
+            entityId: homework.id,
+            entityTitle: homework.title,
+            summary: where ? `Homework posted for ${where}` : "Homework posted"
+        });
 
         return response.success(
             res,
@@ -163,6 +187,18 @@ async function updateHomework(req, res) {
 
         }
 
+        let before = null;
+
+        try {
+            before = await homeworkService.getHomeworkById(
+                req.params.id,
+                req.user.school_id,
+                teacherId
+            );
+        } catch (e) {
+            before = null;
+        }
+
         const homework =
             await homeworkService.updateHomework(
                 req.params.id,
@@ -183,6 +219,17 @@ async function updateHomework(req, res) {
             );
 
         }
+
+        const where = await auditService.describeTeacherSubject(homework.teacher_subject_id);
+
+        await auditService.logAudit(req, {
+            action: "Edited",
+            entityType: "homework",
+            entityId: homework.id,
+            entityTitle: homework.title,
+            summary: where ? `Homework edited (${where})` : "Homework edited",
+            changes: auditService.diffFields(before, req.body, HOMEWORK_FIELDS)
+        });
 
         return response.success(
             res,
@@ -209,6 +256,18 @@ async function deleteHomework(req, res) {
 
     try {
 
+        let before = null;
+
+        try {
+            before = await homeworkService.getHomeworkById(
+                req.params.id,
+                req.user.school_id,
+                null
+            );
+        } catch (e) {
+            before = null;
+        }
+
         const homework =
             await homeworkService.deleteHomework(
                 req.params.id
@@ -223,6 +282,14 @@ async function deleteHomework(req, res) {
             );
 
         }
+
+        await auditService.logAudit(req, {
+            action: "Deleted",
+            entityType: "homework",
+            entityId: homework.id,
+            entityTitle: homework.title || (before && before.title),
+            summary: "Homework deleted"
+        });
 
         return response.success(
             res,
