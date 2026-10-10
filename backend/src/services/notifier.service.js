@@ -309,15 +309,31 @@ async function notifyTeachersOfAnnouncement(announcementId) {
         (announcement.description ? `${announcement.description}<br><br>` : "") +
         `Please log in to SchoolLink to view this announcement.`;
 
+    console.log(
+        `Announcement ${announcementId}: notifying ${userIds.length} user(s) (${announcement.target_audience})`
+    );
+
     for (const userId of userIds) {
 
-        await notifyIfEnabled(
-            userId,
-            "New Announcement",
-            announcement.title,
-            emailBody,
-            link
-        );
+        try {
+
+            await notifyIfEnabled(
+                userId,
+                "New Announcement",
+                announcement.title,
+                emailBody,
+                link
+            );
+
+        } catch (err) {
+
+            console.error(
+                `Failed to notify user ${userId} of announcement ${announcementId}:`,
+                err.message
+            );
+
+        }
+
     }
 }
 
