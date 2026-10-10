@@ -243,7 +243,7 @@ function ReportsPage() {
                         label="Student"
                         value={studentId}
                         onChange={(e) => setStudentId(e.target.value)}
-                        sx={{ minWidth: 240 }}
+                        sx={{ minWidth: { xs: "100%", sm: 240 } }}
                     >
 
                         {students.map((s) => (
@@ -263,7 +263,7 @@ function ReportsPage() {
                         label="Exam"
                         value={examId}
                         onChange={(e) => setExamId(e.target.value)}
-                        sx={{ minWidth: 220 }}
+                        sx={{ minWidth: { xs: "100%", sm: 220 } }}
                     >
 
                         {exams.map((e) => (

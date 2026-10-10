@@ -371,7 +371,7 @@ function EnterMarksPage() {
                             label="Exam"
                             value={examId}
                             onChange={(e) => setExamId(e.target.value)}
-                            sx={{ minWidth: 220 }}
+                            sx={{ minWidth: { xs: "100%", sm: 220 } }}
                         >
 
                             {exams.map((e) => (
@@ -389,7 +389,7 @@ function EnterMarksPage() {
                                 label="Subject"
                                 value={examSubjectId}
                                 onChange={(e) => setExamSubjectId(e.target.value)}
-                                sx={{ minWidth: 220 }}
+                                sx={{ minWidth: { xs: "100%", sm: 220 } }}
                             >
 
                                 {examSubjects.map((es) => {

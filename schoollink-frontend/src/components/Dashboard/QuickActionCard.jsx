@@ -28,12 +28,12 @@ function QuickActionCard({
                 onClick={onClick}
                 sx={{
                     height: "100%",
-                    px: 1.75,
+                    px: { xs: 1.25, sm: 1.75 },
                     py: 1.5,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "flex-start",
-                    gap: 1.5
+                    gap: { xs: 1, sm: 1.5 }
                 }}
             >
                 <Box
@@ -54,7 +54,7 @@ function QuickActionCard({
                 </Box>
 
                 <Typography
-                    sx={{ fontWeight: 600, fontSize: "0.85rem", lineHeight: 1.25 }}
+                    sx={{ fontWeight: 600, fontSize: { xs: "0.8rem", sm: "0.85rem" }, lineHeight: 1.25, minWidth: 0, overflowWrap: "anywhere" }}
                 >
                     {title}
                 </Typography>

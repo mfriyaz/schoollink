@@ -133,11 +133,11 @@ function SchoolCard({ school, onSaved }) {
 
     return (
 
-        <Card sx={{ p: 3, mb: 2 }}>
+        <Card sx={{ p: { xs: 2, sm: 3 }, mb: 2 }}>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 1.5 }}>
 
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 0 }}>
 
                     <Box
 
@@ -183,7 +183,7 @@ function SchoolCard({ school, onSaved }) {
 
                 </Box>
 
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
 
                     <Chip size="small" label={school.subscription_plan || "STANDARD"} />
 

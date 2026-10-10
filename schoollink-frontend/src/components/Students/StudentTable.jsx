@@ -20,7 +20,13 @@ import {
 
     Tooltip,
 
-    Typography
+    Typography,
+
+    Box,
+
+    useMediaQuery,
+
+    useTheme
 
 } from "@mui/material";
 
@@ -43,6 +49,76 @@ export default function StudentTable({
     onDelete
 
 }) {
+
+    const theme = useTheme();
+
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+    if (isMobile) {
+
+        return (
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+
+                {students.map((student) => (
+
+                    <Paper
+                        key={student.id}
+                        sx={{ borderRadius: 3, p: 1.75, border: "1px solid #EEF2F7" }}
+                    >
+
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+
+                            <StudentAvatar name={student.first_name} />
+
+                            <Box sx={{ minWidth: 0, flex: 1 }}>
+
+                                <Typography fontWeight={600} sx={{ overflowWrap: "anywhere" }}>
+                                    {student.first_name} {student.last_name}
+                                </Typography>
+
+                                <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
+                                    {student.admission_no}
+                                    {student.class_name
+                                        ? ` · ${student.class_name}${student.section_name ? ` - ${student.section_name}` : ""}`
+                                        : ""}
+                                    {student.gender ? ` · ${student.gender}` : ""}
+                                </Typography>
+
+                            </Box>
+
+                            <StudentStatusChip active={student.is_active} />
+
+                        </Stack>
+
+                        <Stack direction="row" justifyContent="flex-end" sx={{ mt: 0.5 }}>
+
+                            <IconButton color="default" onClick={() => onView(student)}>
+                                <VisibilityIcon />
+                            </IconButton>
+
+                            <IconButton color="primary" onClick={() => onEdit(student)}>
+                                <EditIcon />
+                            </IconButton>
+
+                            <IconButton
+                                color={student.is_active ? "error" : "success"}
+                                onClick={() => onDelete(student)}
+                            >
+                                {student.is_active ? <BlockIcon /> : <RestoreIcon />}
+                            </IconButton>
+
+                        </Stack>
+
+                    </Paper>
+
+                ))}
+
+            </Box>
+
+        );
+
+    }
 
     return (
 

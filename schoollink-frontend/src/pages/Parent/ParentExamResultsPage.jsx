@@ -163,7 +163,7 @@ function ParentExamResultsPage() {
                         size="small"
                         value={selectedStudentId}
                         onChange={(e) => handleChildChange(e.target.value)}
-                        sx={{ minWidth: 180 }}
+                        sx={{ minWidth: { xs: "100%", sm: 180 } }}
                     >
 
                         {children.map((c) => (

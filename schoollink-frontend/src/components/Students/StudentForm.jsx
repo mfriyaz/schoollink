@@ -304,7 +304,7 @@ function StudentForm({
 
                 <Grid container spacing={2} sx={{ mt: 1 }}>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             fullWidth
@@ -316,7 +316,7 @@ function StudentForm({
 
                     </Grid>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             fullWidth
@@ -328,7 +328,7 @@ function StudentForm({
 
                     </Grid>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             fullWidth
@@ -340,7 +340,7 @@ function StudentForm({
 
                     </Grid>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             fullWidth
@@ -359,7 +359,7 @@ function StudentForm({
 
                     </Grid>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             fullWidth
@@ -379,7 +379,7 @@ function StudentForm({
 
                     </Grid>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             fullWidth
@@ -401,7 +401,7 @@ function StudentForm({
 
                     </Grid>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <SchoolDatePicker
                             fullWidth
@@ -412,7 +412,7 @@ function StudentForm({
 
                     </Grid>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             fullWidth
@@ -424,7 +424,7 @@ function StudentForm({
 
                     </Grid>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             fullWidth
@@ -436,7 +436,7 @@ function StudentForm({
 
                     </Grid>
 
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
 
                         <TextField
                             fullWidth

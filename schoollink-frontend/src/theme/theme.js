@@ -61,10 +61,18 @@ const theme = createTheme({
 
         MuiCssBaseline: {
             styleOverrides: {
+                html: { overflowX: "hidden" },
                 body: {
                     WebkitFontSmoothing: "antialiased",
-                    MozOsxFontSmoothing: "grayscale"
-                }
+                    MozOsxFontSmoothing: "grayscale",
+                    overflowX: "hidden",
+                    WebkitTextSizeAdjust: "100%"
+                },
+                // 16px inputs on phones stop iOS from zooming the page on focus
+                "@media (max-width:600px)": {
+                    "input, select, textarea": { fontSize: "16px !important" }
+                },
+                img: { maxWidth: "100%" }
             }
         },
 
@@ -94,7 +102,21 @@ const theme = createTheme({
 
         MuiDialog: {
             styleOverrides: {
-                paper: { borderRadius: 16 }
+                paper: {
+                    borderRadius: 16,
+                    "@media (max-width:600px)": {
+                        margin: 12,
+                        width: "calc(100% - 24px)",
+                        maxWidth: "calc(100% - 24px)",
+                        maxHeight: "calc(100% - 24px)"
+                    }
+                }
+            }
+        },
+
+        MuiTableContainer: {
+            styleOverrides: {
+                root: { overflowX: "auto", WebkitOverflowScrolling: "touch" }
             }
         },
 

@@ -83,13 +83,13 @@ function KpiCard({ icon, iconBg, label, value, linkLabel, onLinkClick }) {
     return (
         <Card
             sx={{
-                px: 1.75,
+                px: { xs: 1.25, sm: 1.75 },
                 py: 1.5,
                 height: "100%",
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 1.5,
+                gap: { xs: 1, sm: 1.5 },
                 borderRadius: 3,
                 boxShadow: "0 1px 3px rgba(15,23,42,.06)",
                 border: "1px solid #EEF2F7"
@@ -119,7 +119,8 @@ function KpiCard({ icon, iconBg, label, value, linkLabel, onLinkClick }) {
                         color: "#64748B",
                         fontSize: "0.76rem",
                         lineHeight: 1.25,
-                        mt: 0.25
+                        mt: 0.25,
+                        overflowWrap: "anywhere"
                     }}
                 >
                     {label}

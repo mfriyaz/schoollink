@@ -316,7 +316,7 @@ function TakeAttendancePage() {
                             label="Class / Subject"
                             value={teacherSubjectId}
                             onChange={(e) => setTeacherSubjectId(e.target.value)}
-                            sx={{ minWidth: 260 }}
+                            sx={{ minWidth: { xs: "100%", sm: 260 } }}
                         >
 
                             {assignments.map((a) => (
