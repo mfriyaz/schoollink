@@ -395,7 +395,7 @@ function SubjectsPage() {
 
                     <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
 
-                    <Button variant="contained" onClick={handleSave} disabled={saving}>
+                    <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleSave} disabled={saving}>
 
                         {saving ? "Saving..." : "Save"}
 

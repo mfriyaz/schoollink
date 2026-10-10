@@ -639,7 +639,7 @@ function ClassesPage() {
 
                     <Button onClick={() => setClassDialogOpen(false)}>Cancel</Button>
 
-                    <Button variant="contained" onClick={handleSaveClass} disabled={savingClass}>
+                    <Button loading={savingClass} loadingPosition="start" variant="contained" onClick={handleSaveClass} disabled={savingClass}>
 
                         {savingClass ? "Saving..." : "Save"}
 
@@ -685,7 +685,7 @@ function ClassesPage() {
 
                     <Button onClick={() => setSectionDialogOpen(false)}>Cancel</Button>
 
-                    <Button variant="contained" onClick={handleSaveSection} disabled={savingSection}>
+                    <Button loading={savingSection} loadingPosition="start" variant="contained" onClick={handleSaveSection} disabled={savingSection}>
 
                         {savingSection ? "Saving..." : "Save"}
 

@@ -584,7 +584,7 @@ function TeacherDashboardPage() {
 
                                 {unreactedIds.length > 0 && (
 
-                                    <Button
+                                    <Button loading={bulkReacting} loadingPosition="start"
 
                                         size="small"
 

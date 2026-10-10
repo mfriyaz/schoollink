@@ -1042,7 +1042,7 @@ function CreatePostPage() {
                                 Cancel
                             </Button>
 
-                            <Button
+                            <Button loading={submitting} loadingPosition="start"
                                 variant="contained"
                                 onClick={handleSubmit}
                                 disabled={submitting}

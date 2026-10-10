@@ -333,7 +333,7 @@ function SchoolCard({ school, onSaved }) {
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
 
-                        <Button
+                        <Button loading={saving} loadingPosition="start"
                             variant="contained"
                             onClick={handleSave}
                             disabled={saving}

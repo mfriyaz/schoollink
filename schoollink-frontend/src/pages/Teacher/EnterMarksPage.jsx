@@ -510,7 +510,7 @@ function EnterMarksPage() {
 
                         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
 
-                            <Button
+                            <Button loading={saving} loadingPosition="start"
                                 variant="contained"
                                 onClick={handleSave}
                                 disabled={saving}

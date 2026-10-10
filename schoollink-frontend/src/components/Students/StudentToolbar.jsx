@@ -144,7 +144,7 @@ export default function StudentToolbar({
 
                 </Button>
 
-                <Button
+                <Button loading={uploading} loadingPosition="start"
                     variant="outlined"
                     startIcon={<UploadFileIcon />}
                     onClick={handleUploadClick}

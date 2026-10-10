@@ -940,7 +940,7 @@ function ViewPostPage() {
                         />
                         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
 
-                            <Button
+                            <Button loading={submitting} loadingPosition="start"
                                 variant="contained"
                                 disabled={!checked || submitting}
                                 onClick={handleAcknowledge}
@@ -1259,7 +1259,7 @@ function ViewPostPage() {
 
                             {(submissionPhotos.length > 0 || submissionVoice) && (
 
-                                <Button
+                                <Button loading={submittingWork} loadingPosition="start"
                                     variant="contained"
                                     onClick={handleSubmitWork}
                                     disabled={submittingWork}

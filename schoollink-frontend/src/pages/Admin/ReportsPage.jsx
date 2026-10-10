@@ -274,7 +274,7 @@ function ReportsPage() {
 
                     </TextField>
 
-                    <Button
+                    <Button loading={loadingReport} loadingPosition="start"
                         variant="contained"
                         onClick={handleViewReport}
                         disabled={loadingReport}
@@ -310,7 +310,7 @@ function ReportsPage() {
 
                         </Box>
 
-                        <Button
+                        <Button loading={downloading} loadingPosition="start"
                             variant="outlined"
                             startIcon={<DownloadIcon />}
                             onClick={handleDownloadPdf}

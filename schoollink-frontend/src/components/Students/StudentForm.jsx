@@ -486,7 +486,7 @@ function StudentForm({
 
                 </Button>
 
-                <Button
+                <Button loading={saving} loadingPosition="start"
                     variant="contained"
                     onClick={handleSave}
                     disabled={saving}

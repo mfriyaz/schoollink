@@ -302,7 +302,7 @@ export function PostViewDialog({ open, post, onClose, onEdit, onDeleted }) {
                             <Button size="small" onClick={() => setConfirmDelete(false)}>
                                 Keep
                             </Button>
-                            <Button
+                            <Button loading={deleting} loadingPosition="start"
                                 size="small"
                                 color="error"
                                 variant="contained"
@@ -660,7 +660,7 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
                 <Button variant="outlined" onClick={onClose}>
                     Cancel
                 </Button>
-                <Button variant="contained" onClick={handleSave} disabled={saving || uploading}>
+                <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleSave} disabled={saving || uploading}>
                     {saving ? "Saving..." : "Save changes"}
                 </Button>
             </DialogActions>

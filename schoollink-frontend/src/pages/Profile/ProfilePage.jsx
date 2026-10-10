@@ -309,7 +309,7 @@ function ProfilePage() {
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
 
-                        <Button
+                        <Button loading={savingProfile} loadingPosition="start"
                             variant="contained"
                             onClick={handleSaveProfile}
                             disabled={savingProfile}
@@ -373,7 +373,7 @@ function ProfilePage() {
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
 
-                        <Button
+                        <Button loading={changingPassword} loadingPosition="start"
                             variant="contained"
                             color="warning"
                             onClick={handleChangePassword}

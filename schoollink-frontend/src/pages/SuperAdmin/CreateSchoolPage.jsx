@@ -342,7 +342,7 @@ function CreateSchoolPage() {
 
                     <Button onClick={() => navigate("/super-admin/schools")}>Cancel</Button>
 
-                    <Button variant="contained" onClick={handleCreate} disabled={saving}>
+                    <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleCreate} disabled={saving}>
 
                         {saving ? "Creating..." : "Create School"}
 

@@ -691,7 +691,7 @@ function TeacherPostDetailPage() {
 
                         </Button>
 
-                        <Button
+                        <Button loading={saving} loadingPosition="start"
                             variant="contained"
                             startIcon={<SaveIcon />}
                             onClick={handleSave}

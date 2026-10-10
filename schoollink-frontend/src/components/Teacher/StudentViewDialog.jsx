@@ -637,7 +637,7 @@ function StudentViewDialog({ open, student, onClose }) {
 
                             </Button>
 
-                            <Button
+                            <Button loading={linking} loadingPosition="start"
                                 size="small"
                                 variant="contained"
                                 onClick={handleLinkParent}
@@ -691,7 +691,7 @@ function StudentViewDialog({ open, student, onClose }) {
 
                 </Button>
 
-                <Button
+                <Button loading={settingUsername} loadingPosition="start"
                     variant="contained"
                     onClick={handleSetUsername}
                     disabled={settingUsername}

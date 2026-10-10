@@ -506,7 +506,7 @@ function GradesPage() {
 
                     </Button>
 
-                    <Button variant="contained" onClick={handleSave} disabled={saving}>
+                    <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleSave} disabled={saving}>
 
                         {saving ? "Saving..." : "Save"}
 

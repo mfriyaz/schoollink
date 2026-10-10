@@ -1077,7 +1077,7 @@ function TeachersPage() {
 
                     <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
 
-                    <Button variant="contained" onClick={handleSave} disabled={saving}>
+                    <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleSave} disabled={saving}>
 
                         {saving ? "Saving..." : "Save"}
 
@@ -1308,7 +1308,7 @@ function TeachersPage() {
 
                     </Button>
 
-                    <Button
+                    <Button loading={assigning} loadingPosition="start"
                         variant="contained"
                         onClick={handleAssign}
                         disabled={assigning}
@@ -1371,7 +1371,7 @@ function TeachersPage() {
 
                     </Button>
 
-                    <Button
+                    <Button loading={addingLogin} loadingPosition="start"
                         variant="contained"
                         onClick={handleAddLogin}
                         disabled={addingLogin}
@@ -1418,7 +1418,7 @@ function TeachersPage() {
 
                     </Button>
 
-                    <Button
+                    <Button loading={settingUsername} loadingPosition="start"
                         variant="contained"
                         onClick={handleSetUsername}
                         disabled={settingUsername}

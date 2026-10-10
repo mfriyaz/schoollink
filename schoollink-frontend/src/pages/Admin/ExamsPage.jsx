@@ -366,7 +366,7 @@ function ExamsPage() {
                                 fullWidth
                             />
 
-                            <Button
+                            <Button loading={creatingExam} loadingPosition="start"
                                 variant="contained"
                                 onClick={handleCreateExam}
                                 disabled={creatingExam}
@@ -458,7 +458,7 @@ function ExamsPage() {
 
                                 </Box>
 
-                                <Button
+                                <Button loading={assigning} loadingPosition="start"
                                     variant="contained"
                                     onClick={handleAssignSubject}
                                     disabled={assigning}

@@ -821,7 +821,7 @@ function ParentDashboardPage() {
 
                                 </Button>
 
-                                <Button
+                                <Button loading={sendingGreeting} loadingPosition="start"
                                     variant="contained"
                                     color="success"
                                     onClick={handleConfirmSendGreeting}
