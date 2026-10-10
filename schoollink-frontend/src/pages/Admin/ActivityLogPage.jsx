@@ -19,6 +19,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBackOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
+import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import { getAuditLogs } from "../../services/auditService";
 
 const TYPE_FILTERS = [
@@ -73,6 +74,7 @@ function ActivityLogPage() {
     const [to, setTo] = useState("");
 
     const [openId, setOpenId] = useState(null);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         const timeout = setTimeout(load, 300);
@@ -82,6 +84,7 @@ function ActivityLogPage() {
     async function load() {
         try {
             setLoading(true);
+            setError("");
             const response = await getAuditLogs({
                 search,
                 entity_type: type,
@@ -98,6 +101,10 @@ function ActivityLogPage() {
             }
         } catch (err) {
             console.error(err);
+            setError(
+                err.response?.data?.message ||
+                "Unable to load the activity log. Please try again."
+            );
         } finally {
             setLoading(false);
         }
@@ -174,8 +181,21 @@ function ActivityLogPage() {
                     <MenuItem value="School Admin">Admins</MenuItem>
                 </TextField>
 
-                <TextField size="small" type="date" label="From" value={from} onChange={reset(setFrom)} InputLabelProps={{ shrink: true }} />
-                <TextField size="small" type="date" label="To" value={to} onChange={reset(setTo)} InputLabelProps={{ shrink: true }} />
+                <SchoolDatePicker
+                    label="From"
+                    size="small"
+                    value={from}
+                    onChange={(v) => { setFrom(v); setPage(1); }}
+                    sx={{ width: 180 }}
+                />
+
+                <SchoolDatePicker
+                    label="To"
+                    size="small"
+                    value={to}
+                    onChange={(v) => { setTo(v); setPage(1); }}
+                    sx={{ width: 180 }}
+                />
 
             </Box>
 
@@ -187,7 +207,13 @@ function ActivityLogPage() {
                     </Box>
                 )}
 
-                {!loading && logs.length === 0 && (
+                {!loading && error && (
+                    <Typography sx={{ color: "#B91C1C", p: 2 }}>
+                        {error}
+                    </Typography>
+                )}
+
+                {!loading && !error && logs.length === 0 && (
                     <Typography color="text.secondary" sx={{ p: 2 }}>
                         No activity found.
                     </Typography>
