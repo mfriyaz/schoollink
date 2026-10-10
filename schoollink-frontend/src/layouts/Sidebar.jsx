@@ -32,6 +32,7 @@ import DescriptionIcon from "@mui/icons-material/DescriptionOutlined";
 import AddBusinessIcon from "@mui/icons-material/AddBusinessOutlined";
 import ArchiveIcon from "@mui/icons-material/ArchiveOutlined";
 import HistoryIcon from "@mui/icons-material/History";
+import EventIcon from "@mui/icons-material/EventOutlined";
 
 const adminMenus = [
 
@@ -99,6 +100,12 @@ const adminMenus = [
         title: "Reports",
         path: "/reports",
         icon: <DescriptionIcon />
+    },
+
+    {
+        title: "School Calendar",
+        path: "/school-calendar",
+        icon: <EventIcon />
     },
 
     {
@@ -238,6 +245,7 @@ const iconColors = {
     "Grading Scale": "#FACC15",
     "Reports": "#818CF8",
     "Activity Log": "#F59E0B",
+    "School Calendar": "#C084FC",
     "Profile": "#22D3EE",
     "Settings": "#CBD5E1",
     "Create Post": "#4ADE80",

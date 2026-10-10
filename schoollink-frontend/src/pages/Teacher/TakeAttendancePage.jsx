@@ -21,6 +21,8 @@ import AccessTimeIcon from "@mui/icons-material/AccessTimeOutlined";
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
+import { getDayStatus } from "../../services/calendarService";
+import { prettyDate } from "../../utils/calendarUtils";
 
 import {
     getMyTeacherProfile,
@@ -46,7 +48,7 @@ function TakeAttendancePage() {
     const [teacherSubjectId, setTeacherSubjectId] = useState("");
 
     const [date, setDate] = useState(
-        new Date().toISOString().slice(0, 10)
+        new Intl.DateTimeFormat("en-CA", { timeZone: getSchoolTimezone() }).format(new Date())
     );
 
     const [roster, setRoster] = useState([]);
@@ -54,6 +56,7 @@ function TakeAttendancePage() {
     const [loadingAssignments, setLoadingAssignments] = useState(true);
 
     const [loadingRoster, setLoadingRoster] = useState(false);
+    const [dayStatus, setDayStatus] = useState(null);
 
     const [saving, setSaving] = useState(false);
 
@@ -68,7 +71,17 @@ function TakeAttendancePage() {
     }, []);
 
     useEffect(() => {
+        let cancelled = false;
+        setDayStatus(null);
+        if (date) {
+            getDayStatus(date)
+                .then((r) => { if (!cancelled && r.success) setDayStatus(r.data); })
+                .catch(() => {});
+        }
+        return () => { cancelled = true; };
+    }, [date]);
 
+    useEffect(() => {
         if (teacherSubjectId && date) {
 
             loadRoster();
@@ -248,6 +261,8 @@ function TakeAttendancePage() {
 
     }
 
+    const offDay = !!dayStatus && !dayStatus.is_working;
+
     const selectedAssignment = assignments.find(
         (a) => a.teacher_subject_id === teacherSubjectId
     );
@@ -345,7 +360,17 @@ function TakeAttendancePage() {
 
                 )}
 
-                {loadingRoster && (
+                {offDay && (
+                    <Alert severity="info" sx={{ mb: 2 }}>
+                        {prettyDate(date, { weekday: "long", day: "numeric", month: "short", year: "numeric" })} is{" "}
+                        {dayStatus.reason === "Holiday"
+                            ? `a school holiday (${dayStatus.name})`
+                            : dayStatus.reason === "Weekend" ? "a weekend" : "a weekly off day"}.
+                        {" "}Attendance isn't taken on this day. Pick another date. If school is open, ask the School Admin to add a Working Day in School Calendar.
+                    </Alert>
+                )}
+
+                {!offDay && loadingRoster && (
 
                     <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
 
@@ -355,7 +380,7 @@ function TakeAttendancePage() {
 
                 )}
 
-                {!loadingRoster && selectedAssignment && roster.length === 0 && (
+                {!offDay && !loadingRoster && selectedAssignment && roster.length === 0 && (
 
                     <Typography color="text.secondary">
 
@@ -365,7 +390,7 @@ function TakeAttendancePage() {
 
                 )}
 
-                {!loadingRoster && roster.map((student) => (
+                {!offDay && !loadingRoster && roster.map((student) => (
 
                     <Box
 
@@ -450,7 +475,7 @@ function TakeAttendancePage() {
 
                 ))}
 
-                {roster.length > 0 && (
+                {!offDay && roster.length > 0 && (
 
                     <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
 

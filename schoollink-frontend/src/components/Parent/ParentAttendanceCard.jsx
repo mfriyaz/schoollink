@@ -4,12 +4,21 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircleOutlined";
 import CancelIcon from "@mui/icons-material/CancelOutlined";
 import AccessTimeIcon from "@mui/icons-material/AccessTimeOutlined";
 import EventBusyIcon from "@mui/icons-material/EventBusyOutlined";
+import BeachAccessIcon from "@mui/icons-material/BeachAccessOutlined";
+import EventIcon from "@mui/icons-material/EventOutlined";
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
+import { dayInfo, prettyDate } from "../../utils/calendarUtils";
 
 const STATUS = {
     Present: { fg: "#16A34A", bg: "#DCFCE7", icon: <CheckCircleIcon /> },
     Late: { fg: "#EA580C", bg: "#FFEDD5", icon: <AccessTimeIcon /> },
     Absent: { fg: "#DC2626", bg: "#FEE2E2", icon: <CancelIcon /> }
+};
+
+const OFF_STYLE = {
+    Holiday: { fg: "#6D28D9", bg: "#EDE9FE", icon: <BeachAccessIcon /> },
+    Weekend: { fg: "#475569", bg: "#E2E8F0", icon: <EventIcon /> },
+    "Weekly off": { fg: "#475569", bg: "#E2E8F0", icon: <EventIcon /> }
 };
 
 const NOT_MARKED = { fg: "#64748B", bg: "#F1F5F9", icon: <EventBusyIcon /> };
@@ -26,7 +35,7 @@ function styleFor(status) {
  * - This Month: attendance %, counts, a colour-coded month grid and
  *   a short list of only the Late / Absent days.
  */
-function ParentAttendanceCard({ attendance }) {
+function ParentAttendanceCard({ attendance, calendar }) {
 
     const [tab, setTab] = useState("today");
 
@@ -77,7 +86,15 @@ function ParentAttendanceCard({ attendance }) {
         .filter((r) => r.status === "Late" || r.status === "Absent")
         .sort((a, b) => (a.key < b.key ? 1 : -1));
 
-    const todayStyle = styleFor(todayRecord?.status);
+    const todayOff = !todayRecord ? dayInfo(todayKey, calendar) : { off: false };
+    const todayStyle = todayOff.off ? OFF_STYLE[todayOff.reason] : styleFor(todayRecord?.status);
+
+    // Next holiday (a named Holiday entry on or after today)
+    const nextHoliday = calendar
+        ? (calendar.days || [])
+            .filter((d) => d.kind === "Holiday" && d.end_date >= todayKey)
+            .sort((a, b) => (a.start_date < b.start_date ? -1 : 1))[0]
+        : null;
 
     return (
         <Card
@@ -169,12 +186,14 @@ function ParentAttendanceCard({ attendance }) {
 
                     <Box sx={{ minWidth: 0 }}>
                         <Typography sx={{ fontWeight: 700, fontSize: "1.1rem", color: todayStyle.fg, lineHeight: 1.2 }}>
-                            {todayRecord ? todayRecord.status : "Not marked yet"}
+                            {todayRecord ? todayRecord.status : todayOff.off ? (todayOff.reason === "Holiday" ? "Holiday" : todayOff.reason) : "Not marked yet"}
                         </Typography>
                         <Typography sx={{ color: "#475569", fontSize: "0.8rem", mt: 0.25 }}>
                             {todayRecord
                                 ? (todayRecord.remarks || "Marked by the class teacher")
-                                : "The teacher hasn't marked attendance today."}
+                                : todayOff.off
+                                    ? (todayOff.reason === "Holiday" ? `${todayOff.name} - no school today.` : "No school today.")
+                                    : "The teacher hasn't marked attendance today."}
                         </Typography>
                     </Box>
                 </Box>
@@ -251,12 +270,14 @@ function ParentAttendanceCard({ attendance }) {
                                 const key = `${yearStr}-${monthStr}-${String(d).padStart(2, "0")}`;
                                 const rec = byDay[key];
                                 const st = rec ? STATUS[rec.status] : null;
+                                const info = !rec ? dayInfo(key, calendar) : { off: false };
+                                const offStyle = info.off ? OFF_STYLE[info.reason] : null;
                                 const isToday = key === todayKey;
 
                                 return (
                                     <Box
                                         key={i}
-                                        title={rec ? `${d}: ${rec.status}` : undefined}
+                                        title={rec ? `${d}: ${rec.status}` : info.off ? `${d}: ${info.name || info.reason}` : undefined}
                                         sx={{
                                             aspectRatio: "1 / 1",
                                             maxHeight: 38,
@@ -266,8 +287,8 @@ function ParentAttendanceCard({ attendance }) {
                                             justifyContent: "center",
                                             fontSize: "0.76rem",
                                             fontWeight: rec || isToday ? 700 : 500,
-                                            bgcolor: st ? st.bg : "#F8FAFC",
-                                            color: st ? st.fg : "#94A3B8",
+                                            bgcolor: st ? st.bg : offStyle ? offStyle.bg : "#F8FAFC",
+                                            color: st ? st.fg : offStyle ? offStyle.fg : "#94A3B8",
                                             border: isToday ? "2px solid #2563EB" : "2px solid transparent"
                                         }}
                                     >
@@ -275,6 +296,22 @@ function ParentAttendanceCard({ attendance }) {
                                     </Box>
                                 );
                             })}
+                        </Box>
+
+                        {/* Legend */}
+                        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mt: 1.5 }}>
+                            {[
+                                { label: "Present", c: STATUS.Present },
+                                { label: "Late", c: STATUS.Late },
+                                { label: "Absent", c: STATUS.Absent },
+                                { label: "Holiday", c: OFF_STYLE.Holiday },
+                                { label: "Weekend", c: OFF_STYLE.Weekend }
+                            ].map((l) => (
+                                <Box key={l.label} sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                    <Box sx={{ width: 10, height: 10, borderRadius: "3px", bgcolor: l.c.bg, border: `1px solid ${l.c.fg}` }} />
+                                    <Typography sx={{ fontSize: "0.7rem", color: "#64748B" }}>{l.label}</Typography>
+                                </Box>
+                            ))}
                         </Box>
 
                         {/* Only the days that need attention */}
@@ -323,6 +360,27 @@ function ParentAttendanceCard({ attendance }) {
 
                     </Box>
                 )
+                        )}
+
+            {nextHoliday && (
+                <Box
+                    sx={{
+                        mt: 1.75,
+                        pt: 1.25,
+                        borderTop: "1px solid #F1F5F9",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1
+                    }}
+                >
+                    <BeachAccessIcon sx={{ fontSize: 18, color: OFF_STYLE.Holiday.fg }} />
+                    <Typography sx={{ fontSize: "0.8rem", color: "#475569", minWidth: 0 }}>
+                        <b>Next holiday:</b> {nextHoliday.name} ·{" "}
+                        {nextHoliday.start_date === nextHoliday.end_date
+                            ? prettyDate(nextHoliday.start_date)
+                            : `${prettyDate(nextHoliday.start_date)} to ${prettyDate(nextHoliday.end_date)}`}
+                    </Typography>
+                </Box>
             )}
 
         </Card>

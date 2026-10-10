@@ -1,3 +1,4 @@
+const calendarService = require("../services/calendar.service");
 const attendanceService = require("../services/attendance.service");
 const response = require("../utils/response");
 
@@ -26,6 +27,21 @@ async function createAttendance(req, res) {
                 );
 
             }
+
+        }
+
+        const dayStatus = await calendarService.getDayStatus(
+            req.user.school_id,
+            String(req.body.attendance_date).slice(0, 10)
+        );
+
+        if (!dayStatus.is_working) {
+
+            return response.error(
+                res,
+                `Attendance can't be marked: ${String(req.body.attendance_date).slice(0, 10)} is ${calendarService.describeOffDay(dayStatus)}.`,
+                400
+            );
 
         }
 
@@ -65,6 +81,21 @@ async function bulkMarkAttendance(req, res) {
             return response.error(
                 res,
                 "teacher_subject_id, attendance_date and records are required",
+                400
+            );
+
+        }
+
+        const dayStatus = await calendarService.getDayStatus(
+            req.user.school_id,
+            String(attendance_date).slice(0, 10)
+        );
+
+        if (!dayStatus.is_working) {
+
+            return response.error(
+                res,
+                `Attendance can't be marked: ${String(attendance_date).slice(0, 10)} is ${calendarService.describeOffDay(dayStatus)}. Ask the School Admin to add a Working Day in School Calendar if school is open.`,
                 400
             );
 

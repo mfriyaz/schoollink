@@ -19,6 +19,8 @@ import {
 } from "@mui/material";
 
 import ParentAttendanceCard from "../../components/Parent/ParentAttendanceCard";
+import { getCalendar } from "../../services/calendarService";
+import { dayInfo } from "../../utils/calendarUtils";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CampaignIcon from "@mui/icons-material/CampaignOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircleOutlined";
@@ -100,6 +102,7 @@ function ParentDashboardPage() {
     const [posts, setPosts] = useState([]);
 
     const [attendance, setAttendance] = useState([]);
+    const [calendar, setCalendar] = useState(null);
 
 
     const [postFilter, setPostFilter] = useState("all");
@@ -130,6 +133,8 @@ function ParentDashboardPage() {
     useEffect(() => {
 
         loadChildren();
+
+        loadCalendar();
 
     }, []);
 
@@ -198,6 +203,28 @@ function ParentDashboardPage() {
 
             console.error(err);
 
+        }
+
+    }
+
+    async function loadCalendar() {
+
+        try {
+
+            const dayFmt = new Intl.DateTimeFormat("en-CA", { timeZone: getSchoolTimezone() });
+            const today = dayFmt.format(new Date());
+            const monthStart = `${today.slice(0, 7)}-01`;
+            const end = new Date();
+            end.setDate(end.getDate() + 120);
+
+            const response = await getCalendar(monthStart, dayFmt.format(end));
+
+            if (response.success) {
+                setCalendar(response.data);
+            }
+
+        } catch (err) {
+            console.error(err);
         }
 
     }
@@ -652,8 +679,16 @@ function ParentDashboardPage() {
                     (r) => dayFmt.format(toUtcDate(r.attendance_date)) === todayStr
                 );
 
-                const attStatus = todayAtt ? todayAtt.status : "Not marked";
+                const offToday = !todayAtt ? dayInfo(todayStr, calendar) : { off: false };
+
+                const attStatus = todayAtt
+                    ? todayAtt.status
+                    : offToday.off
+                        ? (offToday.reason === "Holiday" ? "Holiday" : offToday.reason)
+                        : "Not marked";
                 const attColor =
+                    !todayAtt && offToday.off
+                        ? (offToday.reason === "Holiday" ? { fg: "#6D28D9", bg: "#EDE9FE" } : { fg: "#475569", bg: "#E2E8F0" }) :
                     !todayAtt ? { fg: "#64748B", bg: "#F1F5F9" } :
                     todayAtt.status === "Present" ? { fg: "#16A34A", bg: "#DCFCE7" } :
                     todayAtt.status === "Late" ? { fg: "#EA580C", bg: "#FFEDD5" } :
@@ -1028,7 +1063,7 @@ function ParentDashboardPage() {
             )}
 
 
-            {attendance.length > 0 && <ParentAttendanceCard attendance={attendance} />}
+            {(attendance.length > 0 || calendar) && <ParentAttendanceCard attendance={attendance} calendar={calendar} />}
 
 
             {pendingCount > 0 && (

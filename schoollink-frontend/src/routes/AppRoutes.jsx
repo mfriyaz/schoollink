@@ -22,6 +22,7 @@ import ViewPostPage from "../pages/Parent/ViewPostPage";
 import CreateAnnouncementPage from "../pages/Admin/CreateAnnouncementPage";
 import AllPostsPage from "../pages/Admin/AllPostsPage";
 import ActivityLogPage from "../pages/Admin/ActivityLogPage";
+import SchoolCalendarPage from "../pages/Admin/SchoolCalendarPage";
 import ExamsPage from "../pages/Admin/ExamsPage";
 
 import EnterMarksPage from "../pages/Teacher/EnterMarksPage";
@@ -186,6 +187,19 @@ export default function AppRoutes() {
                         <ProtectedRoute allowedRoles={["School Admin", "Super Admin"]}>
 
                             <CreateAnnouncementPage />
+
+                        </ProtectedRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/school-calendar"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["School Admin"]}>
+
+                            <SchoolCalendarPage />
 
                         </ProtectedRoute>
 
