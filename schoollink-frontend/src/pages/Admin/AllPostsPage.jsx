@@ -167,10 +167,10 @@ function AllPostsPage() {
                             onClick={() => setViewPost(post)}
                             sx={{
                                 display: "flex",
-                                alignItems: "center",
+                                flexDirection: { xs: "column", sm: "row" },
+                                alignItems: { xs: "stretch", sm: "center" },
                                 justifyContent: "space-between",
-                                gap: 1.5,
-                                flexWrap: "wrap",
+                                gap: { xs: 1, sm: 1.5 },
                                 p: 1.5,
                                 borderRadius: 2,
                                 cursor: "pointer",
@@ -188,7 +188,16 @@ function AllPostsPage() {
                                 </Avatar>
 
                                 <Box sx={{ minWidth: 0 }}>
-                                    <Typography sx={{ fontWeight: 600 }} noWrap>
+                                    <Typography
+                                        sx={{
+                                            fontWeight: 600,
+                                            overflowWrap: "anywhere",
+                                            display: "-webkit-box",
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: "vertical",
+                                            overflow: "hidden"
+                                        }}
+                                    >
                                         {post.title}
                                     </Typography>
                                     <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
@@ -207,32 +216,49 @@ function AllPostsPage() {
 
                             </Box>
 
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: { xs: "space-between", sm: "flex-end" },
+                                    flexWrap: "wrap",
+                                    gap: 1,
+                                    pl: { xs: 0, sm: 0 }
+                                }}
+                            >
 
-                                {post.total_students === null ? (
-                                    <Chip size="small" label={post.target_audience} />
-                                ) : (
-                                    <>
-                                        <Chip size="small" color="success" label={`${post.acknowledged_count}/${post.total_students}`} />
-                                        <Chip size="small" color="warning" label={`${post.pending_count} Pending`} />
-                                    </>
-                                )}
+                                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
 
-                                <Button
-                                    size="small"
-                                    startIcon={<VisibilityIcon fontSize="small" />}
-                                    onClick={(e) => { e.stopPropagation(); setViewPost(post); }}
-                                >
-                                    View
-                                </Button>
+                                    {post.total_students === null ? (
+                                        <Chip size="small" label={post.target_audience} />
+                                    ) : (
+                                        <>
+                                            <Chip size="small" color="success" label={`${post.acknowledged_count}/${post.total_students}`} />
+                                            <Chip size="small" color="warning" label={`${post.pending_count} Pending`} />
+                                        </>
+                                    )}
 
-                                <Button
-                                    size="small"
-                                    startIcon={<EditIcon fontSize="small" />}
-                                    onClick={(e) => { e.stopPropagation(); startEdit(post); }}
-                                >
-                                    Edit
-                                </Button>
+                                </Box>
+
+                                <Box sx={{ display: "flex", gap: 0.5 }}>
+
+                                    <Button
+                                        size="small"
+                                        startIcon={<VisibilityIcon fontSize="small" />}
+                                        onClick={(e) => { e.stopPropagation(); setViewPost(post); }}
+                                    >
+                                        View
+                                    </Button>
+
+                                    <Button
+                                        size="small"
+                                        startIcon={<EditIcon fontSize="small" />}
+                                        onClick={(e) => { e.stopPropagation(); startEdit(post); }}
+                                    >
+                                        Edit
+                                    </Button>
+
+                                </Box>
 
                             </Box>
 
