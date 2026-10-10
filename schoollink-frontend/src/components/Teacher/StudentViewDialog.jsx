@@ -23,6 +23,7 @@ import {
 
 import CloseIcon from "@mui/icons-material/CloseOutlined";
 import PersonAddIcon from "@mui/icons-material/PersonAddOutlined";
+import ResetPasswordDialog from "../common/ResetPasswordDialog";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroomOutlined";
 
 import {
@@ -88,6 +89,7 @@ function StudentViewDialog({ open, student, onClose }) {
     const [linkSuccess, setLinkSuccess] = useState("");
 
     const [usernameDialogOpen, setUsernameDialogOpen] = useState(false);
+    const [resetParent, setResetParent] = useState(null);
 
     const [usernameParent, setUsernameParent] = useState(null);
 
@@ -520,9 +522,8 @@ function StudentViewDialog({ open, student, onClose }) {
 
                         >
 
-                            {p.username ? "Edit Username" : "Set Username"}
-
-                        </Button>
+                            {p.username ? "Edit Username" : "Set Username"} </Button>
+<Button size="small" color="warning" onClick={() => setResetParent(p)}>Reset Password</Button>
 
                     </Box>
 
@@ -658,7 +659,9 @@ function StudentViewDialog({ open, student, onClose }) {
 
         </Dialog>
 
-        <Dialog open={usernameDialogOpen} onClose={() => setUsernameDialogOpen(false)} maxWidth="xs" fullWidth>
+        <ResetPasswordDialog open={!!resetParent} userId={resetParent?.parent_user_id} name={resetParent?.full_name} onClose={() => setResetParent(null)} />
+
+<Dialog open={usernameDialogOpen} onClose={() => setUsernameDialogOpen(false)} maxWidth="xs" fullWidth>
 
             <DialogTitle>
 

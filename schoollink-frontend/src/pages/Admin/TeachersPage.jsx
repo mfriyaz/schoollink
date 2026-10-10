@@ -28,6 +28,7 @@ import AssignmentIndIcon from "@mui/icons-material/AssignmentIndOutlined";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import VpnKeyIcon from "@mui/icons-material/VpnKeyOutlined";
+import ResetPasswordDialog from "../../components/common/ResetPasswordDialog";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 import {
@@ -136,6 +137,7 @@ function TeachersPage() {
     const [loginUsername, setLoginUsername] = useState("");
 
     const [usernameDialogOpen, setUsernameDialogOpen] = useState(false);
+    const [resetTeacher, setResetTeacher] = useState(null);
 
     const [usernameTeacher, setUsernameTeacher] = useState(null);
 
@@ -832,7 +834,7 @@ function TeachersPage() {
 
                             )}
 
-                            {teacher.user_id && (
+                            {teacher.user_id && (<>
 
                                 <Button
                                     size="small"
@@ -840,9 +842,8 @@ function TeachersPage() {
                                     onClick={() => openUsernameDialog(teacher)}
                                 >
 
-                                    {teacher.username ? "Edit Username" : "Set Username"}
-
-                                </Button>
+                                    {teacher.username ? "Edit Username" : "Set Username"} </Button>
+<Button size="small" color="warning" onClick={() => setResetTeacher(teacher)}>Reset Password</Button></>
 
                             )}
 
@@ -1385,7 +1386,9 @@ function TeachersPage() {
 
             </Dialog>
 
-            <Dialog open={usernameDialogOpen} onClose={() => setUsernameDialogOpen(false)} maxWidth="xs" fullWidth>
+            <ResetPasswordDialog open={!!resetTeacher} userId={resetTeacher?.user_id} name={resetTeacher ? `${resetTeacher.first_name} ${resetTeacher.last_name}` : ""} onClose={() => setResetTeacher(null)} />
+
+<Dialog open={usernameDialogOpen} onClose={() => setUsernameDialogOpen(false)} maxWidth="xs" fullWidth>
 
                 <DialogTitle>
 

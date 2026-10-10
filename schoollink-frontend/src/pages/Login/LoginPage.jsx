@@ -71,6 +71,7 @@ function LoginPage() {
     const navigate = useNavigate();
 
     const [identifier, setIdentifier] = useState("");
+    const [showForgotHint, setShowForgotHint] = useState(false);
 
     const [password, setPassword] = useState("");
 
@@ -377,15 +378,12 @@ function LoginPage() {
 
                             underline="hover"
 
-                            sx={{ fontSize: "0.85rem", cursor: "pointer" }}
-
-                        >
-
-                            Forgot Password?
-
-                        </Link>
+                            sx={{ fontSize: "0.85rem", cursor: "pointer" }} onClick={() => setShowForgotHint((v) => !v)} > Forgot Password? </Link>
 
                     </Box>
+
+{showForgotHint && (<Alert severity="info" sx={{ mb: 2 }}>Please contact your school admin - they can reset your password and give you a new temporary one. After logging in, change it under Profile.</Alert>)}
+
 
                     <Button
                         fullWidth
