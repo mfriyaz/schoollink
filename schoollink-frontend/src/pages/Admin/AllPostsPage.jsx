@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import {
     Avatar,
     Box,
+    Button,
     Card,
     Chip,
     CircularProgress,
     InputAdornment,
-    MenuItem,
     Pagination,
     TextField,
     Typography
@@ -18,61 +18,72 @@ import SearchIcon from "@mui/icons-material/SearchOutlined";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CampaignIcon from "@mui/icons-material/CampaignOutlined";
 import ArrowBackIcon from "@mui/icons-material/ArrowBackOutlined";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import VisibilityIcon from "@mui/icons-material/VisibilityOutlined";
 
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
+import { getAllPosts, getAnnouncementById, getHomeworkById } from "../../services/postService";
+import { PostViewDialog, PostEditDialog } from "../../components/Admin/PostManageDialogs";
 
-import { getAllPosts } from "../../services/postService";
+const FILTERS = [
+    { value: "", label: "All" },
+    { value: "announcement", label: "Announcements" },
+    { value: "homework", label: "Homework" }
+];
 
 function AllPostsPage() {
 
     const navigate = useNavigate();
 
     const [posts, setPosts] = useState([]);
-
     const [search, setSearch] = useState("");
-
     const [type, setType] = useState("");
-
     const [page, setPage] = useState(1);
-
     const [totalPages, setTotalPages] = useState(1);
-
     const [loading, setLoading] = useState(true);
 
+    const [viewPost, setViewPost] = useState(null);
+    const [editPost, setEditPost] = useState(null);
+    const [editRecord, setEditRecord] = useState(null);
+
     useEffect(() => {
-
         const timeout = setTimeout(loadPosts, 300);
-
         return () => clearTimeout(timeout);
-
     }, [search, type, page]);
 
     async function loadPosts() {
-
         try {
-
             setLoading(true);
-
             const response = await getAllPosts({ search, type, page });
-
             if (response.success) {
-
                 setPosts(response.data.posts);
-
                 setTotalPages(response.data.totalPages);
-
             }
-
         } catch (err) {
-
             console.error(err);
-
         } finally {
-
             setLoading(false);
-
         }
+    }
 
+    async function startEdit(post) {
+        try {
+            const response = post.post_type === "announcement"
+                ? await getAnnouncementById(post.id)
+                : await getHomeworkById(post.id);
+            if (response.success) {
+                setEditPost(post);
+                setEditRecord(response.data);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function openEdit(post, record) {
+        setEditPost(post);
+        setEditRecord(record);
+        setViewPost(null);
     }
 
     return (
@@ -83,20 +94,19 @@ function AllPostsPage() {
                 onClick={() => navigate("/dashboard")}
                 sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#64748B", cursor: "pointer", mb: 2, width: "fit-content" }}
             >
-
                 <ArrowBackIcon fontSize="small" />
-
                 <Typography sx={{ fontSize: "0.9rem" }}>Back to Dashboard</Typography>
-
             </Box>
 
-            <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
-
-                All Posts
-
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
+                Posts &amp; Announcements
             </Typography>
 
-            <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap" }}>
+            <Typography sx={{ color: "#64748B", fontSize: "0.9rem", mb: 3 }}>
+                Click any item to view it. Use Edit to change it.
+            </Typography>
+
+            <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap", alignItems: "center" }}>
 
                 <TextField
                     placeholder="Search by title..."
@@ -105,178 +115,161 @@ function AllPostsPage() {
                     size="small"
                     sx={{ minWidth: 260 }}
                     InputProps={{
-
                         startAdornment: (
-
                             <InputAdornment position="start">
-
                                 <SearchIcon fontSize="small" sx={{ color: "#94A3B8" }} />
-
                             </InputAdornment>
-
                         )
-
                     }}
                 />
 
-                <TextField
-                    select
-                    size="small"
-                    value={type}
-                    onChange={(e) => { setType(e.target.value); setPage(1); }}
-                    sx={{ minWidth: 180 }}
-                >
-
-                    <MenuItem value="">All Types</MenuItem>
-
-                    <MenuItem value="homework">Homework</MenuItem>
-
-                    <MenuItem value="announcement">Announcements</MenuItem>
-
-                </TextField>
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                    {FILTERS.map((f) => (
+                        <Chip
+                            key={f.value}
+                            label={f.label}
+                            clickable
+                            onClick={() => { setType(f.value); setPage(1); }}
+                            sx={{
+                                fontWeight: 600,
+                                bgcolor: type === f.value ? "#1D4ED8" : "#F1F5F9",
+                                color: type === f.value ? "white" : "#475569",
+                                "&:hover": { bgcolor: type === f.value ? "#1E40AF" : "#E2E8F0" }
+                            }}
+                        />
+                    ))}
+                </Box>
 
             </Box>
 
-            <Card sx={{ p: 3 }}>
+            <Card sx={{ p: { xs: 1, sm: 2 } }}>
 
                 {loading && (
-
                     <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-
                         <CircularProgress size={28} />
-
                     </Box>
-
                 )}
 
                 {!loading && posts.length === 0 && (
-
-                    <Typography color="text.secondary">
-
+                    <Typography color="text.secondary" sx={{ p: 2 }}>
                         No posts match your search.
-
                     </Typography>
-
                 )}
 
-                {!loading && posts.map((post) => (
+                {!loading && posts.map((post) => {
 
-                    <Box
+                    const isAnn = post.post_type === "announcement";
 
-                        key={`${post.post_type}-${post.id}`}
+                    return (
 
-                        sx={{
+                        <Box
+                            key={`${post.post_type}-${post.id}`}
+                            onClick={() => setViewPost(post)}
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                gap: 1.5,
+                                flexWrap: "wrap",
+                                p: 1.5,
+                                borderRadius: 2,
+                                cursor: "pointer",
+                                borderBottom: "1px solid #F1F5F9",
+                                "&:hover": { bgcolor: "#F8FAFC" }
+                            }}
+                        >
 
-                            display: "flex",
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 0, flex: 1 }}>
 
-                            alignItems: "center",
+                                <Avatar sx={{ bgcolor: isAnn ? "#EDE9FE" : "#DBEAFE" }}>
+                                    {isAnn
+                                        ? <CampaignIcon sx={{ color: "#7C3AED" }} fontSize="small" />
+                                        : <MenuBookIcon sx={{ color: "#2563EB" }} fontSize="small" />}
+                                </Avatar>
 
-                            justifyContent: "space-between",
+                                <Box sx={{ minWidth: 0 }}>
+                                    <Typography sx={{ fontWeight: 600 }} noWrap>
+                                        {post.title}
+                                    </Typography>
+                                    <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
+                                        {isAnn
+                                            ? `Announcement · ${post.target_audience}`
+                                            : `${post.class_name} - ${post.section_name} · ${post.subject_name}`}
+                                        {" · "}
+                                        {toUtcDate(post.created_at).toLocaleDateString(undefined, {
+                                            timeZone: getSchoolTimezone(),
+                                            month: "short",
+                                            day: "numeric",
+                                            year: "numeric"
+                                        })}
+                                    </Typography>
+                                </Box>
 
-                            py: 2,
+                            </Box>
 
-                            borderBottom: "1px solid #F1F5F9",
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
 
-                            "&:last-of-type": { borderBottom: "none" }
-
-                        }}
-
-                    >
-
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-
-                            <Avatar sx={{ bgcolor: post.post_type === "announcement" ? "#EDE9FE" : "#DBEAFE" }}>
-
-                                {post.post_type === "announcement" ? (
-
-                                    <CampaignIcon sx={{ color: "#7C3AED" }} fontSize="small" />
-
+                                {post.total_students === null ? (
+                                    <Chip size="small" label={post.target_audience} />
                                 ) : (
-
-                                    <MenuBookIcon sx={{ color: "#2563EB" }} fontSize="small" />
-
+                                    <>
+                                        <Chip size="small" color="success" label={`${post.acknowledged_count}/${post.total_students}`} />
+                                        <Chip size="small" color="warning" label={`${post.pending_count} Pending`} />
+                                    </>
                                 )}
 
-                            </Avatar>
+                                <Button
+                                    size="small"
+                                    startIcon={<VisibilityIcon fontSize="small" />}
+                                    onClick={(e) => { e.stopPropagation(); setViewPost(post); }}
+                                >
+                                    View
+                                </Button>
 
-                            <Box>
-
-                                <Typography sx={{ fontWeight: 600 }}>
-
-                                    {post.title}
-
-                                </Typography>
-
-                                <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
-
-                                    {post.post_type === "announcement"
-                                        ? `Announcement · ${post.target_audience}`
-                                        : `${post.class_name} - ${post.section_name} · ${post.subject_name}`}
-
-                                    {" · "}
-
-                                    {toUtcDate(post.created_at).toLocaleDateString(undefined, {
-
-                                        timeZone: getSchoolTimezone(),
-
-                                        month: "short",
-
-                                        day: "numeric",
-
-                                        year: "numeric"
-
-                                    })}
-
-                                </Typography>
+                                <Button
+                                    size="small"
+                                    startIcon={<EditIcon fontSize="small" />}
+                                    onClick={(e) => { e.stopPropagation(); startEdit(post); }}
+                                >
+                                    Edit
+                                </Button>
 
                             </Box>
 
                         </Box>
 
-                        {post.total_students === null ? (
+                    );
 
-                            <Chip size="small" label={post.target_audience} />
-
-                        ) : (
-
-                            <Box sx={{ display: "flex", gap: 1 }}>
-
-                                <Chip
-                                    size="small"
-                                    color="success"
-                                    label={`${post.acknowledged_count}/${post.total_students}`}
-                                />
-
-                                <Chip
-                                    size="small"
-                                    color="warning"
-                                    label={`${post.pending_count} Pending`}
-                                />
-
-                            </Box>
-
-                        )}
-
-                    </Box>
-
-                ))}
+                })}
 
                 {totalPages > 1 && (
-
                     <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-
                         <Pagination
                             count={totalPages}
                             page={page}
                             onChange={(e, value) => setPage(value)}
                             color="primary"
                         />
-
                     </Box>
-
                 )}
 
             </Card>
+
+            <PostViewDialog
+                open={!!viewPost}
+                post={viewPost}
+                onClose={() => setViewPost(null)}
+                onEdit={(record) => openEdit(viewPost, record)}
+                onDeleted={() => { setViewPost(null); loadPosts(); }}
+            />
+
+            <PostEditDialog
+                open={!!editPost}
+                post={editPost}
+                record={editRecord}
+                onClose={() => { setEditPost(null); setEditRecord(null); }}
+                onSaved={() => { setEditPost(null); setEditRecord(null); loadPosts(); }}
+            />
 
         </Box>
 

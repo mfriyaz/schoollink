@@ -215,6 +215,113 @@ async function notifyParentsOfAnnouncement(announcementId) {
 }
 
 /**
+ * Notify teachers (and, for "School Admin" audience, the other
+ * admins) about a new announcement.
+ *
+ * - "All" / "Teachers" audience  -> every teacher at the school who
+ *   has a login.
+ * - Announcement linked to specific classes -> only the teachers who
+ *   teach those classes.
+ * - "School Admin" audience -> the school's admins.
+ *
+ * Teachers open /teacher/announcements to read it.
+ */
+async function notifyTeachersOfAnnouncement(announcementId) {
+
+    const announcementResult = await db.query(
+        `SELECT * FROM announcements WHERE id = $1`,
+        [announcementId]
+    );
+
+    const announcement = announcementResult.rows[0];
+
+    if (!announcement) {
+        return;
+    }
+
+    const classLinksResult = await db.query(
+        `SELECT class_id FROM announcement_classes WHERE announcement_id = $1`,
+        [announcementId]
+    );
+
+    const linkedClassIds = classLinksResult.rows.map((r) => r.class_id);
+
+    let userIds = [];
+    let link = "/teacher/announcements";
+
+    if (linkedClassIds.length > 0) {
+
+        const result = await db.query(
+            `
+            SELECT DISTINCT t.user_id
+            FROM teacher_subjects ts
+            JOIN teachers t ON ts.teacher_id = t.id
+            WHERE ts.class_id = ANY($1::int[])
+            AND t.school_id = $2
+            AND t.user_id IS NOT NULL
+            `,
+            [linkedClassIds, announcement.school_id]
+        );
+
+        userIds = result.rows.map((r) => r.user_id);
+
+    } else if (
+        announcement.target_audience === "All" ||
+        announcement.target_audience === "Teachers"
+    ) {
+
+        const result = await db.query(
+            `
+            SELECT DISTINCT user_id
+            FROM teachers
+            WHERE school_id = $1
+            AND user_id IS NOT NULL
+            `,
+            [announcement.school_id]
+        );
+
+        userIds = result.rows.map((r) => r.user_id);
+
+    } else if (announcement.target_audience === "School Admin") {
+
+        const result = await db.query(
+            `
+            SELECT u.id AS user_id
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            WHERE u.school_id = $1
+            AND r.role_name = 'School Admin'
+            `,
+            [announcement.school_id]
+        );
+
+        userIds = result.rows.map((r) => r.user_id);
+        link = "/posts";
+
+    } else {
+
+        return;
+    }
+
+    const emailBody =
+        `<strong>${announcement.title}</strong><br>` +
+        `Audience: ${announcement.target_audience}<br><br>` +
+        (announcement.description ? `${announcement.description}<br><br>` : "") +
+        `Please log in to SchoolLink to view this announcement.`;
+
+    for (const userId of userIds) {
+
+        await notifyIfEnabled(
+            userId,
+            "New Announcement",
+            announcement.title,
+            emailBody,
+            link
+        );
+    }
+}
+
+/**
  * Notify the post's "owner" (the teacher for homework, or the
  * school's admins for an announcement) that a parent
  * acknowledged it.
@@ -373,6 +480,7 @@ module.exports = {
     notifyParentsOfHomework,
 
     notifyParentsOfAnnouncement,
+    notifyTeachersOfAnnouncement,
 
     notifyOwnerOfAcknowledgement,
 

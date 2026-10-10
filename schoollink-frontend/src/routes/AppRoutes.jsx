@@ -10,6 +10,7 @@ import StudentListPage from "../pages/Students/StudentListPage";
 import TeacherDashboardPage from "../pages/Teacher/TeacherDashboardPage";
 import CreatePostPage from "../pages/Teacher/CreatePostPage";
 import TakeAttendancePage from "../pages/Teacher/TakeAttendancePage";
+import TeacherAnnouncementsPage from "../pages/Teacher/TeacherAnnouncementsPage";
 import TeacherPostsPage from "../pages/Teacher/TeacherPostsPage";
 import TeacherPostDetailPage from "../pages/Teacher/TeacherPostDetailPage";
 
@@ -298,6 +299,19 @@ export default function AppRoutes() {
                         <ProtectedRoute allowedRoles={["Teacher"]}>
 
                             <TakeAttendancePage />
+
+                        </ProtectedRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/teacher/announcements"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["Teacher"]}>
+
+                            <TeacherAnnouncementsPage />
 
                         </ProtectedRoute>
 

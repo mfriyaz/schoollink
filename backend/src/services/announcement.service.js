@@ -29,13 +29,15 @@ async function createAnnouncement(data) {
     const announcement = await announcementModel.createAnnouncement(data);
 
     try {
-
         await notifierService.notifyParentsOfAnnouncement(announcement.id);
-
     } catch (err) {
-
         console.error("Failed to notify parents of announcement:", err);
+    }
 
+    try {
+        await notifierService.notifyTeachersOfAnnouncement(announcement.id);
+    } catch (err) {
+        console.error("Failed to notify teachers of announcement:", err);
     }
 
     return announcement;
@@ -54,12 +56,12 @@ async function getAllAnnouncements(schoolId) {
 /**
  * Get Announcement By ID
  */
-async function getAnnouncementById(id) {
+async function getAnnouncementById(id, schoolId) {
 
     const announcement =
         await announcementModel.getAnnouncementById(id);
 
-    if (!announcement) {
+    if (!announcement || (schoolId && announcement.school_id !== schoolId)) {
         throw new Error("Announcement not found.");
     }
 
@@ -70,12 +72,12 @@ async function getAnnouncementById(id) {
 /**
  * Update Announcement
  */
-async function updateAnnouncement(id, data) {
+async function updateAnnouncement(id, data, schoolId) {
 
     const announcement =
         await announcementModel.getAnnouncementById(id);
 
-    if (!announcement) {
+    if (!announcement || (schoolId && announcement.school_id !== schoolId)) {
         throw new Error("Announcement not found.");
     }
 
@@ -106,12 +108,12 @@ async function updateAnnouncement(id, data) {
 /**
  * Delete Announcement
  */
-async function deleteAnnouncement(id) {
+async function deleteAnnouncement(id, schoolId) {
 
     const announcement =
         await announcementModel.getAnnouncementById(id);
 
-    if (!announcement) {
+    if (!announcement || (schoolId && announcement.school_id !== schoolId)) {
         throw new Error("Announcement not found.");
     }
 

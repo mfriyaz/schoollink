@@ -250,3 +250,35 @@ export async function acknowledgePost(data) {
     return response.data;
 
 }
+
+/**
+ * Get one announcement (School Admin)
+ */
+export async function getAnnouncementById(id) {
+    const response = await api.get(`/announcements/${id}`);
+    return response.data;
+}
+
+/**
+ * Update an announcement (School Admin)
+ */
+export async function updateAnnouncement(id, data) {
+    const response = await api.put(`/announcements/${id}`, data);
+    return response.data;
+}
+
+/**
+ * Delete an announcement (School Admin)
+ */
+export async function deleteAnnouncement(id) {
+    const response = await api.delete(`/announcements/${id}`);
+    return response.data;
+}
+
+/**
+ * Active announcements for an audience, e.g. "Teachers"
+ */
+export async function getActiveAnnouncements(audience) {
+    const response = await api.get(`/announcements/active/${encodeURIComponent(audience)}`);
+    return response.data;
+}

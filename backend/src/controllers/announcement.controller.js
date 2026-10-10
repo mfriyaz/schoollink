@@ -86,7 +86,7 @@ async function getAnnouncementById(req, res) {
         const { id } = req.params;
 
         const announcement =
-            await announcementService.getAnnouncementById(id);
+            await announcementService.getAnnouncementById(id, req.user.school_id);
 
         return res.status(200).json({
 
@@ -122,7 +122,8 @@ async function updateAnnouncement(req, res) {
         const announcement =
             await announcementService.updateAnnouncement(
                 id,
-                req.body
+                req.body,
+                req.user.school_id
             );
 
         return res.status(200).json({
@@ -159,7 +160,7 @@ async function deleteAnnouncement(req, res) {
         const { id } = req.params;
 
         const announcement =
-            await announcementService.deleteAnnouncement(id);
+            await announcementService.deleteAnnouncement(id, req.user.school_id);
 
         return res.status(200).json({
 

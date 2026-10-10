@@ -129,6 +129,12 @@ const teacherMenus = [
     },
 
     {
+        title: "Announcements",
+        path: "/teacher/announcements",
+        icon: <CampaignIcon />
+    },
+
+    {
         title: "Attendance",
         path: "/teacher/attendance",
         icon: <FactCheckIcon />
@@ -227,6 +233,7 @@ const iconColors = {
     "Profile": "#22D3EE",
     "Settings": "#CBD5E1",
     "Create Post": "#4ADE80",
+    "Announcements": "#F472B6",
     "Attendance": "#34D399",
     "Enter Marks": "#FACC15",
     "Home": "#60A5FA",
