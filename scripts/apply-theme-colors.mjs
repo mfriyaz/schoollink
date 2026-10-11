@@ -28,6 +28,15 @@ const rgbaRe = /rgba\(\s*(?:37\s*,\s*99\s*,\s*235|79\s*,\s*70\s*,\s*229)\s*,\s*(
 // Files that define the themes themselves are left alone
 const SKIP = ["theme/themes.js", "theme/theme.js", "layouts/Sidebar.jsx", "components/Layout/Sidebar.jsx", "layouts/BottomNav.jsx"];
 
+// Page-header icon tiles that were purple (decorative only). Purple stays where it
+// means something, e.g. announcement vs homework or holidays.
+const TILE_FILES = [
+    "pages/Admin/ExamsPage.jsx", "pages/Admin/ReportsPage.jsx", "pages/Admin/GradesPage.jsx",
+    "pages/Teacher/EnterMarksPage.jsx", "pages/Parent/ParentExamResultsPage.jsx"
+];
+const TILE_MAP = { "#EDE9FE": "var(--sl-soft)", "#7C3AED": "var(--sl-primary)" };
+const tileRe = /#(EDE9FE|7C3AED)(?![0-9A-Fa-f])/gi;
+
 let files = 0, hits = 0;
 
 function walk(dir) {
@@ -44,6 +53,11 @@ function walk(dir) {
                 if (!alpha) return `var(--sl-${v})`;
                 const pct = Math.round((parseInt(alpha, 16) / 255) * 100);
                 return `color-mix(in srgb, var(--sl-${v}) ${pct}%, transparent)`;
+            })
+            .replace(tileRe, (m, hex) => {
+                if (!TILE_FILES.some((t) => p.replace(/\\/g, "/").endsWith(t))) return m;
+                hits++;
+                return TILE_MAP["#" + hex.toUpperCase()];
             })
             .replace(rgbaRe, (m, a) => {
                 hits++;

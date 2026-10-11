@@ -24,8 +24,8 @@ export default function StudentStatistics({ students }) {
                 <KpiCard
                     title="Total Students"
                     value={total}
-                    icon={<PeopleIcon sx={{ color: "#2563EB" }} />}
-                    iconBg="#DBEAFE"
+                    icon={<PeopleIcon sx={{ color: "var(--sl-primary)" }} />}
+                    iconBg="var(--sl-soft)"
                 />
             </Grid>
 
@@ -33,8 +33,8 @@ export default function StudentStatistics({ students }) {
                 <KpiCard
                     title="Boys"
                     value={boys}
-                    icon={<BoyIcon sx={{ color: "#2563EB" }} />}
-                    iconBg="#DBEAFE"
+                    icon={<BoyIcon sx={{ color: "var(--sl-primary)" }} />}
+                    iconBg="var(--sl-soft)"
                 />
             </Grid>
 

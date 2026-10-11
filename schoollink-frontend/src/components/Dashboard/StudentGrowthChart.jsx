@@ -34,7 +34,7 @@ function StudentGrowthChart() {
 
         colors:[
 
-            "#2563EB",
+            "var(--sl-primary)",
 
             "#16A34A",
 

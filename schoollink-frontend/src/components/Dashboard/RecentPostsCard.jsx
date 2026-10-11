@@ -18,7 +18,7 @@ function RecentPostsCard({ posts }) {
                 <Typography
                     onClick={() => navigate("/posts")}
                     sx={{
-                        color: "#2563EB",
+                        color: "var(--sl-primary)",
                         fontWeight: 600,
                         fontSize: "0.82rem",
                         cursor: "pointer",
@@ -54,8 +54,8 @@ function RecentPostsCard({ posts }) {
                                 height: 36,
                                 minWidth: 36,
                                 borderRadius: "10px",
-                                bgcolor: isAnnouncement ? "#FCE7F3" : "#DBEAFE",
-                                color: isAnnouncement ? "#DB2777" : "#2563EB",
+                                bgcolor: isAnnouncement ? "#FCE7F3" : "var(--sl-soft)",
+                                color: isAnnouncement ? "#DB2777" : "var(--sl-primary)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",

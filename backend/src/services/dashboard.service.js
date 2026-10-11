@@ -11,6 +11,9 @@ async function getDashboardSummary(schoolId) {
     const classes =
         await dashboardRepository.getClassCount(schoolId);
 
+    const attendance =
+        await dashboardRepository.getTodayAttendancePercent(schoolId);
+
     const recentStudents =
         await dashboardRepository.getRecentStudents(schoolId);
 
@@ -49,7 +52,7 @@ async function getDashboardSummary(schoolId) {
 
         classes,
 
-        attendance: 97,
+        attendance,
 
         recentStudents,
 

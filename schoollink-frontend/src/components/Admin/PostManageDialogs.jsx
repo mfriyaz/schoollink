@@ -154,8 +154,8 @@ export function PostViewDialog({ open, post, onClose, onEdit, onDeleted }) {
                             size="small"
                             label={isAnnouncement ? "Announcement" : "Homework"}
                             sx={{
-                                bgcolor: isAnnouncement ? "#FCE7F3" : "#DBEAFE",
-                                color: isAnnouncement ? "#BE185D" : "#1D4ED8"
+                                bgcolor: isAnnouncement ? "#FCE7F3" : "var(--sl-soft)",
+                                color: isAnnouncement ? "#BE185D" : "var(--sl-primary-dark)"
                             }}
                         />
                         {isAnnouncement && record && (
@@ -240,7 +240,7 @@ export function PostViewDialog({ open, post, onClose, onEdit, onDeleted }) {
                                     py: 0.75,
                                     borderRadius: 2,
                                     bgcolor: "#F1F5F9",
-                                    color: "#2563EB",
+                                    color: "var(--sl-primary)",
                                     textDecoration: "none",
                                     fontSize: "0.85rem",
                                     fontWeight: 600
@@ -544,7 +544,7 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
                                                     right: -8,
                                                     width: 22,
                                                     height: 22,
-                                                    bgcolor: "#0F172A",
+                                                    bgcolor: "var(--sl-ink)",
                                                     color: "white",
                                                     "&:hover": { bgcolor: "#DC2626" }
                                                 }}
@@ -569,7 +569,7 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
                                                 gap: 0.5,
                                                 color: "#64748B",
                                                 cursor: "pointer",
-                                                "&:hover": { borderColor: "#2563EB", color: "#2563EB" }
+                                                "&:hover": { borderColor: "var(--sl-primary)", color: "var(--sl-primary)" }
                                             }}
                                         >
                                             {uploading ? (

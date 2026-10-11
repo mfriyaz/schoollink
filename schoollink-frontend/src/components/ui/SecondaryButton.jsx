@@ -15,8 +15,8 @@ function SecondaryButton({
                 color: "#334155",
 
                 "&:hover": {
-                    borderColor: "#2563EB",
-                    color: "#2563EB"
+                    borderColor: "var(--sl-primary)",
+                    color: "var(--sl-primary)"
                 }
             }}
             {...props}

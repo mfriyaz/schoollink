@@ -28,37 +28,37 @@ function SchoolIllustration() {
         <svg viewBox="0 0 320 260" width="100%" style={{ maxWidth: 300 }}>
 
             {/* sky blob */}
-            <ellipse cx="160" cy="220" rx="150" ry="24" fill="#C7D2FE" opacity="0.6" />
+            <ellipse cx="160" cy="220" rx="150" ry="24" fill="var(--sl-soft2)" opacity="0.6" />
 
             {/* school building */}
-            <rect x="70" y="70" width="180" height="120" rx="8" fill="#FFFFFF" stroke="#A5B4FC" strokeWidth="3" />
+            <rect x="70" y="70" width="180" height="120" rx="8" fill="#FFFFFF" stroke="var(--sl-primary-light)" strokeWidth="3" />
 
-            <polygon points="60,75 160,25 260,75" fill="#4F46E5" />
+            <polygon points="60,75 160,25 260,75" fill="var(--sl-primary)" />
 
             {/* door */}
-            <rect x="140" y="140" width="40" height="50" rx="4" fill="#4F46E5" />
+            <rect x="140" y="140" width="40" height="50" rx="4" fill="var(--sl-primary)" />
 
             {/* windows */}
-            <rect x="90" y="95" width="30" height="30" rx="4" fill="#E0E7FF" stroke="#A5B4FC" strokeWidth="2" />
-            <rect x="200" y="95" width="30" height="30" rx="4" fill="#E0E7FF" stroke="#A5B4FC" strokeWidth="2" />
-            <rect x="90" y="140" width="30" height="30" rx="4" fill="#E0E7FF" stroke="#A5B4FC" strokeWidth="2" />
-            <rect x="200" y="140" width="30" height="30" rx="4" fill="#E0E7FF" stroke="#A5B4FC" strokeWidth="2" />
+            <rect x="90" y="95" width="30" height="30" rx="4" fill="var(--sl-soft)" stroke="var(--sl-primary-light)" strokeWidth="2" />
+            <rect x="200" y="95" width="30" height="30" rx="4" fill="var(--sl-soft)" stroke="var(--sl-primary-light)" strokeWidth="2" />
+            <rect x="90" y="140" width="30" height="30" rx="4" fill="var(--sl-soft)" stroke="var(--sl-primary-light)" strokeWidth="2" />
+            <rect x="200" y="140" width="30" height="30" rx="4" fill="var(--sl-soft)" stroke="var(--sl-primary-light)" strokeWidth="2" />
 
             {/* flag */}
-            <line x1="160" y1="25" x2="160" y2="5" stroke="#312E81" strokeWidth="2" />
+            <line x1="160" y1="25" x2="160" y2="5" stroke="var(--sl-ink)" strokeWidth="2" />
             <polygon points="160,5 178,10 160,15" fill="#F59E0B" />
 
             {/* mother */}
-            <circle cx="105" cy="205" r="10" fill="#312E81" />
-            <rect x="95" y="215" width="20" height="35" rx="8" fill="#4F46E5" />
+            <circle cx="105" cy="205" r="10" fill="var(--sl-ink)" />
+            <rect x="95" y="215" width="20" height="35" rx="8" fill="var(--sl-primary)" />
 
             {/* child */}
-            <circle cx="160" cy="215" r="8" fill="#312E81" />
+            <circle cx="160" cy="215" r="8" fill="var(--sl-ink)" />
             <rect x="151" y="223" width="18" height="27" rx="7" fill="#F59E0B" />
 
             {/* father */}
-            <circle cx="215" cy="205" r="10" fill="#312E81" />
-            <rect x="205" y="215" width="20" height="35" rx="8" fill="#4338CA" />
+            <circle cx="215" cy="205" r="10" fill="var(--sl-ink)" />
+            <rect x="205" y="215" width="20" height="35" rx="8" fill="var(--sl-primary-dark)" />
 
         </svg>
 
@@ -196,7 +196,7 @@ function LoginPage() {
 
                         borderRadius: "10px",
 
-                        bgcolor: "#4F46E5",
+                        bgcolor: "var(--sl-primary)",
 
                         display: "flex",
 
@@ -272,7 +272,7 @@ function LoginPage() {
 
                     <SchoolIllustration />
 
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#312E81" }}>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: "var(--sl-ink)" }}>
 
                         Stronger Connection
                         <br />
@@ -280,7 +280,7 @@ function LoginPage() {
 
                     </Typography>
 
-                    <Typography sx={{ color: "#5B5BA8" }}>
+                    <Typography sx={{ color: "var(--sl-primary-dark)" }}>
 
                         Together for a better tomorrow
 

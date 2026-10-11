@@ -208,7 +208,7 @@ function ReportsPage() {
 
                         borderRadius: "10px",
 
-                        bgcolor: "#EDE9FE",
+                        bgcolor: "var(--sl-soft)",
 
                         display: "flex",
 
@@ -220,7 +220,7 @@ function ReportsPage() {
 
                 >
 
-                    <DescriptionIcon sx={{ color: "#7C3AED" }} />
+                    <DescriptionIcon sx={{ color: "var(--sl-primary)" }} />
 
                 </Box>
 

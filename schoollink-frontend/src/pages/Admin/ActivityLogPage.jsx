@@ -31,7 +31,7 @@ const TYPE_FILTERS = [
 
 const ACTION_STYLE = {
     Created: { bg: "#DCFCE7", color: "#15803D" },
-    Edited: { bg: "#DBEAFE", color: "#1D4ED8" },
+    Edited: { bg: "var(--sl-soft)", color: "var(--sl-primary-dark)" },
     Deleted: { bg: "#FEE2E2", color: "#B91C1C" }
 };
 
@@ -143,9 +143,9 @@ function ActivityLogPage() {
                         onClick={() => { setType(f.value); setPage(1); }}
                         sx={{
                             fontWeight: 600,
-                            bgcolor: type === f.value ? "#1D4ED8" : "#F1F5F9",
+                            bgcolor: type === f.value ? "var(--sl-primary-dark)" : "#F1F5F9",
                             color: type === f.value ? "white" : "#475569",
-                            "&:hover": { bgcolor: type === f.value ? "#1E40AF" : "#E2E8F0" }
+                            "&:hover": { bgcolor: type === f.value ? "var(--sl-primary-dark)" : "#E2E8F0" }
                         }}
                     />
                 ))}

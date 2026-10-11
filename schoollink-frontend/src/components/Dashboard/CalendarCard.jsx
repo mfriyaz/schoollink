@@ -206,7 +206,7 @@ function CalendarCard({ announcements = [] }) {
                             setView(new Date(today.getFullYear(), today.getMonth(), 1));
                             setSelected(todayKey);
                         }}
-                        sx={{ fontSize: "0.72rem", fontWeight: 700, color: "#2563EB", px: 1 }}
+                        sx={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--sl-primary)", px: 1 }}
                     >
                         Today
                     </IconButton>
@@ -274,9 +274,9 @@ function CalendarCard({ announcements = [] }) {
                                     fontSize: "0.82rem",
                                     fontWeight: isToday || isSelected ? 700 : 500,
                                     color: isToday ? "#FFFFFF" : isHoliday ? HOLIDAY_COLOR : isOffDay ? "#94A3B8" : "#334155",
-                                    bgcolor: isToday ? "#2563EB" : isHoliday ? "#EDE9FE" : "transparent",
-                                    border: isSelected && !isToday ? "2px solid #2563EB" : "2px solid transparent",
-                                    "&:hover": { bgcolor: isToday ? "#2563EB" : "#F1F5F9" }
+                                    bgcolor: isToday ? "var(--sl-primary)" : isHoliday ? "#EDE9FE" : "transparent",
+                                    border: isSelected && !isToday ? "2px solid var(--sl-primary)" : "2px solid transparent",
+                                    "&:hover": { bgcolor: isToday ? "var(--sl-primary)" : "#F1F5F9" }
                                 }}
                             >
                                 {d}

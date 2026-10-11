@@ -31,7 +31,7 @@ function KpiCard({
                     height: 40,
                     minWidth: 40,
                     borderRadius: "10px",
-                    bgcolor: iconBg || "#DBEAFE",
+                    bgcolor: iconBg || "var(--sl-soft)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",

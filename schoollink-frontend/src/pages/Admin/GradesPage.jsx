@@ -258,7 +258,7 @@ function GradesPage() {
 
                         borderRadius: 2,
 
-                        bgcolor: "#EDE9FE",
+                        bgcolor: "var(--sl-soft)",
 
                         display: "flex",
 
@@ -270,7 +270,7 @@ function GradesPage() {
 
                 >
 
-                    <GradeIcon sx={{ color: "#7C3AED" }} />
+                    <GradeIcon sx={{ color: "var(--sl-primary)" }} />
 
                 </Box>
 

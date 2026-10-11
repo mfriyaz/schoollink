@@ -18,7 +18,7 @@ function AttendanceChart() {
 
         },
 
-        colors: ["#2563EB"],
+        colors: ["var(--sl-primary)"],
 
         stroke: {
 

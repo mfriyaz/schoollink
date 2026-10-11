@@ -129,7 +129,7 @@ function KpiCard({ icon, iconBg, label, value, linkLabel, onLinkClick }) {
                     <Typography
                         onClick={onLinkClick}
                         sx={{
-                            color: "#2563EB",
+                            color: "var(--sl-primary)",
                             fontSize: "0.74rem",
                             fontWeight: 600,
                             cursor: "pointer",
@@ -510,8 +510,8 @@ function TeacherDashboardPage() {
                 <Grid size={{ xs: 6, md: 3 }}>
 
                     <KpiCard
-                        icon={<MenuBookIcon sx={{ color: "#2563EB" }} />}
-                        iconBg="#DBEAFE"
+                        icon={<MenuBookIcon sx={{ color: "var(--sl-primary)" }} />}
+                        iconBg="var(--sl-soft)"
                         label="Posts Today"
                         value={postsToday}
                         linkLabel="View all posts"
@@ -865,7 +865,7 @@ function TeacherDashboardPage() {
 
                         sx={{
 
-                            color: "#2563EB",
+                            color: "var(--sl-primary)",
 
                             fontWeight: 600,
 
@@ -942,7 +942,7 @@ function TeacherDashboardPage() {
 
                                     borderRadius: "10px",
 
-                                    bgcolor: "#DBEAFE",
+                                    bgcolor: "var(--sl-soft)",
 
                                     display: "flex",
 
@@ -956,7 +956,7 @@ function TeacherDashboardPage() {
 
                             >
 
-                                <MenuBookIcon sx={{ color: "#2563EB", fontSize: 20 }} />
+                                <MenuBookIcon sx={{ color: "var(--sl-primary)", fontSize: 20 }} />
 
                             </Box>
 

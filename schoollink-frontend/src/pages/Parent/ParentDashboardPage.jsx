@@ -598,7 +598,7 @@ function ParentDashboardPage() {
                     py: { xs: 1, md: 1.1 },
                     borderRadius: 3,
                     color: "#FFFFFF",
-                    background: "linear-gradient(135deg,#2563EB,#4F46E5)",
+                    background: "linear-gradient(135deg,var(--sl-primary),var(--sl-primary))",
                     display: "flex",
                     alignItems: "center",
                     gap: 1.25,
@@ -721,8 +721,8 @@ function ParentDashboardPage() {
                     {
                         label: "Updates today",
                         value: todaysPosts.length,
-                        fg: "#2563EB",
-                        bg: "#DBEAFE",
+                        fg: "var(--sl-primary)",
+                        bg: "var(--sl-soft)",
                         icon: <MenuBookIcon />
                     }
                 ];
@@ -982,11 +982,11 @@ function ParentDashboardPage() {
 
                                                     cursor: "pointer",
 
-                                                    bgcolor: "#DBEAFE",
+                                                    bgcolor: "var(--sl-soft)",
 
-                                                    color: "#2563EB",
+                                                    color: "var(--sl-primary)",
 
-                                                    border: isSelected ? "3px solid #2563EB" : "2px solid #BFDBFE"
+                                                    border: isSelected ? "3px solid var(--sl-primary)" : "2px solid var(--sl-soft2)"
 
                                                 }}
 
@@ -1256,7 +1256,7 @@ height: 40,
                                     { state: { studentId: selectedStudentId } }
 
                                 )}
-                                sx={{ color: "#2563EB", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer" }}
+                                sx={{ color: "var(--sl-primary)", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer" }}
                             >
 
                                 View All Updates →
@@ -1291,7 +1291,7 @@ height: 40,
 
                                 )}
 
-                                sx={{ color: "#2563EB", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", mt: 0.5 }}
+                                sx={{ color: "var(--sl-primary)", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", mt: 0.5 }}
 
                             >
 
@@ -1351,7 +1351,7 @@ cursor: "pointer",
 
                                     borderRadius: "10px",
 
-                                    bgcolor: post.post_type === "announcement" ? "#EDE9FE" : "#DBEAFE",
+                                    bgcolor: post.post_type === "announcement" ? "#EDE9FE" : "var(--sl-soft)",
 
                                     display: "flex",
 
@@ -1371,7 +1371,7 @@ cursor: "pointer",
 
                                 ) : (
 
-                                    <MenuBookIcon sx={{ color: "#2563EB", fontSize: 20 }} />
+                                    <MenuBookIcon sx={{ color: "var(--sl-primary)", fontSize: 20 }} />
 
                                 )}
 

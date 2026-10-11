@@ -35,7 +35,7 @@ function DashboardCharts() {
                 }
             },
 
-            colors: ["#2563EB"],
+            colors: ["var(--sl-primary)"],
 
             dataLabels: {
                 enabled: false

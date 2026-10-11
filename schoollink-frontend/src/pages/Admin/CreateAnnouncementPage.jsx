@@ -303,7 +303,7 @@ function CreateAnnouncementPage() {
                                                 position: "absolute",
                                                 top: -8,
                                                 right: -8,
-                                                bgcolor: "#1E1B4B",
+                                                bgcolor: "var(--sl-ink)",
                                                 color: "white",
                                                 width: 22,
                                                 height: 22,
@@ -331,7 +331,7 @@ function CreateAnnouncementPage() {
                                             gap: 0.5,
                                             color: "#64748B",
                                             cursor: uploadingImages ? "default" : "pointer",
-                                            "&:hover": { borderColor: "#4F46E5", color: "#4F46E5", bgcolor: "#F8FAFC" }
+                                            "&:hover": { borderColor: "var(--sl-primary)", color: "var(--sl-primary)", bgcolor: "#F8FAFC" }
                                         }}
                                     >
                                         {uploadingImages ? (

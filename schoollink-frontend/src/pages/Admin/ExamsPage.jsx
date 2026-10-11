@@ -304,7 +304,7 @@ function ExamsPage() {
 
                         borderRadius: "10px",
 
-                        bgcolor: "#EDE9FE",
+                        bgcolor: "var(--sl-soft)",
 
                         display: "flex",
 
@@ -316,7 +316,7 @@ function ExamsPage() {
 
                 >
 
-                    <AssessmentIcon sx={{ color: "#7C3AED" }} />
+                    <AssessmentIcon sx={{ color: "var(--sl-primary)" }} />
 
                 </Box>
 

@@ -212,7 +212,7 @@ function Sidebar({ collapsed }) {
 
     const theme = isSuperAdmin
         ? { bg: "#1E1B3A", accent: "#7C3AED", accentSoft: "rgba(124,58,237,0.15)", brand: "SchoolLink Platform" }
-        : { bg: "#0F172A", accent: "#2563EB", accentSoft: "rgba(37,99,235,0.15)", brand: "SchoolLink" };
+        : { bg: "var(--sl-ink)", accent: "var(--sl-primary)", accentSoft: "color-mix(in srgb, var(--sl-primary) 15%, transparent)", brand: "SchoolLink" };
 
     const sidebarWidth = collapsed ? 76 : 260;
 

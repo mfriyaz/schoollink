@@ -2,7 +2,7 @@ import { Avatar, Box, Chip, Typography } from "@mui/material";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import PanelCard, { EmptyState } from "./PanelCard";
 
-const avatarColors = ["#2563EB", "#16A34A", "#EA580C", "#7C3AED", "#DB2777"];
+const avatarColors = ["var(--sl-primary)", "#16A34A", "#EA580C", "#7C3AED", "#DB2777"];
 
 function RecentStudentCard({ students }) {
     const list = students || [];

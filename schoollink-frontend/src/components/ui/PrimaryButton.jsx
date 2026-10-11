@@ -14,11 +14,11 @@ function PrimaryButton({
                 fontWeight: 600,
                 padding: "10px 22px",
                 background:
-                    "linear-gradient(90deg,#2563EB,#4F46E5)",
+                    "linear-gradient(90deg,var(--sl-primary),var(--sl-primary))",
 
                 "&:hover": {
                     background:
-                        "linear-gradient(90deg,#1D4ED8,#4338CA)"
+                        "linear-gradient(90deg,var(--sl-primary-dark),var(--sl-primary-dark))"
                 }
             }}
             {...props}

@@ -336,7 +336,7 @@ function StudentViewDialog({ open, student, onClose }) {
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
 
-                    <Avatar sx={{ width: 56, height: 56, bgcolor: "#2563EB", fontSize: "1.3rem" }}>
+                    <Avatar sx={{ width: 56, height: 56, bgcolor: "var(--sl-primary)", fontSize: "1.3rem" }}>
 
                         {student.first_name ? student.first_name[0] : "?"}
 

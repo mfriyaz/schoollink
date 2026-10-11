@@ -786,9 +786,9 @@ function TeachersPage() {
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
-                            <Avatar sx={{ bgcolor: teacher.is_active ? "#DBEAFE" : "#F1F5F9" }}>
+                            <Avatar sx={{ bgcolor: teacher.is_active ? "var(--sl-soft)" : "#F1F5F9" }}>
 
-                                <SchoolIcon sx={{ color: teacher.is_active ? "#2563EB" : "#94A3B8" }} fontSize="small" />
+                                <SchoolIcon sx={{ color: teacher.is_active ? "var(--sl-primary)" : "#94A3B8" }} fontSize="small" />
 
                             </Avatar>
 
@@ -1207,9 +1207,9 @@ function TeachersPage() {
 
                     </Box>
 
-                    <Box sx={{ bgcolor: "#EFF6FF", border: "1px solid #BFDBFE", borderRadius: 3, p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+                    <Box sx={{ bgcolor: "var(--sl-soft)", border: "1px solid var(--sl-soft2)", borderRadius: 3, p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
 
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", color: "#1E40AF" }}>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--sl-primary-dark)" }}>
 
                             ➕ Add New Assignment
 
@@ -1281,7 +1281,7 @@ function TeachersPage() {
 
                             cursor: "pointer",
 
-                            color: isClassTeacher ? "#2563EB" : "#64748B"
+                            color: isClassTeacher ? "var(--sl-primary)" : "#64748B"
 
                         }}
 

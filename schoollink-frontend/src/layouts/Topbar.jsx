@@ -102,7 +102,7 @@ function notificationStyle(n) {
     }
 
     if (text.includes("homework") || text.includes("post")) {
-        return { icon: <MenuBookOutlinedIcon />, color: "#2563EB", bg: "#DBEAFE" };
+        return { icon: <MenuBookOutlinedIcon />, color: "var(--sl-primary)", bg: "var(--sl-soft)" };
     }
 
     return { icon: <NotificationsActiveOutlinedIcon />, color: "#475569", bg: "#F1F5F9" };
@@ -300,7 +300,7 @@ function Topbar({ onToggleSidebar }) {
                 <IconButton
                     onClick={handleOpenMenu}
                     sx={{
-                        bgcolor: unreadCount > 0 ? "#EFF6FF" : "#F1F5F9",
+                        bgcolor: unreadCount > 0 ? "var(--sl-soft)" : "#F1F5F9",
                         "&:hover": { bgcolor: "#E2E8F0" }
                     }}
                 >
@@ -311,7 +311,7 @@ function Topbar({ onToggleSidebar }) {
                         overlap="circular"
                     >
                         {unreadCount > 0
-                            ? <NotificationsActiveOutlinedIcon sx={{ color: "#2563EB" }} />
+                            ? <NotificationsActiveOutlinedIcon sx={{ color: "var(--sl-primary)" }} />
                             : <NotificationsNoneIcon sx={{ color: "#64748B" }} />}
                     </Badge>
                 </IconButton>
@@ -353,7 +353,7 @@ function Topbar({ onToggleSidebar }) {
                                             px: 1,
                                             py: 0.1,
                                             borderRadius: 5,
-                                            bgcolor: "#2563EB",
+                                            bgcolor: "var(--sl-primary)",
                                             color: "white",
                                             fontSize: "0.74rem",
                                             fontWeight: 700
@@ -385,7 +385,7 @@ function Topbar({ onToggleSidebar }) {
                                             cursor: "pointer",
                                             fontSize: "0.8rem",
                                             fontWeight: 600,
-                                            bgcolor: notifTab === t.value ? "#2563EB" : "#F1F5F9",
+                                            bgcolor: notifTab === t.value ? "var(--sl-primary)" : "#F1F5F9",
                                             color: notifTab === t.value ? "#FFFFFF" : "#475569"
                                         }}
                                     >
@@ -401,7 +401,7 @@ function Topbar({ onToggleSidebar }) {
                                         display: "flex",
                                         alignItems: "center",
                                         gap: 0.5,
-                                        color: "#2563EB",
+                                        color: "var(--sl-primary)",
                                         fontSize: "0.8rem",
                                         fontWeight: 600,
                                         cursor: "pointer",
@@ -452,8 +452,8 @@ function Topbar({ onToggleSidebar }) {
                                         cursor: "pointer",
                                         bgcolor: "#FFFFFF",
                                         border: "1px solid",
-                                        borderColor: n.is_read ? "#EEF2F7" : "#BFDBFE",
-                                        boxShadow: n.is_read ? "none" : "0 2px 8px rgba(37,99,235,.08)",
+                                        borderColor: n.is_read ? "#EEF2F7" : "var(--sl-soft2)",
+                                        boxShadow: n.is_read ? "none" : "0 2px 8px color-mix(in srgb, var(--sl-primary) 8%, transparent)",
                                         transition: ".15s",
                                         "&:hover": { boxShadow: "0 4px 12px rgba(15,23,42,.08)" }
                                     }}
@@ -513,7 +513,7 @@ function Topbar({ onToggleSidebar }) {
                                                 minWidth: 9,
                                                 mt: 0.75,
                                                 borderRadius: "50%",
-                                                bgcolor: "#2563EB"
+                                                bgcolor: "var(--sl-primary)"
                                             }}
                                         />
                                     )}
@@ -536,7 +536,7 @@ function Topbar({ onToggleSidebar }) {
                             py: 1.75,
                             bgcolor: "#FFFFFF",
                             borderTop: "1px solid #EEF2F7",
-                            color: "#2563EB",
+                            color: "var(--sl-primary)",
                             fontSize: "0.85rem",
                             fontWeight: 600,
                             cursor: "pointer",
@@ -608,7 +608,7 @@ function Topbar({ onToggleSidebar }) {
 
                         onClick={handleOpenAvatarMenu}
 
-                        sx={{ bgcolor: user && user.role === "Super Admin" ? "#7C3AED" : "#2563EB", cursor: "pointer" }}
+                        sx={{ bgcolor: user && user.role === "Super Admin" ? "#7C3AED" : "var(--sl-primary)", cursor: "pointer" }}
                     >
 
                         {user && user.full_name ? user.full_name[0] : "?"}

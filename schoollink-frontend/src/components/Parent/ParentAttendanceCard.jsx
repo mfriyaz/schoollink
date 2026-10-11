@@ -145,7 +145,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                 fontSize: "0.8rem",
                                 fontWeight: 600,
                                 bgcolor: tab === t.value ? "#FFFFFF" : "transparent",
-                                color: tab === t.value ? "#2563EB" : "#64748B",
+                                color: tab === t.value ? "var(--sl-primary)" : "#64748B",
                                 boxShadow: tab === t.value ? "0 1px 2px rgba(15,23,42,.1)" : "none"
                             }}
                         >
@@ -212,7 +212,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", mb: 2 }}>
 
                             <Box sx={{ minWidth: 84 }}>
-                                <Typography sx={{ fontWeight: 700, fontSize: "1.9rem", lineHeight: 1, color: "#0F172A" }}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "1.9rem", lineHeight: 1, color: "var(--sl-ink)" }}>
                                     {percent}%
                                 </Typography>
                                 <Typography sx={{ color: "#64748B", fontSize: "0.72rem", mt: 0.5 }}>
@@ -289,7 +289,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                             fontWeight: rec || isToday ? 700 : 500,
                                             bgcolor: st ? st.bg : offStyle ? offStyle.bg : "#F8FAFC",
                                             color: st ? st.fg : offStyle ? offStyle.fg : "#94A3B8",
-                                            border: isToday ? "2px solid #2563EB" : "2px solid transparent"
+                                            border: isToday ? "2px solid var(--sl-primary)" : "2px solid transparent"
                                         }}
                                     >
                                         {d}

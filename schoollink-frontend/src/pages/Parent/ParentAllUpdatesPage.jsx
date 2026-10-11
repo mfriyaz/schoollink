@@ -247,10 +247,10 @@ function ParentAllUpdatesPage() {
                                 fontWeight: 600,
                                 fontSize: "0.82rem",
                                 height: 32,
-                                bgcolor: active ? "#2563EB" : "#FFFFFF",
+                                bgcolor: active ? "var(--sl-primary)" : "#FFFFFF",
                                 color: active ? "#FFFFFF" : "#475569",
-                                border: active ? "1px solid #2563EB" : "1px solid #E2E8F0",
-                                "&:hover": { bgcolor: active ? "#1D4ED8" : "#F8FAFC" }
+                                border: active ? "1px solid var(--sl-primary)" : "1px solid #E2E8F0",
+                                "&:hover": { bgcolor: active ? "var(--sl-primary-dark)" : "#F8FAFC" }
                             }}
                         />
                     );
@@ -330,7 +330,7 @@ function ParentAllUpdatesPage() {
                                         transition: ".15s",
                                         "&:hover": {
                                             boxShadow: "0 4px 12px rgba(15,23,42,.08)",
-                                            borderColor: "#DBEAFE"
+                                            borderColor: "var(--sl-soft)"
                                         }
                                     }}
                                 >
@@ -340,7 +340,7 @@ function ParentAllUpdatesPage() {
                                             height: 40,
                                             minWidth: 40,
                                             borderRadius: "10px",
-                                            bgcolor: isAnnouncement ? "#EDE9FE" : "#DBEAFE",
+                                            bgcolor: isAnnouncement ? "#EDE9FE" : "var(--sl-soft)",
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center"
@@ -348,7 +348,7 @@ function ParentAllUpdatesPage() {
                                     >
                                         {isAnnouncement
                                             ? <CampaignIcon sx={{ color: "#7C3AED", fontSize: 21 }} />
-                                            : <MenuBookIcon sx={{ color: "#2563EB", fontSize: 21 }} />}
+                                            : <MenuBookIcon sx={{ color: "var(--sl-primary)", fontSize: 21 }} />}
                                     </Box>
 
                                     <Box sx={{ minWidth: 0, flex: 1 }}>

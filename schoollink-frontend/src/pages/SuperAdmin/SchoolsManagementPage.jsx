@@ -211,7 +211,7 @@ function SchoolCard({ school, onSaved }) {
 
                             borderRadius: "12px",
 
-                            bgcolor: "#DBEAFE",
+                            bgcolor: "var(--sl-soft)",
 
                             display: "flex",
 
@@ -223,7 +223,7 @@ function SchoolCard({ school, onSaved }) {
 
                     >
 
-                        <DomainIcon sx={{ color: "#2563EB" }} />
+                        <DomainIcon sx={{ color: "var(--sl-primary)" }} />
 
                     </Box>
 

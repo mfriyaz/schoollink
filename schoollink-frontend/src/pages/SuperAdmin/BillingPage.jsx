@@ -104,7 +104,7 @@ export default function BillingPage() {
             {revenue && (
                 <Grid container spacing={1.5} sx={{ mb: 2 }}>
                     <Grid size={{ xs: 6, md: 3 }}><KpiCard title="This month" value={money(revenue.this_month)} icon={<PaymentsIcon sx={{ color: "#16A34A" }} />} iconBg="#DCFCE7" /></Grid>
-                    <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Last 12 months" value={money(revenue.last_12_months)} icon={<PaymentsIcon sx={{ color: "#2563EB" }} />} iconBg="#DBEAFE" /></Grid>
+                    <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Last 12 months" value={money(revenue.last_12_months)} icon={<PaymentsIcon sx={{ color: "var(--sl-primary)" }} />} iconBg="var(--sl-soft)" /></Grid>
                     <Grid size={{ xs: 6, md: 3 }}><KpiCard title="All time" value={money(revenue.all_time)} icon={<PaymentsIcon sx={{ color: "#7C3AED" }} />} iconBg="#EDE9FE" /></Grid>
                     <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Payments recorded" value={revenue.payments} icon={<PaymentsIcon sx={{ color: "#F59E0B" }} />} iconBg="#FEF3C7" /></Grid>
                 </Grid>

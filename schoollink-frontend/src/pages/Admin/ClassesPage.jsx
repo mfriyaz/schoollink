@@ -68,7 +68,7 @@ function SectionRow({ section, onEdit, onToggle }) {
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
 
-                <MeetingRoomIcon sx={{ color: section.is_active ? "#2563EB" : "#94A3B8" }} fontSize="small" />
+                <MeetingRoomIcon sx={{ color: section.is_active ? "var(--sl-primary)" : "#94A3B8" }} fontSize="small" />
 
                 <Typography sx={{ fontWeight: 500 }}>
 
@@ -513,7 +513,7 @@ function ClassesPage() {
 
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
 
-                                <ClassIcon sx={{ color: classItem.is_active ? "#2563EB" : "#94A3B8" }} />
+                                <ClassIcon sx={{ color: classItem.is_active ? "var(--sl-primary)" : "#94A3B8" }} />
 
                                 <Typography sx={{ fontWeight: 600 }}>
 

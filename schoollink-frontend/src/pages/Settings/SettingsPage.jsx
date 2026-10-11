@@ -147,7 +147,7 @@ function SettingsPage() {
 
                         borderRadius: "10px",
 
-                        bgcolor: "#E0E7FF",
+                        bgcolor: "var(--sl-soft)",
 
                         display: "flex",
 
@@ -159,7 +159,7 @@ function SettingsPage() {
 
                 >
 
-                    <SettingsIcon sx={{ color: "#4F46E5" }} />
+                    <SettingsIcon sx={{ color: "var(--sl-primary)" }} />
 
                 </Box>
 

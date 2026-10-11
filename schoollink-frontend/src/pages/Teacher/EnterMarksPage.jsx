@@ -328,7 +328,7 @@ function EnterMarksPage() {
 
                         borderRadius: "10px",
 
-                        bgcolor: "#EDE9FE",
+                        bgcolor: "var(--sl-soft)",
 
                         display: "flex",
 
@@ -340,7 +340,7 @@ function EnterMarksPage() {
 
                 >
 
-                    <GradeIcon sx={{ color: "#7C3AED" }} />
+                    <GradeIcon sx={{ color: "var(--sl-primary)" }} />
 
                 </Box>
 

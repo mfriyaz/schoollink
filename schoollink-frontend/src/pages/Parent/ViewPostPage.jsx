@@ -673,7 +673,7 @@ function ViewPostPage() {
 
                                 borderRadius: "12px",
 
-                                bgcolor: isAnnouncement ? "#EDE9FE" : "#DBEAFE",
+                                bgcolor: isAnnouncement ? "#EDE9FE" : "var(--sl-soft)",
 
                                 display: "flex",
 
@@ -693,7 +693,7 @@ function ViewPostPage() {
 
                             ) : (
 
-                                <MenuBookIcon sx={{ color: "#2563EB" }} />
+                                <MenuBookIcon sx={{ color: "var(--sl-primary)" }} />
 
                             )}
 
@@ -824,7 +824,7 @@ function ViewPostPage() {
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
 
-                            <InsertDriveFileIcon sx={{ color: "#2563EB" }} />
+                            <InsertDriveFileIcon sx={{ color: "var(--sl-primary)" }} />
 
                             <Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
 

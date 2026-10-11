@@ -153,8 +153,8 @@ function DashboardPage() {
                             <KpiCard
                                 title="Teachers"
                                 value={dashboard.teachers}
-                                icon={<SchoolIcon sx={{ color: "#2563EB" }} />}
-                                iconBg="#DBEAFE"
+                                icon={<SchoolIcon sx={{ color: "var(--sl-primary)" }} />}
+                                iconBg="var(--sl-soft)"
                             />
 
                         </Grid>
@@ -173,8 +173,8 @@ function DashboardPage() {
                         <Grid size={{ xs: 6, md: 4, lg: 2 }}>
 
                             <KpiCard
-                                title="Attendance"
-                                value={`${dashboard.attendance}%`}
+                                title="Attendance today"
+                                value={dashboard.attendance === null || dashboard.attendance === undefined ? "-" : `${dashboard.attendance}%`}
                                 icon={<TaskAltIcon sx={{ color: "#7C3AED" }} />}
                                 iconBg="#EDE9FE"
                             />
@@ -186,8 +186,8 @@ function DashboardPage() {
                             <KpiCard
                                 title="Posts Today"
                                 value={dashboard.postsToday}
-                                icon={<EventNoteIcon sx={{ color: "#2563EB" }} />}
-                                iconBg="#DBEAFE"
+                                icon={<EventNoteIcon sx={{ color: "var(--sl-primary)" }} />}
+                                iconBg="var(--sl-soft)"
                             />
 
                         </Grid>
@@ -221,7 +221,7 @@ function DashboardPage() {
                             <QuickActionCard
                                 title="Add Student"
                                 icon={<PersonAddIcon />}
-                                color="#2563EB"
+                                color="var(--sl-primary)"
                                 onClick={() => navigate("/students")}
                             />
 

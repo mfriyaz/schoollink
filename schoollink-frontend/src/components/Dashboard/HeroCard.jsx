@@ -43,8 +43,8 @@ function HeroCard() {
                 justifyContent: "space-between",
                 gap: 2,
                 color: "#FFFFFF",
-                background: "linear-gradient(135deg,#2563EB,#4F46E5)",
-                boxShadow: "0 8px 20px rgba(37,99,235,.2)"
+                background: "linear-gradient(135deg,var(--sl-primary),var(--sl-primary))",
+                boxShadow: "0 8px 20px color-mix(in srgb, var(--sl-primary) 20%, transparent)"
             }}
         >
 

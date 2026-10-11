@@ -14,6 +14,30 @@ async function getStudentCount(schoolId) {
 
 }
 
+/**
+ * Today's attendance for the school: share of marked records that are
+ * Present or Late. Returns null when nothing has been marked yet today.
+ */
+async function getTodayAttendancePercent(schoolId) {
+
+    const result = await pool.query(
+        `
+        SELECT COUNT(*)::int AS total,
+               COUNT(*) FILTER (WHERE a.status IN ('Present', 'Late'))::int AS attended
+        FROM attendance a
+        JOIN students s ON s.id = a.student_id
+        WHERE s.school_id = $1
+        AND a.attendance_date = CURRENT_DATE
+        `,
+        [schoolId]
+    );
+
+    const { total, attended } = result.rows[0];
+
+    return total ? Math.round((attended / total) * 100) : null;
+
+}
+
 async function getTeacherCount(schoolId) {
 
     const result = await pool.query(
@@ -361,6 +385,8 @@ module.exports = {
     getStudentCount,
 
     getTeacherCount,
+
+    getTodayAttendancePercent,
 
     getClassCount,
 

@@ -92,7 +92,7 @@ export default function InstallAppBanner() {
                 right: 12,
                 bottom: 12,
                 zIndex: 1400,
-                bgcolor: "#0F172A",
+                bgcolor: "var(--sl-ink)",
                 color: "#fff",
                 borderRadius: 3,
                 p: 1.5,

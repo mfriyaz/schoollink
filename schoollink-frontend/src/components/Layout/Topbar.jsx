@@ -260,7 +260,7 @@ function Topbar({ onToggleSidebar }) {
 
                                 onClick={handleMarkAllAsRead}
 
-                                sx={{ color: "#2563EB", fontSize: "0.8rem", cursor: "pointer" }}
+                                sx={{ color: "var(--sl-primary)", fontSize: "0.8rem", cursor: "pointer" }}
 
                             >
 
@@ -309,7 +309,7 @@ function Topbar({ onToggleSidebar }) {
 
                                 alignItems: "flex-start",
 
-                                bgcolor: n.is_read ? "transparent" : "#EFF6FF",
+                                bgcolor: n.is_read ? "transparent" : "var(--sl-soft)",
 
                                 py: 1.2
 
@@ -400,7 +400,7 @@ function Topbar({ onToggleSidebar }) {
 
                     </Box>
 
-                    <Avatar sx={{ bgcolor: user && user.role === "Super Admin" ? "#7C3AED" : "#2563EB" }}>
+                    <Avatar sx={{ bgcolor: user && user.role === "Super Admin" ? "#7C3AED" : "var(--sl-primary)" }}>
 
                         {user && user.full_name ? user.full_name[0] : "?"}
 

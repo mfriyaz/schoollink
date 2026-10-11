@@ -6,7 +6,7 @@ function SectionTitle({ children }) {
             variant="h5"
             sx={{
                 fontWeight: 700,
-                color: "#0F172A",
+                color: "var(--sl-ink)",
                 mb: 2
             }}
         >

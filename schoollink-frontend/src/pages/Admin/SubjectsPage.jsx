@@ -277,9 +277,9 @@ function SubjectsPage() {
 
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
-                            <Avatar sx={{ bgcolor: subject.is_active ? "#DBEAFE" : "#F1F5F9" }}>
+                            <Avatar sx={{ bgcolor: subject.is_active ? "var(--sl-soft)" : "#F1F5F9" }}>
 
-                                <MenuBookIcon sx={{ color: subject.is_active ? "#2563EB" : "#94A3B8" }} fontSize="small" />
+                                <MenuBookIcon sx={{ color: subject.is_active ? "var(--sl-primary)" : "#94A3B8" }} fontSize="small" />
 
                             </Avatar>
 

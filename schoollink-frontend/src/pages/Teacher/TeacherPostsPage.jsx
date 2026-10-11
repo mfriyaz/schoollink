@@ -238,7 +238,7 @@ function TeacherPostsPage() {
 
                                     borderRadius: "10px",
 
-                                    bgcolor: "#DBEAFE",
+                                    bgcolor: "var(--sl-soft)",
 
                                     display: "flex",
 
@@ -252,7 +252,7 @@ function TeacherPostsPage() {
 
                             >
 
-                                <MenuBookIcon sx={{ color: "#2563EB", fontSize: 20 }} />
+                                <MenuBookIcon sx={{ color: "var(--sl-primary)", fontSize: 20 }} />
 
                             </Box>
 

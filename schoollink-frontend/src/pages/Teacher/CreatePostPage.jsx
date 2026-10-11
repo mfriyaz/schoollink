@@ -644,13 +644,13 @@ function CreatePostPage() {
                         width: 40,
                         height: 40,
                         borderRadius: "10px",
-                        bgcolor: "#E0E7FF",
+                        bgcolor: "var(--sl-soft)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"
                     }}
                 >
-                    <EditNoteIcon sx={{ color: "#4F46E5" }} />
+                    <EditNoteIcon sx={{ color: "var(--sl-primary)" }} />
                 </Box>
 
                 <Box>
@@ -780,7 +780,7 @@ function CreatePostPage() {
                                                 <Box
                                                     sx={{
                                                         width: 36, height: 36, minWidth: 36, borderRadius: "10px",
-                                                        bgcolor: "#E0E7FF", color: "#4F46E5",
+                                                        bgcolor: "var(--sl-soft)", color: "var(--sl-primary)",
                                                         display: "flex", alignItems: "center", justifyContent: "center"
                                                     }}
                                                 >
@@ -810,7 +810,7 @@ function CreatePostPage() {
                                                 display: "flex", alignItems: "center", gap: 1.25,
                                                 border: "2px dashed #CBD5E1", borderRadius: 2, px: 2, py: 1.5,
                                                 color: "#64748B", cursor: uploadingFile ? "default" : "pointer",
-                                                "&:hover": { borderColor: "#4F46E5", color: "#4F46E5", bgcolor: "#F8FAFC" }
+                                                "&:hover": { borderColor: "var(--sl-primary)", color: "var(--sl-primary)", bgcolor: "#F8FAFC" }
                                             }}
                                         >
                                             {uploadingFile ? <CircularProgress size={20} /> : <CloudUploadIcon />}
@@ -851,7 +851,7 @@ function CreatePostPage() {
                                                     sx={{
                                                         position: "absolute", top: -8, right: -8,
                                                         minWidth: "auto", width: 22, height: 22, borderRadius: "50%",
-                                                        bgcolor: "#1E1B4B", color: "white", fontSize: "0.65rem", p: 0,
+                                                        bgcolor: "var(--sl-ink)", color: "white", fontSize: "0.65rem", p: 0,
                                                         "&:hover": { bgcolor: "#DC2626" }
                                                     }}
                                                 >
@@ -868,7 +868,7 @@ function CreatePostPage() {
                                                     display: "flex", flexDirection: "column", alignItems: "center",
                                                     justifyContent: "center", gap: 0.5, color: "#64748B",
                                                     cursor: uploadingImages ? "default" : "pointer",
-                                                    "&:hover": { borderColor: "#4F46E5", color: "#4F46E5", bgcolor: "#F8FAFC" }
+                                                    "&:hover": { borderColor: "var(--sl-primary)", color: "var(--sl-primary)", bgcolor: "#F8FAFC" }
                                                 }}
                                             >
                                                 {uploadingImages ? (
@@ -935,7 +935,7 @@ function CreatePostPage() {
                                                 display: "flex", alignItems: "center", gap: 1.25,
                                                 border: "2px dashed #CBD5E1", borderRadius: 2, px: 2, py: 1.5,
                                                 color: "#64748B", cursor: uploadingVoice ? "default" : "pointer",
-                                                "&:hover": { borderColor: "#4F46E5", color: "#4F46E5", bgcolor: "#F8FAFC" }
+                                                "&:hover": { borderColor: "var(--sl-primary)", color: "var(--sl-primary)", bgcolor: "#F8FAFC" }
                                             }}
                                         >
                                             {uploadingVoice ? <CircularProgress size={20} /> : <MicIcon />}

@@ -132,9 +132,9 @@ function AllPostsPage() {
                             onClick={() => { setType(f.value); setPage(1); }}
                             sx={{
                                 fontWeight: 600,
-                                bgcolor: type === f.value ? "#1D4ED8" : "#F1F5F9",
+                                bgcolor: type === f.value ? "var(--sl-primary-dark)" : "#F1F5F9",
                                 color: type === f.value ? "white" : "#475569",
-                                "&:hover": { bgcolor: type === f.value ? "#1E40AF" : "#E2E8F0" }
+                                "&:hover": { bgcolor: type === f.value ? "var(--sl-primary-dark)" : "#E2E8F0" }
                             }}
                         />
                     ))}
@@ -181,10 +181,10 @@ function AllPostsPage() {
 
                             <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 0, flex: 1 }}>
 
-                                <Avatar sx={{ bgcolor: isAnn ? "#EDE9FE" : "#DBEAFE" }}>
+                                <Avatar sx={{ bgcolor: isAnn ? "#EDE9FE" : "var(--sl-soft)" }}>
                                     {isAnn
                                         ? <CampaignIcon sx={{ color: "#7C3AED" }} fontSize="small" />
-                                        : <MenuBookIcon sx={{ color: "#2563EB" }} fontSize="small" />}
+                                        : <MenuBookIcon sx={{ color: "var(--sl-primary)" }} fontSize="small" />}
                                 </Avatar>
 
                                 <Box sx={{ minWidth: 0 }}>
