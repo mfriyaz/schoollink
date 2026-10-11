@@ -203,7 +203,7 @@ return createTheme({
                 {
                     props: { variant: "contained", color: "secondary" },
                     style: {
-                        background: `linear-gradient(135deg, ${t.accent} 0%, ${t.accentDark} 100%)`,
+                        background: t.accent,
                         color: t.btnText,
                         boxShadow: `0 6px 14px ${t.btnShadow}`,
                         "&:hover": { background: t.accentDark }
@@ -268,7 +268,7 @@ return createTheme({
         MuiTabs: {
             styleOverrides: {
                 root: { minHeight: 42 },
-                indicator: { height: 3, borderRadius: "3px 3px 0 0", background: t.tabIndicator || `linear-gradient(90deg, ${t.primary}, ${t.accent})` }
+                indicator: { height: 3, borderRadius: "3px 3px 0 0", background: t.tabIndicator || t.accent }
             }
         },
 

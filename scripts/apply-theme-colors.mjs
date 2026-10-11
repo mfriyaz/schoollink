@@ -45,8 +45,6 @@ function walk(dir) {
                 const pct = Math.round((parseInt(alpha, 16) / 255) * 100);
                 return `color-mix(in srgb, var(--sl-${v}) ${pct}%, transparent)`;
             })
-            // flat two-colour gradients become primary -> darker primary
-            .replace(/var\(--sl-primary\)\s*,\s*var\(--sl-primary\)/g, "var(--sl-primary),var(--sl-primary-dark)")
             .replace(rgbaRe, (m, a) => {
                 hits++;
                 const pct = Math.round(parseFloat(a.startsWith(".") ? "0" + a : a) * 100);

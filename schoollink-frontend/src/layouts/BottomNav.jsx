@@ -51,7 +51,7 @@ const tabs = {
 
 };
 
-const GRADIENT = "var(--sl-side-active)";
+const GRADIENT = "var(--sl-nav-active)";
 
 /** Phone-only bottom navigation. "More" opens the full menu drawer. */
 export default function BottomNav({ onMore }) {
@@ -106,8 +106,8 @@ export default function BottomNav({ onMore }) {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 background: active ? GRADIENT : "transparent",
-                                color: active ? "var(--sl-on-active)" : "#6B7194",
-                                boxShadow: active ? "0 6px 12px var(--sl-glow)" : "none",
+                                color: active ? "var(--sl-on-nav-active)" : "#6B7194",
+                                boxShadow: "none",
                                 transition: "all .15s ease",
                                 "& svg": { fontSize: 22 }
                             }}

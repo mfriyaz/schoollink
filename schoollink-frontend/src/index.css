@@ -6,22 +6,24 @@
     --sl-primary: #111827;
     --sl-primary-dark: #000000;
     --sl-primary-light: #4B5563;
-    --sl-soft: #FFF4C7;
-    --sl-soft2: #FFE28A;
+    --sl-soft: #FFEBA3;
+    --sl-soft2: #EAD98F;
     --sl-ink: #111827;
-    --sl-accent: #FFC107;
+    --sl-accent: #FFC400;
     --sl-accent-dark: #F5A800;
-    --sl-page: #FFFBEB;
-    --sl-page2: #FFF3C4;
-    --sl-border: #F1E7BD;
-    --sl-side-bg: linear-gradient(180deg,#0A0A0B 0%,#151516 60%,#202022 100%);
-    --sl-side-active: linear-gradient(135deg,#FFD84D 0%,#FFB800 100%);
+    --sl-page: #FFF8DC;
+    --sl-page2: #FFF8DC;
+    --sl-border: #E9DCA6;
+    --sl-side-bg: #0B0B0C;
+    --sl-side-active: #FFC400;
     --sl-on-active: #111827;
     --sl-side-text: #D4D4D8;
     --sl-side-muted: rgba(212,212,216,0.55);
-    --sl-glow: rgba(255,193,7,0.45);
-    --sl-login-bg: #FFFBEB;
-    --sl-login-panel: #FFF4C7;
+    --sl-glow: rgba(0,0,0,0);
+    --sl-nav-active: #FFC400;
+    --sl-on-nav-active: #111827;
+    --sl-login-bg: #FFF8DC;
+    --sl-login-panel: #FFC400;
 }
 
 html,
@@ -40,7 +42,7 @@ body,
 }
 
 body {
-    background: var(--sl-page, #FFFBEB);
+    background: var(--sl-page, #FFF8DC);
     font-family: Nunito, Inter, "Segoe UI", Roboto, Arial, sans-serif;
 }
 

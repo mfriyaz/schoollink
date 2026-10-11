@@ -57,7 +57,7 @@ function ThemeProvider({ children }) {
     // The Super Admin console keeps its own violet look
     const role = currentRole();
 
-    const effectiveId = previewId || (role === "Super Admin" ? "royal" : savedId);
+    const effectiveId = previewId || (role === "Super Admin" ? "platform" : savedId);
 
     const t = getTheme(effectiveId);
 

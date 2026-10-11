@@ -358,9 +358,12 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
     const isSuperAdmin = user && user.role === "Super Admin";
 
-    const theme = isSuperAdmin
-        ? { bg: "linear-gradient(180deg,#2E1065 0%,#4C1D95 55%,#5B21B6 100%)", accent: "linear-gradient(135deg,#FF6B6B 0%,#C026D3 100%)", glow: "rgba(192,38,211,0.45)", accentSoft: "rgba(255,255,255,0.16)", onActive: "#FFFFFF", text: "#C7D2FE", muted: "rgba(199,210,254,0.55)", tile: "rgba(255,255,255,0.22)", brand: "SchoolLink Platform" }
-        : { bg: "var(--sl-side-bg)", accent: "var(--sl-side-active)", glow: "var(--sl-glow)", accentSoft: "rgba(255,255,255,0.16)", onActive: "var(--sl-on-active)", text: "var(--sl-side-text)", muted: "var(--sl-side-muted)", tile: "color-mix(in srgb, var(--sl-on-active) 16%, transparent)", brand: "SchoolLink" };
+    const theme = {
+        bg: "var(--sl-side-bg)", accent: "var(--sl-side-active)", glow: "var(--sl-glow)", accentSoft: "rgba(255,255,255,0.16)",
+        onActive: "var(--sl-on-active)", text: "var(--sl-side-text)", muted: "var(--sl-side-muted)",
+        tile: "color-mix(in srgb, var(--sl-on-active) 16%, transparent)",
+        brand: isSuperAdmin ? "SchoolLink Platform" : "SchoolLink"
+    };
 
     const sidebarWidth = collapsed ? 76 : 260;
 

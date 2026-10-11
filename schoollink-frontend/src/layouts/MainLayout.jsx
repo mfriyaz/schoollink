@@ -68,7 +68,7 @@ function MainLayout() {
             sx={{
                 display: "flex",
                 minHeight: "100vh",
-                background: "linear-gradient(180deg,var(--sl-page2) 0%,var(--sl-page) 220px,var(--sl-page) 100%)"
+                background: "var(--sl-page)"
             }}
         >
 

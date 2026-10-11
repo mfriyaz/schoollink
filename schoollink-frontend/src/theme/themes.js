@@ -1,82 +1,97 @@
 /**
- * SchoolLink colour themes.
+ * SchoolLink colour themes - all solid colours (no gradients).
  *
  * Each school picks one in Settings (School Admin). To add a theme, add an
  * entry here AND its id to THEMES in backend/src/controllers/schoolTheme.controller.js.
  *
- *  primary      main brand colour: icons, links, headings accents, solid chips
- *  soft/soft2   pale tints of it (icon tiles, highlights)
- *  accent       the "catchy" second colour (buttons, active menu item)
+ *  primary      main brand colour: icons, links, solid banners and chips
+ *  soft/soft2   pale tints of it (icon tiles, highlights, input borders)
+ *  accent       the second colour
  *  btn*         the main call-to-action button
- *  side*        the left menu and the phone bottom bar
+ *  side*        the left menu;  nav*  the active tab of the phone bottom bar
+ *  loginPanel   the panel behind the school illustration on the login page
  */
 export const THEMES = {
 
+    // 1) Yellow & Black
     sunshine: {
         id: "sunshine",
         name: "Sunshine",
-        tagline: "Black & Yellow",
-        // Solid, high-contrast style: flat yellow, black text, crisp outlines (no gradients or glow)
+        tagline: "Yellow & Black",
         primary: "#111827", primaryDark: "#000000", primaryLight: "#4B5563",
         soft: "#FFEBA3", soft2: "#EAD98F", ink: "#111827",
         accent: "#FFC400", accentDark: "#F5B300",
         pageBg: "#FFF8DC", border: "#E9DCA6", page2: "#FFF8DC",
-        btnBg: "#FFC400", btnHover: "#FFB300", btnText: "#111827", btnShadow: "rgba(17,24,39,0.30)",
-        btnBorder: "1.5px solid #111827", btnShadowCss: "0 3px 0 #111827", btnShadowHoverCss: "0 4px 0 #111827",
+        btnBg: "#FFC400", btnHover: "#FFB300", btnText: "#111827", btnBorder: "1.5px solid #111827",
+        btnShadowCss: "0 3px 0 #111827", btnShadowHoverCss: "0 4px 0 #111827", btnShadow: "rgba(17,24,39,0.30)",
         cardShadow: "0 1px 0 rgba(17,24,39,0.08), 0 2px 8px rgba(17,24,39,0.06)", cardShadowHover: "0 2px 0 rgba(17,24,39,0.12), 0 8px 18px rgba(17,24,39,0.12)",
-        tabIndicator: "#FFC400",
+        tabIndicator: "#FFC400", metaColor: "#111827",
         sideBg: "#0B0B0C", sideActive: "#FFC400", onActive: "#111827", sideText: "#E4E4E7", sideMuted: "rgba(228,228,231,0.55)", glow: "rgba(0,0,0,0)",
-        loginBg: "#FFF8DC",
-        loginPanel: "#FFC400"
+        navActive: "#FFC400", onNavActive: "#111827",
+        loginBg: "#FFF8DC", loginPanel: "#FFC400"
     },
 
-    royal: {
-        id: "royal",
-        name: "Royal",
-        tagline: "Indigo & Coral",
-        primary: "#4F46E5", primaryDark: "#4338CA", primaryLight: "#818CF8",
-        soft: "#E0E7FF", soft2: "#C7D2FE", ink: "#1E1B4B",
-        accent: "#FF6B6B", accentDark: "#F04F5F",
-        pageBg: "#F4F5FF", border: "#E8E9F8", page2: "#EEF0FF",
-        btnBg: "linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%)", btnHover: "linear-gradient(135deg,#4338CA 0%,#6D28D9 100%)", btnText: "#FFFFFF", btnShadow: "rgba(79,70,229,0.32)",
-        sideBg: "linear-gradient(180deg,#1E1B4B 0%,#312E81 60%,#3730A3 100%)", sideActive: "linear-gradient(135deg,#6366F1 0%,#8B5CF6 100%)", onActive: "#FFFFFF", sideText: "#C7D2FE", sideMuted: "rgba(199,210,254,0.55)", glow: "rgba(99,102,241,0.55)",
-        loginBg: "radial-gradient(circle at 15% 10%, #E0E7FF 0%, transparent 45%), radial-gradient(circle at 90% 85%, #FFE4E6 0%, transparent 40%), #F4F5FF",
-        loginPanel: "linear-gradient(160deg,#E0E7FF 0%,#EDE9FE 55%,#FFE4E6 100%)"
+    // 2) Sky Blue & Black
+    sky: {
+        id: "sky",
+        name: "Sky",
+        tagline: "Sky Blue & Black",
+        primary: "#0F172A", primaryDark: "#000000", primaryLight: "#475569",
+        soft: "#D4EEFC", soft2: "#9FD6F2", ink: "#0F172A",
+        accent: "#38BDF8", accentDark: "#0EA5E9",
+        pageBg: "#EEF8FF", border: "#CFE4F2", page2: "#EEF8FF",
+        btnBg: "#38BDF8", btnHover: "#0EA5E9", btnText: "#0F172A", btnBorder: "1.5px solid #0F172A",
+        btnShadowCss: "0 3px 0 #0F172A", btnShadowHoverCss: "0 4px 0 #0F172A", btnShadow: "rgba(15,23,42,0.30)",
+        cardShadow: "0 1px 0 rgba(15,23,42,0.08), 0 2px 8px rgba(15,23,42,0.06)", cardShadowHover: "0 2px 0 rgba(15,23,42,0.12), 0 8px 18px rgba(15,23,42,0.12)",
+        tabIndicator: "#38BDF8", metaColor: "#0B0F14",
+        sideBg: "#0B0F14", sideActive: "#38BDF8", onActive: "#0F172A", sideText: "#E2E8F0", sideMuted: "rgba(226,232,240,0.55)", glow: "rgba(0,0,0,0)",
+        navActive: "#38BDF8", onNavActive: "#0F172A",
+        loginBg: "#EEF8FF", loginPanel: "#38BDF8"
     },
 
-    emerald: {
-        id: "emerald",
-        name: "Emerald",
-        tagline: "Green & Gold",
-        primary: "#059669", primaryDark: "#047857", primaryLight: "#34D399",
-        soft: "#D1FAE5", soft2: "#A7F3D0", ink: "#064E3B",
-        accent: "#F59E0B", accentDark: "#D97706",
-        pageBg: "#F0FDF8", border: "#D5F0E6", page2: "#E3F8EF",
-        btnBg: "linear-gradient(135deg,#10B981 0%,#059669 100%)", btnHover: "linear-gradient(135deg,#059669 0%,#047857 100%)", btnText: "#FFFFFF", btnShadow: "rgba(5,150,105,0.32)",
-        sideBg: "linear-gradient(180deg,#022C22 0%,#064E3B 60%,#065F46 100%)", sideActive: "linear-gradient(135deg,#10B981 0%,#14B8A6 100%)", onActive: "#FFFFFF", sideText: "#A7F3D0", sideMuted: "rgba(167,243,208,0.55)", glow: "rgba(16,185,129,0.5)",
-        loginBg: "radial-gradient(circle at 15% 10%, #D1FAE5 0%, transparent 45%), radial-gradient(circle at 90% 85%, #FEF3C7 0%, transparent 40%), #F0FDF8",
-        loginPanel: "linear-gradient(160deg,#D1FAE5 0%,#A7F3D0 55%,#FEF3C7 100%)"
+    // 3) Dark Maroon & White
+    maroon: {
+        id: "maroon",
+        name: "Maroon",
+        tagline: "Dark Maroon & White",
+        primary: "#6D0F2B", primaryDark: "#4A0A1D", primaryLight: "#A3304F",
+        soft: "#F7E1E6", soft2: "#E8B9C4", ink: "#2B0A14",
+        accent: "#FFFFFF", accentDark: "#F3D9DF",
+        pageBg: "#FCF8F9", border: "#EBD3D9", page2: "#FCF8F9",
+        btnBg: "#6D0F2B", btnHover: "#4A0A1D", btnText: "#FFFFFF", btnBorder: "none",
+        btnShadowCss: "0 3px 0 #3A0817", btnShadowHoverCss: "0 4px 0 #3A0817", btnShadow: "rgba(109,15,43,0.30)",
+        cardShadow: "0 1px 0 rgba(109,15,43,0.08), 0 2px 8px rgba(109,15,43,0.06)", cardShadowHover: "0 2px 0 rgba(109,15,43,0.12), 0 8px 18px rgba(109,15,43,0.14)",
+        tabIndicator: "#6D0F2B", metaColor: "#5B0E24",
+        sideBg: "#5B0E24", sideActive: "#FFFFFF", onActive: "#6D0F2B", sideText: "#F3D9DF", sideMuted: "rgba(243,217,223,0.6)", glow: "rgba(0,0,0,0)",
+        navActive: "#6D0F2B", onNavActive: "#FFFFFF",
+        loginBg: "#FCF8F9", loginPanel: "#F7E1E6"
     },
 
-    sunset: {
-        id: "sunset",
-        name: "Sunset",
-        tagline: "Orange & Rose",
-        primary: "#EA580C", primaryDark: "#C2410C", primaryLight: "#FB923C",
-        soft: "#FFEDD5", soft2: "#FED7AA", ink: "#431407",
-        accent: "#F43F5E", accentDark: "#E11D48",
-        pageBg: "#FFF8F1", border: "#FBE3CF", page2: "#FFEFE0",
-        btnBg: "linear-gradient(135deg,#F97316 0%,#EA580C 100%)", btnHover: "linear-gradient(135deg,#EA580C 0%,#C2410C 100%)", btnText: "#FFFFFF", btnShadow: "rgba(234,88,12,0.34)",
-        sideBg: "linear-gradient(180deg,#431407 0%,#7C2D12 60%,#9A3412 100%)", sideActive: "linear-gradient(135deg,#FB923C 0%,#F43F5E 100%)", onActive: "#FFFFFF", sideText: "#FED7AA", sideMuted: "rgba(254,215,170,0.55)", glow: "rgba(244,63,94,0.45)",
-        loginBg: "radial-gradient(circle at 15% 10%, #FFEDD5 0%, transparent 45%), radial-gradient(circle at 90% 85%, #FFE4E6 0%, transparent 40%), #FFF8F1",
-        loginPanel: "linear-gradient(160deg,#FFEDD5 0%,#FED7AA 55%,#FECDD3 100%)"
+    // Used only by the Super Admin console (not offered to schools)
+    platform: {
+        id: "platform",
+        hidden: true,
+        name: "Platform",
+        tagline: "Super Admin",
+        primary: "#5B21B6", primaryDark: "#4C1D95", primaryLight: "#8B5CF6",
+        soft: "#EDE9FE", soft2: "#C4B5FD", ink: "#2E1065",
+        accent: "#7C3AED", accentDark: "#6D28D9",
+        pageBg: "#F6F3FF", border: "#E3DCF7", page2: "#F6F3FF",
+        btnBg: "#7C3AED", btnHover: "#6D28D9", btnText: "#FFFFFF", btnBorder: "none",
+        btnShadowCss: "0 3px 0 #4C1D95", btnShadowHoverCss: "0 4px 0 #4C1D95", btnShadow: "rgba(91,33,182,0.30)",
+        cardShadow: "0 1px 0 rgba(46,16,101,0.08), 0 2px 8px rgba(46,16,101,0.06)", cardShadowHover: "0 2px 0 rgba(46,16,101,0.12), 0 8px 18px rgba(46,16,101,0.12)",
+        tabIndicator: "#7C3AED", metaColor: "#2E1065",
+        sideBg: "#2E1065", sideActive: "#7C3AED", onActive: "#FFFFFF", sideText: "#DDD6FE", sideMuted: "rgba(221,214,254,0.55)", glow: "rgba(0,0,0,0)",
+        navActive: "#7C3AED", onNavActive: "#FFFFFF",
+        loginBg: "#F6F3FF", loginPanel: "#EDE9FE"
     }
 
 };
 
 export const DEFAULT_THEME = "sunshine";
 
-export const THEME_LIST = Object.values(THEMES);
+/** The themes a School Admin can choose from */
+export const THEME_LIST = Object.values(THEMES).filter((t) => !t.hidden);
 
 export function getTheme(id) {
 
@@ -93,9 +108,10 @@ export function applyThemeVars(t) {
         primary: t.primary, "primary-dark": t.primaryDark, "primary-light": t.primaryLight,
         soft: t.soft, soft2: t.soft2, ink: t.ink, accent: t.accent, "accent-dark": t.accentDark,
         page: t.pageBg, page2: t.page2, border: t.border,
-        "btn-bg": t.btnBg, "btn-border": t.btnBorder || "none", "btn-text": t.btnText, "btn-shadow": t.btnShadow,
+        "btn-bg": t.btnBg, "btn-text": t.btnText, "btn-border": t.btnBorder || "none",
         "side-bg": t.sideBg, "side-active": t.sideActive, "on-active": t.onActive,
         "side-text": t.sideText, "side-muted": t.sideMuted, glow: t.glow,
+        "nav-active": t.navActive, "on-nav-active": t.onNavActive,
         "login-bg": t.loginBg, "login-panel": t.loginPanel
     };
 
@@ -103,6 +119,6 @@ export function applyThemeVars(t) {
 
     const meta = document.querySelector('meta[name="theme-color"]');
 
-    if (meta) meta.setAttribute("content", t.accent === "#FFC107" ? "#111827" : t.primary);
+    if (meta) meta.setAttribute("content", t.metaColor || t.primary);
 
 }
