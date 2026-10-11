@@ -48,6 +48,24 @@ const ACTIONS = {
     draft: "Write a short, clear school message based on the idea or notes provided.",
 };
 
+// Each AI use is logged under a feature name; the Super Admin switches them on or off in these groups
+const FEATURES = [
+    { key: "writing", label: "Writing assistant and translation" },
+    { key: "report_remarks", label: "Report card remarks" },
+    { key: "weekly_summary", label: "Weekly summary for parents" },
+    { key: "early_warning", label: "Early warning suggestions" },
+];
+
+const FEATURE_OF = {
+    improve: "writing", grammar: "writing", shorten: "writing", lengthen: "writing",
+    friendly: "writing", formal: "writing", draft: "writing", translate: "writing",
+    report_remarks: "report_remarks",
+    weekly_summary: "weekly_summary",
+    early_warning: "early_warning",
+};
+
+const featureOn = (ai, key) => !ai.features || ai.features[key] !== false;
+
 const SYSTEM_PROMPT = `You are a writing assistant inside a school communication app. Teachers and school administrators use you to write messages that go to parents.
 
 Rules:
@@ -82,17 +100,37 @@ class AiError extends Error {
 
 async function getSchoolAi(schoolId) {
     try {
-        const r = await pool.query(
-            "SELECT ai_enabled, ai_monthly_limit FROM schools WHERE id = $1",
-            [schoolId]
-        );
-        const row = r.rows[0];
-        if (!row) return { enabled: false, limit: 0 };
-        return { enabled: !!row.ai_enabled, limit: Number(row.ai_monthly_limit) };
+        let row;
+        try {
+            const r = await pool.query(
+                "SELECT ai_enabled, ai_monthly_limit, ai_features FROM schools WHERE id = $1",
+                [schoolId]
+            );
+            row = r.rows[0];
+        } catch (e) {
+            // migration 056 not run yet: fall back to the older columns
+            const r = await pool.query(
+                "SELECT ai_enabled, ai_monthly_limit FROM schools WHERE id = $1",
+                [schoolId]
+            );
+            row = r.rows[0];
+        }
+        if (!row) return { enabled: false, limit: 0, features: {} };
+        return {
+            enabled: !!row.ai_enabled,
+            limit: Number(row.ai_monthly_limit),
+            features: row.ai_features && typeof row.ai_features === "object" ? row.ai_features : {},
+        };
     } catch (e) {
         // migration 053 not run yet
-        return { enabled: false, limit: 0 };
+        return { enabled: false, limit: 0, features: {} };
     }
+}
+
+function featureMap(ai) {
+    const out = {};
+    FEATURES.forEach((f) => { out[f.key] = featureOn(ai, f.key); });
+    return out;
 }
 
 async function usedThisMonth(schoolId) {
@@ -126,6 +164,7 @@ async function getStatus(schoolId) {
     const used = await usedThisMonth(schoolId);
     return {
         available: configured() && ai.enabled,
+        features: featureMap(ai),
         enabled: ai.enabled,
         configured: configured(),
         limit: ai.limit,
@@ -297,6 +336,9 @@ async function run(user, feature, instruction, text) {
     const ai = await getSchoolAi(user.school_id);
     if (!ai.enabled) throw new AiError("AI assistant is turned off for your school.", 403);
 
+    const group = FEATURE_OF[feature];
+    if (group && !featureOn(ai, group)) throw new AiError("This AI feature is turned off for your school.", 403);
+
     const used = await usedThisMonth(user.school_id);
     if (used >= ai.limit) throw new AiError("Your school has reached this month's AI limit.", 429);
 
@@ -407,8 +449,8 @@ async function weeklySummary(user, studentId, language, refresh) {
     if (!insights.hasAnything(facts)) return out;
 
     const status = await getStatus(user.school_id);
-    out.ai_available = status.available;
-    if (!status.available) return out;
+    out.ai_available = status.available && status.features.weekly_summary;
+    if (!out.ai_available) return out;
 
     const text = insights.factsToText(facts);
     const hash = crypto.createHash("sha256").update(text).digest("hex").slice(0, 32);
@@ -518,6 +560,8 @@ async function getSchoolUsage(schoolId) {
     return {
         enabled: ai.enabled,
         limit: ai.limit,
+        features: featureMap(ai),
+        feature_list: FEATURES,
         configured: configured(),
         requests,
         input_tokens: inT,
@@ -527,7 +571,7 @@ async function getSchoolUsage(schoolId) {
     };
 }
 
-async function updateSchoolAi(schoolId, { enabled, limit }) {
+async function updateSchoolAi(schoolId, { enabled, limit, features }) {
     const sets = [];
     const vals = [];
     if (typeof enabled === "boolean") { vals.push(enabled); sets.push(`ai_enabled = $${vals.length}`); }
@@ -535,6 +579,12 @@ async function updateSchoolAi(schoolId, { enabled, limit }) {
         const n = Number(limit);
         if (!Number.isInteger(n) || n < 0 || n > 100000) throw new AiError("Monthly limit must be a whole number from 0 to 100000.");
         vals.push(n); sets.push(`ai_monthly_limit = $${vals.length}`);
+    }
+    if (features && typeof features === "object") {
+        const current = (await getSchoolAi(schoolId)).features || {};
+        const next = { ...current };
+        FEATURES.forEach((f) => { if (typeof features[f.key] === "boolean") next[f.key] = features[f.key]; });
+        vals.push(JSON.stringify(next)); sets.push(`ai_features = $${vals.length}::jsonb`);
     }
     if (!sets.length) throw new AiError("Nothing to update.");
     vals.push(schoolId);

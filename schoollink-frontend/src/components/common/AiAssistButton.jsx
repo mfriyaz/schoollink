@@ -37,7 +37,7 @@ export default function AiAssistButton({ value, onApply }) {
         return () => { alive = false; };
     }, []);
 
-    if (!status || !status.available) return null;
+    if (!status || !status.available || (status.features && status.features.writing === false)) return null;
 
     const empty = !String(value || "").trim();
     const noneLeft = status.remaining <= 0;

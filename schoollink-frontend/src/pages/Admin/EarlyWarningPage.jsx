@@ -127,7 +127,7 @@ export default function EarlyWarningPage() {
             .then((r) => { if (r.success) setClasses(r.data.filter((c) => c.is_active !== false)); })
             .catch(() => { /* filter is optional */ });
         getAiStatus()
-            .then((r) => setAiAvailable(!!(r.data && r.data.available)))
+            .then((r) => setAiAvailable(!!(r.data && r.data.available && !(r.data.features && r.data.features.early_warning === false))))
             .catch(() => setAiAvailable(false));
     }, []);
 

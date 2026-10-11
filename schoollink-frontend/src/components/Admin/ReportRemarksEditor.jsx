@@ -73,7 +73,7 @@ export default function ReportRemarksEditor({ studentId, examId, initial, onSave
         }
     }
 
-    const aiOn = ai && ai.available;
+    const aiOn = ai && ai.available && !(ai.features && ai.features.report_remarks === false);
     const noneLeft = aiOn && ai.remaining <= 0;
     const changed = text.trim() !== saved.trim();
 

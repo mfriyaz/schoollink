@@ -13,6 +13,7 @@ export default function AiSchoolCard({ schoolId }) {
     const [info, setInfo] = useState(null);
     const [enabled, setEnabled] = useState(true);
     const [limit, setLimit] = useState("300");
+    const [features, setFeatures] = useState({});
     const [busy, setBusy] = useState(false);
     const [msg, setMsg] = useState(null);
 
@@ -22,6 +23,7 @@ export default function AiSchoolCard({ schoolId }) {
                 setInfo(r.data);
                 setEnabled(r.data.enabled);
                 setLimit(String(r.data.limit));
+                setFeatures(r.data.features || {});
             })
             .catch(() => setMsg({ type: "error", text: "Unable to load AI settings." }));
     }, [schoolId]);
@@ -30,8 +32,9 @@ export default function AiSchoolCard({ schoolId }) {
         setBusy(true);
         setMsg(null);
         try {
-            const r = await saveSchoolAi(schoolId, { enabled, limit: Number(limit) });
+            const r = await saveSchoolAi(schoolId, { enabled, limit: Number(limit), features });
             setInfo(r.data);
+            setFeatures(r.data.features || {});
             setMsg({ type: "success", text: "AI settings saved." });
         } catch (err) {
             setMsg({ type: "error", text: err.response?.data?.message || "Unable to save." });
@@ -42,7 +45,9 @@ export default function AiSchoolCard({ schoolId }) {
 
     if (!info && !msg) return null;
 
-    const changed = info && (enabled !== info.enabled || Number(limit) !== info.limit);
+    const list = (info && info.feature_list) || [];
+    const featuresChanged = info && list.some((f) => (features[f.key] !== false) !== (info.features[f.key] !== false));
+    const changed = info && (enabled !== info.enabled || Number(limit) !== info.limit || featuresChanged);
 
     return (
         <Box>
@@ -56,8 +61,27 @@ export default function AiSchoolCard({ schoolId }) {
 
             <FormControlLabel
                 control={<Switch checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />}
-                label="AI writing assistant for this school"
+                label="AI for this school (master switch)"
             />
+
+            {list.length > 0 && (
+                <Box sx={{ pl: 4, display: "flex", flexDirection: "column", opacity: enabled ? 1 : 0.5 }}>
+                    {list.map((f) => (
+                        <FormControlLabel
+                            key={f.key}
+                            disabled={!enabled}
+                            control={
+                                <Switch
+                                    size="small"
+                                    checked={features[f.key] !== false}
+                                    onChange={(e) => setFeatures({ ...features, [f.key]: e.target.checked })}
+                                />
+                            }
+                            label={<Typography sx={{ fontSize: "0.9rem" }}>{f.label}</Typography>}
+                        />
+                    ))}
+                </Box>
+            )}
 
             <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap", mt: 1.5 }}>
                 <TextField
