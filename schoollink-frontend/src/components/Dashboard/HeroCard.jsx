@@ -42,9 +42,10 @@ function HeroCard() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 gap: 2,
-                color: "#FFFFFF",
-                background: "linear-gradient(135deg,var(--sl-primary),var(--sl-primary))",
-                boxShadow: "0 8px 20px color-mix(in srgb, var(--sl-primary) 20%, transparent)"
+                color: "var(--sl-on-banner)",
+                bgcolor: "var(--sl-banner)",
+                border: "var(--sl-banner-border)",
+                boxShadow: "var(--sl-banner-shadow)"
             }}
         >
 
@@ -56,7 +57,7 @@ function HeroCard() {
                         height: 44,
                         minWidth: 44,
                         borderRadius: "14px",
-                        bgcolor: "rgba(255,255,255,0.16)",
+                        bgcolor: "color-mix(in srgb, var(--sl-on-banner) 12%, transparent)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"

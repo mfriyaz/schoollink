@@ -9,13 +9,13 @@ function KpiCard({
     return (
         <Card
             sx={{
-                px: { xs: 1.25, sm: 1.75 },
+                px: { xs: 1.25, sm: 1.25 },
                 py: 1.5,
                 height: "100%",
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                gap: { xs: 1, sm: 1.5 },
+                gap: { xs: 1, sm: 1.1 },
                 borderRadius: 3,
                 boxShadow: "0 1px 3px rgba(15,23,42,.06)",
                 border: "1px solid #EEF2F7",
@@ -45,7 +45,7 @@ function KpiCard({
                 <Typography sx={{ fontWeight: 700, fontSize: "1.4rem", lineHeight: 1.1, overflowWrap: "anywhere" }}>
                     {value}
                 </Typography>
-                <Typography sx={{ color: "#64748B", fontSize: "0.76rem", lineHeight: 1.25, mt: 0.25, overflowWrap: "anywhere" }}>
+                <Typography sx={{ color: "#64748B", fontSize: "0.74rem", lineHeight: 1.25, mt: 0.25, overflowWrap: "break-word" }}>
                     {title}
                 </Typography>
             </Box>

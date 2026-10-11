@@ -234,7 +234,7 @@ function ProfilePage() {
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
-                <Avatar sx={{ width: 56, height: 56, bgcolor: "var(--sl-primary)", fontSize: "1.4rem" }}>
+                <Avatar sx={{ width: 56, height: 56, bgcolor: "var(--sl-banner)", color: "var(--sl-on-banner)", fontSize: "1.4rem" }}>
 
                     {profile && profile.full_name ? profile.full_name[0] : "?"}
 

@@ -173,7 +173,7 @@ function DashboardPage() {
                         <Grid size={{ xs: 6, md: 4, lg: 2 }}>
 
                             <KpiCard
-                                title="Attendance today"
+                                title="Attendance"
                                 value={dashboard.attendance === null || dashboard.attendance === undefined ? "-" : `${dashboard.attendance}%`}
                                 icon={<TaskAltIcon sx={{ color: "#7C3AED" }} />}
                                 iconBg="#EDE9FE"

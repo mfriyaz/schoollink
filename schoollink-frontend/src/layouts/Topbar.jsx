@@ -608,7 +608,7 @@ function Topbar({ onToggleSidebar }) {
 
                         onClick={handleOpenAvatarMenu}
 
-                        sx={{ bgcolor: user && user.role === "Super Admin" ? "#7C3AED" : "var(--sl-primary)", cursor: "pointer" }}
+                        sx={{ bgcolor: "var(--sl-banner)", color: "var(--sl-on-banner)", cursor: "pointer" }}
                     >
 
                         {user && user.full_name ? user.full_name[0] : "?"}

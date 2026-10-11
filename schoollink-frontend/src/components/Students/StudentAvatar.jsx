@@ -8,7 +8,9 @@ export default function StudentAvatar({ name }) {
 
             sx={{
 
-                bgcolor: "var(--sl-primary)",
+                bgcolor: "var(--sl-banner)",
+
+                color: "var(--sl-on-banner)",
 
                 fontWeight: 700
 

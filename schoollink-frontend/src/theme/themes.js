@@ -28,6 +28,7 @@ export const THEMES = {
         tabIndicator: "#FFC400", metaColor: "#111827",
         sideBg: "#0B0B0C", sideActive: "#FFC400", onActive: "#111827", sideText: "#F4F4F5", sideMuted: "rgba(244,244,245,0.68)", glow: "rgba(0,0,0,0)",
         navActive: "#FFC400", onNavActive: "#111827",
+        banner: "#FFC400", onBanner: "#111827", bannerBorder: "1.5px solid #111827", bannerShadow: "0 3px 0 #111827",
         loginBg: "#FFFCEB", loginPanel: "#FFC400"
     },
 
@@ -46,6 +47,7 @@ export const THEMES = {
         tabIndicator: "#38BDF8", metaColor: "#0B0F14",
         sideBg: "#0B0F14", sideActive: "#38BDF8", onActive: "#0F172A", sideText: "#E2E8F0", sideMuted: "rgba(226,232,240,0.55)", glow: "rgba(0,0,0,0)",
         navActive: "#38BDF8", onNavActive: "#0F172A",
+        banner: "#38BDF8", onBanner: "#0F172A", bannerBorder: "1.5px solid #0F172A", bannerShadow: "0 3px 0 #0F172A",
         loginBg: "#EEF8FF", loginPanel: "#38BDF8"
     },
 
@@ -64,6 +66,7 @@ export const THEMES = {
         tabIndicator: "#6D0F2B", metaColor: "#650F28",
         sideBg: "#650F28", sideActive: "#FFFFFF", onActive: "#6D0F2B", sideText: "#FFF1F4", sideMuted: "rgba(255,241,244,0.72)", glow: "rgba(0,0,0,0)",
         navActive: "#6D0F2B", onNavActive: "#FFFFFF",
+        banner: "#6D0F2B", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "0 6px 16px rgba(109,15,43,0.22)",
         loginBg: "#FFF8FA", loginPanel: "#FCE8ED"
     },
 
@@ -83,6 +86,7 @@ export const THEMES = {
         tabIndicator: "#7C3AED", metaColor: "#2E1065",
         sideBg: "#2E1065", sideActive: "#7C3AED", onActive: "#FFFFFF", sideText: "#DDD6FE", sideMuted: "rgba(221,214,254,0.55)", glow: "rgba(0,0,0,0)",
         navActive: "#7C3AED", onNavActive: "#FFFFFF",
+        banner: "#7C3AED", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "0 6px 16px rgba(91,33,182,0.22)",
         loginBg: "#F6F3FF", loginPanel: "#EDE9FE"
     }
 
@@ -112,6 +116,7 @@ export function applyThemeVars(t) {
         "side-bg": t.sideBg, "side-active": t.sideActive, "on-active": t.onActive,
         "side-text": t.sideText, "side-muted": t.sideMuted, glow: t.glow,
         "nav-active": t.navActive, "on-nav-active": t.onNavActive,
+        banner: t.banner, "on-banner": t.onBanner, "banner-border": t.bannerBorder, "banner-shadow": t.bannerShadow,
         "login-bg": t.loginBg, "login-panel": t.loginPanel
     };
 
