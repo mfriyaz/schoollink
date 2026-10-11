@@ -37,6 +37,7 @@ import AddBusinessIcon from "@mui/icons-material/AddBusinessOutlined";
 import ArchiveIcon from "@mui/icons-material/ArchiveOutlined";
 import HistoryIcon from "@mui/icons-material/History";
 import EventIcon from "@mui/icons-material/EventOutlined";
+import EventNoteIcon from "@mui/icons-material/EventNoteOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmberRounded";
 
 const adminMenus = [
@@ -200,6 +201,12 @@ const parentMenus = [
     },
 
     {
+        title: "This Week",
+        path: "/parent/this-week",
+        icon: <EventNoteIcon />
+    },
+
+    {
         title: "Profile",
         path: "/profile",
         icon: <PersonIcon />
@@ -268,6 +275,7 @@ const iconColors = {
     "Exams": "#FB7185",
     "Grading Scale": "#FACC15",
     "Reports": "#818CF8",
+    "This Week": "#2DD4BF",
     "Early Warning": "#FB923C",
     "Activity Log": "#F59E0B",
     "School Calendar": "#C084FC",

@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 
 import ParentAttendanceCard from "../../components/Parent/ParentAttendanceCard";
-import WeeklySummaryCard from "../../components/Parent/WeeklySummaryCard";
 import { getCalendar } from "../../services/calendarService";
 import { dayInfo } from "../../utils/calendarUtils";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -671,8 +670,6 @@ function ParentDashboardPage() {
                 )}
 
             </Box>
-
-            {selectedChild && <WeeklySummaryCard studentId={selectedChild.student_id} />}
 
             {/* ---------- At-a-glance tiles ---------- */}
             {(() => {

@@ -16,6 +16,7 @@ import TeacherPostDetailPage from "../pages/Teacher/TeacherPostDetailPage";
 
 import ParentDashboardPage from "../pages/Parent/ParentDashboardPage";
 import ParentExamResultsPage from "../pages/Parent/ParentExamResultsPage";
+import ParentWeeklyPage from "../pages/Parent/ParentWeeklyPage";
 import ParentAllUpdatesPage from "../pages/Parent/ParentAllUpdatesPage";
 import ViewPostPage from "../pages/Parent/ViewPostPage";
 
@@ -436,6 +437,19 @@ export default function AppRoutes() {
                         <ProtectedRoute allowedRoles={["Parent"]}>
 
                             <ParentExamResultsPage />
+
+                        </ProtectedRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/parent/this-week"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["Parent"]}>
+
+                            <ParentWeeklyPage />
 
                         </ProtectedRoute>
 

@@ -10,7 +10,7 @@ import MoreIcon from "@mui/icons-material/GridViewRounded";
 import AddIcon from "@mui/icons-material/AddCircleRounded";
 import FactCheckIcon from "@mui/icons-material/FactCheckRounded";
 import AssessmentIcon from "@mui/icons-material/AssessmentRounded";
-import PersonIcon from "@mui/icons-material/PersonRounded";
+import WeeklyIcon from "@mui/icons-material/EventNoteRounded";
 import SettingsIcon from "@mui/icons-material/SettingsRounded";
 import SchoolIcon from "@mui/icons-material/SchoolRounded";
 import PaymentsIcon from "@mui/icons-material/PaymentsRounded";
@@ -38,7 +38,7 @@ const tabs = {
     Parent: [
         { title: "Home", path: "/parent/dashboard", icon: <HomeIcon /> },
         { title: "Results", path: "/parent/exam-results", icon: <AssessmentIcon /> },
-        { title: "Profile", path: "/profile", icon: <PersonIcon /> },
+        { title: "This Week", path: "/parent/this-week", icon: <WeeklyIcon /> },
         { title: "Settings", path: "/settings", icon: <SettingsIcon /> }
     ],
 

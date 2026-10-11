@@ -44,7 +44,7 @@ function Stat({ value, label, tone }) {
  * The numbers come straight from the database. The short note is written by AI
  * (cached for the day) and the card still works if AI is off or unavailable.
  */
-export default function WeeklySummaryCard({ studentId }) {
+export default function WeeklySummaryCard({ studentId, showEmpty }) {
 
     const [lang, setLang] = useState(readLang);
     const [data, setData] = useState(null);
@@ -81,7 +81,17 @@ export default function WeeklySummaryCard({ studentId }) {
     if (!loading && !error && f) {
         const empty = !f.attendance.recorded && !f.homework.given && !f.homework.pending_ack.length &&
             !f.announcements.count && !f.marks.length;
-        if (empty) return null;
+        if (empty && !showEmpty) return null;
+        if (empty) {
+            return (
+                <Card data-testid="weekly-summary" sx={{ p: 2.5, borderRadius: 3, border: "1px solid var(--sl-border, #EEF2F7)" }}>
+                    <Typography sx={{ fontWeight: 700 }}>Nothing new this week for {f.first_name}.</Typography>
+                    <Typography sx={{ color: "text.secondary", fontSize: "0.88rem", mt: 0.5 }}>
+                        Attendance, homework, notices and results from the last 7 days will show here.
+                    </Typography>
+                </Card>
+            );
+        }
     }
 
     return (
