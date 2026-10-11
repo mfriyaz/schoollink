@@ -17,7 +17,7 @@ import PaymentsIcon from "@mui/icons-material/PaymentsOutlined";
 import KpiCard from "../../components/Dashboard/KpiCard";
 import MiniBars from "../../components/SuperAdmin/MiniBars";
 import { getPlatformOverview } from "../../services/platformAdminService";
-import { fmtDate, money, statusColor, timeAgo } from "../../utils/platformUi";
+import { bytesLabel, fmtDate, money, statusColor, timeAgo, usd } from "../../utils/platformUi";
 
 function SectionCard({ title, subtitle, children, sx }) {
 
@@ -114,7 +114,7 @@ export default function PlatformDashboardPage() {
         return <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box>;
     }
 
-    const { totals, by_status, by_plan, attention, growth, revenue, recent_activity } = data;
+    const { totals, by_status, by_plan, attention, growth, revenue, recent_activity, storage } = data;
 
     const open = (id) => navigate(`/super-admin/schools/${id}`);
 
@@ -228,6 +228,32 @@ export default function PlatformDashboardPage() {
                     <SectionCard title="Revenue" subtitle={`Last 12 months: ${money(revenue.last_12_months)}  |  All time: ${money(revenue.all_time)}`}>
                         <MiniBars color="#16A34A" data={revenue.series.map((g) => ({ month: g.month, value: g.amount }))}
                             format={(v) => (v >= 1000 ? `${Math.round(v / 100) / 10}k` : v)} />
+                    </SectionCard>
+                </Grid>
+
+                <Grid size={{ xs: 12 }}>
+                    <SectionCard
+                        title="Storage by school"
+                        subtitle={`Total ${bytesLabel(totals.storage_bytes)} (about ${usd(totals.storage_cost_usd)} per month on S3)  |  Uploaded in last 30 days: ${storage.uploads_30d.files} files, ${bytesLabel(storage.uploads_30d.bytes)}`}
+                    >
+                        {storage.top.length === 0 && (
+                            <Typography sx={{ color: "#94A3B8", fontSize: "0.85rem", mt: 1 }}>
+                                No file usage recorded yet. New uploads are counted automatically; run the backfill to include older files.
+                            </Typography>
+                        )}
+                        {storage.top.map((s) => (
+                            <Box key={s.id} onClick={() => open(s.id)} sx={{ py: 1, cursor: "pointer", "&:hover": { bgcolor: "#F8FAFC" }, mx: -1, px: 1, borderRadius: 2 }}>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1, mb: 0.5 }}>
+                                    <Typography sx={{ fontWeight: 600, fontSize: "0.88rem" }} noWrap>{s.school_name}</Typography>
+                                    <Typography sx={{ fontSize: "0.82rem", color: "#64748B", whiteSpace: "nowrap" }}>
+                                        {bytesLabel(s.storage_bytes)} - {s.files} files{s.percent_of_limit !== null ? ` - ${s.percent_of_limit}% of limit` : ""}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{ height: 8, borderRadius: 4, bgcolor: "#F1F5F9", overflow: "hidden" }}>
+                                    <Box sx={{ height: "100%", width: `${Math.max(2, s.share)}%`, bgcolor: s.percent_of_limit >= 90 ? "#EF4444" : "#7C3AED" }} />
+                                </Box>
+                            </Box>
+                        ))}
                     </SectionCard>
                 </Grid>
 

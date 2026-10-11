@@ -18,7 +18,7 @@ import {
     deleteSchoolPayment, getPlatformSchool, resetSchoolAdminPassword,
     saveSchoolNotes, setSchoolStatus
 } from "../../services/platformAdminService";
-import { fmtDate, money, statusColor, timeAgo } from "../../utils/platformUi";
+import { bytesLabel, fmtDate, money, statusColor, timeAgo, usd } from "../../utils/platformUi";
 
 function Section({ title, action, children }) {
 
@@ -97,7 +97,7 @@ export default function SchoolDetailPage() {
 
     if (!data) return <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box>;
 
-    const { school, admins, payments, activity, actions_30d } = data;
+    const { school, admins, payments, activity, actions_30d, storage } = data;
 
     const suspended = school.status === "SUSPENDED";
 
@@ -231,6 +231,59 @@ export default function SchoolDetailPage() {
                 </Grid>
 
             </Grid>
+
+            <Section title="Storage (photos, voice notes, files)">
+                <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Box sx={{ mb: 2 }}>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
+                                <Typography sx={{ fontSize: "0.88rem", fontWeight: 600 }}>Used</Typography>
+                                <Typography sx={{ fontSize: "0.85rem", color: "#64748B" }}>
+                                    {bytesLabel(storage.bytes)}{storage.limit_mb ? ` / ${storage.limit_mb} MB` : " (no limit set)"}
+                                </Typography>
+                            </Box>
+                            <LinearProgress variant="determinate"
+                                value={storage.limit_mb ? Math.min(100, (storage.bytes / 1048576 / storage.limit_mb) * 100) : 0}
+                                color={storage.limit_mb && storage.bytes / 1048576 >= storage.limit_mb ? "error" : (storage.limit_mb && storage.bytes / 1048576 >= storage.limit_mb * 0.9 ? "warning" : "primary")}
+                                sx={{ height: 8, borderRadius: 4, bgcolor: "#F1F5F9" }} />
+                        </Box>
+                        <Typography sx={{ fontSize: "0.85rem", color: "#64748B" }}>
+                            {storage.files} files - last 30 days: {storage.last_30_days.files} files ({bytesLabel(storage.last_30_days.bytes)})
+                        </Typography>
+                        <Typography sx={{ fontSize: "0.85rem", color: "#64748B", mt: 0.5 }}>
+                            Estimated S3 cost: {usd(storage.cost_usd)} per month
+                        </Typography>
+                        <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap", mt: 1.5 }}>
+                            {storage.by_kind.map((k) => (
+                                <Chip key={k.kind} size="small" variant="outlined" label={`${k.kind}: ${k.files} (${bytesLabel(k.bytes)})`} />
+                            ))}
+                        </Box>
+                        {storage.files === 0 && (
+                            <Typography sx={{ color: "#94A3B8", fontSize: "0.8rem", mt: 1 }}>
+                                Nothing tracked yet. New uploads are counted automatically; older files need the backfill.
+                            </Typography>
+                        )}
+                        <Typography sx={{ fontSize: "0.75rem", color: "#94A3B8", mt: 1 }}>
+                            Set a storage limit in Schools - Manage. See every file under School records - Files.
+                        </Typography>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Typography sx={{ fontSize: "0.78rem", fontWeight: 700, color: "#475569", mb: 0.5 }}>LARGEST FILES</Typography>
+                        {storage.biggest.length === 0 && <Typography sx={{ color: "#94A3B8", fontSize: "0.85rem" }}>-</Typography>}
+                        {storage.biggest.map((f) => (
+                            <Box key={f.id} sx={{ display: "flex", justifyContent: "space-between", gap: 1, py: 0.75, borderBottom: "1px solid #F1F5F9" }}>
+                                <Box sx={{ minWidth: 0 }}>
+                                    <Typography sx={{ fontSize: "0.84rem", overflowWrap: "anywhere" }}>{f.filename || "-"}</Typography>
+                                    <Typography sx={{ fontSize: "0.72rem", color: "#94A3B8" }}>
+                                        {f.kind}{f.uploaded_by ? ` - ${f.uploaded_by}` : ""} - {timeAgo(f.created_at)}
+                                    </Typography>
+                                </Box>
+                                <Typography sx={{ fontSize: "0.84rem", fontWeight: 600, whiteSpace: "nowrap" }}>{bytesLabel(f.bytes)}</Typography>
+                            </Box>
+                        ))}
+                    </Grid>
+                </Grid>
+            </Section>
 
             <Section title="Contact">
                 <Grid container spacing={2}>

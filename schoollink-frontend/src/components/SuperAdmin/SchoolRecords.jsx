@@ -7,7 +7,7 @@ import {
 import SearchIcon from "@mui/icons-material/SearchOutlined";
 
 import { getSchoolRecords } from "../../services/platformAdminService";
-import { fmtDate, timeAgo } from "../../utils/platformUi";
+import { bytesLabel, fmtDate, timeAgo } from "../../utils/platformUi";
 
 const active = (v) => <Chip size="small" color={v ? "success" : "default"} variant="outlined" label={v ? "Active" : "Inactive"} />;
 const yesNo = (v) => <Chip size="small" color={v ? "success" : "default"} variant="outlined" label={v ? "Yes" : "No"} />;
@@ -107,6 +107,16 @@ const tabs = {
                 )
             },
             { label: "Total", render: (r) => r.total }
+        ]
+    },
+
+        files: {
+        label: "Files", search: "Search file name, uploader or type (image, audio, document)",
+        columns: [
+            { label: "File", render: (r) => r.filename || "-", sub: (r) => r.uploaded_by ? `by ${r.uploaded_by}` : (r.source === "backfill" ? "existing file" : "") },
+            { label: "Type", render: (r) => r.kind },
+            { label: "Size", render: (r) => bytesLabel(r.bytes) },
+            { label: "Uploaded", render: (r) => timeAgo(r.created_at) }
         ]
     },
 

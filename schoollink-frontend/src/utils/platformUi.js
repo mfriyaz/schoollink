@@ -57,3 +57,23 @@ export function monthLabel(ym) {
     return new Date(Number(y), Number(m) - 1, 1).toLocaleDateString(undefined, { month: "short" });
 
 }
+
+export function bytesLabel(bytes) {
+
+    const n = Number(bytes || 0);
+
+    if (n < 1024) return `${n} B`;
+    if (n < 1048576) return `${(n / 1024).toFixed(0)} KB`;
+    if (n < 1073741824) return `${(n / 1048576).toFixed(1)} MB`;
+
+    return `${(n / 1073741824).toFixed(2)} GB`;
+
+}
+
+export function usd(amount) {
+
+    const n = Number(amount || 0);
+
+    return n > 0 && n < 0.01 ? "< $0.01" : `$${n.toFixed(2)}`;
+
+}

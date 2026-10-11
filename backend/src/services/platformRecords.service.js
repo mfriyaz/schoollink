@@ -127,6 +127,20 @@ const types = {
         order: `ORDER BY a.created_at DESC`
     },
 
+    files: {
+        from: `
+            FROM uploaded_files f
+            LEFT JOIN users u ON u.id = f.user_id
+            WHERE f.school_id = $1
+        `,
+        search: `AND (COALESCE(f.filename,'') ILIKE $2 OR COALESCE(u.full_name,'') ILIKE $2 OR f.kind ILIKE $2)`,
+        select: `
+            SELECT f.id, f.filename, f.kind, f.bytes::float8 AS bytes, f.source,
+                   u.full_name AS uploaded_by, f.created_at
+        `,
+        order: `ORDER BY f.bytes DESC`
+    },
+
     activity: {
         from: `
             FROM audit_logs al

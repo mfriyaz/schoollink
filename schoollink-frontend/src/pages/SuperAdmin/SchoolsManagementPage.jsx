@@ -69,6 +69,7 @@ function SchoolCard({ school, onSaved }) {
     const [maxStudents, setMaxStudents] = useState(school.max_students ?? "");
 
     const [maxTeachers, setMaxTeachers] = useState(school.max_teachers ?? "");
+    const [maxStorage, setMaxStorage] = useState(school.max_storage_mb ?? "");
 
     const [timezone, setTimezone] = useState(school.timezone || "Asia/Singapore");
 
@@ -97,6 +98,7 @@ function SchoolCard({ school, onSaved }) {
                 max_students: maxStudents === "" ? null : Number(maxStudents),
 
                 max_teachers: maxTeachers === "" ? null : Number(maxTeachers),
+                max_storage_mb: maxStorage === "" ? null : Number(maxStorage),
 
                 timezone
 
@@ -311,6 +313,18 @@ function SchoolCard({ school, onSaved }) {
                                 size="small"
                             />
 
+                        </Grid>
+                        <Grid size={{ xs: 12, sm: 4 }}>
+                            <TextField
+                                label="Max Storage (MB)"
+                                type="number"
+                                placeholder="Unlimited"
+                                value={maxStorage}
+                                onChange={(e) => setMaxStorage(e.target.value)}
+                                helperText="Photos, voice notes and files. 1024 MB = 1 GB"
+                                fullWidth
+                                size="small"
+                            />
                         </Grid>
 
                         <Grid size={{ xs: 12 }}>

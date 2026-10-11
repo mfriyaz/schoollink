@@ -145,6 +145,7 @@ async function updateSchoolGovernance(id, data) {
             max_students = $5,
             max_teachers = $6,
             timezone = $7,
+            max_storage_mb = CASE WHEN $9::boolean THEN $10::integer ELSE max_storage_mb END,
             updated_at = CURRENT_TIMESTAMP
         WHERE id = $8
         RETURNING *;
@@ -158,7 +159,9 @@ async function updateSchoolGovernance(id, data) {
         data.max_students,
         data.max_teachers,
         data.timezone,
-        id
+        id,
+        Object.prototype.hasOwnProperty.call(data, "max_storage_mb"),
+        data.max_storage_mb === "" ? null : (data.max_storage_mb ?? null)
     ];
 
     const result = await pool.query(query, values);

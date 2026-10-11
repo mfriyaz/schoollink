@@ -22,6 +22,7 @@ const SCHOOL_USAGE_SQL = `
         s.max_students,
         s.max_teachers,
         s.max_classes,
+        s.max_storage_mb,
         s.internal_notes,
         s.created_at,
         (SELECT COUNT(*)::int FROM students st
@@ -30,6 +31,10 @@ const SCHOOL_USAGE_SQL = `
             WHERE t.school_id = s.id AND t.is_active) AS teachers,
         (SELECT COUNT(*)::int FROM classes c
             WHERE c.school_id = s.id AND c.is_active) AS classes,
+        (SELECT COALESCE(SUM(f.bytes), 0)::float8 FROM uploaded_files f
+            WHERE f.school_id = s.id) AS storage_bytes,
+        (SELECT COUNT(*)::int FROM uploaded_files f
+            WHERE f.school_id = s.id) AS files,
         (SELECT COUNT(DISTINCT ps.parent_user_id)::int
             FROM parent_students ps
             JOIN students st ON st.id = ps.student_id
@@ -40,6 +45,9 @@ const SCHOOL_USAGE_SQL = `
     FROM schools s
     WHERE s.is_active = true
 `;
+
+// Approximate S3 Standard storage price (USD per GB-month)
+const S3_USD_PER_GB_MONTH = 0.025;
 
 function todayStr() {
 
@@ -85,7 +93,7 @@ async function getOverview() {
     const nearLimit = [];
     const inactive = [];
 
-    let students = 0, teachers = 0, parents = 0, classes = 0;
+    let students = 0, teachers = 0, parents = 0, classes = 0, storageBytes = 0;
 
     const thirtyDaysAgo = Date.now() - 30 * 86400000;
 
@@ -98,6 +106,7 @@ async function getOverview() {
         teachers += s.teachers;
         parents += s.parents;
         classes += s.classes;
+        storageBytes += s.storage_bytes;
 
         if (s.subscription_expiry) {
 
@@ -118,7 +127,8 @@ async function getOverview() {
         for (const [key, label, used, limit] of [
             ["students", "Students", s.students, s.max_students],
             ["teachers", "Teachers", s.teachers, s.max_teachers],
-            ["classes", "Classes", s.classes, s.max_classes]
+            ["classes", "Classes", s.classes, s.max_classes],
+            ["storage", "Storage (MB)", Math.round(s.storage_bytes / 1048576), s.max_storage_mb]
         ]) {
 
             const pct = usagePercent(used, limit);
@@ -193,6 +203,25 @@ async function getOverview() {
         LIMIT 15
     `);
 
+    const topStorage = schools
+        .filter((s) => s.storage_bytes > 0)
+        .sort((a, b) => b.storage_bytes - a.storage_bytes)
+        .slice(0, 5)
+        .map((s) => ({
+            id: s.id,
+            school_name: s.school_name,
+            storage_bytes: s.storage_bytes,
+            files: s.files,
+            share: storageBytes ? Math.round((s.storage_bytes / storageBytes) * 100) : 0,
+            percent_of_limit: usagePercent(s.storage_bytes / 1048576, s.max_storage_mb)
+        }));
+
+    const uploads30 = await pool.query(`
+        SELECT COUNT(*)::int AS files, COALESCE(SUM(bytes), 0)::float8 AS bytes
+        FROM uploaded_files
+        WHERE created_at >= NOW() - interval '30 days'
+    `).catch(() => ({ rows: [{ files: 0, bytes: 0 }] }));
+
     expiringSoon.sort((a, b) => a.days_left - b.days_left);
     expiredByDate.sort((a, b) => b.days_overdue - a.days_overdue);
 
@@ -202,7 +231,13 @@ async function getOverview() {
             students,
             teachers,
             parents,
-            classes
+            classes,
+            storage_bytes: storageBytes,
+            storage_cost_usd: Number(((storageBytes / 1073741824) * S3_USD_PER_GB_MONTH).toFixed(2))
+        },
+        storage: {
+            top: topStorage,
+            uploads_30d: uploads30.rows[0]
         },
         by_status: byStatus,
         by_plan: byPlan,
@@ -282,6 +317,34 @@ async function getSchoolDetail(id) {
         [id]
     );
 
+    const storageByKind = await pool.query(
+        `
+        SELECT kind, COUNT(*)::int AS files, COALESCE(SUM(bytes), 0)::float8 AS bytes
+        FROM uploaded_files WHERE school_id = $1 GROUP BY kind ORDER BY 3 DESC
+        `,
+        [id]
+    );
+
+    const recentStorage = await pool.query(
+        `
+        SELECT COUNT(*)::int AS files, COALESCE(SUM(bytes), 0)::float8 AS bytes
+        FROM uploaded_files
+        WHERE school_id = $1 AND created_at >= NOW() - interval '30 days'
+        `,
+        [id]
+    );
+
+    const biggestFiles = await pool.query(
+        `
+        SELECT f.id, f.filename, f.kind, f.bytes::float8 AS bytes, f.created_at,
+               u.full_name AS uploaded_by
+        FROM uploaded_files f LEFT JOIN users u ON u.id = f.user_id
+        WHERE f.school_id = $1
+        ORDER BY f.bytes DESC LIMIT 5
+        `,
+        [id]
+    );
+
     const recentUsage = await pool.query(
         `
         SELECT COUNT(*)::int AS actions_30d
@@ -296,7 +359,16 @@ async function getSchoolDetail(id) {
         admins: admins.rows,
         payments: payments.rows,
         activity: activity.rows,
-        actions_30d: recentUsage.rows[0].actions_30d
+        actions_30d: recentUsage.rows[0].actions_30d,
+        storage: {
+            bytes: school.storage_bytes,
+            files: school.files,
+            limit_mb: school.max_storage_mb,
+            cost_usd: Number(((school.storage_bytes / 1073741824) * S3_USD_PER_GB_MONTH).toFixed(4)),
+            by_kind: storageByKind.rows,
+            last_30_days: recentStorage.rows[0],
+            biggest: biggestFiles.rows
+        }
     };
 
 }

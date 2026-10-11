@@ -3,6 +3,7 @@ const sharp = require("sharp");
 const response = require("../utils/response");
 
 const fileStorageService = require("../services/fileStorage.service");
+const fileUsageService = require("../services/fileUsage.service");
 
 const IMAGE_MIME_TYPES = [
     "image/jpeg",
@@ -64,7 +65,7 @@ async function uploadAttachment(req, res) {
 
         }
 
-        const { url } = await fileStorageService.saveFile(
+        const { url, filename } = await fileStorageService.saveFile(
 
             buffer,
 
@@ -75,6 +76,16 @@ async function uploadAttachment(req, res) {
             extensionOverride
 
         );
+
+        // Remember who/which school uploaded it (for storage monitoring)
+        await fileUsageService.recordUpload({
+            schoolId: req.user.school_id,
+            userId: req.user.id,
+            url,
+            filename,
+            mimetype,
+            bytes: finalSize
+        });
 
         return response.success(
             res,
