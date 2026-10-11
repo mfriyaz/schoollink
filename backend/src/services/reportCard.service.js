@@ -25,6 +25,7 @@ async function getStudentReportCard(studentId, examId) {
 
             sm.marks_obtained,
             es.max_marks,
+            es.pass_marks,
 
             sm.percentage,
             sm.grade_name,
@@ -91,6 +92,41 @@ async function parentOwnsStudent(userId, studentId) {
     );
 
     return result.rows.length > 0;
+
+}
+
+/**
+ * Extra details printed on the PDF: school letterhead, academic year, grading scale
+ */
+async function getPdfExtras(schoolId, examId) {
+
+    const school = await db.query(
+        `SELECT school_name, address, city, state, country, postal_code,
+                phone, email, website, logo_url, theme, timezone
+         FROM schools WHERE id = $1`,
+        [schoolId]
+    ).catch(() => ({ rows: [] }));
+
+    const year = await db.query(
+        `SELECT ay.year_name
+         FROM exams e
+         JOIN academic_years ay ON ay.id = e.academic_year_id
+         WHERE e.id = $1`,
+        [examId]
+    ).catch(() => ({ rows: [] }));
+
+    const grades = await db.query(
+        `SELECT grade_name, minimum_percentage, maximum_percentage
+         FROM grades WHERE school_id = $1
+         ORDER BY minimum_percentage DESC`,
+        [schoolId]
+    ).catch(() => ({ rows: [] }));
+
+    return {
+        school: school.rows[0] || {},
+        academic_year: year.rows[0] ? year.rows[0].year_name : "",
+        grades: grades.rows
+    };
 
 }
 
@@ -180,6 +216,8 @@ module.exports = {
     getStudentReportCard,
 
     getRemarks,
+
+    getPdfExtras,
 
     listRemarksForStudent,
 

@@ -64,7 +64,10 @@ async function downloadReportCard(req, res) {
 
         const remarksRow = await reportCardService.getRemarks(studentId, examId);
 
+        const extras = await reportCardService.getPdfExtras(req.user.school_id, examId);
+
         const reportData = {
+            ...extras,
 
             school_name: report[0].school_name,
 
