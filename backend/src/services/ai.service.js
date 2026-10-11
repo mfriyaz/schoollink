@@ -1,11 +1,13 @@
 const pool = require("../config/database");
 
 /**
- * AI writing assistant (Anthropic API).
- * Key and model come from the server environment, never from the browser:
- *   ANTHROPIC_API_KEY   required
- *   AI_MODEL            optional, default claude-haiku-5-5
- *   ANTHROPIC_BASE_URL  optional (testing)
+ * AI writing assistant. Works with Google Gemini or Anthropic Claude.
+ * Keys and model come from the server environment, never from the browser:
+ *   AI_PROVIDER         "gemini" or "claude" (optional: picked from whichever key is set)
+ *   GEMINI_API_KEY      key for Gemini
+ *   ANTHROPIC_API_KEY   key for Claude
+ *   AI_MODEL            optional (default gemini-2.5-flash / claude-haiku-5-5)
+ *   GEMINI_BASE_URL, ANTHROPIC_BASE_URL   optional (testing)
  */
 
 const MAX_INPUT_CHARS = 4000;
@@ -102,8 +104,17 @@ async function usedThisMonth(schoolId) {
     }
 }
 
+function provider() {
+    const p = (process.env.AI_PROVIDER || "").toLowerCase();
+    if (p === "gemini" || p === "claude") return p;
+    if (process.env.GEMINI_API_KEY && !process.env.ANTHROPIC_API_KEY) return "gemini";
+    return "claude";
+}
+
 function configured() {
-    return !!process.env.ANTHROPIC_API_KEY;
+    return provider() === "gemini"
+        ? !!process.env.GEMINI_API_KEY
+        : !!process.env.ANTHROPIC_API_KEY;
 }
 
 async function getStatus(schoolId) {
@@ -120,7 +131,7 @@ async function getStatus(schoolId) {
     };
 }
 
-async function callModel(userContent) {
+async function callClaude(userContent) {
 
     const base = (process.env.ANTHROPIC_BASE_URL || "https://api.anthropic.com").replace(/\/$/, "");
     const model = process.env.AI_MODEL || "claude-haiku-5-5";
@@ -175,6 +186,68 @@ async function callModel(userContent) {
         input_tokens: data.usage?.input_tokens || 0,
         output_tokens: data.usage?.output_tokens || 0,
     };
+}
+
+async function callGemini(userContent) {
+
+    const base = (process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com").replace(/\/$/, "");
+    const model = process.env.AI_MODEL || "gemini-2.5-flash";
+
+    const generationConfig = { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.4 };
+    // Gemini 2.5 Flash "thinks" by default, which wastes tokens on a simple rewrite
+    if (/2\.5-flash/.test(model)) generationConfig.thinkingConfig = { thinkingBudget: 0 };
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30000);
+
+    let res;
+    try {
+        res = await fetch(`${base}/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+            method: "POST",
+            signal: controller.signal,
+            headers: {
+                "content-type": "application/json",
+                "x-goog-api-key": process.env.GEMINI_API_KEY,
+            },
+            body: JSON.stringify({
+                systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+                contents: [{ role: "user", parts: [{ text: userContent }] }],
+                generationConfig,
+            }),
+        });
+    } catch (e) {
+        throw new AiError("The AI service did not respond. Please try again.", 502);
+    } finally {
+        clearTimeout(timer);
+    }
+
+    if (!res.ok) {
+        let detail = "";
+        try { detail = await res.text(); } catch (e) { /* ignore */ }
+        console.error("AI API error (gemini)", res.status, detail.slice(0, 300));
+        if (res.status === 429) throw new AiError("The AI service is busy. Please try again in a minute.", 503);
+        throw new AiError("The AI service is not available right now.", 502);
+    }
+
+    const data = await res.json();
+    const cand = data.candidates?.[0];
+    const text = (cand?.content?.parts || [])
+        .map((p) => p.text || "")
+        .join("")
+        .trim();
+
+    if (!text) throw new AiError("The AI could not write this one. Please try again or reword it.", 502);
+
+    return {
+        text,
+        model: data.modelVersion || model,
+        input_tokens: data.usageMetadata?.promptTokenCount || 0,
+        output_tokens: data.usageMetadata?.candidatesTokenCount || 0,
+    };
+}
+
+function callModel(userContent) {
+    return provider() === "gemini" ? callGemini(userContent) : callClaude(userContent);
 }
 
 async function run(user, feature, instruction, text) {
