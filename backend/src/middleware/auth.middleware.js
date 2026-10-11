@@ -1,9 +1,11 @@
 const jwt = require("jsonwebtoken");
 
+const { isSchoolBlocked, BLOCKED_MESSAGE } = require("../utils/schoolAccess");
+
 /**
  * JWT Authentication Middleware
  */
-function authenticate(req, res, next) {
+async function authenticate(req, res, next) {
 
     const authHeader = req.headers.authorization;
 
@@ -32,8 +34,6 @@ function authenticate(req, res, next) {
 
         req.user = decoded;
 
-        next();
-
     } catch (err) {
 
         return res.status(401).json({
@@ -42,6 +42,21 @@ function authenticate(req, res, next) {
         });
 
     }
+
+    // Suspended / expired schools are locked out immediately,
+    // even if someone is still holding a valid login token.
+    // (Super Admin has no school and is never blocked.)
+    if (req.user.role !== "Super Admin" && await isSchoolBlocked(req.user.school_id)) {
+
+        return res.status(403).json({
+            success: false,
+            code: "SCHOOL_SUSPENDED",
+            message: BLOCKED_MESSAGE
+        });
+
+    }
+
+    next();
 
 }
 

@@ -1,7 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+const pool = require("../config/database");
 const userModel = require("../models/user.model");
+const { BLOCKED_MESSAGE } = require("../utils/schoolAccess");
 
 async function login(identifier, password, remember) {
 
@@ -28,6 +30,26 @@ async function login(identifier, password, remember) {
 
     if (!passwordMatch) {
         throw new Error("Invalid email/username or password");
+    }
+
+    // Suspended / expired schools cannot log in (Super Admin
+    // has no school and is never blocked)
+    if (
+        user.role_name !== "Super Admin" &&
+        ["SUSPENDED", "EXPIRED"].includes(user.school_status)
+    ) {
+        throw new Error(BLOCKED_MESSAGE);
+    }
+
+    // Remember when they last logged in (used by the Super
+    // Admin dashboard to spot inactive schools)
+    try {
+        await pool.query(
+            "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1",
+            [user.id]
+        );
+    } catch (err) {
+        console.error("last_login update failed:", err.message);
     }
 
     // "Remember me" keeps someone logged in for a month instead

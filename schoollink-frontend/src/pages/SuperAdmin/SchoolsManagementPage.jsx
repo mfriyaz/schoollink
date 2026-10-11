@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
     Alert,
@@ -48,6 +49,8 @@ const timezoneOptions = [
 ];
 
 function SchoolCard({ school, onSaved }) {
+
+    const navigate = useNavigate();
 
     const [editing, setEditing] = useState(false);
 
@@ -189,6 +192,9 @@ function SchoolCard({ school, onSaved }) {
 
                     <Chip size="small" color={statusColor} label={school.status || "ACTIVE"} />
 
+                    <Button size="small" onClick={() => navigate(`/super-admin/schools/${school.id}`)}>
+                        Details
+                    </Button>
                     <Button
                         size="small"
                         startIcon={<EditIcon fontSize="small" />}

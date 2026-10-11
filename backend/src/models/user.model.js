@@ -52,7 +52,8 @@ async function findUserByEmailOrUsername(identifier, db = pool) {
             u.is_active,
             r.role_name,
             s.school_name,
-            s.timezone AS school_timezone
+            s.timezone AS school_timezone,
+            COALESCE(s.status, 'ACTIVE') AS school_status
         FROM users u
         INNER JOIN roles r
             ON u.role_id = r.id

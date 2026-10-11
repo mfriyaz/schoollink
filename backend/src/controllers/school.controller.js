@@ -1,4 +1,6 @@
 const schoolService = require("../services/school.service");
+const platformAdminService = require("../services/platformAdmin.service");
+const { clearSchoolAccessCache } = require("../utils/schoolAccess");
 
 /**
  * Update School Governance
@@ -18,6 +20,15 @@ async function updateSchoolGovernance(req, res) {
                 message: "School not found"
             });
         }
+
+        clearSchoolAccessCache();
+
+        await platformAdminService.logActivity(
+            req,
+            { id: school.id, school_name: school.school_name },
+            "governance",
+            `Updated plan/status/limits for ${school.school_name} (plan ${school.subscription_plan}, status ${school.status}, expiry ${school.subscription_expiry ? String(school.subscription_expiry).slice(0, 10) : "none"})`
+        );
 
         return res.json({
             success: true,

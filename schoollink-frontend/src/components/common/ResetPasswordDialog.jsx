@@ -17,7 +17,7 @@ import { resetUserPassword } from "../../services/passwordResetService";
  * Admin-side password reset. Step 1: confirm. Step 2: show the
  * new temporary password once so the admin can pass it on.
  */
-export default function ResetPasswordDialog({ open, userId, name, onClose }) {
+export default function ResetPasswordDialog({ open, userId, name, onClose, onReset }) {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -40,7 +40,7 @@ export default function ResetPasswordDialog({ open, userId, name, onClose }) {
 
         try {
 
-            const res = await resetUserPassword(userId);
+            const res = onReset ? await onReset() : await resetUserPassword(userId);
 
             setPassword(res.data.temporary_password);
 

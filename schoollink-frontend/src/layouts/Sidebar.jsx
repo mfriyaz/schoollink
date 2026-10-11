@@ -17,6 +17,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import DashboardIcon from "@mui/icons-material/SpaceDashboardOutlined";
 import GroupsIcon from "@mui/icons-material/GroupsOutlined";
+import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboardOutlined";
+import PaymentsIcon from "@mui/icons-material/PaymentsOutlined";
 import CampaignIcon from "@mui/icons-material/CampaignOutlined";
 import AddCircleIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import HomeIcon from "@mui/icons-material/HomeOutlined";
@@ -205,9 +207,22 @@ const parentMenus = [
 const superAdminMenus = [
 
     {
+        title: "Dashboard",
+        path: "/super-admin/dashboard",
+        icon: <SpaceDashboardIcon />
+    },
+
+
+    {
         title: "Schools",
         path: "/super-admin/schools",
         icon: <GroupsIcon />
+    },
+
+    {
+        title: "Billing",
+        path: "/super-admin/billing",
+        icon: <PaymentsIcon />
     },
 
     {

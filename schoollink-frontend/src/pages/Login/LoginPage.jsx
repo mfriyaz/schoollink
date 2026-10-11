@@ -81,7 +81,15 @@ function LoginPage() {
 
     const [loading, setLoading] = useState(false);
 
-    const [error, setError] = useState("");
+    const [error, setError] = useState(() => {
+        try {
+            const notice = sessionStorage.getItem("login_notice");
+            if (notice) sessionStorage.removeItem("login_notice");
+            return notice || "";
+        } catch {
+            return "";
+        }
+    });
 
     const handleLogin = async () => {
 

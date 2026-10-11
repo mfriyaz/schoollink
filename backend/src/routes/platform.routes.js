@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const platformController = require("../controllers/platform.controller");
+const admin = require("../controllers/platformAdmin.controller");
 
 const {
     authenticate
@@ -21,5 +22,17 @@ router.post(
     authorizeRoles("Super Admin"),
     platformController.onboardSchool
 );
+
+const sa = [authenticate, authorizeRoles("Super Admin")];
+
+router.get("/overview", ...sa, admin.overview);
+router.get("/schools", ...sa, admin.listSchools);
+router.get("/schools/:id", ...sa, admin.schoolDetail);
+router.post("/schools/:id/status", ...sa, admin.setStatus);
+router.post("/schools/:id/payments", ...sa, admin.addPayment);
+router.patch("/schools/:id/notes", ...sa, admin.updateNotes);
+router.delete("/payments/:paymentId", ...sa, admin.deletePayment);
+router.get("/payments", ...sa, admin.listPayments);
+router.post("/school-admins/:userId/reset-password", ...sa, admin.resetAdminPassword);
 
 module.exports = router;

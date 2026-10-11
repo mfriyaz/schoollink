@@ -29,4 +29,30 @@ api.interceptors.request.use((config) => {
 
 });
 
+// A suspended / expired school is locked out by the server.
+// Sign the user out and show why on the login page.
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+
+        if (error.response?.data?.code === "SCHOOL_SUSPENDED") {
+
+            try {
+                sessionStorage.setItem("login_notice", error.response.data.message);
+            } catch { /* ignore */ }
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            if (window.location.pathname !== "/login") {
+                window.location.href = "/login";
+            }
+
+        }
+
+        return Promise.reject(error);
+
+    }
+);
+
 export default api;

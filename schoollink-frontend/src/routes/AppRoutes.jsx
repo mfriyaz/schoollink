@@ -29,6 +29,9 @@ import EnterMarksPage from "../pages/Teacher/EnterMarksPage";
 
 import SchoolsManagementPage from "../pages/SuperAdmin/SchoolsManagementPage";
 import CreateSchoolPage from "../pages/SuperAdmin/CreateSchoolPage";
+import PlatformDashboardPage from "../pages/SuperAdmin/PlatformDashboardPage";
+import SchoolDetailPage from "../pages/SuperAdmin/SchoolDetailPage";
+import BillingPage from "../pages/SuperAdmin/BillingPage";
 
 import TeachersPage from "../pages/Admin/TeachersPage";
 import ClassesPage from "../pages/Admin/ClassesPage";
@@ -49,7 +52,7 @@ function RoleHome() {
 
     if (user && user.role === "Super Admin") {
 
-        return <Navigate to="/super-admin/schools" replace />;
+        return <Navigate to="/super-admin/dashboard" replace />;
 
     }
 
@@ -255,6 +258,33 @@ export default function AppRoutes() {
 
                         </ProtectedRoute>
 
+                    }
+                />
+
+                <Route
+                    path="/super-admin/dashboard"
+                    element={
+                        <ProtectedRoute allowedRoles={["Super Admin"]}>
+                            <PlatformDashboardPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/super-admin/schools/:id"
+                    element={
+                        <ProtectedRoute allowedRoles={["Super Admin"]}>
+                            <SchoolDetailPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/super-admin/billing"
+                    element={
+                        <ProtectedRoute allowedRoles={["Super Admin"]}>
+                            <BillingPage />
+                        </ProtectedRoute>
                     }
                 />
 
