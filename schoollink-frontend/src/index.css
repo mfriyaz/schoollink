@@ -6,23 +6,23 @@
     --sl-primary: #111827;
     --sl-primary-dark: #000000;
     --sl-primary-light: #4B5563;
-    --sl-soft: #FFEBA3;
-    --sl-soft2: #EAD98F;
+    --sl-soft: #FFF0B0;
+    --sl-soft2: #F0E1A0;
     --sl-ink: #111827;
     --sl-accent: #FFC400;
     --sl-accent-dark: #F5A800;
-    --sl-page: #FFF8DC;
-    --sl-page2: #FFF8DC;
-    --sl-border: #E9DCA6;
+    --sl-page: #FFFCEB;
+    --sl-page2: #FFFCEB;
+    --sl-border: #F2E8B8;
     --sl-side-bg: #0B0B0C;
     --sl-side-active: #FFC400;
     --sl-on-active: #111827;
-    --sl-side-text: #D4D4D8;
+    --sl-side-text: #F4F4F5;
     --sl-side-muted: rgba(212,212,216,0.55);
     --sl-glow: rgba(0,0,0,0);
     --sl-nav-active: #FFC400;
     --sl-on-nav-active: #111827;
-    --sl-login-bg: #FFF8DC;
+    --sl-login-bg: #FFFCEB;
     --sl-login-panel: #FFC400;
 }
 
@@ -42,7 +42,7 @@ body,
 }
 
 body {
-    background: var(--sl-page, #FFF8DC);
+    background: var(--sl-page, #FFFCEB);
     font-family: Nunito, Inter, "Segoe UI", Roboto, Arial, sans-serif;
 }
 

@@ -19,16 +19,16 @@ export const THEMES = {
         name: "Sunshine",
         tagline: "Yellow & Black",
         primary: "#111827", primaryDark: "#000000", primaryLight: "#4B5563",
-        soft: "#FFEBA3", soft2: "#EAD98F", ink: "#111827",
+        soft: "#FFF0B0", soft2: "#F0E1A0", ink: "#111827",
         accent: "#FFC400", accentDark: "#F5B300",
-        pageBg: "#FFF8DC", border: "#E9DCA6", page2: "#FFF8DC",
+        pageBg: "#FFFCEB", border: "#F2E8B8", page2: "#FFFCEB",
         btnBg: "#FFC400", btnHover: "#FFB300", btnText: "#111827", btnBorder: "1.5px solid #111827",
         btnShadowCss: "0 3px 0 #111827", btnShadowHoverCss: "0 4px 0 #111827", btnShadow: "rgba(17,24,39,0.30)",
         cardShadow: "0 1px 0 rgba(17,24,39,0.08), 0 2px 8px rgba(17,24,39,0.06)", cardShadowHover: "0 2px 0 rgba(17,24,39,0.12), 0 8px 18px rgba(17,24,39,0.12)",
         tabIndicator: "#FFC400", metaColor: "#111827",
-        sideBg: "#0B0B0C", sideActive: "#FFC400", onActive: "#111827", sideText: "#E4E4E7", sideMuted: "rgba(228,228,231,0.55)", glow: "rgba(0,0,0,0)",
+        sideBg: "#0B0B0C", sideActive: "#FFC400", onActive: "#111827", sideText: "#F4F4F5", sideMuted: "rgba(244,244,245,0.68)", glow: "rgba(0,0,0,0)",
         navActive: "#FFC400", onNavActive: "#111827",
-        loginBg: "#FFF8DC", loginPanel: "#FFC400"
+        loginBg: "#FFFCEB", loginPanel: "#FFC400"
     },
 
     // 2) Sky Blue & Black
@@ -55,16 +55,16 @@ export const THEMES = {
         name: "Maroon",
         tagline: "Dark Maroon & White",
         primary: "#6D0F2B", primaryDark: "#4A0A1D", primaryLight: "#A3304F",
-        soft: "#F7E1E6", soft2: "#E8B9C4", ink: "#2B0A14",
+        soft: "#FCE8ED", soft2: "#EFC3CE", ink: "#2B0A14",
         accent: "#FFFFFF", accentDark: "#F3D9DF",
-        pageBg: "#FCF8F9", border: "#EBD3D9", page2: "#FCF8F9",
+        pageBg: "#FFF8FA", border: "#F2DCE2", page2: "#FFF8FA",
         btnBg: "#6D0F2B", btnHover: "#4A0A1D", btnText: "#FFFFFF", btnBorder: "none",
         btnShadowCss: "0 3px 0 #3A0817", btnShadowHoverCss: "0 4px 0 #3A0817", btnShadow: "rgba(109,15,43,0.30)",
         cardShadow: "0 1px 0 rgba(109,15,43,0.08), 0 2px 8px rgba(109,15,43,0.06)", cardShadowHover: "0 2px 0 rgba(109,15,43,0.12), 0 8px 18px rgba(109,15,43,0.14)",
-        tabIndicator: "#6D0F2B", metaColor: "#5B0E24",
-        sideBg: "#5B0E24", sideActive: "#FFFFFF", onActive: "#6D0F2B", sideText: "#F3D9DF", sideMuted: "rgba(243,217,223,0.6)", glow: "rgba(0,0,0,0)",
+        tabIndicator: "#6D0F2B", metaColor: "#650F28",
+        sideBg: "#650F28", sideActive: "#FFFFFF", onActive: "#6D0F2B", sideText: "#FFF1F4", sideMuted: "rgba(255,241,244,0.72)", glow: "rgba(0,0,0,0)",
         navActive: "#6D0F2B", onNavActive: "#FFFFFF",
-        loginBg: "#FCF8F9", loginPanel: "#F7E1E6"
+        loginBg: "#FFF8FA", loginPanel: "#FCE8ED"
     },
 
     // Used only by the Super Admin console (not offered to schools)
