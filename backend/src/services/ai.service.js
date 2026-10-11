@@ -1,4 +1,5 @@
 const pool = require("../config/database");
+const reportCardService = require("./reportCard.service");
 
 /**
  * AI writing assistant. Works with Google Gemini or Anthropic Claude.
@@ -331,6 +332,57 @@ async function translate(user, lang, text) {
     );
 }
 
+/**
+ * Suggest report card remarks from a student's marks.
+ * Marks are read on the server (the browser only sends ids), and only the
+ * first name goes to the AI.
+ */
+async function reportRemarks(user, studentId, examId, language) {
+
+    const sid = Number(studentId);
+    const eid = Number(examId);
+
+    if (!Number.isInteger(sid) || !Number.isInteger(eid)) throw new AiError("Choose a student and an exam first.");
+
+    const rows = await reportCardService.getStudentReportCard(sid, eid);
+
+    if (!rows.length) throw new AiError("No marks found for this student and exam.", 404);
+    if (rows[0].school_id !== user.school_id) throw new AiError("This student does not belong to your school.", 403);
+
+    let got = 0;
+    let max = 0;
+    rows.forEach((r) => { got += Number(r.marks_obtained); max += Number(r.max_marks); });
+    const overall = max ? Math.round((got / max) * 1000) / 10 : 0;
+
+    const lines = rows.map((r) =>
+        `- ${r.subject_name}: ${r.marks_obtained}/${r.max_marks} (${Number(r.percentage)}%), grade ${r.grade_name}, ${r.result}`
+    );
+
+    const data = [
+        `Student first name: ${rows[0].first_name}`,
+        `Class: ${rows[0].class_name} ${rows[0].section_name}`,
+        `Exam: ${rows[0].exam_name}`,
+        `Overall: ${got}/${max} (${overall}%)`,
+        "Subjects:",
+        ...lines
+    ].join("\n");
+
+    let instruction =
+        "Write a report card remark from the class teacher about this student's exam result. " +
+        "Use 2 to 3 sentences and fewer than 60 words. Use the student's first name. " +
+        "Mention one strength and, if the marks show it, one area to improve, in a warm, encouraging and honest tone. " +
+        "If a subject is failed, say gently that extra support is needed there. " +
+        "Use only the marks given: do not mention behaviour, attendance, effort or personality.";
+
+    if (language) {
+        const name = LANGUAGES[language];
+        if (!name) throw new AiError("Unsupported language.");
+        instruction += ` Write the remark in ${name}.`;
+    }
+
+    return run(user, "report_remarks", instruction, data);
+}
+
 // ---------- Super Admin helpers ----------
 async function getSchoolUsage(schoolId) {
     const ai = await getSchoolAi(schoolId);
@@ -385,4 +437,4 @@ async function updateSchoolAi(schoolId, { enabled, limit }) {
     return getSchoolUsage(schoolId);
 }
 
-module.exports = { AiError, ACTIONS, LANGUAGES, getStatus, improve, translate, getSchoolUsage, updateSchoolAi };
+module.exports = { AiError, ACTIONS, LANGUAGES, getStatus, improve, translate, reportRemarks, getSchoolUsage, updateSchoolAi };

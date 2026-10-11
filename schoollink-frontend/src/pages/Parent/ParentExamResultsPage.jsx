@@ -15,6 +15,7 @@ import AssessmentIcon from "@mui/icons-material/AssessmentOutlined";
 import { getMyChildren } from "../../services/postService";
 
 import { getMarksForStudent } from "../../services/examService";
+import { getStudentRemarks } from "../../services/reportCardService";
 
 const panelSx = {
     p: { xs: 2, md: 2.5 },
@@ -30,6 +31,8 @@ function ParentExamResultsPage() {
     const [selectedStudentId, setSelectedStudentId] = useState("");
 
     const [marks, setMarks] = useState([]);
+
+    const [remarksByName, setRemarksByName] = useState({});
 
     const [loading, setLoading] = useState(true);
 
@@ -76,6 +79,22 @@ function ParentExamResultsPage() {
             if (response.success) {
 
                 setMarks(response.data);
+
+            }
+
+            try {
+
+                const rem = await getStudentRemarks(studentId);
+
+                const map = {};
+
+                (rem.data || []).forEach((r) => { map[r.exam_name] = r.remarks; });
+
+                setRemarksByName(map);
+
+            } catch (e) {
+
+                setRemarksByName({});
 
             }
 
@@ -262,6 +281,26 @@ function ParentExamResultsPage() {
                         </Box>
 
                     ))}
+
+                    {remarksByName[examName] && (
+
+                        <Box sx={{ mt: 1.5, p: 1.5, borderRadius: 2, bgcolor: "var(--sl-soft, #F1F5F9)" }}>
+
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.82rem", mb: 0.5 }}>
+
+                                Teacher's remarks
+
+                            </Typography>
+
+                            <Typography sx={{ fontSize: "0.9rem", whiteSpace: "pre-wrap" }}>
+
+                                {remarksByName[examName]}
+
+                            </Typography>
+
+                        </Box>
+
+                    )}
 
                 </Card>
 

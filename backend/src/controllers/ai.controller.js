@@ -27,6 +27,13 @@ async function translate(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
+async function reportRemarks(req, res) {
+    try {
+        const { student_id, exam_id, language } = req.body || {};
+        return response.success(res, await ai.reportRemarks(req.user, student_id, exam_id, language), "Done");
+    } catch (err) { return fail(res, err); }
+}
+
 async function getSchoolAi(req, res) {
     try {
         return response.success(res, await ai.getSchoolUsage(Number(req.params.id)), "AI usage");
@@ -39,4 +46,4 @@ async function updateSchoolAi(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
-module.exports = { status, improve, translate, getSchoolAi, updateSchoolAi };
+module.exports = { status, improve, translate, reportRemarks, getSchoolAi, updateSchoolAi };

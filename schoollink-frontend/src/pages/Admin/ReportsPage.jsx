@@ -20,6 +20,7 @@ import {
 import DescriptionIcon from "@mui/icons-material/DescriptionOutlined";
 import DownloadIcon from "@mui/icons-material/DownloadOutlined";
 
+import ReportRemarksEditor from "../../components/Admin/ReportRemarksEditor";
 import { getStudents } from "../../services/studentService";
 import { getAllExams } from "../../services/examService";
 import {
@@ -390,6 +391,13 @@ function ReportsPage() {
                         </Typography>
 
                     </Box>
+
+                    <ReportRemarksEditor
+                        studentId={report.student.student_id}
+                        examId={examId}
+                        initial={report.remarks || ""}
+                        onSaved={(value) => setReport((prev) => ({ ...prev, remarks: value }))}
+                    />
 
                 </Card>
 

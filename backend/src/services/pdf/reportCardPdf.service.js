@@ -77,6 +77,18 @@ async function generateReportCard(reportData, res) {
     doc.text(`Maximum Marks : ${reportData.summary.maximum_marks}`);
     doc.text(`Percentage : ${reportData.summary.percentage}%`);
 
+    if (reportData.remarks) {
+
+        doc.moveDown();
+
+        doc.fontSize(12).text("Remarks", { underline: true });
+
+        doc.moveDown(0.3);
+
+        doc.text(reportData.remarks, { align: "left" });
+
+    }
+
     doc.moveDown(3);
 
     doc.text("_______________________");

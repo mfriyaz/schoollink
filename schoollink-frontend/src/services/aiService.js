@@ -19,3 +19,7 @@ export async function getSchoolAi(id) {
 export async function saveSchoolAi(id, payload) {
     return (await api.put(`/platform/schools/${id}/ai`, payload)).data;
 }
+
+export async function aiReportRemarks(studentId, examId, language) {
+    return (await api.post("/ai/report-remarks", { student_id: studentId, exam_id: examId, language })).data;
+}

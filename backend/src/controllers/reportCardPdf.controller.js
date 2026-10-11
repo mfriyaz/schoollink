@@ -62,6 +62,8 @@ async function downloadReportCard(req, res) {
 
         });
 
+        const remarksRow = await reportCardService.getRemarks(studentId, examId);
+
         const reportData = {
 
             school_name: report[0].school_name,
@@ -77,6 +79,7 @@ async function downloadReportCard(req, res) {
             },
 
             exam: report[0].exam_name,
+            remarks: remarksRow ? remarksRow.remarks : "",
 
             summary: {
 

@@ -72,6 +72,8 @@ async function getStudentReportCard(req, res) {
                 ).toFixed(2)
             );
 
+        const remarksRow = await reportCardService.getRemarks(studentId, examId);
+
         return res.status(200).json({
 
             success: true,
@@ -92,6 +94,7 @@ async function getStudentReportCard(req, res) {
             },
 
             exam: report[0].exam_name,
+            remarks: remarksRow ? remarksRow.remarks : "",
 
             summary: {
 
