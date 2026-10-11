@@ -43,6 +43,39 @@ const SCRIPT_FONTS = [
 
 const FONT_DIR = path.join(__dirname, "..", "..", "assets", "fonts");
 
+// Fonts used for Latin text. Falls back to the built-in PDF fonts if a file is missing.
+const F = { body: "Helvetica", semi: "Helvetica-Bold", bold: "Helvetica-Bold", display: "Helvetica-Bold" };
+
+function registerLatinFonts(doc) {
+
+    const files = {
+        body: ["sl-body", "Inter-Regular.woff"],
+        semi: ["sl-semi", "Inter-SemiBold.woff"],
+        bold: ["sl-bold", "Inter-Bold.woff"],
+        display: ["sl-display", "PlayfairDisplay-Bold.woff"]
+    };
+
+    const fallback = { body: "Helvetica", semi: "Helvetica-Bold", bold: "Helvetica-Bold", display: "Helvetica-Bold" };
+
+    Object.keys(files).forEach((k) => {
+
+        const [name, file] = files[k];
+        const full = path.join(FONT_DIR, file);
+
+        try {
+            if (fs.existsSync(full)) {
+                doc.registerFont(name, full);
+                F[k] = name;
+                return;
+            }
+        } catch (e) { /* use fallback */ }
+
+        F[k] = fallback[k];
+
+    });
+
+}
+
 function textFont(doc, text) {
 
     for (const s of SCRIPT_FONTS) {
@@ -57,7 +90,7 @@ function textFont(doc, text) {
                     doc.registerFont(`ns-${s.name}`, file);
                     return `ns-${s.name}`;
                 } catch (e) {
-                    return "Helvetica";
+                    return F.body;
                 }
 
             }
@@ -66,7 +99,7 @@ function textFont(doc, text) {
 
     }
 
-    return "Helvetica";
+    return F.body;
 
 }
 
@@ -78,7 +111,7 @@ function drawMixed(doc, text, x, y, width, scriptFont, size) {
 
     runs.forEach((run, i) => {
 
-        const font = /^[\u0000-\u024F\u2000-\u206F]/.test(run) ? "Helvetica" : scriptFont;
+        const font = /^[\u0000-\u024F\u2000-\u206F]/.test(run) ? F.body : scriptFont;
         const last = i === runs.length - 1;
 
         doc.font(font).fontSize(size);
@@ -158,6 +191,8 @@ async function generateReportCard(reportData, res) {
 
     const doc = new PDFDocument({ size: "A4", margins: { top: MARGIN, left: MARGIN, right: MARGIN, bottom: 10 }, info: { Title: "Student Progress Report" } });
 
+    registerLatinFonts(doc);
+
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "inline; filename=report-card.pdf");
 
@@ -175,43 +210,43 @@ async function generateReportCard(reportData, res) {
         } catch (e) { /* unsupported image type: skip */ }
     }
 
-    doc.fillColor(theme.on).font("Helvetica-Bold").fontSize(20)
+    doc.fillColor(theme.on).font(F.display).fontSize(22)
         .text(school.school_name || "School", textX, 24, { width: 595.28 - textX - MARGIN, lineBreak: false, ellipsis: true });
 
     const addr = [school.address, school.city, school.state, school.postal_code].filter(Boolean).join(", ");
     const contact = [school.phone && `Tel: ${school.phone}`, school.email, school.website].filter(Boolean).join("   |   ");
 
-    doc.font("Helvetica").fontSize(9);
-    if (addr) doc.text(addr, textX, 52, { width: 595.28 - textX - MARGIN, lineBreak: false, ellipsis: true });
-    if (contact) doc.text(contact, textX, 66, { width: 595.28 - textX - MARGIN, lineBreak: false, ellipsis: true });
+    doc.font(F.body).fontSize(9);
+    if (addr) doc.text(addr, textX, 56, { width: 595.28 - textX - MARGIN, lineBreak: false, ellipsis: true });
+    if (contact) doc.text(contact, textX, 70, { width: 595.28 - textX - MARGIN, lineBreak: false, ellipsis: true });
 
     // ---------- Title ----------
-    doc.fillColor(INK).font("Helvetica-Bold").fontSize(15)
-        .text("STUDENT PROGRESS REPORT", MARGIN, 112, { width: W, align: "center", characterSpacing: 1.5 });
+    doc.fillColor(INK).font(F.display).fontSize(17)
+        .text("Student Progress Report", MARGIN, 111, { width: W, align: "center", characterSpacing: 0.5 });
 
     const sub = [reportData.exam, reportData.academic_year && `Academic Year ${reportData.academic_year}`].filter(Boolean).join("   |   ");
 
-    doc.fillColor(MUTED).font("Helvetica").fontSize(10).text(sub, MARGIN, 133, { width: W, align: "center" });
+    doc.fillColor(MUTED).font(F.body).fontSize(10).text(sub, MARGIN, 137, { width: W, align: "center" });
 
     // ---------- Student details ----------
-    let y = 158;
-    const boxH = 62;
+    let y = 162;
+    const boxH = 68;
 
     doc.roundedRect(MARGIN, y, W, boxH, 6).lineWidth(0.8).strokeColor(LINE).stroke();
 
     const half = W / 2;
 
     const cell = (label, value, x, cy) => {
-        doc.fillColor(MUTED).font("Helvetica").fontSize(8).text(label.toUpperCase(), x, cy, { width: half - 24, lineBreak: false });
-        doc.fillColor(INK).font("Helvetica-Bold").fontSize(11).text(String(value || "-"), x, cy + 11, { width: half - 24, lineBreak: false, ellipsis: true });
+        doc.fillColor(MUTED).font(F.body).fontSize(8).text(label.toUpperCase(), x, cy, { width: half - 24, lineBreak: false });
+        doc.fillColor(INK).font(F.bold).fontSize(11).text(String(value || "-"), x, cy + 13, { width: half - 24, lineBreak: false, ellipsis: true });
     };
 
     const st = reportData.student;
 
     cell("Student Name", st.name, MARGIN + 14, y + 10);
     cell("Class / Section", `${st.class || "-"} - ${st.section || "-"}`, MARGIN + half + 6, y + 10);
-    cell("Admission No", st.admission_no, MARGIN + 14, y + 36);
-    cell("Date Issued", fmtDate(school.timezone), MARGIN + half + 6, y + 36);
+    cell("Admission No", st.admission_no, MARGIN + 14, y + 39);
+    cell("Date Issued", fmtDate(school.timezone), MARGIN + half + 6, y + 39);
 
     y += boxH + 18;
 
@@ -231,7 +266,7 @@ async function generateReportCard(reportData, res) {
     const drawHeader = () => {
         doc.rect(MARGIN, y, W, ROW).fill(theme.band);
         let x = MARGIN;
-        doc.fillColor(theme.on).font("Helvetica-Bold").fontSize(9.5);
+        doc.fillColor(theme.on).font(F.bold).fontSize(9.5);
         cols.forEach((c) => {
             doc.text(c.label, x + 8, y + 7.5, { width: c.w - 16, align: c.align, lineBreak: false });
             x += c.w;
@@ -268,7 +303,7 @@ async function generateReportCard(reportData, res) {
         cols.forEach((c) => {
             const isResult = c.key === "result";
             doc.fillColor(isResult ? (pass ? GREEN : RED) : INK)
-                .font(isResult || c.key === "subject" || c.key === "grade" ? "Helvetica-Bold" : "Helvetica")
+                .font(isResult || c.key === "subject" || c.key === "grade" ? F.semi : F.body)
                 .fontSize(10)
                 .text(String(vals[c.key]), x + 8, y + 7, { width: c.w - 16, align: c.align, lineBreak: false, ellipsis: true });
             x += c.w;
@@ -301,8 +336,8 @@ async function generateReportCard(reportData, res) {
     tiles.forEach((t, i) => {
         const tx = MARGIN + i * (tw + gap);
         doc.roundedRect(tx, y, tw, 52, 6).lineWidth(0.8).strokeColor(LINE).stroke();
-        doc.fillColor(MUTED).font("Helvetica").fontSize(8).text(t.label.toUpperCase(), tx, y + 9, { width: tw, align: "center", lineBreak: false });
-        doc.fillColor(t.color).font("Helvetica-Bold").fontSize(t.value.length > 9 ? 11 : 15).text(t.value, tx, y + 25, { width: tw, align: "center", lineBreak: false });
+        doc.fillColor(MUTED).font(F.body).fontSize(8).text(t.label.toUpperCase(), tx, y + 9, { width: tw, align: "center", lineBreak: false });
+        doc.fillColor(t.color).font(F.bold).fontSize(t.value.length > 9 ? 11 : 15).text(t.value, tx, y + 25, { width: tw, align: "center", lineBreak: false });
     });
 
     y += 52 + 14;
@@ -314,8 +349,8 @@ async function generateReportCard(reportData, res) {
             .map((g) => `${g.grade_name}: ${Number(g.minimum_percentage)}-${Number(g.maximum_percentage)}%`)
             .join("    ");
 
-        doc.fillColor(MUTED).font("Helvetica-Bold").fontSize(8).text("GRADING SCALE", MARGIN, y, { lineBreak: false });
-        doc.font("Helvetica").fontSize(8.5).text(scale, MARGIN, y + 11, { width: W });
+        doc.fillColor(MUTED).font(F.bold).fontSize(8).text("GRADING SCALE", MARGIN, y, { lineBreak: false });
+        doc.font(F.body).fontSize(8.5).text(scale, MARGIN, y + 11, { width: W });
 
         y = doc.y + 12;
 
@@ -323,7 +358,7 @@ async function generateReportCard(reportData, res) {
 
     // ---------- Remarks ----------
     const remarks = (reportData.remarks || "").trim();
-    const remarkFont = remarks ? textFont(doc, remarks) : "Helvetica";
+    const remarkFont = remarks ? textFont(doc, remarks) : F.body;
 
     doc.font(remarkFont).fontSize(10.5);
 
@@ -335,13 +370,13 @@ async function generateReportCard(reportData, res) {
 
     doc.roundedRect(MARGIN, y, W, remarksH, 6).lineWidth(0.8).strokeColor(LINE).stroke();
 
-    doc.fillColor(MUTED).font("Helvetica-Bold").fontSize(8).text("CLASS TEACHER'S REMARKS", MARGIN + 14, y + 10, { lineBreak: false });
+    doc.fillColor(MUTED).font(F.bold).fontSize(8).text("CLASS TEACHER'S REMARKS", MARGIN + 14, y + 10, { lineBreak: false });
 
     if (remarks) {
         doc.fillColor(INK);
 
-        if (remarkFont === "Helvetica") {
-            doc.font("Helvetica").fontSize(10.5).text(remarks, MARGIN + 14, y + 26, { width: W - 28, lineGap: 2 });
+        if (remarkFont === F.body) {
+            doc.font(F.body).fontSize(10.5).text(remarks, MARGIN + 14, y + 26, { width: W - 28, lineGap: 2 });
         } else {
             drawMixed(doc, remarks, MARGIN + 14, y + 26, W - 28, remarkFont, 10.5);
         }
@@ -359,12 +394,12 @@ async function generateReportCard(reportData, res) {
     ["Class Teacher", "Parent / Guardian", "Principal"].forEach((label, i) => {
         const sx = MARGIN + i * (sw + 20);
         doc.moveTo(sx, finalY).lineTo(sx + sw, finalY).lineWidth(0.8).strokeColor(INK).stroke();
-        doc.fillColor(INK).font("Helvetica").fontSize(9.5).text(label, sx, finalY + 5, { width: sw, align: "center", lineBreak: false });
+        doc.fillColor(INK).font(F.body).fontSize(9.5).text(label, sx, finalY + 5, { width: sw, align: "center", lineBreak: false });
     });
 
     // ---------- Footer ----------
     doc.moveTo(MARGIN, 806).lineTo(MARGIN + W, 806).lineWidth(0.5).strokeColor(LINE).stroke();
-    doc.fillColor(MUTED).font("Helvetica").fontSize(7.5)
+    doc.fillColor(MUTED).font(F.body).fontSize(7.5)
         .text(`Computer generated report card  |  ${school.school_name || ""}  |  Generated on ${fmtDate(school.timezone)}`, MARGIN, 812, { width: W, align: "center", lineBreak: false });
 
     doc.end();
