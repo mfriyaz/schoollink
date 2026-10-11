@@ -334,6 +334,35 @@ async function logActivity(req, school, action, summary) {
 
 }
 
+/** Log "viewed records" at most once per 30 min per actor + school */
+async function logRecordsView(req, school) {
+
+    try {
+
+        const recent = await pool.query(
+            `
+            SELECT 1 FROM platform_activity
+            WHERE actor_id = $1 AND school_id = $2 AND action = 'view_records'
+              AND created_at > NOW() - interval '30 minutes'
+            LIMIT 1
+            `,
+            [req.user.id, school.id]
+        );
+
+        if (recent.rows.length === 0) {
+
+            await logActivity(req, school, "view_records", `Viewed the records of ${school.school_name}`);
+
+        }
+
+    } catch (err) {
+
+        console.error("records view log failed:", err.message);
+
+    }
+
+}
+
 async function getSchoolBrief(id) {
 
     const r = await pool.query(
@@ -578,5 +607,6 @@ module.exports = {
     updateNotes,
     resetSchoolAdminPassword,
     logActivity,
+    logRecordsView,
     getSchoolBrief
 };

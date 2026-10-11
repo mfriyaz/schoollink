@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import {
     Alert, Box, Button, Card, Chip, CircularProgress, Dialog, DialogActions,
-    DialogContent, DialogTitle, IconButton, LinearProgress, TextField, Typography
+    DialogContent, DialogTitle, IconButton, LinearProgress, Tab, Tabs, TextField, Typography
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
@@ -12,6 +12,7 @@ import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import AddIcon from "@mui/icons-material/AddOutlined";
 
 import PaymentDialog from "../../components/SuperAdmin/PaymentDialog";
+import SchoolRecords from "../../components/SuperAdmin/SchoolRecords";
 import ResetPasswordDialog from "../../components/common/ResetPasswordDialog";
 import {
     deleteSchoolPayment, getPlatformSchool, resetSchoolAdminPassword,
@@ -71,6 +72,7 @@ export default function SchoolDetailPage() {
     const navigate = useNavigate();
 
     const [data, setData] = useState(null);
+    const [tab, setTab] = useState("overview");
     const [error, setError] = useState("");
     const [payOpen, setPayOpen] = useState(false);
     const [resetAdmin, setResetAdmin] = useState(null);
@@ -187,6 +189,18 @@ export default function SchoolDetailPage() {
                 </Alert>
             )}
 
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, borderBottom: "1px solid #E2E8F0" }}>
+                <Tab value="overview" label="Overview" sx={{ textTransform: "none", fontWeight: 600 }} />
+                <Tab value="records" label="School records" sx={{ textTransform: "none", fontWeight: 600 }} />
+            </Tabs>
+
+            {tab === "records" ? (
+
+                <SchoolRecords schoolId={school.id} />
+
+            ) : (
+
+                <>
             <Grid container spacing={2}>
 
                 <Grid size={{ xs: 12, md: 6 }}>
@@ -283,6 +297,10 @@ export default function SchoolDetailPage() {
                     </Box>
                 ))}
             </Section>
+
+                </>
+
+            )}
 
             <PaymentDialog open={payOpen} school={school} onClose={() => setPayOpen(false)} onSaved={load} />
 

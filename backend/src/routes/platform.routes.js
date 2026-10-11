@@ -28,6 +28,7 @@ const sa = [authenticate, authorizeRoles("Super Admin")];
 router.get("/overview", ...sa, admin.overview);
 router.get("/schools", ...sa, admin.listSchools);
 router.get("/schools/:id", ...sa, admin.schoolDetail);
+router.get("/schools/:id/records/:type", ...sa, admin.schoolRecords);
 router.post("/schools/:id/status", ...sa, admin.setStatus);
 router.post("/schools/:id/payments", ...sa, admin.addPayment);
 router.patch("/schools/:id/notes", ...sa, admin.updateNotes);

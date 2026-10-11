@@ -35,3 +35,7 @@ export async function saveSchoolNotes(id, notes) {
 export async function resetSchoolAdminPassword(userId) {
     return (await api.post(`/platform/school-admins/${userId}/reset-password`)).data;
 }
+
+export async function getSchoolRecords(id, type, params) {
+    return (await api.get(`/platform/schools/${id}/records/${type}`, { params })).data;
+}

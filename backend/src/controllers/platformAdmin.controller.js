@@ -1,4 +1,5 @@
 const service = require("../services/platformAdmin.service");
+const records = require("../services/platformRecords.service");
 const response = require("../utils/response");
 
 function wrap(fn) {
@@ -97,7 +98,30 @@ const resetAdminPassword = wrap(async (req, res) => {
 
 });
 
+const schoolRecords = wrap(async (req, res) => {
+
+    const { id, type } = req.params;
+
+    if (!records.recordTypes.includes(type)) {
+
+        return response.error(res, "Unknown record type", 400);
+
+    }
+
+    const school = await service.getSchoolBrief(id);
+
+    if (!school) return response.error(res, "School not found", 404);
+
+    // Accountability: note that a Super Admin looked at this school's
+    // records (at most once per 30 minutes per school)
+    await service.logRecordsView(req, school);
+
+    return response.success(res, await records.getRecords(id, type, req.query));
+
+});
+
 module.exports = {
+    schoolRecords,
     overview, listSchools, schoolDetail, setStatus, addPayment,
     deletePayment, listPayments, updateNotes, resetAdminPassword
 };
