@@ -598,9 +598,13 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
     // Start with the current page's group open (or the first real group)
     const [openGroups, setOpenGroups] = useState(() => {
 
-        const first = groups.find((g) => g.name && g.items.length > 1)?.name;
+        const real = (g) => g.name && g.items.length > 1;
 
-        return new Set([activeGroup || first].filter(Boolean));
+        const current = groups.find((g) => g.name === activeGroup);
+
+        const first = groups.find(real)?.name;
+
+        return new Set([current && real(current) ? activeGroup : first].filter(Boolean));
 
     });
 
