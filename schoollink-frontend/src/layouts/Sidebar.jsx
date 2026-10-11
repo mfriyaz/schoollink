@@ -344,7 +344,9 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
                         color: "white",
 
-                        minHeight: "100vh",
+                        minHeight: isMobile ? 0 : "100vh",
+                        height: isMobile ? "100dvh" : "auto",
+                        maxHeight: isMobile ? "100dvh" : "none",
 
                         display: "flex",
 
@@ -498,7 +500,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
             </Box>
 
-            <List sx={{ px: collapsed ? 1 : 2, mt: 1, flexGrow: 1, overflowY: "auto" }}>
+            <List sx={{ px: collapsed ? 1 : 2, mt: 1, flexGrow: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", pb: "calc(16px + env(safe-area-inset-bottom))" }}>
 
                 {
 
