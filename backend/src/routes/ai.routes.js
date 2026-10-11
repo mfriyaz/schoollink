@@ -13,4 +13,8 @@ router.post("/improve", ...writers, controller.improve);
 router.post("/translate", ...writers, controller.translate);
 router.post("/report-remarks", ...writers, controller.reportRemarks);
 
+router.get("/weekly-summary/:studentId", authenticate, authorizeRoles("Parent"), controller.weeklySummary);
+router.get("/early-warning", authenticate, authorizeRoles("School Admin"), controller.earlyWarning);
+router.post("/early-warning-note", authenticate, authorizeRoles("School Admin"), controller.earlyWarningNote);
+
 module.exports = router;

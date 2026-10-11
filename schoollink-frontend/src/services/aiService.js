@@ -23,3 +23,18 @@ export async function saveSchoolAi(id, payload) {
 export async function aiReportRemarks(studentId, examId, language) {
     return (await api.post("/ai/report-remarks", { student_id: studentId, exam_id: examId, language })).data;
 }
+
+export async function getWeeklySummary(studentId, language, refresh) {
+    const params = { language };
+    if (refresh) params.refresh = 1;
+    return (await api.get(`/ai/weekly-summary/${studentId}`, { params })).data;
+}
+
+export async function getEarlyWarning(classId) {
+    const params = classId ? { class_id: classId } : {};
+    return (await api.get("/ai/early-warning", { params })).data;
+}
+
+export async function aiEarlyWarningNote(studentId) {
+    return (await api.post("/ai/early-warning-note", { student_id: studentId })).data;
+}

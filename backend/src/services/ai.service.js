@@ -1,5 +1,7 @@
 const pool = require("../config/database");
 const reportCardService = require("./reportCard.service");
+const insights = require("./insights.service");
+const crypto = require("crypto");
 
 /**
  * AI writing assistant. Works with Google Gemini or Anthropic Claude.
@@ -383,6 +385,110 @@ async function reportRemarks(user, studentId, examId, language) {
     return run(user, "report_remarks", instruction, data);
 }
 
+
+/**
+ * Weekly summary for a parent. The facts always come back (exact numbers from
+ * the database). The AI only adds a short friendly note, which is cached for
+ * the day so reopening the page costs nothing.
+ */
+async function weeklySummary(user, studentId, language, refresh) {
+
+    const sid = Number(studentId);
+    if (!Number.isInteger(sid)) throw new AiError("Choose a child first.");
+
+    const lang = language && LANGUAGES[language] ? language : "en";
+
+    const facts = await insights.getWeeklyFacts(sid);
+    if (!facts) throw new AiError("Student not found.", 404);
+    if (facts.school_id !== user.school_id) throw new AiError("This student does not belong to your school.", 403);
+
+    const out = { facts, summary: null, ai_available: false, ai_message: null, language: lang };
+
+    if (!insights.hasAnything(facts)) return out;
+
+    const status = await getStatus(user.school_id);
+    out.ai_available = status.available;
+    if (!status.available) return out;
+
+    const text = insights.factsToText(facts);
+    const hash = crypto.createHash("sha256").update(text).digest("hex").slice(0, 32);
+
+    if (!refresh) {
+        try {
+            const c = await pool.query(
+                `SELECT summary, facts_hash FROM weekly_summaries
+                  WHERE student_id = $1 AND as_of = $2 AND language = $3`,
+                [sid, facts.as_of, lang]
+            );
+            if (c.rows[0] && c.rows[0].facts_hash === hash) {
+                out.summary = c.rows[0].summary;
+                out.cached = true;
+                return out;
+            }
+        } catch (e) { /* table missing: migration 055 not run */ }
+    }
+
+    const instruction =
+        "Write a short weekly update for the parent of this student, based only on the facts below. " +
+        "Use 3 to 4 sentences and fewer than 80 words. Use the student's first name. " +
+        "Start with what went well, then mention anything the parent should do or know (such as homework to acknowledge or days absent). " +
+        "Do not give advice about studies, do not compare with other students, and do not mention anything that is not in the facts. " +
+        `Write in ${LANGUAGES[lang]}.`;
+
+    try {
+        const res = await run(user, "weekly_summary", instruction, text);
+        out.summary = res.text;
+        try {
+            await pool.query(
+                `INSERT INTO weekly_summaries (school_id, student_id, as_of, language, summary, facts_hash)
+                 VALUES ($1,$2,$3,$4,$5,$6)
+                 ON CONFLICT (student_id, as_of, language)
+                 DO UPDATE SET summary = EXCLUDED.summary, facts_hash = EXCLUDED.facts_hash, created_at = NOW()`,
+                [user.school_id, sid, facts.as_of, lang, res.text, hash]
+            );
+        } catch (e) { console.error("Weekly summary cache failed", e.message); }
+    } catch (err) {
+        if (!(err instanceof AiError)) throw err;
+        out.ai_message = err.message;
+    }
+
+    return out;
+}
+
+/** Early warning list for the School Admin (rules only, no AI). */
+async function earlyWarning(user, classId) {
+    return insights.getEarlyWarnings(user.school_id, { classId });
+}
+
+/**
+ * Suggest a next step for one flagged student. Only the first name and the
+ * numbers go to the AI.
+ */
+async function earlyWarningNote(user, studentId) {
+
+    const sid = Number(studentId);
+    if (!Number.isInteger(sid)) throw new AiError("Choose a student first.");
+
+    const res = await insights.getEarlyWarnings(user.school_id, { studentId: sid });
+    const item = res.items[0];
+    if (!item) throw new AiError("This student has no warning flags right now.", 404);
+
+    const data = [
+        `Student first name: ${item.first_name}`,
+        `Class: ${item.class_name} ${item.section_name}`,
+        "Flags:",
+        ...item.flags.map((f) => `- ${f.text}`),
+    ].join("\n");
+
+    const instruction =
+        "A school administrator is reviewing a student who was flagged by simple rules. " +
+        "Suggest 2 to 3 practical next steps for the class teacher or school office, in 3 to 4 short sentences and fewer than 70 words. " +
+        "Examples of steps: speak with the parents, check the reason for absence, offer extra practice in the weak subject. " +
+        "Use only the facts given. Do not guess the cause, do not diagnose, and do not blame the student, parents or teachers.";
+
+    return run(user, "early_warning", instruction, data);
+}
+
 // ---------- Super Admin helpers ----------
 async function getSchoolUsage(schoolId) {
     const ai = await getSchoolAi(schoolId);
@@ -437,4 +543,4 @@ async function updateSchoolAi(schoolId, { enabled, limit }) {
     return getSchoolUsage(schoolId);
 }
 
-module.exports = { AiError, ACTIONS, LANGUAGES, getStatus, improve, translate, reportRemarks, getSchoolUsage, updateSchoolAi };
+module.exports = { AiError, ACTIONS, LANGUAGES, getStatus, improve, translate, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, getSchoolUsage, updateSchoolAi };

@@ -6,6 +6,7 @@ import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import QuizIcon from "@mui/icons-material/Quiz";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import WarningAmberIcon from "@mui/icons-material/WarningAmberRounded";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
@@ -57,6 +58,12 @@ const NavigationMenu = [
         title: "Reports",
         icon: <AssessmentIcon />,
         path: "/reports"
+    },
+
+    {
+        title: "Early Warning",
+        icon: <WarningAmberIcon />,
+        path: "/early-warning"
     },
 
     {

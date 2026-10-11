@@ -37,6 +37,7 @@ import AddBusinessIcon from "@mui/icons-material/AddBusinessOutlined";
 import ArchiveIcon from "@mui/icons-material/ArchiveOutlined";
 import HistoryIcon from "@mui/icons-material/History";
 import EventIcon from "@mui/icons-material/EventOutlined";
+import WarningAmberIcon from "@mui/icons-material/WarningAmberRounded";
 
 const adminMenus = [
 
@@ -104,6 +105,12 @@ const adminMenus = [
         title: "Reports",
         path: "/reports",
         icon: <DescriptionIcon />
+    },
+
+    {
+        title: "Early Warning",
+        path: "/early-warning",
+        icon: <WarningAmberIcon />
     },
 
     {
@@ -261,6 +268,7 @@ const iconColors = {
     "Exams": "#FB7185",
     "Grading Scale": "#FACC15",
     "Reports": "#818CF8",
+    "Early Warning": "#FB923C",
     "Activity Log": "#F59E0B",
     "School Calendar": "#C084FC",
     "Profile": "#22D3EE",
@@ -280,7 +288,7 @@ const adminGroups = {
     "Dashboard": "Overview",
     "Teachers": "People", "Students": "People", "Classes": "People", "Subjects": "People",
     "Posts": "Communication", "Create Announcement": "Communication", "Expired Announcements": "Communication", "School Calendar": "Communication",
-    "Exams": "Academics", "Grading Scale": "Academics", "Reports": "Academics",
+    "Exams": "Academics", "Grading Scale": "Academics", "Reports": "Academics", "Early Warning": "Academics",
     "Activity Log": "Account", "Profile": "Account", "Settings": "Account"
 };
 

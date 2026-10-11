@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 
 import ParentAttendanceCard from "../../components/Parent/ParentAttendanceCard";
+import WeeklySummaryCard from "../../components/Parent/WeeklySummaryCard";
 import { getCalendar } from "../../services/calendarService";
 import { dayInfo } from "../../utils/calendarUtils";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -597,8 +598,9 @@ function ParentDashboardPage() {
                     px: { xs: 1.5, md: 2 },
                     py: { xs: 1, md: 1.1 },
                     borderRadius: 3,
-                    color: "#FFFFFF",
-                    background: "linear-gradient(135deg,var(--sl-primary),var(--sl-primary))",
+                    color: "var(--sl-on-banner)",
+                    bgcolor: "var(--sl-banner)",
+                    border: "var(--sl-banner-border)",
                     display: "flex",
                     alignItems: "center",
                     gap: 1.25,
@@ -610,8 +612,8 @@ function ParentDashboardPage() {
                     sx={{
                         width: 34,
                         height: 34,
-                        bgcolor: "rgba(255,255,255,0.22)",
-                        color: "#FFFFFF",
+                        bgcolor: "color-mix(in srgb, var(--sl-on-banner) 14%, transparent)",
+                        color: "var(--sl-on-banner)",
                         fontWeight: 700,
                         fontSize: "0.95rem"
                     }}
@@ -669,6 +671,8 @@ function ParentDashboardPage() {
                 )}
 
             </Box>
+
+            {selectedChild && <WeeklySummaryCard studentId={selectedChild.student_id} />}
 
             {/* ---------- At-a-glance tiles ---------- */}
             {(() => {

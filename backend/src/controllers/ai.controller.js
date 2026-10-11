@@ -1,5 +1,6 @@
 const response = require("../utils/response");
 const ai = require("../services/ai.service");
+const reportCardService = require("../services/reportCard.service");
 
 function fail(res, err) {
     if (err instanceof ai.AiError) return response.error(res, err.message, err.status);
@@ -34,6 +35,29 @@ async function reportRemarks(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
+async function weeklySummary(req, res) {
+    try {
+        const sid = Number(req.params.studentId);
+        const ok = await reportCardService.parentOwnsStudent(req.user.id, sid);
+        if (!ok) return response.error(res, "You cannot view this student.", 403);
+        const { language, refresh } = req.query || {};
+        return response.success(res, await ai.weeklySummary(req.user, sid, language, refresh === "1"), "Weekly summary");
+    } catch (err) { return fail(res, err); }
+}
+
+async function earlyWarning(req, res) {
+    try {
+        return response.success(res, await ai.earlyWarning(req.user, req.query.class_id), "Early warning");
+    } catch (err) { return fail(res, err); }
+}
+
+async function earlyWarningNote(req, res) {
+    try {
+        const { student_id } = req.body || {};
+        return response.success(res, await ai.earlyWarningNote(req.user, student_id), "Done");
+    } catch (err) { return fail(res, err); }
+}
+
 async function getSchoolAi(req, res) {
     try {
         return response.success(res, await ai.getSchoolUsage(Number(req.params.id)), "AI usage");
@@ -46,4 +70,4 @@ async function updateSchoolAi(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
-module.exports = { status, improve, translate, reportRemarks, getSchoolAi, updateSchoolAi };
+module.exports = { status, improve, translate, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, getSchoolAi, updateSchoolAi };
