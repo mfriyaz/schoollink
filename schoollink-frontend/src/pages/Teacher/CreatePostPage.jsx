@@ -24,6 +24,7 @@ import MicIcon from "@mui/icons-material/MicOutlined";
 import ImageIcon from "@mui/icons-material/ImageOutlined";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
+import AiAssistButton from "../../components/common/AiAssistButton";
 import StopCircleIcon from "@mui/icons-material/StopCircleOutlined";
 
 import { resolveFileUrl } from "../../config";
@@ -643,13 +644,13 @@ function CreatePostPage() {
                         width: 40,
                         height: 40,
                         borderRadius: "10px",
-                        bgcolor: "#DBEAFE",
+                        bgcolor: "#E0E7FF",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"
                     }}
                 >
-                    <EditNoteIcon sx={{ color: "#2563EB" }} />
+                    <EditNoteIcon sx={{ color: "#4F46E5" }} />
                 </Box>
 
                 <Box>
@@ -742,6 +743,8 @@ function CreatePostPage() {
                                     fullWidth
                                 />
 
+                                <AiAssistButton value={description} onApply={setDescription} />
+
                             </Box>
 
                         </PostSection>
@@ -777,7 +780,7 @@ function CreatePostPage() {
                                                 <Box
                                                     sx={{
                                                         width: 36, height: 36, minWidth: 36, borderRadius: "10px",
-                                                        bgcolor: "#DBEAFE", color: "#2563EB",
+                                                        bgcolor: "#E0E7FF", color: "#4F46E5",
                                                         display: "flex", alignItems: "center", justifyContent: "center"
                                                     }}
                                                 >
@@ -807,7 +810,7 @@ function CreatePostPage() {
                                                 display: "flex", alignItems: "center", gap: 1.25,
                                                 border: "2px dashed #CBD5E1", borderRadius: 2, px: 2, py: 1.5,
                                                 color: "#64748B", cursor: uploadingFile ? "default" : "pointer",
-                                                "&:hover": { borderColor: "#2563EB", color: "#2563EB", bgcolor: "#F8FAFC" }
+                                                "&:hover": { borderColor: "#4F46E5", color: "#4F46E5", bgcolor: "#F8FAFC" }
                                             }}
                                         >
                                             {uploadingFile ? <CircularProgress size={20} /> : <CloudUploadIcon />}
@@ -848,7 +851,7 @@ function CreatePostPage() {
                                                     sx={{
                                                         position: "absolute", top: -8, right: -8,
                                                         minWidth: "auto", width: 22, height: 22, borderRadius: "50%",
-                                                        bgcolor: "#0F172A", color: "white", fontSize: "0.65rem", p: 0,
+                                                        bgcolor: "#1E1B4B", color: "white", fontSize: "0.65rem", p: 0,
                                                         "&:hover": { bgcolor: "#DC2626" }
                                                     }}
                                                 >
@@ -865,7 +868,7 @@ function CreatePostPage() {
                                                     display: "flex", flexDirection: "column", alignItems: "center",
                                                     justifyContent: "center", gap: 0.5, color: "#64748B",
                                                     cursor: uploadingImages ? "default" : "pointer",
-                                                    "&:hover": { borderColor: "#2563EB", color: "#2563EB", bgcolor: "#F8FAFC" }
+                                                    "&:hover": { borderColor: "#4F46E5", color: "#4F46E5", bgcolor: "#F8FAFC" }
                                                 }}
                                             >
                                                 {uploadingImages ? (
@@ -932,7 +935,7 @@ function CreatePostPage() {
                                                 display: "flex", alignItems: "center", gap: 1.25,
                                                 border: "2px dashed #CBD5E1", borderRadius: 2, px: 2, py: 1.5,
                                                 color: "#64748B", cursor: uploadingVoice ? "default" : "pointer",
-                                                "&:hover": { borderColor: "#2563EB", color: "#2563EB", bgcolor: "#F8FAFC" }
+                                                "&:hover": { borderColor: "#4F46E5", color: "#4F46E5", bgcolor: "#F8FAFC" }
                                             }}
                                         >
                                             {uploadingVoice ? <CircularProgress size={20} /> : <MicIcon />}

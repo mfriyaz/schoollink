@@ -21,6 +21,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { createAnnouncement, uploadAttachment } from "../../services/postService";
 import { resolveFileUrl } from "../../config";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
+import AiAssistButton from "../../components/common/AiAssistButton";
 
 const audiences = ["All", "Teachers", "Parents", "Students", "School Admin"];
 
@@ -251,6 +252,8 @@ function CreateAnnouncementPage() {
                             fullWidth
                         />
 
+                        <AiAssistButton value={description} onApply={setDescription} />
+
                         {/* ---------- Images ---------- */}
                         <Box>
 
@@ -300,7 +303,7 @@ function CreateAnnouncementPage() {
                                                 position: "absolute",
                                                 top: -8,
                                                 right: -8,
-                                                bgcolor: "#0F172A",
+                                                bgcolor: "#1E1B4B",
                                                 color: "white",
                                                 width: 22,
                                                 height: 22,
@@ -328,7 +331,7 @@ function CreateAnnouncementPage() {
                                             gap: 0.5,
                                             color: "#64748B",
                                             cursor: uploadingImages ? "default" : "pointer",
-                                            "&:hover": { borderColor: "#2563EB", color: "#2563EB", bgcolor: "#F8FAFC" }
+                                            "&:hover": { borderColor: "#4F46E5", color: "#4F46E5", bgcolor: "#F8FAFC" }
                                         }}
                                     >
                                         {uploadingImages ? (

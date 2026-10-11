@@ -4,6 +4,7 @@ const router = express.Router();
 
 const platformController = require("../controllers/platform.controller");
 const admin = require("../controllers/platformAdmin.controller");
+const aiAdmin = require("../controllers/ai.controller");
 
 const {
     authenticate
@@ -29,6 +30,8 @@ router.get("/overview", ...sa, admin.overview);
 router.get("/schools", ...sa, admin.listSchools);
 router.get("/schools/:id", ...sa, admin.schoolDetail);
 router.get("/schools/:id/records/:type", ...sa, admin.schoolRecords);
+router.get("/schools/:id/ai", ...sa, aiAdmin.getSchoolAi);
+router.put("/schools/:id/ai", ...sa, aiAdmin.updateSchoolAi);
 router.post("/schools/:id/status", ...sa, admin.setStatus);
 router.post("/schools/:id/payments", ...sa, admin.addPayment);
 router.patch("/schools/:id/notes", ...sa, admin.updateNotes);
