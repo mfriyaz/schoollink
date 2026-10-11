@@ -6,7 +6,8 @@ const pool = require("../config/database");
  *   AI_PROVIDER         "gemini" or "claude" (optional: picked from whichever key is set)
  *   GEMINI_API_KEY      key for Gemini
  *   ANTHROPIC_API_KEY   key for Claude
- *   AI_MODEL            optional (default gemini-2.5-flash / claude-haiku-5-5)
+ *   AI_MODEL            optional (default gemini-3.8-flash / claude-haiku-5-5)
+ *   AI_FALLBACK_MODEL   optional Gemini backup model (default gemini-3.1-flash-lite)
  *   GEMINI_BASE_URL, ANTHROPIC_BASE_URL   optional (testing)
  */
 
@@ -188,10 +189,9 @@ async function callClaude(userContent) {
     };
 }
 
-async function callGemini(userContent) {
+async function callGeminiModel(model, userContent) {
 
     const base = (process.env.GEMINI_BASE_URL || "https://generativelanguage.googleapis.com").replace(/\/$/, "");
-    const model = process.env.AI_MODEL || "gemini-2.5-flash";
 
     const generationConfig = { maxOutputTokens: MAX_OUTPUT_TOKENS, temperature: 0.4 };
     // Gemini 2.5 Flash "thinks" by default, which wastes tokens on a simple rewrite
@@ -216,7 +216,9 @@ async function callGemini(userContent) {
             }),
         });
     } catch (e) {
-        throw new AiError("The AI service did not respond. Please try again.", 502);
+        const err = new AiError("The AI service did not respond. Please try again.", 502);
+        err.retryable = true;
+        throw err;
     } finally {
         clearTimeout(timer);
     }
@@ -224,9 +226,13 @@ async function callGemini(userContent) {
     if (!res.ok) {
         let detail = "";
         try { detail = await res.text(); } catch (e) { /* ignore */ }
-        console.error("AI API error (gemini)", res.status, detail.slice(0, 300));
-        if (res.status === 429) throw new AiError("The AI service is busy. Please try again in a minute.", 503);
-        throw new AiError("The AI service is not available right now.", 502);
+        console.error("AI API error (gemini)", model, res.status, detail.slice(0, 300));
+        const busy = res.status === 429 || res.status >= 500;
+        const err = busy
+            ? new AiError("The AI service is busy right now. Please try again in a moment.", 503)
+            : new AiError("The AI service is not available right now.", 502);
+        err.retryable = busy || res.status === 404;
+        throw err;
     }
 
     const data = await res.json();
@@ -244,6 +250,31 @@ async function callGemini(userContent) {
         input_tokens: data.usageMetadata?.promptTokenCount || 0,
         output_tokens: data.usageMetadata?.candidatesTokenCount || 0,
     };
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Gemini: try the main model twice (busy spikes are short), then a backup model.
+ *   AI_MODEL           main model   (default gemini-3.8-flash)
+ *   AI_FALLBACK_MODEL  backup model (default gemini-3.1-flash-lite)
+ */
+async function callGemini(userContent) {
+    const main = process.env.AI_MODEL || "gemini-3.8-flash";
+    const backup = process.env.AI_FALLBACK_MODEL || "gemini-3.1-flash-lite";
+    const plan = [main, main, ...(backup && backup !== main ? [backup] : [])];
+
+    let lastErr;
+    for (let i = 0; i < plan.length; i++) {
+        try {
+            return await callGeminiModel(plan[i], userContent);
+        } catch (err) {
+            lastErr = err;
+            if (!err.retryable) throw err;
+            if (i < plan.length - 1 && plan[i + 1] === plan[i]) await sleep(1500);
+        }
+    }
+    throw lastErr;
 }
 
 function callModel(userContent) {
