@@ -51,7 +51,7 @@ const tabs = {
 
 };
 
-const GRADIENT = "linear-gradient(135deg,#4F46E5 0%,#8B5CF6 100%)";
+const GRADIENT = "var(--sl-side-active)";
 
 /** Phone-only bottom navigation. "More" opens the full menu drawer. */
 export default function BottomNav({ onMore }) {
@@ -85,9 +85,9 @@ export default function BottomNav({ onMore }) {
                 pb: "calc(8px + env(safe-area-inset-bottom))",
                 bgcolor: "rgba(255,255,255,0.96)",
                 backdropFilter: "blur(10px)",
-                borderTop: "1px solid #E8E9F8",
+                borderTop: "1px solid var(--sl-border)",
                 borderRadius: "20px 20px 0 0",
-                boxShadow: "0 -6px 24px rgba(79,70,229,0.12)"
+                boxShadow: "0 -6px 24px rgba(15,23,42,0.1)"
             }}
         >
 
@@ -106,15 +106,15 @@ export default function BottomNav({ onMore }) {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 background: active ? GRADIENT : "transparent",
-                                color: active ? "#fff" : "#6B7194",
-                                boxShadow: active ? "0 6px 12px rgba(79,70,229,0.35)" : "none",
+                                color: active ? "var(--sl-on-active)" : "#6B7194",
+                                boxShadow: active ? "0 6px 12px var(--sl-glow)" : "none",
                                 transition: "all .15s ease",
                                 "& svg": { fontSize: 22 }
                             }}
                         >
                             {c.icon}
                         </Box>
-                        <Typography sx={{ fontSize: "0.66rem", fontWeight: active ? 800 : 600, color: active ? "#4F46E5" : "#6B7194", mt: 0.25, lineHeight: 1.1 }}>
+                        <Typography sx={{ fontSize: "0.66rem", fontWeight: active ? 800 : 600, color: active ? "var(--sl-primary)" : "#6B7194", mt: 0.25, lineHeight: 1.1 }}>
                             {c.title}
                         </Typography>
                     </>

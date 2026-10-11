@@ -17,6 +17,7 @@ import EmailIcon from "@mui/icons-material/EmailOutlined";
 import NotificationsIcon from "@mui/icons-material/NotificationsOutlined";
 
 import PushAlertsToggle from "../../components/common/PushAlertsToggle";
+import ThemePicker from "../../components/common/ThemePicker";
 
 import {
     getMySettings,
@@ -24,6 +25,10 @@ import {
 } from "../../services/settingsService";
 
 function SettingsPage() {
+
+    let isSchoolAdmin = false;
+
+    try { isSchoolAdmin = JSON.parse(localStorage.getItem("user"))?.role === "School Admin"; } catch { /* ignore */ }
 
     const [loading, setLoading] = useState(true);
 
@@ -142,7 +147,7 @@ function SettingsPage() {
 
                         borderRadius: "10px",
 
-                        bgcolor: "#DBEAFE",
+                        bgcolor: "#E0E7FF",
 
                         display: "flex",
 
@@ -154,7 +159,7 @@ function SettingsPage() {
 
                 >
 
-                    <SettingsIcon sx={{ color: "#2563EB" }} />
+                    <SettingsIcon sx={{ color: "#4F46E5" }} />
 
                 </Box>
 
@@ -260,6 +265,8 @@ function SettingsPage() {
                 </Box>
 
             </Card>
+
+            {isSchoolAdmin && <ThemePicker />}
 
         </Box>
 

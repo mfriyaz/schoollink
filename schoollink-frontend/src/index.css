@@ -1,5 +1,29 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap");
 
+/* Colours come from the chosen theme (see src/theme/themes.js). These are the
+   "Sunshine" defaults used for the very first paint before the theme loads. */
+:root {
+    --sl-primary: #111827;
+    --sl-primary-dark: #000000;
+    --sl-primary-light: #4B5563;
+    --sl-soft: #FFF4C7;
+    --sl-soft2: #FFE28A;
+    --sl-ink: #111827;
+    --sl-accent: #FFC107;
+    --sl-accent-dark: #F5A800;
+    --sl-page: #FFFBEB;
+    --sl-page2: #FFF3C4;
+    --sl-border: #F1E7BD;
+    --sl-side-bg: linear-gradient(180deg,#0A0A0B 0%,#151516 60%,#202022 100%);
+    --sl-side-active: linear-gradient(135deg,#FFD84D 0%,#FFB800 100%);
+    --sl-on-active: #111827;
+    --sl-side-text: #D4D4D8;
+    --sl-side-muted: rgba(212,212,216,0.55);
+    --sl-glow: rgba(255,193,7,0.45);
+    --sl-login-bg: #FFFBEB;
+    --sl-login-panel: #FFF4C7;
+}
+
 html,
 body,
 #root {
@@ -16,7 +40,7 @@ body,
 }
 
 body {
-    background: #F4F5FF;
+    background: var(--sl-page, #FFFBEB);
     font-family: Nunito, Inter, "Segoe UI", Roboto, Arial, sans-serif;
 }
 

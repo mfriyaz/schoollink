@@ -359,8 +359,8 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
     const isSuperAdmin = user && user.role === "Super Admin";
 
     const theme = isSuperAdmin
-        ? { bg: "linear-gradient(180deg,#2E1065 0%,#4C1D95 55%,#5B21B6 100%)", accent: "linear-gradient(135deg,#FF6B6B 0%,#C026D3 100%)", glow: "rgba(192,38,211,0.45)", accentSoft: "rgba(255,255,255,0.16)", brand: "SchoolLink Platform" }
-        : { bg: "linear-gradient(180deg,#1E1B4B 0%,#312E81 60%,#3730A3 100%)", accent: "linear-gradient(135deg,#6366F1 0%,#8B5CF6 100%)", glow: "rgba(99,102,241,0.55)", accentSoft: "rgba(255,255,255,0.16)", brand: "SchoolLink" };
+        ? { bg: "linear-gradient(180deg,#2E1065 0%,#4C1D95 55%,#5B21B6 100%)", accent: "linear-gradient(135deg,#FF6B6B 0%,#C026D3 100%)", glow: "rgba(192,38,211,0.45)", accentSoft: "rgba(255,255,255,0.16)", onActive: "#FFFFFF", text: "#C7D2FE", muted: "rgba(199,210,254,0.55)", tile: "rgba(255,255,255,0.22)", brand: "SchoolLink Platform" }
+        : { bg: "var(--sl-side-bg)", accent: "var(--sl-side-active)", glow: "var(--sl-glow)", accentSoft: "rgba(255,255,255,0.16)", onActive: "var(--sl-on-active)", text: "var(--sl-side-text)", muted: "var(--sl-side-muted)", tile: "color-mix(in srgb, var(--sl-on-active) 16%, transparent)", brand: "SchoolLink" };
 
     const sidebarWidth = collapsed ? 76 : 260;
 
@@ -469,7 +469,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
                 >
 
-                    <MenuBookIcon sx={{ fontSize: 20 }} />
+                    <MenuBookIcon sx={{ fontSize: 20, color: theme.onActive }} />
 
                 </Box>
 
@@ -568,7 +568,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
                                 to={menu.path}
                                 selected={active}
                                 sx={{
-                                    color: active ? "white" : "#C7D2FE",
+                                    color: active ? theme.onActive : theme.text,
                                     borderRadius: "14px",
                                     mb: 0.5,
                                     py: 0.8,
@@ -578,7 +578,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
                                     "&.Mui-selected": {
                                         background: theme.accent,
                                         boxShadow: `0 8px 18px ${theme.glow}`,
-                                        color: "white"
+                                        color: theme.onActive
                                     },
                                     "&.Mui-selected:hover": {
                                         background: theme.accent
@@ -603,8 +603,8 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
-                                            bgcolor: active ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.08)",
-                                            color: active ? "white" : tint,
+                                            bgcolor: active ? theme.tile : "rgba(255,255,255,0.08)",
+                                            color: active ? theme.onActive : tint,
                                             "& svg": { fontSize: 20 }
                                         }}
                                     >
@@ -636,7 +636,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
                         return (
                             <Box key={menu.path}>
                                 {heading && !collapsed && (
-                                    <Typography sx={{ px: 1.5, pt: idx === 0 ? 0 : 1.5, pb: 0.75, fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(199,210,254,0.55)" }}>
+                                    <Typography sx={{ px: 1.5, pt: idx === 0 ? 0 : 1.5, pb: 0.75, fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: theme.muted }}>
                                         {menu.group}
                                     </Typography>
                                 )}
@@ -651,7 +651,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
             {user && !collapsed && (
                 <Box sx={{ m: 2, mt: 0, p: 1.25, borderRadius: "14px", bgcolor: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", gap: 1.25 }}>
-                    <Box sx={{ width: 36, height: 36, borderRadius: "50%", background: theme.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, flexShrink: 0 }}>
+                    <Box sx={{ width: 36, height: 36, borderRadius: "50%", background: theme.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, flexShrink: 0, color: theme.onActive }}>
                         {String(user.name || user.username || "U").charAt(0).toUpperCase()}
                     </Box>
                     <Box sx={{ minWidth: 0 }}>

@@ -174,7 +174,7 @@ function LoginPage() {
 
                 minHeight: "100vh",
 
-                background: "radial-gradient(circle at 15% 10%, #E0E7FF 0%, transparent 45%), radial-gradient(circle at 90% 85%, #FFE4E6 0%, transparent 40%), #F4F5FF",
+                background: "var(--sl-login-bg)",
 
                 display: "flex",
 
@@ -252,7 +252,7 @@ function LoginPage() {
 
                         maxWidth: 480,
 
-                        background: "linear-gradient(160deg, #E0E7FF 0%, #EDE9FE 55%, #FFE4E6 100%)",
+                        background: "var(--sl-login-panel)",
 
                         borderRadius: 6,
 

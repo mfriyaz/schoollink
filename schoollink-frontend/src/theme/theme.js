@@ -9,9 +9,13 @@ import { createTheme } from "@mui/material/styles";
  */
 
 const HEAD_FONT = "Poppins, Nunito, Inter, Segoe UI, Roboto, Arial, sans-serif";
-const BORDER = "#E8E9F8";
-const CARD_SHADOW = "0 2px 8px rgba(79,70,229,0.06)";
-const CARD_SHADOW_HOVER = "0 10px 24px rgba(79,70,229,0.14)";
+
+
+export function buildTheme(t) {
+
+const BORDER = t.border;
+const CARD_SHADOW = `0 2px 8px ${t.btnShadow.replace(/[\d.]+\)$/, "0.08)")}`;
+const CARD_SHADOW_HOVER = `0 10px 24px ${t.btnShadow.replace(/[\d.]+\)$/, "0.16)")}`;
 
 // MUI needs 25 shadow levels. Level 1 is what a plain <Paper> / <Card>
 // uses, so making it soft and thin restyles every card at once.
@@ -21,19 +25,19 @@ shadows[1] = CARD_SHADOW;
 shadows[2] = CARD_SHADOW;
 shadows[3] = CARD_SHADOW_HOVER;
 
-const theme = createTheme({
+return createTheme({
 
     palette: {
         mode: "light",
         // Indigo (main) + coral (accent) + teal (success)
-        primary: { main: "#4F46E5", dark: "#4338CA", light: "#818CF8", contrastText: "#FFFFFF" },
-        secondary: { main: "#FF6B6B", dark: "#F04F5F", light: "#FF9A9A", contrastText: "#FFFFFF" },
+        primary: { main: t.primary, dark: t.primaryDark, light: t.primaryLight, contrastText: "#FFFFFF" },
+        secondary: { main: t.accent, dark: t.accentDark, light: t.accent, contrastText: t.btnText },
         success: { main: "#14B8A6", dark: "#0D9488" },
         warning: { main: "#F59E0B" },
         error: { main: "#EF4444" },
         info: { main: "#0EA5E9" },
-        background: { default: "#F4F5FF", paper: "#FFFFFF" },
-        text: { primary: "#1E1B4B", secondary: "#64748B" },
+        background: { default: t.pageBg, paper: "#FFFFFF" },
+        text: { primary: t.ink, secondary: "#64748B" },
         divider: BORDER
     },
 
@@ -150,7 +154,7 @@ const theme = createTheme({
                 tooltip: {
                     borderRadius: 8,
                     fontSize: "0.75rem",
-                    backgroundColor: "#1E1B4B"
+                    backgroundColor: t.ink
                 }
             }
         },
@@ -175,23 +179,35 @@ const theme = createTheme({
                     fontSize: "0.82rem"
                 },
                 outlined: {
-                    borderColor: "#C7D2FE"
-                },
-                containedPrimary: {
-                    background: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)",
-                    boxShadow: "0 6px 14px rgba(79,70,229,0.28)",
-                    "&:hover": {
-                        background: "linear-gradient(135deg, #4338CA 0%, #6D28D9 100%)",
-                        boxShadow: "0 8px 18px rgba(79,70,229,0.36)"
-                    },
-                    "&.Mui-disabled": { background: "#E2E8F0", boxShadow: "none" }
-                },
-                containedSecondary: {
-                    background: "linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)",
-                    boxShadow: "0 6px 14px rgba(255,107,107,0.30)",
-                    "&:hover": { background: "linear-gradient(135deg, #F04F5F 0%, #F97316 100%)" }
+                    borderColor: t.soft2
                 }
-            }
+            },
+
+            // MUI 9: colour-specific styles go in "variants"
+            variants: [
+                {
+                    props: { variant: "contained", color: "primary" },
+                    style: {
+                        background: t.btnBg,
+                        color: t.btnText,
+                        boxShadow: `0 6px 14px ${t.btnShadow}`,
+                        "&:hover": {
+                            background: t.btnHover,
+                            boxShadow: `0 8px 18px ${t.btnShadow}`
+                        },
+                        "&.Mui-disabled": { background: "#E2E8F0", color: "#94A3B8", boxShadow: "none" }
+                    }
+                },
+                {
+                    props: { variant: "contained", color: "secondary" },
+                    style: {
+                        background: `linear-gradient(135deg, ${t.accent} 0%, ${t.accentDark} 100%)`,
+                        color: t.btnText,
+                        boxShadow: `0 6px 14px ${t.btnShadow}`,
+                        "&:hover": { background: t.accentDark }
+                    }
+                }
+            ]
         },
 
         MuiIconButton: {
@@ -211,10 +227,10 @@ const theme = createTheme({
                     borderRadius: 10,
                     backgroundColor: "#FFFFFF",
                     "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#D5D9F5"
+                        borderColor: t.soft2
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#A5B4FC"
+                        borderColor: t.primaryLight
                     }
                 }
             }
@@ -250,7 +266,7 @@ const theme = createTheme({
         MuiTabs: {
             styleOverrides: {
                 root: { minHeight: 42 },
-                indicator: { height: 3, borderRadius: "3px 3px 0 0", background: "linear-gradient(90deg,#4F46E5,#FF6B6B)" }
+                indicator: { height: 3, borderRadius: "3px 3px 0 0", background: `linear-gradient(90deg, ${t.primary}, ${t.accent})` }
             }
         },
 
@@ -282,7 +298,7 @@ const theme = createTheme({
 
         MuiTableHead: {
             styleOverrides: {
-                root: { backgroundColor: "#EEF0FF" }
+                root: { backgroundColor: t.page2 }
             }
         },
 
@@ -292,7 +308,7 @@ const theme = createTheme({
                 head: {
                     fontWeight: 700,
                     fontSize: "0.78rem",
-                    color: "#4338CA",
+                    color: t.primaryDark,
                     textTransform: "uppercase",
                     letterSpacing: "0.04em"
                 }
@@ -302,7 +318,7 @@ const theme = createTheme({
         MuiTableRow: {
             styleOverrides: {
                 root: {
-                    "&:hover": { backgroundColor: "#F7F8FF" },
+                    "&:hover": { backgroundColor: t.pageBg },
                     "&:last-child td": { borderBottom: 0 }
                 }
             }
@@ -310,4 +326,4 @@ const theme = createTheme({
     }
 });
 
-export default theme;
+}

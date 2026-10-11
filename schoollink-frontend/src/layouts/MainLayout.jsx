@@ -7,8 +7,14 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import BottomNav from "./BottomNav";
+import { useAppTheme } from "../theme/ThemeProvider";
 
 function MainLayout() {
+
+    const { refresh: refreshTheme } = useAppTheme();
+
+    // Pick up the colour theme chosen by this school (after login / on reload)
+    useEffect(() => { refreshTheme(); }, [refreshTheme]);
 
     const [collapsed, setCollapsed] = useState(false);
 
@@ -62,7 +68,7 @@ function MainLayout() {
             sx={{
                 display: "flex",
                 minHeight: "100vh",
-                background: "linear-gradient(180deg,#EEF0FF 0%,#F4F5FF 220px,#F7F8FF 100%)"
+                background: "linear-gradient(180deg,var(--sl-page2) 0%,var(--sl-page) 220px,var(--sl-page) 100%)"
             }}
         >
 
