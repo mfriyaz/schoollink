@@ -7,8 +7,14 @@ import {
     Button,
     Card,
     Chip,
-    CircularProgress,
+        CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Grid,
+    InputAdornment,
+    LinearProgress,
     MenuItem,
     TextField,
     Typography
@@ -18,11 +24,11 @@ import DomainIcon from "@mui/icons-material/DomainOutlined";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import EditIcon from "@mui/icons-material/EditOutlined";
+import SearchIcon from "@mui/icons-material/SearchOutlined";
 
-import {
-    getAllSchools,
-    updateSchoolGovernance
-} from "../../services/superAdminService";
+import { updateSchoolGovernance } from "../../services/superAdminService";
+import { getPlatformSchools } from "../../services/platformAdminService";
+import { bytesLabel, changeLines, fmtDate, timeAgo } from "../../utils/platformUi";
 
 const statusOptions = ["ACTIVE", "SUSPENDED", "TRIAL", "EXPIRED"];
 
@@ -77,59 +83,110 @@ function SchoolCard({ school, onSaved }) {
 
     const [error, setError] = useState("");
 
-    async function handleSave() {
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [pending, setPending] = useState([]);
+    const [reason, setReason] = useState("");
+
+    const current = {
+        subscription_plan: school.subscription_plan || "STANDARD",
+        status: school.status || "ACTIVE",
+        subscription_expiry: school.subscription_expiry ? String(school.subscription_expiry).slice(0, 10) : null,
+        max_students: school.max_students ?? null,
+        max_teachers: school.max_teachers ?? null,
+        max_classes: school.max_classes ?? null,
+        max_storage_mb: school.max_storage_mb ?? null
+    };
+
+    const next = {
+        subscription_plan: plan,
+        status,
+        subscription_expiry: expiry || null,
+        max_students: maxStudents === "" ? null : Number(maxStudents),
+        max_teachers: maxTeachers === "" ? null : Number(maxTeachers),
+        max_classes: maxClasses === "" ? null : Number(maxClasses),
+        max_storage_mb: maxStorage === "" ? null : Number(maxStorage)
+    };
+
+    const expiryChanged = current.subscription_expiry !== next.subscription_expiry;
+
+    // Step 1: show exactly what is about to change and ask to confirm
+    function requestSave() {
 
         setError("");
 
+        const changes = {};
+
+        for (const k of Object.keys(next)) {
+
+            const a = current[k] === null ? null : String(current[k]);
+            const b = next[k] === null ? null : String(next[k]);
+
+            if (a !== b) changes[k] = { from: current[k], to: next[k] };
+
+        }
+
+        const lines = changeLines(changes);
+
+        const tzChanged = timezone !== (school.timezone || "Asia/Singapore");
+
+        if (lines.length === 0 && !tzChanged) {
+
+            setError("Nothing has changed.");
+
+            return;
+
+        }
+
+        if (tzChanged) {
+
+            lines.push({ field: "timezone", label: "Time zone", from: school.timezone || "-", to: timezone });
+
+        }
+
+        setPending(lines);
+        setReason("");
+        setConfirmOpen(true);
+
+    }
+
+    // Step 2: confirmed - save, with the reason kept in the change history
+    async function handleSave() {
+        setError("");
         try {
-
             setSaving(true);
-
             const response = await updateSchoolGovernance(school.id, {
-
                 subscription_plan: plan,
-
                 status,
-
                 subscription_expiry: expiry || null,
-
                 max_classes: maxClasses === "" ? null : Number(maxClasses),
-
                 max_students: maxStudents === "" ? null : Number(maxStudents),
-
                 max_teachers: maxTeachers === "" ? null : Number(maxTeachers),
                 max_storage_mb: maxStorage === "" ? null : Number(maxStorage),
-
-                timezone
-
+                timezone,
+                reason
             });
-
             if (response.success) {
-
+                setConfirmOpen(false);
                 setEditing(false);
-
                 onSaved(response.data);
-
             } else {
-
                 setError(response.message);
-
+                setConfirmOpen(false);
             }
-
         } catch (err) {
-
             setError(
                 err.response?.data?.message ||
                 "Unable to save changes."
             );
-
+            setConfirmOpen(false);
         } finally {
-
             setSaving(false);
-
         }
-
     }
+
+    const expiryDays = school.subscription_expiry
+        ? Math.round((new Date(`${String(school.subscription_expiry).slice(0, 10)}T00:00:00`) - new Date(new Date().toDateString())) / 86400000)
+        : null;
 
     const statusColor =
         school.status === "ACTIVE" ? "success" :
@@ -208,6 +265,59 @@ function SchoolCard({ school, onSaved }) {
                     </Button>
 
                 </Box>
+
+            </Box>
+
+                        <Box sx={{ mt: 2 }}>
+
+                <Grid container spacing={1.5}>
+                    {[
+                        ["Students", school.students, school.max_students, null],
+                        ["Teachers", school.teachers, school.max_teachers, null],
+                        ["Classes", school.classes, school.max_classes, null],
+                        ["Parents", school.parents, null, null],
+                        ["Storage", bytesLabel(school.storage_bytes), school.max_storage_mb ? `${school.max_storage_mb} MB` : null, school.max_storage_mb ? (school.storage_bytes / 1048576 / school.max_storage_mb) * 100 : null]
+                    ].map(([label, used, limit, pctOverride]) => {
+                        const pct = pctOverride !== null ? pctOverride : (limit && typeof used === "number" ? (used / limit) * 100 : null);
+                        return (
+                            <Grid key={label} size={{ xs: 6, sm: 4, md: 2.4 }}>
+                                <Box sx={{ p: 1.25, borderRadius: 2, bgcolor: "#F8FAFC", height: "100%" }}>
+                                    <Typography sx={{ color: "#94A3B8", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: 0.4 }}>{label}</Typography>
+                                    <Typography sx={{ fontWeight: 700, fontSize: "1.05rem", lineHeight: 1.3 }}>
+                                        {used}{limit ? <span style={{ color: "#94A3B8", fontWeight: 500, fontSize: "0.8rem" }}> / {limit}</span> : null}
+                                    </Typography>
+                                    {pct !== null && (
+                                        <LinearProgress variant="determinate" value={Math.min(100, pct)}
+                                            color={pct >= 100 ? "error" : pct >= 90 ? "warning" : "primary"}
+                                            sx={{ height: 5, borderRadius: 3, mt: 0.5, bgcolor: "#E2E8F0" }} />
+                                    )}
+                                </Box>
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mt: 1.5, alignItems: "center" }}>
+
+                    {expiryDays === null ? (
+                        <Chip size="small" variant="outlined" label="No expiry set" />
+                    ) : (
+                        <Chip size="small" color={expiryDays < 0 ? "error" : expiryDays <= 30 ? "warning" : "success"} variant="outlined"
+                            label={expiryDays < 0
+                                ? `Expired ${-expiryDays} day${-expiryDays === 1 ? "" : "s"} ago (${fmtDate(school.subscription_expiry)})`
+                                : `Expires ${fmtDate(school.subscription_expiry)} (${expiryDays} day${expiryDays === 1 ? "" : "s"} left)`} />
+                    )}
+
+                    <Chip size="small" variant="outlined" label={`Last login: ${timeAgo(school.last_login)}`} />
+
+                    {school.files > 0 && <Chip size="small" variant="outlined" label={`${school.files} files`} />}
+
+                </Box>
+
+                <Typography sx={{ color: "#64748B", fontSize: "0.8rem", mt: 1, overflowWrap: "anywhere" }}>
+                    Admin: {school.admin_name ? `${school.admin_name}${school.admin_email ? ` - ${school.admin_email}` : ""}` : "no administrator found"}
+                    {school.phone ? ` | Phone: ${school.phone}` : ""}
+                </Typography>
 
             </Box>
 
@@ -355,9 +465,7 @@ function SchoolCard({ school, onSaved }) {
 
                         <Button loading={saving} loadingPosition="start"
                             variant="contained"
-                            onClick={handleSave}
-                            disabled={saving}
-                        >
+                            onClick={requestSave} disabled={saving} >
 
                             {saving ? "Saving..." : "Save Changes"}
 
@@ -369,6 +477,34 @@ function SchoolCard({ school, onSaved }) {
 
             )}
 
+                    <Dialog open={confirmOpen} onClose={saving ? undefined : () => setConfirmOpen(false)} maxWidth="xs" fullWidth>
+                <DialogTitle>Confirm changes for {school.school_name}</DialogTitle>
+                <DialogContent>
+                    <Typography sx={{ fontSize: "0.88rem", mb: 1.5 }}>
+                        Please check these changes. They are saved in the school's change history.
+                    </Typography>
+                    {pending.map((c) => (
+                        <Typography key={c.field} sx={{ fontSize: "0.9rem", mb: 0.5 }}>
+                            <span style={{ color: "#64748B" }}>{c.label}:</span> {c.from} <b>→</b> <b>{c.to}</b>
+                        </Typography>
+                    ))}
+                    <TextField
+                        label={expiryChanged ? "Reason (required - expiry date is changing)" : "Reason (optional)"}
+                        value={reason}
+                        onChange={(e) => setReason(e.target.value)}
+                        fullWidth size="small" multiline minRows={2} sx={{ mt: 2 }}
+                        error={expiryChanged && !reason.trim()}
+                        placeholder="e.g. Renewed for 1 year, paid by UPI"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirmOpen(false)} disabled={saving}>Cancel</Button>
+                    <Button variant="contained" onClick={handleSave} loading={saving} loadingPosition="start"
+                        disabled={expiryChanged && !reason.trim()}>
+                        Confirm and save
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Card>
 
     );
@@ -380,6 +516,8 @@ function SchoolsManagementPage() {
     const [schools, setSchools] = useState([]);
 
     const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
+    const [statusFilter, setStatusFilter] = useState("ALL");
 
     useEffect(() => {
 
@@ -391,7 +529,7 @@ function SchoolsManagementPage() {
 
         try {
 
-            const response = await getAllSchools();
+            const response = await getPlatformSchools();
 
             if (response.success) {
 
@@ -411,12 +549,9 @@ function SchoolsManagementPage() {
 
     }
 
-    function handleSaved(updatedSchool) {
-
-        setSchools((list) =>
-            list.map((s) => (s.id === updatedSchool.id ? updatedSchool : s))
-        );
-
+    function handleSaved() {
+        // Reload so usage, expiry countdown and limits all refresh together
+        loadSchools();
     }
 
     if (loading) {
@@ -499,11 +634,26 @@ function SchoolsManagementPage() {
 
             )}
 
-            {schools.map((school) => (
+                        <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 2, alignItems: "center" }}>
+                <TextField
+                    size="small" placeholder="Search school name, code or city" value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    sx={{ flex: 1, minWidth: 220, maxWidth: 360 }}
+                    slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> } }}
+                />
+                {["ALL", "ACTIVE", "TRIAL", "SUSPENDED", "EXPIRED"].map((st) => (
+                    <Chip key={st} size="small" clickable label={st === "ALL" ? `All (${schools.length})` : `${st} (${schools.filter((x) => x.status === st).length})`}
+                        color={statusFilter === st ? "primary" : "default"} variant={statusFilter === st ? "filled" : "outlined"}
+                        onClick={() => setStatusFilter(st)} />
+                ))}
+            </Box>
 
-                <SchoolCard key={school.id} school={school} onSaved={handleSaved} />
-
-            ))}
+            {schools
+                .filter((x) => statusFilter === "ALL" || x.status === statusFilter)
+                .filter((x) => !search.trim() || `${x.school_name} ${x.school_code} ${x.city || ""}`.toLowerCase().includes(search.trim().toLowerCase()))
+                .map((school) => (
+                    <SchoolCard key={school.id} school={school} onSaved={handleSaved} />
+                ))}
 
         </Box>
 

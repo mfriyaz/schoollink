@@ -120,7 +120,14 @@ const schoolRecords = wrap(async (req, res) => {
 
 });
 
+const subscriptionHistory = wrap(async (req, res) => {
+
+    return response.success(res, await service.listSubscriptionHistory(req.query));
+
+});
+
 module.exports = {
+    subscriptionHistory,
     schoolRecords,
     overview, listSchools, schoolDetail, setStatus, addPayment,
     deletePayment, listPayments, updateNotes, resetAdminPassword

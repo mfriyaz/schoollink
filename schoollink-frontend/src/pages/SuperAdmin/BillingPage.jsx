@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Alert, Box, Button, Card, CircularProgress, MenuItem, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, CircularProgress, MenuItem, Tab, Tabs, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
 import PaymentsIcon from "@mui/icons-material/PaymentsOutlined";
 import DownloadIcon from "@mui/icons-material/FileDownloadOutlined";
 
 import KpiCard from "../../components/Dashboard/KpiCard";
+import HistoryList from "../../components/SuperAdmin/HistoryList";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
-import { getPlatformOverview, getPlatformPayments, getPlatformSchools } from "../../services/platformAdminService";
+import { getPlatformOverview, getPlatformPayments, getPlatformSchools, getSubscriptionHistory } from "../../services/platformAdminService";
 import { fmtDate, money } from "../../utils/platformUi";
 
 function toCsv(rows) {
@@ -35,6 +36,8 @@ export default function BillingPage() {
     const [from, setFrom] = useState("");
     const [to, setTo] = useState("");
     const [error, setError] = useState("");
+    const [tab, setTab] = useState("payments");
+    const [history, setHistory] = useState(null);
 
     useEffect(() => {
 
@@ -51,6 +54,16 @@ export default function BillingPage() {
         getPlatformPayments({ school_id: schoolId || undefined, from: from || undefined, to: to || undefined })
             .then((res) => setRows(res.data))
             .catch((err) => setError(err.response?.data?.message || "Unable to load payments."));
+
+    }, [schoolId, from, to]);
+
+    useEffect(() => {
+
+        setHistory(null);
+
+        getSubscriptionHistory({ school_id: schoolId || undefined, from: from || undefined, to: to || undefined })
+            .then((res) => setHistory(res.data))
+            .catch(() => setHistory([]));
 
     }, [schoolId, from, to]);
 
@@ -97,6 +110,11 @@ export default function BillingPage() {
                 </Grid>
             )}
 
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 1.5, borderBottom: "1px solid #E2E8F0" }}>
+                <Tab value="payments" label="Payments" sx={{ textTransform: "none", fontWeight: 600 }} />
+                <Tab value="history" label="Subscription changes" sx={{ textTransform: "none", fontWeight: 600 }} />
+            </Tabs>
+
             <Card sx={{ p: { xs: 2, sm: 2.5 } }}>
 
                 <Grid container spacing={1.5} sx={{ mb: 2 }}>
@@ -109,17 +127,24 @@ export default function BillingPage() {
                     <Grid size={{ xs: 6, sm: 3 }}><SchoolDatePicker label="From" value={from} onChange={setFrom} fullWidth size="small" /></Grid>
                     <Grid size={{ xs: 6, sm: 3 }}><SchoolDatePicker label="To" value={to} onChange={setTo} fullWidth size="small" /></Grid>
                     <Grid size={{ xs: 12, sm: 2 }}>
-                        <Button fullWidth variant="outlined" startIcon={<DownloadIcon />} disabled={!rows || rows.length === 0} onClick={exportCsv} sx={{ height: 40 }}>
+                        <Button fullWidth variant="outlined" startIcon={<DownloadIcon />} disabled={tab !== "payments" || !rows || rows.length === 0} onClick={exportCsv} sx={{ height: 40 }}>
                             CSV
                         </Button>
                     </Grid>
                 </Grid>
 
-                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                {tab === "history" && (
+                    <>
+                        {!history && <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}><CircularProgress /></Box>}
+                        {history && <HistoryList rows={history} showSchool onOpenSchool={(id) => navigate(`/super-admin/schools/${id}`)} />}
+                    </>
+                )}
 
-                {!rows && !error && <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}><CircularProgress /></Box>}
+                {tab === "payments" && error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-                {rows && (
+                {tab === "payments" && !rows && !error && <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}><CircularProgress /></Box>}
+
+                {tab === "payments" && rows && (
                     <>
                         <Typography sx={{ color: "#64748B", fontSize: "0.85rem", mb: 1 }}>
                             {rows.length} payment{rows.length === 1 ? "" : "s"} - total {money(total, rows[0]?.currency)}

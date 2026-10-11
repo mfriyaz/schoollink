@@ -77,3 +77,39 @@ export function usd(amount) {
     return n > 0 && n < 0.01 ? "< $0.01" : `$${n.toFixed(2)}`;
 
 }
+
+const FIELD_LABELS = {
+    subscription_plan: "Plan",
+    status: "Status",
+    subscription_expiry: "Expiry date",
+    max_students: "Max students",
+    max_teachers: "Max teachers",
+    max_classes: "Max classes",
+    max_storage_mb: "Max storage (MB)"
+};
+
+export function fieldLabel(field) {
+    return FIELD_LABELS[field] || field;
+}
+
+export function fieldValue(field, value) {
+
+    if (value === null || value === undefined || value === "") {
+        return field.startsWith("max_") ? "Unlimited" : "None";
+    }
+
+    return field === "subscription_expiry" ? fmtDate(value) : String(value);
+
+}
+
+/** [{ label, from, to }] for a stored changes object */
+export function changeLines(changes) {
+
+    return Object.entries(changes || {}).map(([field, c]) => ({
+        field,
+        label: fieldLabel(field),
+        from: fieldValue(field, c.from),
+        to: fieldValue(field, c.to)
+    }));
+
+}

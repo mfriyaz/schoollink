@@ -9,6 +9,29 @@ const { clearSchoolAccessCache } = require("../utils/schoolAccess");
 async function updateSchoolGovernance(req, res) {
     try {
 
+        const before = await platformAdminService.getSubscriptionSnapshot(req.params.id);
+
+        if (!before) {
+            return res.status(404).json({
+                success: false,
+                message: "School not found"
+            });
+        }
+
+        const reason = String(req.body.reason || "").trim();
+
+        const incomingExpiry = req.body.subscription_expiry
+            ? String(req.body.subscription_expiry).slice(0, 10)
+            : null;
+
+        // Changing the subscription duration must always be explained
+        if (incomingExpiry !== before.subscription_expiry && !reason) {
+            return res.status(400).json({
+                success: false,
+                message: "Please give a reason for changing the subscription expiry date."
+            });
+        }
+
         const school = await schoolService.updateSchoolGovernance(
             req.params.id,
             req.body
@@ -22,6 +45,17 @@ async function updateSchoolGovernance(req, res) {
         }
 
         clearSchoolAccessCache();
+
+        await platformAdminService.recordSubscriptionChange(
+            req,
+            { id: school.id },
+            platformAdminService.diffSnapshots(
+                before,
+                await platformAdminService.getSubscriptionSnapshot(school.id)
+            ),
+            reason,
+            "manual"
+        );
 
         await platformAdminService.logActivity(
             req,

@@ -39,3 +39,7 @@ export async function resetSchoolAdminPassword(userId) {
 export async function getSchoolRecords(id, type, params) {
     return (await api.get(`/platform/schools/${id}/records/${type}`, { params })).data;
 }
+
+export async function getSubscriptionHistory(params) {
+    return (await api.get("/platform/subscription-history", { params })).data;
+}

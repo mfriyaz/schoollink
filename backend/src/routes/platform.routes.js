@@ -34,6 +34,7 @@ router.post("/schools/:id/payments", ...sa, admin.addPayment);
 router.patch("/schools/:id/notes", ...sa, admin.updateNotes);
 router.delete("/payments/:paymentId", ...sa, admin.deletePayment);
 router.get("/payments", ...sa, admin.listPayments);
+router.get("/subscription-history", ...sa, admin.subscriptionHistory);
 router.post("/school-admins/:userId/reset-password", ...sa, admin.resetAdminPassword);
 
 module.exports = router;

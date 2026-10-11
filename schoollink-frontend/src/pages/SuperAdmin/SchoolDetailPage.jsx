@@ -11,6 +11,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBackOutlined";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import AddIcon from "@mui/icons-material/AddOutlined";
 
+import HistoryList from "../../components/SuperAdmin/HistoryList";
 import PaymentDialog from "../../components/SuperAdmin/PaymentDialog";
 import SchoolRecords from "../../components/SuperAdmin/SchoolRecords";
 import ResetPasswordDialog from "../../components/common/ResetPasswordDialog";
@@ -283,6 +284,10 @@ export default function SchoolDetailPage() {
                         ))}
                     </Grid>
                 </Grid>
+            </Section>
+
+            <Section title="Subscription history (who changed what)">
+                <HistoryList rows={data.history || []} />
             </Section>
 
             <Section title="Contact">

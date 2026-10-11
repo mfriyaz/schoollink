@@ -31,6 +31,12 @@ const SCHOOL_USAGE_SQL = `
             WHERE t.school_id = s.id AND t.is_active) AS teachers,
         (SELECT COUNT(*)::int FROM classes c
             WHERE c.school_id = s.id AND c.is_active) AS classes,
+        (SELECT u.full_name FROM users u JOIN roles r ON r.id = u.role_id
+            WHERE u.school_id = s.id AND r.role_name = 'School Admin'
+            ORDER BY u.id LIMIT 1) AS admin_name,
+        (SELECT u.email FROM users u JOIN roles r ON r.id = u.role_id
+            WHERE u.school_id = s.id AND r.role_name = 'School Admin'
+            ORDER BY u.id LIMIT 1) AS admin_email,
         (SELECT COALESCE(SUM(f.bytes), 0)::float8 FROM uploaded_files f
             WHERE f.school_id = s.id) AS storage_bytes,
         (SELECT COUNT(*)::int FROM uploaded_files f
@@ -68,6 +74,99 @@ function usagePercent(used, limit) {
     if (!limit) return null;
 
     return Math.round((used / limit) * 100);
+
+}
+
+
+const TRACKED_FIELDS = [
+    "subscription_plan", "status", "subscription_expiry",
+    "max_students", "max_teachers", "max_classes", "max_storage_mb"
+];
+
+/** Current plan/status/expiry/limits of a school, in comparable form */
+async function getSubscriptionSnapshot(id) {
+
+    const r = await pool.query(
+        `
+        SELECT COALESCE(subscription_plan, 'STANDARD') AS subscription_plan,
+               COALESCE(status, 'ACTIVE') AS status,
+               to_char(subscription_expiry, 'YYYY-MM-DD') AS subscription_expiry,
+               max_students, max_teachers, max_classes, max_storage_mb
+        FROM schools WHERE id = $1
+        `,
+        [id]
+    );
+
+    return r.rows[0] || null;
+
+}
+
+/** { field: { from, to } } for every tracked field that differs */
+function diffSnapshots(before, after) {
+
+    const changes = {};
+
+    for (const f of TRACKED_FIELDS) {
+
+        const a = before[f] === null || before[f] === undefined ? null : String(before[f]);
+        const b = after[f] === null || after[f] === undefined ? null : String(after[f]);
+
+        if (a !== b) changes[f] = { from: a, to: b };
+
+    }
+
+    return changes;
+
+}
+
+async function recordSubscriptionChange(req, school, changes, reason, source) {
+
+    if (!changes || Object.keys(changes).length === 0) return;
+
+    try {
+
+        const actor = await pool.query(`SELECT full_name FROM users WHERE id = $1`, [req.user.id]);
+
+        await pool.query(
+            `
+            INSERT INTO school_subscription_history
+            (school_id, changed_by, changed_by_name, source, changes, reason)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            `,
+            [school.id, req.user.id, actor.rows[0]?.full_name || null, source || "manual", JSON.stringify(changes), reason || null]
+        );
+
+    } catch (err) {
+
+        console.error("subscription history failed:", err.message);
+
+    }
+
+}
+
+async function listSubscriptionHistory({ school_id, from, to } = {}) {
+
+    const where = [];
+    const params = [];
+
+    if (school_id) { params.push(school_id); where.push(`h.school_id = $${params.length}`); }
+    if (from) { params.push(from); where.push(`h.created_at >= $${params.length}::date`); }
+    if (to) { params.push(to); where.push(`h.created_at < ($${params.length}::date + interval '1 day')`); }
+
+    const r = await pool.query(
+        `
+        SELECT h.id, h.school_id, s.school_name, h.changed_by_name, h.source,
+               h.changes, h.reason, h.created_at
+        FROM school_subscription_history h
+        JOIN schools s ON s.id = h.school_id
+        ${where.length ? "WHERE " + where.join(" AND ") : ""}
+        ORDER BY h.created_at DESC
+        LIMIT 300
+        `,
+        params
+    );
+
+    return r.rows;
 
 }
 
@@ -345,6 +444,16 @@ async function getSchoolDetail(id) {
         [id]
     );
 
+    const history = await pool.query(
+        `
+        SELECT id, changed_by_name, source, changes, reason, created_at
+        FROM school_subscription_history
+        WHERE school_id = $1
+        ORDER BY created_at DESC LIMIT 30
+        `,
+        [id]
+    ).catch(() => ({ rows: [] }));
+
     const recentUsage = await pool.query(
         `
         SELECT COUNT(*)::int AS actions_30d
@@ -360,6 +469,7 @@ async function getSchoolDetail(id) {
         payments: payments.rows,
         activity: activity.rows,
         actions_30d: recentUsage.rows[0].actions_30d,
+        history: history.rows,
         storage: {
             bytes: school.storage_bytes,
             files: school.files,
@@ -460,7 +570,11 @@ async function setStatus(req, id, status, reason) {
 
     if (!school) return null;
 
+    const before = await getSubscriptionSnapshot(id);
+
     await pool.query(`UPDATE schools SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`, [status, id]);
+
+    await recordSubscriptionChange(req, school, diffSnapshots(before, await getSubscriptionSnapshot(id)), reason, "status");
 
     clearSchoolAccessCache();
 
@@ -486,6 +600,8 @@ async function addPayment(req, schoolId, p) {
         throw new Error("Enter a valid amount");
 
     }
+
+    const beforeSnap = await getSubscriptionSnapshot(schoolId);
 
     const client = await pool.connect();
 
@@ -539,6 +655,17 @@ async function addPayment(req, schoolId, p) {
         await client.query("COMMIT");
 
         clearSchoolAccessCache();
+
+        if (p.update_expiry && p.period_end) {
+
+            await recordSubscriptionChange(
+                req, school,
+                diffSnapshots(beforeSnap, await getSubscriptionSnapshot(schoolId)),
+                `Payment recorded${p.reference ? ` (ref ${p.reference})` : ""}`,
+                "payment"
+            );
+
+        }
 
         await logActivity(
             req, school, "payment",
@@ -679,6 +806,10 @@ module.exports = {
     updateNotes,
     resetSchoolAdminPassword,
     logActivity,
+    getSubscriptionSnapshot,
+    diffSnapshots,
+    recordSubscriptionChange,
+    listSubscriptionHistory,
     logRecordsView,
     getSchoolBrief
 };
