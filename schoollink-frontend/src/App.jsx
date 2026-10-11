@@ -1,5 +1,6 @@
 import AppRoutes from "./routes/AppRoutes";
 import InstallAppBanner from "./components/common/InstallAppBanner";
+import PushPrompt from "./components/common/PushPrompt";
 
 function App() {
 
@@ -7,6 +8,7 @@ function App() {
         <>
             <AppRoutes />
             <InstallAppBanner />
+            <PushPrompt />
         </>
     );
 

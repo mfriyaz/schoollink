@@ -16,6 +16,8 @@ import SettingsIcon from "@mui/icons-material/SettingsOutlined";
 import EmailIcon from "@mui/icons-material/EmailOutlined";
 import NotificationsIcon from "@mui/icons-material/NotificationsOutlined";
 
+import PushAlertsToggle from "../../components/common/PushAlertsToggle";
+
 import {
     getMySettings,
     updateMySettings
@@ -239,6 +241,9 @@ function SettingsPage() {
                     />
 
                 </Box>
+
+<PushAlertsToggle />
+
 
                 <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
 

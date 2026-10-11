@@ -2,6 +2,7 @@ const db = require("../config/database");
 
 const notificationModel = require("../models/notification.model");
 const emailService = require("./email.service");
+const pushService = require("./push.service");
 
 /**
  * Create a notification for a user, but only if they haven't
@@ -58,6 +59,17 @@ async function notifyIfEnabled(userId, title, inAppMessage, emailBody, link) {
         message: inAppMessage,
 
         link
+
+    });
+
+    // Phone alert (fire-and-forget; never blocks or breaks the post)
+    pushService.sendToUser(userId, {
+
+        title,
+
+        body: inAppMessage,
+
+        url: link
 
     });
 
