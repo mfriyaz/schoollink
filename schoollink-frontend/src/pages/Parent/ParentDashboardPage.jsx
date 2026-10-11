@@ -18,7 +18,6 @@ import {
     Typography
 } from "@mui/material";
 
-import ParentAttendanceCard from "../../components/Parent/ParentAttendanceCard";
 import { getCalendar } from "../../services/calendarService";
 import { dayInfo } from "../../utils/calendarUtils";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -1064,7 +1063,6 @@ function ParentDashboardPage() {
             )}
 
 
-            {(attendance.length > 0 || calendar) && <ParentAttendanceCard attendance={attendance} calendar={calendar} />}
 
 
             {pendingCount > 0 && (

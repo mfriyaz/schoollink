@@ -195,6 +195,12 @@ const parentMenus = [
     },
 
     {
+        title: "Attendance",
+        path: "/parent/attendance",
+        icon: <FactCheckIcon />
+    },
+
+    {
         title: "Exam Results",
         path: "/parent/exam-results",
         icon: <AssessmentIcon />

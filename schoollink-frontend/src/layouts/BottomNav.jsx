@@ -37,6 +37,7 @@ const tabs = {
 
     Parent: [
         { title: "Home", path: "/parent/dashboard", icon: <HomeIcon /> },
+        { title: "Attendance", path: "/parent/attendance", icon: <FactCheckIcon /> },
         { title: "Results", path: "/parent/exam-results", icon: <AssessmentIcon /> },
         { title: "This Week", path: "/parent/this-week", icon: <WeeklyIcon /> },
         { title: "Settings", path: "/settings", icon: <SettingsIcon /> }
