@@ -16,14 +16,18 @@ export const THEMES = {
         id: "sunshine",
         name: "Sunshine",
         tagline: "Black & Yellow",
+        // Solid, high-contrast style: flat yellow, black text, crisp outlines (no gradients or glow)
         primary: "#111827", primaryDark: "#000000", primaryLight: "#4B5563",
-        soft: "#FFF4C7", soft2: "#FFE28A", ink: "#111827",
-        accent: "#FFC107", accentDark: "#F5A800",
-        pageBg: "#FFFBEB", border: "#F1E7BD", page2: "#FFF3C4",
-        btnBg: "linear-gradient(135deg,#FFD84D 0%,#FFB800 100%)", btnHover: "linear-gradient(135deg,#FFC107 0%,#F59E0B 100%)", btnText: "#111827", btnShadow: "rgba(255,184,0,0.38)",
-        sideBg: "linear-gradient(180deg,#0A0A0B 0%,#151516 60%,#202022 100%)", sideActive: "linear-gradient(135deg,#FFD84D 0%,#FFB800 100%)", onActive: "#111827", sideText: "#D4D4D8", sideMuted: "rgba(212,212,216,0.55)", glow: "rgba(255,193,7,0.45)",
-        loginBg: "radial-gradient(circle at 15% 10%, #FFF1B8 0%, transparent 45%), radial-gradient(circle at 90% 85%, #E5E7EB 0%, transparent 40%), #FFFBEB",
-        loginPanel: "linear-gradient(160deg,#FFF4C7 0%,#FFE28A 60%,#FFD84D 100%)"
+        soft: "#FFEBA3", soft2: "#EAD98F", ink: "#111827",
+        accent: "#FFC400", accentDark: "#F5B300",
+        pageBg: "#FFF8DC", border: "#E9DCA6", page2: "#FFF8DC",
+        btnBg: "#FFC400", btnHover: "#FFB300", btnText: "#111827", btnShadow: "rgba(17,24,39,0.30)",
+        btnBorder: "1.5px solid #111827", btnShadowCss: "0 3px 0 #111827", btnShadowHoverCss: "0 4px 0 #111827",
+        cardShadow: "0 1px 0 rgba(17,24,39,0.08), 0 2px 8px rgba(17,24,39,0.06)", cardShadowHover: "0 2px 0 rgba(17,24,39,0.12), 0 8px 18px rgba(17,24,39,0.12)",
+        tabIndicator: "#FFC400",
+        sideBg: "#0B0B0C", sideActive: "#FFC400", onActive: "#111827", sideText: "#E4E4E7", sideMuted: "rgba(228,228,231,0.55)", glow: "rgba(0,0,0,0)",
+        loginBg: "#FFF8DC",
+        loginPanel: "#FFC400"
     },
 
     royal: {
@@ -89,7 +93,7 @@ export function applyThemeVars(t) {
         primary: t.primary, "primary-dark": t.primaryDark, "primary-light": t.primaryLight,
         soft: t.soft, soft2: t.soft2, ink: t.ink, accent: t.accent, "accent-dark": t.accentDark,
         page: t.pageBg, page2: t.page2, border: t.border,
-        "btn-bg": t.btnBg, "btn-text": t.btnText, "btn-shadow": t.btnShadow,
+        "btn-bg": t.btnBg, "btn-border": t.btnBorder || "none", "btn-text": t.btnText, "btn-shadow": t.btnShadow,
         "side-bg": t.sideBg, "side-active": t.sideActive, "on-active": t.onActive,
         "side-text": t.sideText, "side-muted": t.sideMuted, glow: t.glow,
         "login-bg": t.loginBg, "login-panel": t.loginPanel

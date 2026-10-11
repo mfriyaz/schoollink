@@ -14,8 +14,8 @@ const HEAD_FONT = "Poppins, Nunito, Inter, Segoe UI, Roboto, Arial, sans-serif";
 export function buildTheme(t) {
 
 const BORDER = t.border;
-const CARD_SHADOW = `0 2px 8px ${t.btnShadow.replace(/[\d.]+\)$/, "0.08)")}`;
-const CARD_SHADOW_HOVER = `0 10px 24px ${t.btnShadow.replace(/[\d.]+\)$/, "0.16)")}`;
+const CARD_SHADOW = t.cardShadow || `0 2px 8px ${t.btnShadow.replace(/[\d.]+\)$/, "0.08)")}`;
+const CARD_SHADOW_HOVER = t.cardShadowHover || `0 10px 24px ${t.btnShadow.replace(/[\d.]+\)$/, "0.16)")}`;
 
 // MUI needs 25 shadow levels. Level 1 is what a plain <Paper> / <Card>
 // uses, so making it soft and thin restyles every card at once.
@@ -190,12 +190,14 @@ return createTheme({
                     style: {
                         background: t.btnBg,
                         color: t.btnText,
-                        boxShadow: `0 6px 14px ${t.btnShadow}`,
+                        border: t.btnBorder || "none",
+                        boxShadow: t.btnShadowCss || `0 6px 14px ${t.btnShadow}`,
                         "&:hover": {
                             background: t.btnHover,
-                            boxShadow: `0 8px 18px ${t.btnShadow}`
+                            boxShadow: t.btnShadowHoverCss || `0 8px 18px ${t.btnShadow}`
                         },
-                        "&.Mui-disabled": { background: "#E2E8F0", color: "#94A3B8", boxShadow: "none" }
+                        "&:active": t.btnBorder ? { transform: "translateY(2px)", boxShadow: "0 1px 0 #111827" } : {},
+                        "&.Mui-disabled": { background: "#E2E8F0", color: "#94A3B8", boxShadow: "none", border: "none" }
                     }
                 },
                 {
@@ -266,7 +268,7 @@ return createTheme({
         MuiTabs: {
             styleOverrides: {
                 root: { minHeight: 42 },
-                indicator: { height: 3, borderRadius: "3px 3px 0 0", background: `linear-gradient(90deg, ${t.primary}, ${t.accent})` }
+                indicator: { height: 3, borderRadius: "3px 3px 0 0", background: t.tabIndicator || `linear-gradient(90deg, ${t.primary}, ${t.accent})` }
             }
         },
 
