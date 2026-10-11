@@ -248,7 +248,7 @@ const superAdminMenus = [
 // Icon colour per menu item (bright enough for the dark sidebar).
 // The active item stays white on the accent background.
 const iconColors = {
-    "Dashboard": "#60A5FA",
+    "Dashboard": "#818CF8",
     "Teachers": "#34D399",
     "Students": "#FBBF24",
     "Classes": "#A78BFA",
@@ -267,13 +267,34 @@ const iconColors = {
     "Announcements": "#F472B6",
     "Attendance": "#34D399",
     "Enter Marks": "#FACC15",
-    "Home": "#60A5FA",
+    "Home": "#818CF8",
     "Exam Results": "#FB7185",
     "Schools": "#A78BFA",
     "Onboard School": "#4ADE80"
 };
 
-function getMenus() {
+// Groups the long admin menu under small headings (other roles are short, so no headings)
+const adminGroups = {
+    "Dashboard": "Overview",
+    "Teachers": "People", "Students": "People", "Classes": "People", "Subjects": "People",
+    "Posts": "Communication", "Create Announcement": "Communication", "Expired Announcements": "Communication", "School Calendar": "Communication",
+    "Exams": "Academics", "Grading Scale": "Academics", "Reports": "Academics",
+    "Activity Log": "Account", "Profile": "Account", "Settings": "Account"
+};
+
+const groupOrder = ["Overview", "People", "Communication", "Academics", "Account"];
+
+function withGroups(menus, isAdmin) {
+
+    if (!isAdmin) return menus.map((m) => ({ ...m, group: null }));
+
+    return menus
+        .map((m, i) => ({ ...m, group: adminGroups[m.title] || "Account", _i: i }))
+        .sort((a, b) => groupOrder.indexOf(a.group) - groupOrder.indexOf(b.group) || a._i - b._i);
+
+}
+
+export function getMenus() {
 
     const storedUser = localStorage.getItem("user");
 
@@ -301,6 +322,20 @@ function getMenus() {
 
 }
 
+export function getStoredUser() {
+
+    try {
+
+        return JSON.parse(localStorage.getItem("user"));
+
+    } catch {
+
+        return null;
+
+    }
+
+}
+
 function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
     const muiTheme = useTheme();
@@ -311,7 +346,11 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
     const navigate = useNavigate();
 
-    const menus = getMenus();
+    const storedRole = getStoredUser()?.role;
+
+    const isAdminRole = !(storedRole === "Super Admin" || storedRole === "Teacher" || storedRole === "Parent");
+
+    const menus = withGroups(getMenus(), isAdminRole);
 
     const storedUser = localStorage.getItem("user");
 
@@ -320,8 +359,8 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
     const isSuperAdmin = user && user.role === "Super Admin";
 
     const theme = isSuperAdmin
-        ? { bg: "#1E1B3A", accent: "#7C3AED", accentSoft: "rgba(124,58,237,0.15)", brand: "SchoolLink Platform" }
-        : { bg: "#0F172A", accent: "#2563EB", accentSoft: "rgba(37,99,235,0.15)", brand: "SchoolLink" };
+        ? { bg: "linear-gradient(180deg,#2E1065 0%,#4C1D95 55%,#5B21B6 100%)", accent: "linear-gradient(135deg,#FF6B6B 0%,#C026D3 100%)", glow: "rgba(192,38,211,0.45)", accentSoft: "rgba(255,255,255,0.16)", brand: "SchoolLink Platform" }
+        : { bg: "linear-gradient(180deg,#1E1B4B 0%,#312E81 60%,#3730A3 100%)", accent: "linear-gradient(135deg,#6366F1 0%,#8B5CF6 100%)", glow: "rgba(99,102,241,0.55)", accentSoft: "rgba(255,255,255,0.16)", brand: "SchoolLink" };
 
     const sidebarWidth = collapsed ? 76 : 260;
 
@@ -355,7 +394,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
                         flexShrink: 0,
 
-                        bgcolor: theme.bg,
+                        background: theme.bg,
 
                         color: "white",
 
@@ -413,13 +452,10 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
                     sx={{
 
-                        width: 36,
+                        width: 40, height: 40, borderRadius: "12px",
 
-                        height: 36,
-
-                        borderRadius: "10px",
-
-                        bgcolor: theme.accent,
+                        background: theme.accent,
+                        boxShadow: `0 6px 14px ${theme.glow}`,
 
                         display: "flex",
 
@@ -518,118 +554,113 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
             <List sx={{ px: collapsed ? 1 : 2, mt: 1, flexGrow: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", pb: "calc(16px + env(safe-area-inset-bottom))" }}>
 
                 {
-
-                    menus.map((menu) => {
+                    menus.map((menu, idx) => {
 
                         const active = location.pathname === menu.path;
 
+                        const tint = iconColors[menu.title] || "#C7D2FE";
+
+                        const heading = menu.group && (idx === 0 || menus[idx - 1].group !== menu.group);
+
                         const button = (
-
                             <ListItemButton
-
-                                key={menu.path}
-
                                 component={Link}
-
                                 to={menu.path}
-
                                 selected={active}
-
                                 sx={{
-
-                                    color: active ? "white" : "#94A3B8",
-
-                                    borderRadius: 2,
-
+                                    color: active ? "white" : "#C7D2FE",
+                                    borderRadius: "14px",
                                     mb: 0.5,
-
-                                    py: 1.1,
-
+                                    py: 0.8,
+                                    px: collapsed ? 0.5 : 1,
                                     justifyContent: collapsed ? "center" : "flex-start",
-
+                                    transition: "all .15s ease",
                                     "&.Mui-selected": {
-
-                                        bgcolor: theme.accent,
-
+                                        background: theme.accent,
+                                        boxShadow: `0 8px 18px ${theme.glow}`,
                                         color: "white"
-
                                     },
-
                                     "&.Mui-selected:hover": {
-
-                                        bgcolor: theme.accent
-
+                                        background: theme.accent
                                     },
-
                                     "&:hover": {
-
-                                        bgcolor: "rgba(255,255,255,0.06)"
-
+                                        bgcolor: "rgba(255,255,255,0.09)"
                                     }
-
                                 }}
-
                             >
 
                                 <ListItemIcon
-
                                     sx={{
-
-                                        color: active ? "white" : (iconColors[menu.title] || "inherit"),
-
-                                        minWidth: collapsed ? "auto" : 36,
-
+                                        minWidth: collapsed ? "auto" : 44,
                                         justifyContent: "center"
-
                                     }}
-
                                 >
-
-                                    {menu.icon}
-
+                                    <Box
+                                        sx={{
+                                            width: 34,
+                                            height: 34,
+                                            borderRadius: "10px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            bgcolor: active ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.08)",
+                                            color: active ? "white" : tint,
+                                            "& svg": { fontSize: 20 }
+                                        }}
+                                    >
+                                        {menu.icon}
+                                    </Box>
                                 </ListItemIcon>
 
                                 {!collapsed && (
-
                                     <ListItemText
-
                                         primary={menu.title}
-
                                         slotProps={{
-
                                             primary: {
-
-                                                fontWeight: active ? 600 : 500,
-
+                                                fontWeight: active ? 700 : 600,
                                                 fontSize: "0.92rem"
-
                                             }
-
                                         }}
-
                                     />
-
                                 )}
 
                             </ListItemButton>
-
                         );
 
-                        return collapsed ? (
-
-                            <Tooltip key={menu.path} title={menu.title} placement="right">
-
+                        const item = collapsed ? (
+                            <Tooltip title={menu.title} placement="right">
                                 {button}
-
                             </Tooltip>
-
                         ) : button;
 
-                    })
+                        return (
+                            <Box key={menu.path}>
+                                {heading && !collapsed && (
+                                    <Typography sx={{ px: 1.5, pt: idx === 0 ? 0 : 1.5, pb: 0.75, fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(199,210,254,0.55)" }}>
+                                        {menu.group}
+                                    </Typography>
+                                )}
+                                {item}
+                            </Box>
+                        );
 
+                    })
                 }
 
             </List>
+
+            {user && !collapsed && (
+                <Box sx={{ m: 2, mt: 0, p: 1.25, borderRadius: "14px", bgcolor: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", gap: 1.25 }}>
+                    <Box sx={{ width: 36, height: 36, borderRadius: "50%", background: theme.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, flexShrink: 0 }}>
+                        {String(user.name || user.username || "U").charAt(0).toUpperCase()}
+                    </Box>
+                    <Box sx={{ minWidth: 0 }}>
+                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, lineHeight: 1.2 }} noWrap>{user.name || user.username || "User"}</Typography>
+                        <Typography sx={{ fontSize: "0.72rem", color: "rgba(199,210,254,0.8)" }} noWrap>{user.role}</Typography>
+                    </Box>
+                </Box>
+            )}
+
 
 
         </Drawer>

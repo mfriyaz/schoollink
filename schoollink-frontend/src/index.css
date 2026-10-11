@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap");
+
 html,
 body,
 #root {
@@ -14,8 +16,8 @@ body,
 }
 
 body {
-    background: #F5F7FB;
-    font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #F4F5FF;
+    font-family: Nunito, Inter, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 * {

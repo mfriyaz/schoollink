@@ -28,37 +28,37 @@ function SchoolIllustration() {
         <svg viewBox="0 0 320 260" width="100%" style={{ maxWidth: 300 }}>
 
             {/* sky blob */}
-            <ellipse cx="160" cy="220" rx="150" ry="24" fill="#BFDBFE" opacity="0.6" />
+            <ellipse cx="160" cy="220" rx="150" ry="24" fill="#C7D2FE" opacity="0.6" />
 
             {/* school building */}
-            <rect x="70" y="70" width="180" height="120" rx="8" fill="#FFFFFF" stroke="#93C5FD" strokeWidth="3" />
+            <rect x="70" y="70" width="180" height="120" rx="8" fill="#FFFFFF" stroke="#A5B4FC" strokeWidth="3" />
 
-            <polygon points="60,75 160,25 260,75" fill="#2563EB" />
+            <polygon points="60,75 160,25 260,75" fill="#4F46E5" />
 
             {/* door */}
-            <rect x="140" y="140" width="40" height="50" rx="4" fill="#2563EB" />
+            <rect x="140" y="140" width="40" height="50" rx="4" fill="#4F46E5" />
 
             {/* windows */}
-            <rect x="90" y="95" width="30" height="30" rx="4" fill="#DBEAFE" stroke="#93C5FD" strokeWidth="2" />
-            <rect x="200" y="95" width="30" height="30" rx="4" fill="#DBEAFE" stroke="#93C5FD" strokeWidth="2" />
-            <rect x="90" y="140" width="30" height="30" rx="4" fill="#DBEAFE" stroke="#93C5FD" strokeWidth="2" />
-            <rect x="200" y="140" width="30" height="30" rx="4" fill="#DBEAFE" stroke="#93C5FD" strokeWidth="2" />
+            <rect x="90" y="95" width="30" height="30" rx="4" fill="#E0E7FF" stroke="#A5B4FC" strokeWidth="2" />
+            <rect x="200" y="95" width="30" height="30" rx="4" fill="#E0E7FF" stroke="#A5B4FC" strokeWidth="2" />
+            <rect x="90" y="140" width="30" height="30" rx="4" fill="#E0E7FF" stroke="#A5B4FC" strokeWidth="2" />
+            <rect x="200" y="140" width="30" height="30" rx="4" fill="#E0E7FF" stroke="#A5B4FC" strokeWidth="2" />
 
             {/* flag */}
-            <line x1="160" y1="25" x2="160" y2="5" stroke="#1E3A8A" strokeWidth="2" />
+            <line x1="160" y1="25" x2="160" y2="5" stroke="#312E81" strokeWidth="2" />
             <polygon points="160,5 178,10 160,15" fill="#F59E0B" />
 
             {/* mother */}
-            <circle cx="105" cy="205" r="10" fill="#1E3A8A" />
-            <rect x="95" y="215" width="20" height="35" rx="8" fill="#2563EB" />
+            <circle cx="105" cy="205" r="10" fill="#312E81" />
+            <rect x="95" y="215" width="20" height="35" rx="8" fill="#4F46E5" />
 
             {/* child */}
-            <circle cx="160" cy="215" r="8" fill="#1E3A8A" />
+            <circle cx="160" cy="215" r="8" fill="#312E81" />
             <rect x="151" y="223" width="18" height="27" rx="7" fill="#F59E0B" />
 
             {/* father */}
-            <circle cx="215" cy="205" r="10" fill="#1E3A8A" />
-            <rect x="205" y="215" width="20" height="35" rx="8" fill="#1D4ED8" />
+            <circle cx="215" cy="205" r="10" fill="#312E81" />
+            <rect x="205" y="215" width="20" height="35" rx="8" fill="#4338CA" />
 
         </svg>
 
@@ -174,7 +174,7 @@ function LoginPage() {
 
                 minHeight: "100vh",
 
-                bgcolor: "#F8FAFC",
+                background: "radial-gradient(circle at 15% 10%, #E0E7FF 0%, transparent 45%), radial-gradient(circle at 90% 85%, #FFE4E6 0%, transparent 40%), #F4F5FF",
 
                 display: "flex",
 
@@ -196,7 +196,7 @@ function LoginPage() {
 
                         borderRadius: "10px",
 
-                        bgcolor: "#2563EB",
+                        bgcolor: "#4F46E5",
 
                         display: "flex",
 
@@ -252,7 +252,7 @@ function LoginPage() {
 
                         maxWidth: 480,
 
-                        bgcolor: "#DBEAFE",
+                        background: "linear-gradient(160deg, #E0E7FF 0%, #EDE9FE 55%, #FFE4E6 100%)",
 
                         borderRadius: 6,
 
@@ -272,7 +272,7 @@ function LoginPage() {
 
                     <SchoolIllustration />
 
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#1E3A8A" }}>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#312E81" }}>
 
                         Stronger Connection
                         <br />
@@ -280,7 +280,7 @@ function LoginPage() {
 
                     </Typography>
 
-                    <Typography sx={{ color: "#3B5A9A" }}>
+                    <Typography sx={{ color: "#5B5BA8" }}>
 
                         Together for a better tomorrow
 

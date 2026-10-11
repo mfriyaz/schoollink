@@ -6,6 +6,7 @@ import { Outlet } from "react-router-dom";
 
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import BottomNav from "./BottomNav";
 
 function MainLayout() {
 
@@ -61,7 +62,7 @@ function MainLayout() {
             sx={{
                 display: "flex",
                 minHeight: "100vh",
-                bgcolor: "#F8FAFC"
+                background: "linear-gradient(180deg,#EEF0FF 0%,#F4F5FF 220px,#F7F8FF 100%)"
             }}
         >
 
@@ -87,7 +88,8 @@ function MainLayout() {
                         flex: 1,
                         minWidth: 0,
                         overflowX: "hidden",
-                        p: { xs: 2, sm: 3, md: 4 }
+                        p: { xs: 2, sm: 3, md: 4 },
+                        pb: { xs: "calc(96px + env(safe-area-inset-bottom))", md: 4 }
                     }}
                 >
 
@@ -96,6 +98,8 @@ function MainLayout() {
                 </Box>
 
             </Box>
+
+            {isMobile && <BottomNav onMore={() => setMobileOpen(true)} />}
 
         </Box>
 
