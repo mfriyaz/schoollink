@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { Box, Alert } from "@mui/material";
+import { Box, Alert, Chip, MenuItem, TextField } from "@mui/material";
 
-import StudentToolbar from "../../components/Students/StudentToolbar";
+import StudentToolbar, { SearchField } from "../../components/Students/StudentToolbar";
 import StudentStatistics from "../../components/Students/StudentStatistics";
 import StudentTable from "../../components/Students/StudentTable";
 import EmptyStudents from "../../components/Students/EmptyStudents";
@@ -53,11 +53,40 @@ export default function StudentListPage() {
 
     const [confirmTarget, setConfirmTarget] = useState(null);
 
-    const filteredStudents = students.filter(student =>
-        `${student.first_name} ${student.last_name}`
-            .toLowerCase()
-            .includes(search.toLowerCase())
-    );
+    const [filter, setFilter] = useState("active");
+
+    const [classKey, setClassKey] = useState("");
+
+    // classes that actually have students, for the class filter
+    const classOptions = [];
+    const seen = new Set();
+    students.forEach((st) => {
+        const key = `${st.class_id}-${st.section_id}`;
+        if (st.class_name && !seen.has(key)) {
+            seen.add(key);
+            classOptions.push({ key, label: `${st.class_name}${st.section_name ? ` - ${st.section_name}` : ""}` });
+        }
+    });
+    classOptions.sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
+
+    const q = search.trim().toLowerCase();
+
+    const filteredStudents = students.filter((student) => {
+
+        if (filter === "active" && !student.is_active) return false;
+        if (filter === "inactive" && student.is_active) return false;
+        if (filter === "boys" && (student.gender !== "Male" || !student.is_active)) return false;
+        if (filter === "girls" && (student.gender !== "Female" || !student.is_active)) return false;
+        if (classKey && `${student.class_id}-${student.section_id}` !== classKey) return false;
+
+        if (!q) return true;
+
+        return [
+            student.first_name, student.last_name, student.admission_no,
+            student.father_name, student.mother_name, student.parent_phone
+        ].join(" ").toLowerCase().includes(q);
+
+    });
 
     function handleAdd() {
 
@@ -227,8 +256,7 @@ export default function StudentListPage() {
             {pageError && <Alert severity="error" sx={{ mb: 2 }}>{pageError}</Alert>}
 
             <StudentToolbar
-                search={search}
-                setSearch={setSearch}
+                total={students.length}
                 onAdd={handleAdd}
                 onDownloadTemplate={handleDownloadTemplate}
                 onUploadFile={handleUploadFile}
@@ -236,8 +264,49 @@ export default function StudentListPage() {
             />
 
             <StudentStatistics
-                students={filteredStudents}
+                students={students}
+                active={filter}
+                onPick={setFilter}
             />
+
+            <Box sx={{ display: "flex", gap: 1.25, alignItems: "center", flexWrap: "wrap", mb: 2 }}>
+
+                <SearchField value={search} onChange={setSearch} />
+
+                <TextField
+                    select
+                    size="small"
+                    label="Class"
+                    value={classKey}
+                    onChange={(e) => setClassKey(e.target.value)}
+                    sx={{ minWidth: 150 }}
+                >
+                    <MenuItem value="">All classes</MenuItem>
+                    {classOptions.map((c) => <MenuItem key={c.key} value={c.key}>{c.label}</MenuItem>)}
+                </TextField>
+
+                <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
+                    {[["active", "Active"], ["inactive", "Inactive"], ["all", "All"]].map(([id, label]) => (
+                        <Chip
+                            key={id}
+                            label={label}
+                            size="small"
+                            onClick={() => setFilter(id)}
+                            sx={{
+                                fontWeight: 600,
+                                bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft, #F1F5F9)",
+                                color: filter === id ? "#fff" : "var(--sl-ink, var(--sl-ink))",
+                                "&:hover": { bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft2, #E2E8F0)" }
+                            }}
+                        />
+                    ))}
+                </Box>
+
+            </Box>
+
+            <Box sx={{ color: "text.secondary", fontSize: "0.8rem", mb: 1 }}>
+                Showing {filteredStudents.length} of {students.length}
+            </Box>
 
             {
 
@@ -248,6 +317,7 @@ export default function StudentListPage() {
                 ) : (
 
                     <StudentTable
+                        key={`${filter}-${classKey}-${q}`}
                         students={filteredStudents}
                         onView={handleView}
                         onEdit={handleEdit}
