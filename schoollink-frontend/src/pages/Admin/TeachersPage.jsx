@@ -428,10 +428,13 @@ function TeachersPage() {
 
         } catch (err) {
 
+            const raw = err.response?.data?.message || "";
+
             setAssignError(
 
-                err.response?.data?.message ||
-                "Unable to remove this assignment."
+                /foreign key|violates|constraint/i.test(raw)
+                    ? "This assignment can't be removed because it already has attendance, homework or marks recorded. Those records are kept for the school's history."
+                    : raw || "Unable to remove this assignment."
 
             );
 
