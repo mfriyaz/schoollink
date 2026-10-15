@@ -394,7 +394,29 @@ function TeachersPage() {
 
             if (response.success) {
 
-                setCurrentAssignments(response.data);
+                // the per-teacher list has no class-teacher flag, so read it from the school-wide list
+                let flags = {};
+
+                try {
+
+                    const all = await getSchoolAssignments();
+
+                    if (all.success) {
+
+                        all.data.forEach((x) => { flags[x.id] = !!x.is_class_teacher; });
+
+                    }
+
+                } catch (e) {
+
+                    flags = {};
+
+                }
+
+                setCurrentAssignments(response.data.map((a) => ({
+                    ...a,
+                    is_class_teacher: flags[a.teacher_subject_id] !== undefined ? flags[a.teacher_subject_id] : !!a.is_class_teacher
+                })));
 
             }
 
