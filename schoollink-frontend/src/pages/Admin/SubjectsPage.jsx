@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 import {
     Alert,
-    Avatar,
     Box,
     Button,
     Card,
@@ -12,6 +11,9 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    IconButton,
+    Menu,
+    MenuItem,
     TextField,
     Typography
 } from "@mui/material";
@@ -21,6 +23,10 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import BlockIcon from "@mui/icons-material/BlockOutlined";
 import RestoreIcon from "@mui/icons-material/RestoreOutlined";
 import MenuBookIcon from "@mui/icons-material/MenuBookOutlined";
+import SearchIcon from "@mui/icons-material/SearchRounded";
+import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
+import StatChips from "../../components/common/StatChips";
+import { getSchoolAssignments } from "../../services/teacherSubjectService";
 
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 
@@ -37,6 +43,16 @@ const emptyForm = { subject_name: "", subject_code: "" };
 function SubjectsPage() {
 
     const [subjects, setSubjects] = useState([]);
+
+    const [assignments, setAssignments] = useState([]);
+
+    const [assignmentsReady, setAssignmentsReady] = useState(false);
+
+    const [search, setSearch] = useState("");
+
+    const [filter, setFilter] = useState("all");
+
+    const [menu, setMenu] = useState(null);
 
     const [loading, setLoading] = useState(true);
 
@@ -59,6 +75,11 @@ function SubjectsPage() {
     useEffect(() => {
 
         loadSubjects();
+
+        getSchoolAssignments()
+            .then((r) => { if (r.success) setAssignments(r.data); })
+            .catch(() => { /* chips stay empty */ })
+            .finally(() => setAssignmentsReady(true));
 
     }, []);
 
@@ -219,6 +240,31 @@ function SubjectsPage() {
 
     }
 
+    const bySubject = {};
+    assignments.forEach((a) => {
+        (bySubject[a.subject_id] = bySubject[a.subject_id] || []).push(a);
+    });
+
+    const stats = {
+        total: subjects.length,
+        active: subjects.filter((x) => x.is_active).length,
+        inUse: subjects.filter((x) => (bySubject[x.id] || []).length).length,
+        unused: assignmentsReady ? subjects.filter((x) => x.is_active && !(bySubject[x.id] || []).length).length : 0
+    };
+
+    const q = search.trim().toLowerCase();
+
+    const visibleSubjects = subjects.filter((x) => {
+        const mine = bySubject[x.id] || [];
+        if (filter === "active" && !x.is_active) return false;
+        if (filter === "inactive" && x.is_active) return false;
+        if (filter === "inuse" && !mine.length) return false;
+        if (filter === "unused" && (!x.is_active || mine.length)) return false;
+        if (!q) return true;
+        const hay = [x.subject_name, x.subject_code, ...mine.flatMap((a) => [a.first_name, a.last_name, a.class_name])].join(" ").toLowerCase();
+        return hay.includes(q);
+    });
+
     if (loading) {
 
         return (
@@ -235,129 +281,174 @@ function SubjectsPage() {
 
     return (
 
-        <Box sx={{ maxWidth: 800 }}>
+        <Box sx={{ maxWidth: 1100 }}>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>
-
-                    Subjects
-
-                </Typography>
-
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={openCreateDialog}
-                >
-
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, gap: 1.5, flexWrap: "wrap" }}>
+                <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Subjects</Typography>
+                    <Typography sx={{ color: "text.secondary", fontSize: "0.85rem" }}>
+                        {stats.total} subjects - {stats.active} active
+                    </Typography>
+                </Box>
+                <Button variant="contained" startIcon={<AddIcon />} onClick={openCreateDialog}>
                     Add Subject
-
                 </Button>
-
             </Box>
 
             {pageError && <Alert severity="error" sx={{ mb: 2 }}>{pageError}</Alert>}
 
-            {subjects.length === 0 && (
+            <StatChips
+                active={filter}
+                onPick={setFilter}
+                items={[
+                    { label: "Total", value: stats.total, filter: "all" },
+                    { label: "Active", value: stats.active, filter: "active", tone: "#16A34A" },
+                    { label: "Being taught", value: stats.inUse, filter: "inuse" },
+                    { label: "Not assigned", value: stats.unused, filter: "unused", tone: stats.unused ? "#B45309" : undefined }
+                ]}
+            />
 
-                <Typography color="text.secondary">
+            <Box sx={{ display: "flex", gap: 1.25, alignItems: "center", flexWrap: "wrap", mb: 2 }}>
+                <TextField
+                    size="small"
+                    placeholder="Search subject, code, teacher or class"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    sx={{ flex: "1 1 260px", maxWidth: 420 }}
+                    slotProps={{
+                        input: { startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.75, color: "text.secondary" }} /> }
+                    }}
+                />
+                <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
+                    {[["all", "All"], ["active", "Active"], ["inactive", "Inactive"], ["inuse", "Being taught"], ["unused", "Not assigned"]].map(([id, label]) => (
+                        <Chip
+                            key={id}
+                            label={label}
+                            size="small"
+                            onClick={() => setFilter(id)}
+                            sx={{
+                                fontWeight: 600,
+                                bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft, #F1F5F9)",
+                                color: filter === id ? "#fff" : "var(--sl-ink, var(--sl-ink))",
+                                "&:hover": { bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft2, #E2E8F0)" }
+                            }}
+                        />
+                    ))}
+                </Box>
+            </Box>
 
-                    No subjects added yet.
+            {subjects.length === 0 && <Typography color="text.secondary">No subjects added yet.</Typography>}
+            {subjects.length > 0 && visibleSubjects.length === 0 && <Typography color="text.secondary">No subjects match.</Typography>}
 
-                </Typography>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 1.5 }}>
 
-            )}
+                {visibleSubjects.map((subject) => {
 
-            {subjects.map((subject) => (
+                    const mine = bySubject[subject.id] || [];
+                    const teachers = [...new Set(mine.map((a) => `${a.first_name} ${a.last_name || ""}`.trim()))];
+                    const classNames = [...new Set(mine.map((a) => a.class_name))];
+                    const shown = mine.slice(0, 6);
 
-                <Card key={subject.id} sx={{ p: 2.5, mb: 2 }}>
+                    return (
+                        <Card
+                            key={subject.id}
+                            data-testid="subject-card"
+                            sx={{
+                                p: { xs: 1.75, md: 2.25 },
+                                borderRadius: 3,
+                                border: "1px solid var(--sl-border, #EEF2F7)",
+                                boxShadow: "var(--sl-card-shadow, 0 1px 3px rgba(15,23,42,.06))",
+                                opacity: subject.is_active ? 1 : 0.72,
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 1.25
+                            }}
+                        >
 
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1.5 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                <Box
+                                    sx={{
+                                        width: 44, height: 44, borderRadius: 2.5, display: "flex", alignItems: "center", justifyContent: "center",
+                                        bgcolor: subject.is_active ? "var(--sl-soft, var(--sl-soft))" : "#F1F5F9",
+                                        color: subject.is_active ? "var(--sl-ink, var(--sl-primary))" : "#94A3B8"
+                                    }}
+                                >
+                                    <MenuBookIcon />
+                                </Box>
 
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-
-                            <Avatar sx={{ bgcolor: subject.is_active ? "var(--sl-soft)" : "#F1F5F9" }}>
-
-                                <MenuBookIcon sx={{ color: subject.is_active ? "var(--sl-primary)" : "#94A3B8" }} fontSize="small" />
-
-                            </Avatar>
-
-                            <Box>
-
-                                <Typography sx={{ fontWeight: 600 }}>
-
-                                    {subject.subject_name}
-
-                                </Typography>
-
-                                {subject.subject_code && (
-
-                                    <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
-
-                                        Code: {subject.subject_code}
-
+                                <Box sx={{ minWidth: 0, flex: 1 }}>
+                                    <Typography sx={{ fontWeight: 700, lineHeight: 1.25 }} noWrap>{subject.subject_name}</Typography>
+                                    <Typography sx={{ color: "text.secondary", fontSize: "0.8rem" }} noWrap>
+                                        {subject.subject_code ? `Code ${subject.subject_code} - ` : ""}
+                                        {mine.length ? `${mine.length} class ${mine.length === 1 ? "section" : "sections"}` : "Not assigned yet"}
                                     </Typography>
+                                </Box>
 
-                                )}
+                                <Chip
+                                    size="small"
+                                    label={subject.is_active ? "Active" : "Inactive"}
+                                    sx={{
+                                        fontWeight: 700,
+                                        bgcolor: subject.is_active ? "#DCFCE7" : "#F1F5F9",
+                                        color: subject.is_active ? "#15803D" : "#64748B"
+                                    }}
+                                />
 
+                                <IconButton size="small" aria-label="Edit subject" onClick={() => openEditDialog(subject)}>
+                                    <EditIcon fontSize="small" />
+                                </IconButton>
+
+                                <IconButton size="small" aria-label="More subject actions" onClick={(e) => setMenu({ anchor: e.currentTarget, subject })}>
+                                    <MoreVertIcon fontSize="small" />
+                                </IconButton>
                             </Box>
 
-                        </Box>
-
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-
-                            <Chip
-                                size="small"
-                                color={subject.is_active ? "success" : "default"}
-                                label={subject.is_active ? "Active" : "Inactive"}
-                            />
-
-                            <Button
-                                size="small"
-                                startIcon={<EditIcon fontSize="small" />}
-                                onClick={() => openEditDialog(subject)}
+                            <Box
+                                sx={{
+                                    p: 1.25,
+                                    borderRadius: 2,
+                                    bgcolor: "var(--sl-page2, #F8FAFC)",
+                                    border: "1px solid var(--sl-border, #EEF2F7)"
+                                }}
                             >
+                                {mine.length === 0 ? (
+                                    <Typography sx={{ fontSize: "0.84rem", color: assignmentsReady ? "#B45309" : "text.secondary" }}>
+                                        {assignmentsReady ? "No teacher teaches this subject yet. Assign it from the Teachers page." : "Loading..."}
+                                    </Typography>
+                                ) : (
+                                    <>
+                                        <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "text.secondary", mb: 0.75, letterSpacing: 0.3 }}>
+                                            TAUGHT IN {classNames.length} {classNames.length === 1 ? "CLASS" : "CLASSES"} BY {teachers.length} {teachers.length === 1 ? "TEACHER" : "TEACHERS"}
+                                        </Typography>
+                                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.6 }}>
+                                            {shown.map((a) => (
+                                                <Chip
+                                                    key={a.id}
+                                                    size="small"
+                                                    label={`${a.class_name}-${a.section_name} - ${a.first_name}`}
+                                                    sx={{ bgcolor: "#fff", border: "1px solid var(--sl-border, #E2E8F0)" }}
+                                                />
+                                            ))}
+                                            {mine.length > shown.length && <Chip size="small" label={`+${mine.length - shown.length} more`} />}
+                                        </Box>
+                                    </>
+                                )}
+                            </Box>
 
-                                Edit
+                        </Card>
+                    );
+                })}
 
-                            </Button>
+            </Box>
 
-                            {subject.is_active ? (
-
-                                <Button
-                                    size="small"
-                                    color="error"
-                                    startIcon={<BlockIcon fontSize="small" />}
-                                    onClick={() => handleToggleRequest(subject)}
-                                >
-
-                                    Deactivate
-
-                                </Button>
-
-                            ) : (
-
-                                <Button
-                                    size="small"
-                                    color="success"
-                                    startIcon={<RestoreIcon fontSize="small" />}
-                                    onClick={() => handleToggleRequest(subject)}
-                                >
-
-                                    Reactivate
-
-                                </Button>
-
-                            )}
-
-                        </Box>
-
-                    </Box>
-
-                </Card>
-
-            ))}
+            <Menu anchorEl={menu ? menu.anchor : null} open={!!menu} onClose={() => setMenu(null)}>
+                {menu && menu.subject.is_active && (
+                    <MenuItem sx={{ color: "error.main" }} onClick={() => { const s = menu.subject; setMenu(null); handleToggleRequest(s); }}>Deactivate</MenuItem>
+                )}
+                {menu && !menu.subject.is_active && (
+                    <MenuItem sx={{ color: "success.main" }} onClick={() => { const s = menu.subject; setMenu(null); handleToggleRequest(s); }}>Reactivate</MenuItem>
+                )}
+            </Menu>
 
             <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="xs" fullWidth>
 
