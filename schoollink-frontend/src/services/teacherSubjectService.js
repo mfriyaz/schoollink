@@ -31,3 +31,11 @@ export async function getSchoolAssignments() {
     return response.data;
 
 }
+
+export async function setClassTeacherFlag(id, isClassTeacher) {
+
+    const response = await api.patch(`/ai/assignments/${id}/class-teacher`, { is_class_teacher: isClassTeacher });
+
+    return response.data;
+
+}

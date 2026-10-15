@@ -17,4 +17,6 @@ router.get("/weekly-summary/:studentId", authenticate, authorizeRoles("Parent"),
 router.get("/early-warning", authenticate, authorizeRoles("School Admin"), controller.earlyWarning);
 router.post("/early-warning-note", authenticate, authorizeRoles("School Admin"), controller.earlyWarningNote);
 
+router.patch("/assignments/:id/class-teacher", authenticate, authorizeRoles("School Admin"), controller.setClassTeacher);
+
 module.exports = router;

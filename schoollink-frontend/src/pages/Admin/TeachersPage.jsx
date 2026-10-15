@@ -20,7 +20,8 @@ import {
     TextField,
     useMediaQuery,
     useTheme,
-    Typography
+    Typography,
+    Tooltip
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/AddOutlined";
@@ -34,6 +35,7 @@ import PhoneIcon from "@mui/icons-material/PhoneOutlined";
 import EmailIcon from "@mui/icons-material/EmailOutlined";
 import CloseIcon from "@mui/icons-material/CloseRounded";
 import StarIcon from "@mui/icons-material/StarRounded";
+import StarBorderIcon from "@mui/icons-material/StarBorderRounded";
 import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
@@ -62,7 +64,8 @@ import {
     getSchoolAssignments,
     createTeacherSubjectAssignment,
     getAssignmentsByTeacher,
-    deleteTeacherSubjectAssignment
+    deleteTeacherSubjectAssignment,
+    setClassTeacherFlag
 } from "../../services/teacherSubjectService";
 
 const emptyForm = {
@@ -162,6 +165,7 @@ function TeachersPage() {
     const [loadingAssignments, setLoadingAssignments] = useState(false);
 
     const [removingId, setRemovingId] = useState(null);
+    const [togglingId, setTogglingId] = useState(null);
 
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
@@ -446,6 +450,34 @@ function TeachersPage() {
 
     }
 
+    async function handleToggleClassTeacher(a) {
+
+        setAssignError("");
+
+        setAssignSuccess("");
+
+        try {
+
+            setTogglingId(a.teacher_subject_id);
+
+            await setClassTeacherFlag(a.teacher_subject_id, !a.is_class_teacher);
+
+            await loadCurrentAssignments(assignTeacher.id);
+
+            setAssignSuccess(a.is_class_teacher ? "Class teacher removed." : "Class teacher updated.");
+
+        } catch (err) {
+
+            setAssignError(err.response?.data?.message || "Unable to update the class teacher.");
+
+        } finally {
+
+            setTogglingId(null);
+
+        }
+
+    }
+
     async function handleAssign() {
 
         setAssignError("");
@@ -454,7 +486,7 @@ function TeachersPage() {
 
         if (!assignSubjectId || !assignClassId || !assignSectionId) {
 
-            setAssignError("Please select a subject, class, and section.");
+            setAssignError("To add an assignment, first choose a subject, class and section. To change an existing class teacher, tap the star in the list above.");
 
             return;
 
@@ -1401,14 +1433,21 @@ function TeachersPage() {
                                                 {a.class_name} - {a.section_name}
                                             </Typography>
                                         </Box>
-                                        {a.is_class_teacher && (
-                                            <Chip
-                                                size="small"
-                                                icon={<StarIcon sx={{ fontSize: 15, color: "#B45309 !important" }} />}
-                                                label="Class teacher"
-                                                sx={{ bgcolor: "#FEF3C7", color: "#92400E", fontWeight: 700 }}
-                                            />
-                                        )}
+                                        <Tooltip title={a.is_class_teacher ? "Class teacher - tap to remove" : "Make class teacher"}>
+                                            <span>
+                                                <IconButton
+                                                    size="small"
+                                                    aria-label="Toggle class teacher"
+                                                    onClick={() => handleToggleClassTeacher(a)}
+                                                    disabled={togglingId === a.teacher_subject_id}
+                                                    sx={{ bgcolor: a.is_class_teacher ? "#FEF3C7" : "transparent" }}
+                                                >
+                                                    {a.is_class_teacher
+                                                        ? <StarIcon fontSize="small" sx={{ color: "#B45309" }} />
+                                                        : <StarBorderIcon fontSize="small" sx={{ color: "#94A3B8" }} />}
+                                                </IconButton>
+                                            </span>
+                                        </Tooltip>
                                         <IconButton
                                             size="small"
                                             aria-label="Remove assignment"
@@ -1509,9 +1548,9 @@ function TeachersPage() {
                         >
                             <StarIcon sx={{ color: isClassTeacher ? "#B45309" : "#94A3B8" }} />
                             <Box sx={{ flex: 1 }}>
-                                <Typography sx={{ fontSize: "0.88rem", fontWeight: 700 }}>Class teacher of this section</Typography>
+                                <Typography sx={{ fontSize: "0.88rem", fontWeight: 700 }}>Make class teacher of the new assignment</Typography>
                                 <Typography sx={{ fontSize: "0.76rem", color: "text.secondary" }}>
-                                    Sends the daily greeting and sees this class first.
+                                    Applies only when you press Assign below.
                                 </Typography>
                             </Box>
                             <Switch checked={isClassTeacher} onChange={(e) => setIsClassTeacher(e.target.checked)} />

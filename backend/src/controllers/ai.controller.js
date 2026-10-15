@@ -1,6 +1,7 @@
 const response = require("../utils/response");
 const ai = require("../services/ai.service");
 const reportCardService = require("../services/reportCard.service");
+const classTeacherService = require("../services/classTeacher.service");
 
 function fail(res, err) {
     if (err instanceof ai.AiError) return response.error(res, err.message, err.status);
@@ -58,6 +59,21 @@ async function earlyWarningNote(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
+async function setClassTeacher(req, res) {
+    try {
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id)) return response.error(res, "Invalid assignment.", 400);
+        const value = req.body && req.body.is_class_teacher;
+        if (typeof value !== "boolean") return response.error(res, "is_class_teacher must be true or false.", 400);
+        const row = await classTeacherService.setClassTeacher(req.user.school_id, id, value);
+        if (!row) return response.error(res, "Assignment not found.", 404);
+        return response.success(res, row, value ? "Class teacher set" : "Class teacher removed");
+    } catch (err) {
+        console.error("setClassTeacher failed", err);
+        return response.error(res, "Unable to update the class teacher.", 500);
+    }
+}
+
 async function getSchoolAi(req, res) {
     try {
         return response.success(res, await ai.getSchoolUsage(Number(req.params.id)), "AI usage");
@@ -70,4 +86,4 @@ async function updateSchoolAi(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
-module.exports = { status, improve, translate, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, getSchoolAi, updateSchoolAi };
+module.exports = { status, improve, translate, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, setClassTeacher, getSchoolAi, updateSchoolAi };
