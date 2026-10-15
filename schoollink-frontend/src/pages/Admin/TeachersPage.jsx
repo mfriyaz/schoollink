@@ -854,31 +854,35 @@ function TeachersPage() {
 
             {pageError && <Alert severity="error" sx={{ mb: 2 }}>{pageError}</Alert>}
 
-            {/* ---------- At a glance ---------- */}
-            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }, gap: 1.25, mb: 2 }}>
+            {/* ---------- At a glance (small chips) ---------- */}
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }, gap: 1, mb: 1.5 }}>
                 {[
-                    { label: "Total teachers", value: stats.total, filter: "all" },
+                    { label: "Total", value: stats.total, filter: "all" },
                     { label: "Active", value: stats.active, filter: "active", tone: "#16A34A" },
-                    { label: "Not assigned to a class", value: stats.unassigned, filter: "unassigned", tone: stats.unassigned ? "#B45309" : undefined },
-                    { label: "No login yet", value: stats.noLogin, filter: "nologin", tone: stats.noLogin ? "#B45309" : undefined }
+                    { label: "Not assigned", value: stats.unassigned, filter: "unassigned", tone: stats.unassigned ? "#B45309" : undefined },
+                    { label: "No login", value: stats.noLogin, filter: "nologin", tone: stats.noLogin ? "#B45309" : undefined }
                 ].map((s) => (
-                    <Card
+                    <Box
                         key={s.label}
                         onClick={() => setFilter(s.filter)}
                         sx={{
-                            p: 1.5,
+                            display: "flex",
+                            alignItems: "baseline",
+                            gap: 0.75,
+                            px: 1.5,
+                            py: 0.75,
                             cursor: "pointer",
-                            borderRadius: 3,
+                            borderRadius: 2,
+                            bgcolor: "#fff",
                             border: "1px solid var(--sl-border, #EEF2F7)",
-                            outline: filter === s.filter ? "2px solid var(--sl-accent, var(--sl-primary))" : "none",
-                            boxShadow: "var(--sl-card-shadow, 0 1px 3px rgba(15,23,42,.06))"
+                            outline: filter === s.filter ? "2px solid var(--sl-accent, var(--sl-primary))" : "none"
                         }}
                     >
-                        <Typography sx={{ fontWeight: 800, fontSize: "1.5rem", lineHeight: 1.1, color: s.tone || "var(--sl-ink, var(--sl-ink))" }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.05rem", lineHeight: 1.2, color: s.tone || "var(--sl-ink, var(--sl-ink))" }}>
                             {s.value}
                         </Typography>
-                        <Typography sx={{ fontSize: "0.74rem", color: "text.secondary", mt: 0.25 }}>{s.label}</Typography>
-                    </Card>
+                        <Typography sx={{ fontSize: "0.76rem", color: "text.secondary" }} noWrap>{s.label}</Typography>
+                    </Box>
                 ))}
             </Box>
 
