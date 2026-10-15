@@ -23,3 +23,11 @@ export async function deleteTeacherSubjectAssignment(id) {
     return response.data;
 
 }
+
+export async function getSchoolAssignments() {
+
+    const response = await api.get("/teacher-subjects/mine");
+
+    return response.data;
+
+}

@@ -14,6 +14,7 @@ import {
     DialogTitle,
     Grid,
     IconButton,
+    Menu,
     MenuItem,
     TextField,
     Typography
@@ -25,6 +26,11 @@ import BlockIcon from "@mui/icons-material/BlockOutlined";
 import RestoreIcon from "@mui/icons-material/RestoreOutlined";
 import SchoolIcon from "@mui/icons-material/SchoolOutlined";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentIndOutlined";
+import SearchIcon from "@mui/icons-material/SearchRounded";
+import PhoneIcon from "@mui/icons-material/PhoneOutlined";
+import EmailIcon from "@mui/icons-material/EmailOutlined";
+import StarIcon from "@mui/icons-material/StarRounded";
+import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import VpnKeyIcon from "@mui/icons-material/VpnKeyOutlined";
@@ -49,6 +55,7 @@ import {
 } from "../../services/classManagementService";
 
 import {
+    getSchoolAssignments,
     createTeacherSubjectAssignment,
     getAssignmentsByTeacher,
     deleteTeacherSubjectAssignment
@@ -80,9 +87,29 @@ const emptyForm = {
 
 };
 
+function initials(t) {
+    return `${(t.first_name || "?")[0]}${(t.last_name || "")[0] || ""}`.toUpperCase();
+}
+
+function prettyJoin(d) {
+    const dt = new Date(String(d).slice(0, 10) + "T00:00:00Z");
+    if (Number.isNaN(dt.getTime())) return "";
+    return dt.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
 function TeachersPage() {
 
     const [teachers, setTeachers] = useState([]);
+
+    const [allAssignments, setAllAssignments] = useState([]);
+
+    const [assignmentsReady, setAssignmentsReady] = useState(false);
+
+    const [search, setSearch] = useState("");
+
+    const [filter, setFilter] = useState("all");
+
+    const [menu, setMenu] = useState(null);
 
     const [loading, setLoading] = useState(true);
 
@@ -162,6 +189,33 @@ function TeachersPage() {
         loadTeachers();
 
     }, []);
+
+    async function loadAssignments() {
+
+        try {
+
+            const response = await getSchoolAssignments();
+
+            if (response.success) setAllAssignments(response.data);
+
+        } catch (err) {
+
+            // the list still works without the class and subject chips
+
+        } finally {
+
+            setAssignmentsReady(true);
+
+        }
+
+    }
+
+    useEffect(() => {
+
+        // refresh the chips after the Assign dialog is closed
+        if (!assignDialogOpen) loadAssignments();
+
+    }, [assignDialogOpen]);
 
     async function loadTeachers() {
 
@@ -728,6 +782,42 @@ function TeachersPage() {
 
     }
 
+    const assignmentsByTeacher = {};
+    allAssignments.forEach((a) => {
+        (assignmentsByTeacher[a.teacher_id] = assignmentsByTeacher[a.teacher_id] || []).push(a);
+    });
+
+    const stats = {
+        total: teachers.length,
+        active: teachers.filter((t) => t.is_active).length,
+        unassigned: assignmentsReady
+            ? teachers.filter((t) => t.is_active && !(assignmentsByTeacher[t.id] || []).length).length
+            : 0,
+        noLogin: teachers.filter((t) => t.is_active && !t.user_id).length
+    };
+
+    const q = search.trim().toLowerCase();
+
+    const visibleTeachers = teachers.filter((t) => {
+
+        const mine = assignmentsByTeacher[t.id] || [];
+
+        if (filter === "active" && !t.is_active) return false;
+        if (filter === "inactive" && t.is_active) return false;
+        if (filter === "unassigned" && (!t.is_active || mine.length)) return false;
+        if (filter === "nologin" && (!t.is_active || t.user_id)) return false;
+
+        if (!q) return true;
+
+        const hay = [
+            t.first_name, t.last_name, t.employee_no, t.email, t.phone, t.qualification,
+            ...mine.flatMap((a) => [a.class_name, a.section_name, a.subject_name])
+        ].join(" ").toLowerCase();
+
+        return hay.includes(q);
+
+    });
+
     if (loading) {
 
         return (
@@ -744,164 +834,296 @@ function TeachersPage() {
 
     return (
 
-        <Box sx={{ maxWidth: 900 }}>
+        <Box sx={{ maxWidth: 1100 }}>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+            {/* ---------- Header ---------- */}
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, gap: 1.5, flexWrap: "wrap" }}>
 
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Teachers</Typography>
+                    <Typography sx={{ color: "text.secondary", fontSize: "0.85rem" }}>
+                        {stats.total} teachers - {stats.active} active
+                    </Typography>
+                </Box>
 
-                    Teachers
-
-                </Typography>
-
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={openCreateDialog}
-                >
-
+                <Button variant="contained" startIcon={<AddIcon />} onClick={openCreateDialog}>
                     Add Teacher
-
                 </Button>
 
             </Box>
 
             {pageError && <Alert severity="error" sx={{ mb: 2 }}>{pageError}</Alert>}
 
+            {/* ---------- At a glance ---------- */}
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }, gap: 1.25, mb: 2 }}>
+                {[
+                    { label: "Total teachers", value: stats.total, filter: "all" },
+                    { label: "Active", value: stats.active, filter: "active", tone: "#16A34A" },
+                    { label: "Not assigned to a class", value: stats.unassigned, filter: "unassigned", tone: stats.unassigned ? "#B45309" : undefined },
+                    { label: "No login yet", value: stats.noLogin, filter: "nologin", tone: stats.noLogin ? "#B45309" : undefined }
+                ].map((s) => (
+                    <Card
+                        key={s.label}
+                        onClick={() => setFilter(s.filter)}
+                        sx={{
+                            p: 1.5,
+                            cursor: "pointer",
+                            borderRadius: 3,
+                            border: "1px solid var(--sl-border, #EEF2F7)",
+                            outline: filter === s.filter ? "2px solid var(--sl-accent, var(--sl-primary))" : "none",
+                            boxShadow: "var(--sl-card-shadow, 0 1px 3px rgba(15,23,42,.06))"
+                        }}
+                    >
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.5rem", lineHeight: 1.1, color: s.tone || "var(--sl-ink, var(--sl-ink))" }}>
+                            {s.value}
+                        </Typography>
+                        <Typography sx={{ fontSize: "0.74rem", color: "text.secondary", mt: 0.25 }}>{s.label}</Typography>
+                    </Card>
+                ))}
+            </Box>
+
+            {/* ---------- Search and filter ---------- */}
+            <Box sx={{ display: "flex", gap: 1.25, alignItems: "center", flexWrap: "wrap", mb: 2 }}>
+                <TextField
+                    size="small"
+                    placeholder="Search name, employee no, class or subject"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    sx={{ flex: "1 1 260px", maxWidth: 460 }}
+                    slotProps={{
+                        input: {
+                            startAdornment: <SearchIcon fontSize="small" sx={{ mr: 0.75, color: "text.secondary" }} />
+                        }
+                    }}
+                />
+                <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
+                    {[
+                        ["all", "All"], ["active", "Active"], ["inactive", "Inactive"],
+                        ["unassigned", "Not assigned"], ["nologin", "No login"]
+                    ].map(([id, label]) => (
+                        <Chip
+                            key={id}
+                            label={label}
+                            size="small"
+                            onClick={() => setFilter(id)}
+                            sx={{
+                                fontWeight: 600,
+                                bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft, #F1F5F9)",
+                                color: filter === id ? "#fff" : "var(--sl-ink, var(--sl-ink))",
+                                "&:hover": { bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft2, #E2E8F0)" }
+                            }}
+                        />
+                    ))}
+                </Box>
+            </Box>
+
             {teachers.length === 0 && (
-
-                <Typography color="text.secondary">
-
-                    No teachers added yet.
-
-                </Typography>
-
+                <Typography color="text.secondary">No teachers added yet.</Typography>
             )}
 
-            {teachers.map((teacher) => (
+            {teachers.length > 0 && visibleTeachers.length === 0 && (
+                <Typography color="text.secondary">No teachers match your search.</Typography>
+            )}
 
-                <Card key={teacher.id} sx={{ p: 2.5, mb: 2 }}>
+            {/* ---------- Teacher cards ---------- */}
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 1.5 }}>
 
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1.5 }}>
+                {visibleTeachers.map((teacher) => {
 
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    const mine = assignmentsByTeacher[teacher.id] || [];
+                    const classTeacherOf = mine.filter((a) => a.is_class_teacher);
+                    const shown = mine.slice(0, 6);
+                    const hasLogin = !!teacher.user_id;
 
-                            <Avatar sx={{ bgcolor: teacher.is_active ? "var(--sl-soft)" : "#F1F5F9" }}>
+                    return (
+                        <Card
+                            key={teacher.id}
+                            data-testid="teacher-card"
+                            sx={{
+                                p: { xs: 1.75, md: 2.25 },
+                                borderRadius: 3,
+                                border: "1px solid var(--sl-border, #EEF2F7)",
+                                boxShadow: "var(--sl-card-shadow, 0 1px 3px rgba(15,23,42,.06))",
+                                opacity: teacher.is_active ? 1 : 0.72,
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 1.25
+                            }}
+                        >
 
-                                <SchoolIcon sx={{ color: teacher.is_active ? "var(--sl-primary)" : "#94A3B8" }} fontSize="small" />
+                            {/* Name row */}
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                <Avatar
+                                    sx={{
+                                        width: 44, height: 44, fontWeight: 800,
+                                        bgcolor: teacher.is_active ? "var(--sl-soft, var(--sl-soft))" : "#F1F5F9",
+                                        color: teacher.is_active ? "var(--sl-ink, var(--sl-primary))" : "#94A3B8"
+                                    }}
+                                >
+                                    {initials(teacher)}
+                                </Avatar>
 
-                            </Avatar>
+                                <Box sx={{ minWidth: 0, flex: 1 }}>
+                                    <Typography sx={{ fontWeight: 700, lineHeight: 1.25 }} noWrap>
+                                        {teacher.first_name} {teacher.last_name}
+                                    </Typography>
+                                    <Typography sx={{ color: "text.secondary", fontSize: "0.8rem" }} noWrap>
+                                        {teacher.employee_no}
+                                        {teacher.qualification && ` - ${teacher.qualification}`}
+                                    </Typography>
+                                </Box>
 
-                            <Box>
+                                <Chip
+                                    size="small"
+                                    label={teacher.is_active ? "Active" : "Inactive"}
+                                    sx={{
+                                        fontWeight: 700,
+                                        bgcolor: teacher.is_active ? "#DCFCE7" : "#F1F5F9",
+                                        color: teacher.is_active ? "#15803D" : "#64748B"
+                                    }}
+                                />
+                            </Box>
 
-                                <Typography sx={{ fontWeight: 600 }}>
+                            {/* Contact and experience */}
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.4 }}>
+                                {teacher.phone && (
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, color: "text.secondary" }}>
+                                        <PhoneIcon sx={{ fontSize: 16 }} />
+                                        <Typography sx={{ fontSize: "0.84rem" }}>{teacher.phone}</Typography>
+                                    </Box>
+                                )}
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, color: "text.secondary", minWidth: 0 }}>
+                                    <EmailIcon sx={{ fontSize: 16 }} />
+                                    <Typography sx={{ fontSize: "0.84rem" }} noWrap>{teacher.email || "No email"}</Typography>
+                                </Box>
+                                {(teacher.experience_years || teacher.joining_date) && (
+                                    <Typography sx={{ fontSize: "0.78rem", color: "text.secondary", pl: 3 }}>
+                                        {teacher.experience_years ? `${teacher.experience_years} yrs experience` : ""}
+                                        {teacher.experience_years && teacher.joining_date ? " - " : ""}
+                                        {teacher.joining_date ? `Joined ${prettyJoin(teacher.joining_date)}` : ""}
+                                    </Typography>
+                                )}
+                            </Box>
 
-                                    {teacher.first_name} {teacher.last_name}
-
+                            {/* Classes and subjects */}
+                            <Box
+                                sx={{
+                                    p: 1.25,
+                                    borderRadius: 2,
+                                    bgcolor: "var(--sl-page2, #F8FAFC)",
+                                    border: "1px solid var(--sl-border, #EEF2F7)"
+                                }}
+                            >
+                                <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "text.secondary", mb: 0.75, letterSpacing: 0.3 }}>
+                                    {mine.length ? `TEACHING ${mine.length} ${mine.length === 1 ? "SUBJECT" : "SUBJECTS"}` : "CLASSES AND SUBJECTS"}
                                 </Typography>
 
-                                <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
+                                {mine.length === 0 ? (
+                                    <Typography sx={{ fontSize: "0.84rem", color: assignmentsReady ? "#B45309" : "text.secondary" }}>
+                                        {assignmentsReady ? "Not assigned to any class yet." : "Loading..."}
+                                    </Typography>
+                                ) : (
+                                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.6 }}>
+                                        {classTeacherOf.map((a) => (
+                                            <Chip
+                                                key={"ct" + a.id}
+                                                size="small"
+                                                icon={<StarIcon sx={{ fontSize: 15, color: "#B45309 !important" }} />}
+                                                label={`Class teacher ${a.class_name}-${a.section_name}`}
+                                                sx={{ bgcolor: "#FEF3C7", color: "#92400E", fontWeight: 700 }}
+                                            />
+                                        ))}
+                                        {shown.map((a) => (
+                                            <Chip
+                                                key={a.id}
+                                                size="small"
+                                                label={`${a.class_name}-${a.section_name} - ${a.subject_name}`}
+                                                sx={{ bgcolor: "#fff", border: "1px solid var(--sl-border, #E2E8F0)" }}
+                                            />
+                                        ))}
+                                        {mine.length > shown.length && (
+                                            <Chip size="small" label={`+${mine.length - shown.length} more`} onClick={() => openAssignDialog(teacher)} />
+                                        )}
+                                    </Box>
+                                )}
+                            </Box>
 
-                                    {teacher.employee_no} · {teacher.email || "No email"}
-                                    {teacher.qualification && ` · ${teacher.qualification}`}
+                            {/* Login and actions */}
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", mt: "auto" }}>
 
-                                </Typography>
+                                <Chip
+                                    size="small"
+                                    label={hasLogin ? (teacher.username ? `Login: ${teacher.username}` : "Has login") : "No login yet"}
+                                    sx={{
+                                        fontWeight: 600,
+                                        bgcolor: hasLogin ? "#E0F2FE" : "#FEF3C7",
+                                        color: hasLogin ? "#075985" : "#92400E"
+                                    }}
+                                />
+
+                                <Box sx={{ flex: 1 }} />
+
+                                <Button
+                                    size="small"
+                                    variant="outlined"
+                                    startIcon={<AssignmentIndIcon fontSize="small" />}
+                                    onClick={() => openAssignDialog(teacher)}
+                                >
+                                    Assign
+                                </Button>
+
+                                <Button
+                                    size="small"
+                                    startIcon={<EditIcon fontSize="small" />}
+                                    onClick={() => openEditDialog(teacher)}
+                                >
+                                    Edit
+                                </Button>
+
+                                <IconButton
+                                    size="small"
+                                    aria-label="More actions"
+                                    onClick={(e) => setMenu({ anchor: e.currentTarget, teacher })}
+                                >
+                                    <MoreVertIcon fontSize="small" />
+                                </IconButton>
 
                             </Box>
 
-                        </Box>
+                        </Card>
+                    );
+                })}
 
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+            </Box>
 
-                            <Chip
-                                size="small"
-                                color={teacher.is_active ? "success" : "default"}
-                                label={teacher.is_active ? "Active" : "Inactive"}
-                            />
-
-                            {!teacher.user_id && (
-
-                                <Button
-                                    size="small"
-                                    color="warning"
-                                    startIcon={<VpnKeyIcon fontSize="small" />}
-                                    onClick={() => openLoginDialog(teacher)}
-                                >
-
-                                    Add Login
-
-                                </Button>
-
-                            )}
-
-                            {teacher.user_id && (<>
-
-                                <Button
-                                    size="small"
-                                    startIcon={<VpnKeyIcon fontSize="small" />}
-                                    onClick={() => openUsernameDialog(teacher)}
-                                >
-
-                                    {teacher.username ? "Edit Username" : "Set Username"} </Button>
-<Button size="small" color="warning" onClick={() => setResetTeacher(teacher)}>Reset Password</Button></>
-
-                            )}
-
-                            <Button
-                                size="small"
-                                startIcon={<AssignmentIndIcon fontSize="small" />}
-                                onClick={() => openAssignDialog(teacher)}
-                            >
-
-                                Assign
-
-                            </Button>
-
-                            <Button
-                                size="small"
-                                startIcon={<EditIcon fontSize="small" />}
-                                onClick={() => openEditDialog(teacher)}
-                            >
-
-                                Edit
-
-                            </Button>
-
-                            {teacher.is_active ? (
-
-                                <Button
-                                    size="small"
-                                    color="error"
-                                    startIcon={<BlockIcon fontSize="small" />}
-                                    onClick={() => handleDeactivate(teacher.id)}
-                                >
-
-                                    Deactivate
-
-                                </Button>
-
-                            ) : (
-
-                                <Button
-                                    size="small"
-                                    color="success"
-                                    startIcon={<RestoreIcon fontSize="small" />}
-                                    onClick={() => handleReactivate(teacher.id)}
-                                >
-
-                                    Reactivate
-
-                                </Button>
-
-                            )}
-
-                        </Box>
-
-                    </Box>
-
-                </Card>
-
-            ))}
+            {/* ---------- More actions menu ---------- */}
+            <Menu
+                anchorEl={menu ? menu.anchor : null}
+                open={!!menu}
+                onClose={() => setMenu(null)}
+            >
+                {menu && !menu.teacher.user_id && (
+                    <MenuItem onClick={() => { const t = menu.teacher; setMenu(null); openLoginDialog(t); }}>Add login</MenuItem>
+                )}
+                {menu && menu.teacher.user_id && (
+                    <MenuItem onClick={() => { const t = menu.teacher; setMenu(null); openUsernameDialog(t); }}>
+                        {menu.teacher.username ? "Edit username" : "Set username"}
+                    </MenuItem>
+                )}
+                {menu && menu.teacher.user_id && (
+                    <MenuItem onClick={() => { const t = menu.teacher; setMenu(null); setResetTeacher(t); }}>Reset password</MenuItem>
+                )}
+                {menu && menu.teacher.is_active && (
+                    <MenuItem sx={{ color: "error.main" }} onClick={() => { const t = menu.teacher; setMenu(null); handleDeactivate(t.id); }}>
+                        Deactivate
+                    </MenuItem>
+                )}
+                {menu && !menu.teacher.is_active && (
+                    <MenuItem sx={{ color: "success.main" }} onClick={() => { const t = menu.teacher; setMenu(null); handleReactivate(t.id); }}>
+                        Reactivate
+                    </MenuItem>
+                )}
+            </Menu>
 
             <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
 
