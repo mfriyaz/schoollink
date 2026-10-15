@@ -70,6 +70,25 @@ export const THEMES = {
         loginBg: "#FFF8FA", loginPanel: "#FCE8ED"
     },
 
+    // 4) Violet (vibrant violet, travel-card style)
+    violet: {
+        id: "violet",
+        name: "Violet",
+        tagline: "Vibrant Violet & White",
+        primary: "#6D28D9", primaryDark: "#4C1D95", primaryLight: "#8B5CF6",
+        soft: "#EDE4FF", soft2: "#CDB8FA", ink: "#1E0B4B",
+        accent: "#A78BFA", accentDark: "#8B5CF6",
+        pageBg: "#F7F3FF", border: "#E4D9FA", page2: "#F7F3FF",
+        btnBg: "#7C3AED", btnHover: "#6D28D9", btnText: "#FFFFFF", btnBorder: "none",
+        btnShadowCss: "0 3px 0 #4C1D95", btnShadowHoverCss: "0 4px 0 #4C1D95", btnShadow: "rgba(109,40,217,0.30)",
+        cardShadow: "0 1px 0 rgba(76,29,149,0.08), 0 2px 8px rgba(76,29,149,0.07)", cardShadowHover: "0 2px 0 rgba(76,29,149,0.12), 0 8px 18px rgba(76,29,149,0.14)",
+        tabIndicator: "#7C3AED", metaColor: "#2A0F66",
+        sideBg: "#2A0F66", sideActive: "#FFFFFF", onActive: "#4C1D95", sideText: "#F3EEFF", sideMuted: "rgba(243,238,255,0.68)", glow: "rgba(0,0,0,0)",
+        navActive: "#7C3AED", onNavActive: "#FFFFFF",
+        banner: "#7C3AED", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "0 6px 16px rgba(109,40,217,0.28)",
+        loginBg: "#F7F3FF", loginPanel: "#EDE4FF"
+    },
+
     // Used only by the Super Admin console (not offered to schools)
     platform: {
         id: "platform",
