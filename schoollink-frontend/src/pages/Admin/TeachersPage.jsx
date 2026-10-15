@@ -16,7 +16,10 @@ import {
     IconButton,
     Menu,
     MenuItem,
+    Switch,
     TextField,
+    useMediaQuery,
+    useTheme,
     Typography
 } from "@mui/material";
 
@@ -29,6 +32,7 @@ import AssignmentIndIcon from "@mui/icons-material/AssignmentIndOutlined";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import PhoneIcon from "@mui/icons-material/PhoneOutlined";
 import EmailIcon from "@mui/icons-material/EmailOutlined";
+import CloseIcon from "@mui/icons-material/CloseRounded";
 import StarIcon from "@mui/icons-material/StarRounded";
 import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 
@@ -98,6 +102,10 @@ function prettyJoin(d) {
 }
 
 function TeachersPage() {
+
+    const theme = useTheme();
+
+    const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
 
     const [teachers, setTeachers] = useState([]);
 
@@ -1314,235 +1322,217 @@ function TeachersPage() {
 
             </Dialog>
 
-            <Dialog open={assignDialogOpen} onClose={() => setAssignDialogOpen(false)} maxWidth="sm" fullWidth>
+            <Dialog
+                open={assignDialogOpen}
+                onClose={() => setAssignDialogOpen(false)}
+                maxWidth="sm"
+                fullWidth
+                fullScreen={isPhone}
+                slotProps={{ paper: { sx: { borderRadius: isPhone ? 0 : 4 } } }}
+            >
 
-                <DialogTitle>
+                {/* ---------- Header ---------- */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, px: 2.5, pt: 2.25, pb: 1.5 }}>
+                    <Avatar sx={{ width: 46, height: 46, fontWeight: 800, bgcolor: "var(--sl-banner, #FFC400)", color: "var(--sl-on-banner, #111827)" }}>
+                        {assignTeacher ? initials(assignTeacher) : "?"}
+                    </Avatar>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1.2 }} noWrap>
+                            {assignTeacher ? `${assignTeacher.first_name} ${assignTeacher.last_name || ""}` : "Teacher"}
+                        </Typography>
+                        <Typography sx={{ color: "text.secondary", fontSize: "0.82rem" }} noWrap>
+                            Classes and subjects
+                            {assignTeacher && assignTeacher.employee_no ? ` - ${assignTeacher.employee_no}` : ""}
+                        </Typography>
+                    </Box>
+                    <IconButton aria-label="Close" onClick={() => setAssignDialogOpen(false)}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
 
-                    Assign {assignTeacher ? `${assignTeacher.first_name} ${assignTeacher.last_name}` : "Teacher"}
-
-                </DialogTitle>
-
-                <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+                <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 0.5 }}>
 
                     {assignError && <Alert severity="error">{assignError}</Alert>}
 
                     {assignSuccess && <Alert severity="success">{assignSuccess}</Alert>}
 
-                    <Box sx={{ bgcolor: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 3, p: 2 }}>
+                    {/* ---------- Current assignments ---------- */}
+                    <Box>
 
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", mb: 1, color: "#334155" }}>
-
-                            📋 Current Assignments
-
+                        <Typography sx={{ fontSize: "0.74rem", fontWeight: 800, letterSpacing: 0.4, color: "text.secondary", mb: 0.75 }}>
+                            CURRENTLY TEACHING{currentAssignments.length ? ` (${currentAssignments.length})` : ""}
                         </Typography>
 
                         {loadingAssignments && (
-
                             <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
-
                                 <CircularProgress size={20} />
-
                             </Box>
-
                         )}
 
                         {!loadingAssignments && currentAssignments.length === 0 && (
-
-                            <Typography sx={{ color: "#94A3B8", fontSize: "0.85rem", py: 1 }}>
-
-                                Not assigned to any subject/class yet.
-
-                            </Typography>
-
+                            <Box sx={{ p: 1.5, borderRadius: 2.5, bgcolor: "#FEF3C7", color: "#92400E", fontSize: "0.86rem" }}>
+                                Not assigned to any class yet. Add the first one below.
+                            </Box>
                         )}
 
                         {!loadingAssignments && currentAssignments.length > 0 && (
-
-                            <Box
-
-                                sx={{
-
-                                    display: "flex",
-
-                                    flexDirection: "column",
-
-                                    gap: 1,
-
-                                    maxHeight: 220,
-
-                                    overflowY: "auto"
-
-                                }}
-
-                            >
-
+                            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75, maxHeight: 230, overflowY: "auto", pr: 0.5 }}>
                                 {currentAssignments.map((a) => (
-
                                     <Box
-
                                         key={a.teacher_subject_id}
-
+                                        data-testid="current-assignment"
                                         sx={{
-
                                             display: "flex",
-
                                             alignItems: "center",
-
-                                            justifyContent: "space-between",
-
-                                            bgcolor: "white",
-
-                                            border: "1px solid #E2E8F0",
-
-                                            borderRadius: 2,
-
+                                            gap: 1,
                                             px: 1.5,
-
-                                            py: 1
-
+                                            py: 0.75,
+                                            borderRadius: 2.5,
+                                            border: "1px solid var(--sl-border, #E2E8F0)",
+                                            bgcolor: "var(--sl-page2, #F8FAFC)"
                                         }}
-
                                     >
-
-                                        <Typography sx={{ fontSize: "0.85rem", fontWeight: 500 }}>
-
-                                            {a.subject_name} · {a.class_name} - {a.section_name}
-
-                                        </Typography>
-
+                                        <Box sx={{ minWidth: 0, flex: 1 }}>
+                                            <Typography sx={{ fontSize: "0.9rem", fontWeight: 700 }} noWrap>{a.subject_name}</Typography>
+                                            <Typography sx={{ fontSize: "0.78rem", color: "text.secondary" }} noWrap>
+                                                {a.class_name} - {a.section_name}
+                                            </Typography>
+                                        </Box>
+                                        {a.is_class_teacher && (
+                                            <Chip
+                                                size="small"
+                                                icon={<StarIcon sx={{ fontSize: 15, color: "#B45309 !important" }} />}
+                                                label="Class teacher"
+                                                sx={{ bgcolor: "#FEF3C7", color: "#92400E", fontWeight: 700 }}
+                                            />
+                                        )}
                                         <IconButton
-
                                             size="small"
-
+                                            aria-label="Remove assignment"
                                             onClick={() => handleRemoveAssignment(a.teacher_subject_id)}
-
                                             disabled={removingId === a.teacher_subject_id}
                                         >
-
                                             <DeleteOutlineIcon fontSize="small" sx={{ color: "#DC2626" }} />
-
                                         </IconButton>
-
                                     </Box>
-
                                 ))}
-
                             </Box>
-
                         )}
 
                     </Box>
 
-                    <Box sx={{ bgcolor: "var(--sl-soft)", border: "1px solid var(--sl-soft2)", borderRadius: 3, p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-
-                        <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--sl-primary-dark)" }}>
-
-                            ➕ Add New Assignment
-
-                        </Typography>
-
-                    <TextField
-                        select
-                        label="Subject"
-                        size="small"
-                        fullWidth
-                        value={assignSubjectId}
-                        onChange={(e) => setAssignSubjectId(e.target.value)}
-                    >
-
-                        {subjects.map((s) => (
-
-                            <MenuItem key={s.id} value={s.id}>{s.subject_name}</MenuItem>
-
-                        ))}
-
-                    </TextField>
-
-                    <TextField
-                        select
-                        label="Class"
-                        size="small"
-                        fullWidth
-                        value={assignClassId}
-                        onChange={(e) => handleClassChange(e.target.value)}
-                    >
-
-                        {classes.map((c) => (
-
-                            <MenuItem key={c.id} value={c.id}>{c.class_name}</MenuItem>
-
-                        ))}
-
-                    </TextField>
-
-                    <TextField
-                        select
-                        label="Section"
-                        size="small"
-                        fullWidth
-                        value={assignSectionId}
-                        onChange={(e) => setAssignSectionId(e.target.value)}
-                        disabled={!assignClassId}
-                    >
-
-                        {sections.map((s) => (
-
-                            <MenuItem key={s.id} value={s.id}>{s.section_name}</MenuItem>
-
-                        ))}
-
-                    </TextField>
-
+                    {/* ---------- Add new ---------- */}
                     <Box
-
-                        onClick={() => setIsClassTeacher((v) => !v)}
-
                         sx={{
-
+                            p: 2,
+                            borderRadius: 3,
+                            border: "1px solid var(--sl-border, #E2E8F0)",
+                            bgcolor: "#fff",
+                            boxShadow: "var(--sl-card-shadow, 0 1px 3px rgba(15,23,42,.06))",
                             display: "flex",
-
-                            alignItems: "center",
-
-                            gap: 1,
-
-                            cursor: "pointer",
-
-                            color: isClassTeacher ? "var(--sl-primary)" : "#64748B"
-
+                            flexDirection: "column",
+                            gap: 1.75
                         }}
-
                     >
 
-                        <SchoolIcon fontSize="small" />
-
-                        <Typography sx={{ fontSize: "0.85rem" }}>
-
-                            {isClassTeacher ? "✓ Set as Class Teacher for this section" : "Set as Class Teacher for this section"}
-
+                        <Typography sx={{ fontSize: "0.74rem", fontWeight: 800, letterSpacing: 0.4, color: "text.secondary" }}>
+                            ADD A NEW ASSIGNMENT
                         </Typography>
 
-                    </Box>
+                        <TextField
+                            select
+                            label="Subject"
+                            size="small"
+                            fullWidth
+                            value={assignSubjectId}
+                            onChange={(e) => setAssignSubjectId(e.target.value)}
+                        >
+                            {subjects.map((s) => (
+                                <MenuItem key={s.id} value={s.id}>{s.subject_name}</MenuItem>
+                            ))}
+                        </TextField>
+
+                        <TextField
+                            select
+                            label="Class"
+                            size="small"
+                            fullWidth
+                            value={assignClassId}
+                            onChange={(e) => handleClassChange(e.target.value)}
+                        >
+                            {classes.map((c) => (
+                                <MenuItem key={c.id} value={c.id}>{c.class_name}</MenuItem>
+                            ))}
+                        </TextField>
+
+                        <Box>
+                            <Typography sx={{ fontSize: "0.78rem", color: "text.secondary", mb: 0.75 }}>Section</Typography>
+                            {!assignClassId && (
+                                <Typography sx={{ fontSize: "0.84rem", color: "text.secondary" }}>Choose a class first.</Typography>
+                            )}
+                            {assignClassId && sections.length === 0 && (
+                                <Typography sx={{ fontSize: "0.84rem", color: "#B45309" }}>This class has no sections yet.</Typography>
+                            )}
+                            <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
+                                {sections.map((s) => {
+                                    const on = assignSectionId === s.id;
+                                    return (
+                                        <Chip
+                                            key={s.id}
+                                            label={`Section ${s.section_name}`}
+                                            onClick={() => setAssignSectionId(s.id)}
+                                            sx={{
+                                                fontWeight: 700,
+                                                bgcolor: on ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft, #F1F5F9)",
+                                                color: on ? "#fff" : "var(--sl-ink, var(--sl-ink))",
+                                                "&:hover": { bgcolor: on ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft2, #E2E8F0)" }
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </Box>
+                        </Box>
+
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                                p: 1.25,
+                                borderRadius: 2.5,
+                                bgcolor: isClassTeacher ? "#FEF3C7" : "var(--sl-page2, #F8FAFC)",
+                                border: "1px solid var(--sl-border, #E2E8F0)"
+                            }}
+                        >
+                            <StarIcon sx={{ color: isClassTeacher ? "#B45309" : "#94A3B8" }} />
+                            <Box sx={{ flex: 1 }}>
+                                <Typography sx={{ fontSize: "0.88rem", fontWeight: 700 }}>Class teacher of this section</Typography>
+                                <Typography sx={{ fontSize: "0.76rem", color: "text.secondary" }}>
+                                    Sends the daily greeting and sees this class first.
+                                </Typography>
+                            </Box>
+                            <Switch checked={isClassTeacher} onChange={(e) => setIsClassTeacher(e.target.checked)} />
+                        </Box>
 
                     </Box>
 
                 </DialogContent>
 
-                <DialogActions>
+                <DialogActions sx={{ px: 2.5, pb: 2, pt: 1 }}>
 
                     <Button onClick={() => setAssignDialogOpen(false)}>
-
                         Close
-
                     </Button>
 
-                    <Button loading={assigning} loadingPosition="start"
+                    <Button
+                        loading={assigning}
+                        loadingPosition="start"
                         variant="contained"
+                        startIcon={<AddIcon />}
                         onClick={handleAssign}
                         disabled={assigning}
                     >
-
                         {assigning ? "Assigning..." : "Assign"}
-
                     </Button>
 
                 </DialogActions>
