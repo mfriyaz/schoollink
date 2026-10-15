@@ -486,7 +486,7 @@ function TeachersPage() {
 
         if (!assignSubjectId || !assignClassId || !assignSectionId) {
 
-            setAssignError("To add an assignment, first choose a subject, class and section. To change an existing class teacher, tap the star in the list above.");
+            setAssignError("To add an assignment, first choose a subject, class and section. To change an existing class teacher, use the Make class teacher button in the list above.");
 
             return;
 
@@ -1433,21 +1433,20 @@ function TeachersPage() {
                                                 {a.class_name} - {a.section_name}
                                             </Typography>
                                         </Box>
-                                        <Tooltip title={a.is_class_teacher ? "Class teacher - tap to remove" : "Make class teacher"}>
-                                            <span>
-                                                <IconButton
-                                                    size="small"
-                                                    aria-label="Toggle class teacher"
-                                                    onClick={() => handleToggleClassTeacher(a)}
-                                                    disabled={togglingId === a.teacher_subject_id}
-                                                    sx={{ bgcolor: a.is_class_teacher ? "#FEF3C7" : "transparent" }}
-                                                >
-                                                    {a.is_class_teacher
-                                                        ? <StarIcon fontSize="small" sx={{ color: "#B45309" }} />
-                                                        : <StarBorderIcon fontSize="small" sx={{ color: "#94A3B8" }} />}
-                                                </IconButton>
-                                            </span>
-                                        </Tooltip>
+                                        <Chip
+                                            size="small"
+                                            clickable
+                                            aria-label="Toggle class teacher"
+                                            onClick={() => handleToggleClassTeacher(a)}
+                                            disabled={togglingId === a.teacher_subject_id}
+                                            icon={a.is_class_teacher
+                                                ? <StarIcon sx={{ fontSize: 15, color: "#B45309 !important" }} />
+                                                : <StarBorderIcon sx={{ fontSize: 15 }} />}
+                                            label={a.is_class_teacher ? "Class teacher" : "Make class teacher"}
+                                            sx={a.is_class_teacher
+                                                ? { bgcolor: "#FEF3C7", color: "#92400E", fontWeight: 700 }
+                                                : { border: "1px dashed #94A3B8", bgcolor: "transparent", color: "text.secondary", fontWeight: 600 }}
+                                        />
                                         <IconButton
                                             size="small"
                                             aria-label="Remove assignment"
@@ -1550,10 +1549,10 @@ function TeachersPage() {
                             <Box sx={{ flex: 1 }}>
                                 <Typography sx={{ fontSize: "0.88rem", fontWeight: 700 }}>Make class teacher of the new assignment</Typography>
                                 <Typography sx={{ fontSize: "0.76rem", color: "text.secondary" }}>
-                                    Applies only when you press Assign below.
+                                    Choose subject, class and section first. Already assigned? Use the button in the list above.
                                 </Typography>
                             </Box>
-                            <Switch checked={isClassTeacher} onChange={(e) => setIsClassTeacher(e.target.checked)} />
+                            <Switch checked={isClassTeacher} disabled={!assignSubjectId || !assignClassId || !assignSectionId} onChange={(e) => setIsClassTeacher(e.target.checked)} />
                         </Box>
 
                     </Box>
