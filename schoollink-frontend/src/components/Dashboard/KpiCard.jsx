@@ -30,12 +30,12 @@ function KpiCard({
                     height: 40,
                     minWidth: 40,
                     borderRadius: "12px",
-                    bgcolor: "var(--sl-accent)",
+                    bgcolor: iconBg || "var(--sl-accent)",
                     border: "1.5px solid var(--sl-ink)",
                                         display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    "& svg": { fontSize: 20, color: "var(--sl-ink) !important" }
+                    "& svg": { fontSize: 20 }
                 }}
             >
                 {icon}

@@ -88,8 +88,8 @@ function DashboardPage() {
                             <KpiCard
                                 title="Teachers"
                                 value={dashboard.teachers}
-                                icon={<SchoolIcon sx={{ color: "#4F46E5" }} />}
-                                iconBg="#E0E7FF"
+                                icon={<SchoolIcon sx={{ color: "#0D9488" }} />}
+                                iconBg="#CCFBF1"
                             />
                         </Grid>
                         <Grid size={{ xs: 6, md: 4, lg: 2 }}>
@@ -112,8 +112,8 @@ function DashboardPage() {
                             <KpiCard
                                 title="Posts Today"
                                 value={dashboard.postsToday}
-                                icon={<EventNoteIcon sx={{ color: "#4F46E5" }} />}
-                                iconBg="#E0E7FF"
+                                icon={<EventNoteIcon sx={{ color: "#0891B2" }} />}
+                                iconBg="#CFFAFE"
                             />
                         </Grid>
                         <Grid size={{ xs: 6, md: 4, lg: 2 }}>
@@ -136,7 +136,7 @@ function DashboardPage() {
                             <QuickActionCard
                                 title="Add Student"
                                 icon={<PersonAddIcon />}
-                                color="#4F46E5"
+                                color="#0284C7"
                                 onClick={() => navigate("/students")}
                             />
                         </Grid>
