@@ -22,9 +22,6 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import PendingActionsIcon from "@mui/icons-material/PendingActionsOutlined";
 import GroupsIcon from "@mui/icons-material/GroupsOutlined";
 import ClassIcon from "@mui/icons-material/ClassOutlined";
-import FactCheckIcon from "@mui/icons-material/FactCheckOutlined";
-import GradeIcon from "@mui/icons-material/GradeOutlined";
-import CampaignIcon from "@mui/icons-material/CampaignOutlined";
 import {
     getMyTeacherProfile,
     getMyAssignments,
@@ -99,28 +96,6 @@ function KpiCard({ icon, label, value, linkLabel, onLinkClick }) {
                 )}
             </Box>
         </Card>
-    );
-}
-
-function QuickAction({ icon, label, onClick }) {
-    return (
-        <Box
-            role="button"
-            tabIndex={0}
-            onClick={onClick}
-            onKeyDown={(e) => e.key === "Enter" && onClick()}
-            sx={{
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 0.75,
-                py: 1.25, px: 1, borderRadius: 3, cursor: "pointer", textAlign: "center",
-                bgcolor: "#fff", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)",
-                transition: "transform .1s",
-                "&:active": { transform: "translate(1px,1px)", boxShadow: "1px 1px 0 var(--sl-ink)" },
-                "& svg": { fontSize: 24, color: "var(--sl-ink)" }
-            }}
-        >
-            {icon}
-            <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", lineHeight: 1.2 }}>{label}</Typography>
-        </Box>
     );
 }
 
@@ -329,13 +304,6 @@ function TeacherDashboardPage() {
                 >
                     Create Post
                 </Button>
-            </Box>
-
-            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: { xs: 1, sm: 1.5 }, mb: 2.5 }}>
-                <QuickAction icon={<AddIcon />} label="Create Post" onClick={() => navigate("/teacher/create-post")} />
-                <QuickAction icon={<FactCheckIcon />} label="Attendance" onClick={() => navigate("/teacher/attendance")} />
-                <QuickAction icon={<GradeIcon />} label="Enter Marks" onClick={() => navigate("/teacher/enter-marks")} />
-                <QuickAction icon={<CampaignIcon />} label="Notices" onClick={() => navigate("/teacher/announcements")} />
             </Box>
 
             <Grid container spacing={{ xs: 1.5, md: 2 }} sx={{ mb: 3 }}>
