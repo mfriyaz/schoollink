@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
+    Alert,
+    Avatar,
     Box,
     Card,
     Chip,
@@ -17,6 +19,10 @@ import {
 import SearchIcon from "@mui/icons-material/SearchOutlined";
 import ArrowBackIcon from "@mui/icons-material/ArrowBackOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import HistoryIcon from "@mui/icons-material/HistoryRounded";
+import CampaignIcon from "@mui/icons-material/CampaignOutlined";
+import MenuBookIcon from "@mui/icons-material/MenuBookOutlined";
+import GradeIcon from "@mui/icons-material/GradeOutlined";
 
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
@@ -30,9 +36,9 @@ const TYPE_FILTERS = [
 ];
 
 const ACTION_STYLE = {
-    Created: { bg: "#DCFCE7", color: "#15803D" },
-    Edited: { bg: "var(--sl-soft)", color: "var(--sl-primary-dark)" },
-    Deleted: { bg: "#FEE2E2", color: "#B91C1C" }
+    Created: { bg: "#DCFCE7", color: "#15803D", dot: "#22C55E" },
+    Edited: { bg: "#FEF3C7", color: "#92400E", dot: "#F59E0B" },
+    Deleted: { bg: "#FEE2E2", color: "#B91C1C", dot: "#EF4444" }
 };
 
 const TYPE_LABEL = {
@@ -41,19 +47,44 @@ const TYPE_LABEL = {
     marks: "Marks"
 };
 
-function formatWhen(value) {
+const TYPE_ICON = {
+    announcement: <CampaignIcon fontSize="small" />,
+    homework: <MenuBookIcon fontSize="small" />,
+    marks: <GradeIcon fontSize="small" />
+};
 
-    const d = toUtcDate(value);
+function dayKey(value) {
+    return toUtcDate(value).toLocaleDateString("en-CA", { timeZone: getSchoolTimezone() });
+}
 
-    return d.toLocaleString(undefined, {
+function dayLabel(key) {
+    const today = new Date().toLocaleDateString("en-CA", { timeZone: getSchoolTimezone() });
+    const yesterday = new Date(Date.now() - 86400000).toLocaleDateString("en-CA", { timeZone: getSchoolTimezone() });
+    if (key === today) return "Today";
+    if (key === yesterday) return "Yesterday";
+    const [y, m, d] = key.split("-").map(Number);
+    return new Date(Date.UTC(y, m - 1, d, 12)).toLocaleDateString(undefined, {
+        weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "UTC"
+    });
+}
+
+function timeOf(value) {
+    return toUtcDate(value).toLocaleTimeString(undefined, {
         timeZone: getSchoolTimezone(),
-        month: "short",
-        day: "numeric",
-        year: "numeric",
         hour: "numeric",
         minute: "2-digit"
     });
+}
 
+function pill(active) {
+    return {
+        fontWeight: 700,
+        border: "1px solid",
+        borderColor: active ? "var(--sl-ink, #111827)" : "var(--sl-border, #E2E8F0)",
+        bgcolor: active ? "var(--sl-accent, #FFC400)" : "#fff",
+        color: active ? "var(--sl-ink, #111827)" : "text.secondary",
+        "&:hover": { bgcolor: active ? "var(--sl-accent, #FFC400)" : "var(--sl-soft, #F1F5F9)" }
+    };
 }
 
 function ActivityLogPage() {
@@ -85,15 +116,7 @@ function ActivityLogPage() {
         try {
             setLoading(true);
             setError("");
-            const response = await getAuditLogs({
-                search,
-                entity_type: type,
-                action,
-                role,
-                from,
-                to,
-                page
-            });
+            const response = await getAuditLogs({ search, entity_type: type, action, role, from, to, page });
             if (response.success) {
                 setLogs(response.data.logs);
                 setTotalPages(response.data.totalPages);
@@ -101,10 +124,7 @@ function ActivityLogPage() {
             }
         } catch (err) {
             console.error(err);
-            setError(
-                err.response?.data?.message ||
-                "Unable to load the activity log. Please try again."
-            );
+            setError(err.response?.data?.message || "Unable to load the activity log. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -114,227 +134,229 @@ function ActivityLogPage() {
         return (e) => { setter(e.target.value); setPage(1); };
     }
 
+    const filtersOn = Boolean(search || type || action || role || from || to);
+
+    // group the page's entries by day (school time zone), keeping the order
+    const groups = useMemo(() => {
+        const map = new Map();
+        logs.forEach((l) => {
+            const k = dayKey(l.created_at);
+            if (!map.has(k)) map.set(k, []);
+            map.get(k).push(l);
+        });
+        return Array.from(map.entries());
+    }, [logs]);
+
     return (
 
-        <Box>
+        <Box sx={{ maxWidth: 1000 }}>
 
             <Box
                 onClick={() => navigate("/dashboard")}
-                sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#64748B", cursor: "pointer", mb: 2, width: "fit-content" }}
+                sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "text.secondary", cursor: "pointer", mb: 1.5, width: "fit-content" }}
             >
                 <ArrowBackIcon fontSize="small" />
                 <Typography sx={{ fontSize: "0.9rem" }}>Back to Dashboard</Typography>
             </Box>
 
-            <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
-                Activity Log
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #FEF3C7)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <HistoryIcon sx={{ color: "var(--sl-ink, #B45309)" }} />
+                </Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Activity Log</Typography>
+                    <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
+                        Who created, edited or deleted announcements, homework and marks. Entries can't be changed or removed.
+                    </Typography>
+                </Box>
+                {!loading && total > 0 && (
+                    <Chip label={`${total} entr${total === 1 ? "y" : "ies"}`} sx={{ fontWeight: 700, bgcolor: "var(--sl-soft, #F1F5F9)" }} />
+                )}
+            </Box>
 
-            <Typography sx={{ color: "#64748B", fontSize: "0.9rem", mb: 3 }}>
-                Who created, edited or deleted announcements, homework and marks. Entries cannot be changed or removed.
-            </Typography>
-
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
+            {/* ---------- filters ---------- */}
+            <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap", mb: 1.5 }}>
                 {TYPE_FILTERS.map((f) => (
                     <Chip
                         key={f.value}
                         label={f.label}
                         clickable
                         onClick={() => { setType(f.value); setPage(1); }}
-                        sx={{
-                            fontWeight: 600,
-                            bgcolor: type === f.value ? "var(--sl-primary-dark)" : "#F1F5F9",
-                            color: type === f.value ? "white" : "#475569",
-                            "&:hover": { bgcolor: type === f.value ? "var(--sl-primary-dark)" : "#E2E8F0" }
-                        }}
+                        sx={pill(type === f.value)}
                     />
                 ))}
             </Box>
 
-            <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap" }}>
-
+            <Box sx={{ display: "flex", gap: 1.25, mb: 2.5, flexWrap: "wrap" }}>
                 <TextField
                     placeholder="Search title or person..."
                     value={search}
                     onChange={reset(setSearch)}
                     size="small"
-                    sx={{ minWidth: 240 }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon fontSize="small" sx={{ color: "#94A3B8" }} />
-                            </InputAdornment>
-                        )
+                    sx={{ flex: 1, minWidth: 220 }}
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon fontSize="small" sx={{ color: "#94A3B8" }} />
+                                </InputAdornment>
+                            )
+                        }
                     }}
                 />
-
-                <TextField select size="small" label="Action" value={action} onChange={reset(setAction)} sx={{ minWidth: 130 }}>
+                <TextField select size="small" label="Action" value={action} onChange={reset(setAction)} sx={{ minWidth: 120 }}>
                     <MenuItem value="">All</MenuItem>
                     <MenuItem value="Created">Created</MenuItem>
                     <MenuItem value="Edited">Edited</MenuItem>
                     <MenuItem value="Deleted">Deleted</MenuItem>
                 </TextField>
-
-                <TextField select size="small" label="By" value={role} onChange={reset(setRole)} sx={{ minWidth: 130 }}>
+                <TextField select size="small" label="By" value={role} onChange={reset(setRole)} sx={{ minWidth: 120 }}>
                     <MenuItem value="">Everyone</MenuItem>
                     <MenuItem value="Teacher">Teachers</MenuItem>
                     <MenuItem value="School Admin">Admins</MenuItem>
                 </TextField>
-
-                <SchoolDatePicker
-                    label="From"
-                    size="small"
-                    value={from}
-                    onChange={(v) => { setFrom(v); setPage(1); }}
-                    sx={{ width: 180 }}
-                />
-
-                <SchoolDatePicker
-                    label="To"
-                    size="small"
-                    value={to}
-                    onChange={(v) => { setTo(v); setPage(1); }}
-                    sx={{ width: 180 }}
-                />
-
+                <SchoolDatePicker label="From" size="small" value={from} onChange={(v) => { setFrom(v); setPage(1); }} sx={{ width: 160 }} />
+                <SchoolDatePicker label="To" size="small" value={to} onChange={(v) => { setTo(v); setPage(1); }} sx={{ width: 160 }} />
             </Box>
 
-            <Card sx={{ p: { xs: 1, sm: 2 } }}>
+            {/* ---------- timeline ---------- */}
+            {loading && (
+                <Box sx={{ display: "flex", justifyContent: "center", py: 5 }}>
+                    <CircularProgress size={28} />
+                </Box>
+            )}
 
-                {loading && (
-                    <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-                        <CircularProgress size={28} />
-                    </Box>
-                )}
+            {!loading && error && <Alert severity="error">{error}</Alert>}
 
-                {!loading && error && (
-                    <Typography sx={{ color: "#B91C1C", p: 2 }}>
-                        {error}
+            {!loading && !error && logs.length === 0 && (
+                <Card sx={{ p: 4, textAlign: "center", borderRadius: 3 }}>
+                    <Typography sx={{ fontWeight: 700, mb: 0.5 }}>
+                        {filtersOn ? "No activity matches these filters" : "No activity yet"}
                     </Typography>
-                )}
-
-                {!loading && !error && logs.length === 0 && (
-                    <Typography color="text.secondary" sx={{ p: 2 }}>
-                        No activity found.
+                    <Typography color="text.secondary">
+                        {filtersOn ? "Try clearing a filter or searching a different word." : "Changes to announcements, homework and marks will show up here."}
                     </Typography>
-                )}
+                </Card>
+            )}
 
-                {!loading && logs.map((log) => {
+            {!loading && groups.map(([key, items]) => (
 
-                    const style = ACTION_STYLE[log.action] || ACTION_STYLE.Edited;
-                    const changes = Array.isArray(log.changes) ? log.changes : [];
-                    const open = openId === log.id;
+                <Box key={key} sx={{ mb: 2.5 }}>
 
-                    return (
+                    <Typography sx={{ fontSize: "0.74rem", fontWeight: 800, letterSpacing: 0.4, color: "text.secondary", mb: 0.75 }}>
+                        {dayLabel(key).toUpperCase()} ({items.length})
+                    </Typography>
 
-                        <Box key={log.id} sx={{ borderBottom: "1px solid #F1F5F9" }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
 
-                            <Box
-                                onClick={() => changes.length > 0 && setOpenId(open ? null : log.id)}
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1.5,
-                                    flexWrap: "wrap",
-                                    p: 1.5,
-                                    borderRadius: 2,
-                                    cursor: changes.length > 0 ? "pointer" : "default",
-                                    "&:hover": { bgcolor: changes.length > 0 ? "#F8FAFC" : "transparent" }
-                                }}
-                            >
+                        {items.map((log) => {
 
-                                <Chip
-                                    size="small"
-                                    label={log.action}
-                                    sx={{ bgcolor: style.bg, color: style.color, fontWeight: 700, minWidth: 72 }}
-                                />
+                            const style = ACTION_STYLE[log.action] || ACTION_STYLE.Edited;
+                            const changes = Array.isArray(log.changes) ? log.changes : [];
+                            const open = openId === log.id;
+                            const who = log.user_name || "Unknown";
 
-                                <Box sx={{ flex: 1, minWidth: 220 }}>
+                            return (
 
-                                    <Typography sx={{ fontWeight: 600 }}>
-                                        {log.entity_title || "(untitled)"}
-                                    </Typography>
+                                <Box
+                                    key={log.id}
+                                    data-testid="log-row"
+                                    sx={{
+                                        borderRadius: 3,
+                                        bgcolor: "#fff",
+                                        border: "1px solid var(--sl-border, #E2E8F0)",
+                                        borderLeft: `4px solid ${style.dot}`,
+                                        boxShadow: "var(--sl-card-shadow, none)",
+                                        overflow: "hidden"
+                                    }}
+                                >
+                                    <Box
+                                        onClick={() => changes.length > 0 && setOpenId(open ? null : log.id)}
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 1.5,
+                                            flexWrap: "wrap",
+                                            p: 1.5,
+                                            cursor: changes.length > 0 ? "pointer" : "default"
+                                        }}
+                                    >
+                                        <Chip
+                                            size="small"
+                                            label={log.action}
+                                            sx={{ bgcolor: style.bg, color: style.color, fontWeight: 800, minWidth: 74 }}
+                                        />
 
-                                    <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
-                                        {TYPE_LABEL[log.entity_type] || log.entity_type}
-                                        {log.summary ? ` · ${log.summary}` : ""}
-                                    </Typography>
-
-                                </Box>
-
-                                <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
-
-                                    <Typography sx={{ fontSize: "0.88rem", fontWeight: 600 }}>
-                                        {log.user_name || "Unknown"}
-                                        <Typography component="span" sx={{ color: "#64748B", fontSize: "0.78rem", ml: 0.75 }}>
-                                            {log.user_role}
-                                        </Typography>
-                                    </Typography>
-
-                                    <Typography sx={{ color: "#64748B", fontSize: "0.78rem" }}>
-                                        {formatWhen(log.created_at)}
-                                    </Typography>
-
-                                </Box>
-
-                                {changes.length > 0 && (
-                                    <ExpandMoreIcon
-                                        fontSize="small"
-                                        sx={{ color: "#94A3B8", transform: open ? "rotate(180deg)" : "none", transition: "0.2s" }}
-                                    />
-                                )}
-
-                            </Box>
-
-                            <Collapse in={open} unmountOnExit>
-
-                                <Box sx={{ px: 2, pb: 2 }}>
-
-                                    {changes.map((c, i) => (
-
-                                        <Box key={i} sx={{ display: "flex", gap: 1, flexWrap: "wrap", py: 0.5, fontSize: "0.88rem" }}>
-
-                                            <Typography sx={{ fontWeight: 600, fontSize: "inherit", minWidth: 150 }}>
-                                                {c.field}
+                                        <Box sx={{ flex: 1, minWidth: 200 }}>
+                                            <Typography sx={{ fontWeight: 700, overflowWrap: "anywhere" }}>
+                                                {log.entity_title || "(untitled)"}
                                             </Typography>
-
-                                            <Typography sx={{ color: "#B91C1C", fontSize: "inherit", textDecoration: "line-through" }}>
-                                                {c.from}
-                                            </Typography>
-
-                                            <Typography sx={{ fontSize: "inherit", color: "#94A3B8" }}>→</Typography>
-
-                                            <Typography sx={{ color: "#15803D", fontSize: "inherit" }}>
-                                                {c.to}
-                                            </Typography>
-
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "text.secondary", fontSize: "0.8rem" }}>
+                                                {TYPE_ICON[log.entity_type]}
+                                                <span>
+                                                    {TYPE_LABEL[log.entity_type] || log.entity_type}
+                                                    {log.summary ? ` · ${log.summary}` : ""}
+                                                </span>
+                                            </Box>
                                         </Box>
 
-                                    ))}
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                            <Avatar sx={{ width: 30, height: 30, fontSize: "0.8rem", fontWeight: 800, bgcolor: "var(--sl-soft, var(--sl-soft))", color: "var(--sl-ink, var(--sl-primary))" }}>
+                                                {who[0]}
+                                            </Avatar>
+                                            <Box>
+                                                <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, lineHeight: 1.2 }}>{who}</Typography>
+                                                <Typography sx={{ color: "text.secondary", fontSize: "0.74rem" }}>
+                                                    {log.user_role} · {timeOf(log.created_at)}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
 
+                                        {changes.length > 0 ? (
+                                            <ExpandMoreIcon
+                                                fontSize="small"
+                                                sx={{ color: "#94A3B8", transform: open ? "rotate(180deg)" : "none", transition: "0.2s" }}
+                                            />
+                                        ) : (
+                                            <Box sx={{ width: 20 }} />
+                                        )}
+                                    </Box>
+
+                                    <Collapse in={open} unmountOnExit>
+                                        <Box sx={{ mx: 1.5, mb: 1.5, p: 1.5, borderRadius: 2.5, bgcolor: "var(--sl-page2, #F8FAFC)" }}>
+                                            {changes.map((c, i) => (
+                                                <Box key={i} sx={{ display: "flex", gap: 1, flexWrap: "wrap", py: 0.5, fontSize: "0.86rem" }}>
+                                                    <Typography sx={{ fontWeight: 700, fontSize: "inherit", minWidth: 140 }}>
+                                                        {c.field}
+                                                    </Typography>
+                                                    <Typography sx={{ color: "#B91C1C", fontSize: "inherit", textDecoration: "line-through", overflowWrap: "anywhere" }}>
+                                                        {String(c.from ?? "")}
+                                                    </Typography>
+                                                    <Typography sx={{ fontSize: "inherit", color: "#94A3B8" }}>→</Typography>
+                                                    <Typography sx={{ color: "#15803D", fontSize: "inherit", overflowWrap: "anywhere" }}>
+                                                        {String(c.to ?? "")}
+                                                    </Typography>
+                                                </Box>
+                                            ))}
+                                        </Box>
+                                    </Collapse>
                                 </Box>
 
-                            </Collapse>
+                            );
 
-                        </Box>
+                        })}
 
-                    );
-
-                })}
-
-                {totalPages > 1 && (
-                    <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-                        <Pagination count={totalPages} page={page} onChange={(e, v) => setPage(v)} color="primary" />
                     </Box>
-                )}
 
-                {!loading && total > 0 && (
-                    <Typography sx={{ color: "#94A3B8", fontSize: "0.8rem", textAlign: "center", mt: 1.5 }}>
-                        {total} entr{total === 1 ? "y" : "ies"}
-                    </Typography>
-                )}
+                </Box>
 
-            </Card>
+            ))}
+
+            {totalPages > 1 && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                    <Pagination count={totalPages} page={page} onChange={(e, v) => setPage(v)} color="primary" />
+                </Box>
+            )}
 
         </Box>
 
