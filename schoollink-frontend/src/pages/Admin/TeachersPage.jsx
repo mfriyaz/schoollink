@@ -41,6 +41,12 @@ import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import VpnKeyIcon from "@mui/icons-material/VpnKeyOutlined";
+import DialogHeader, { generatePassword } from "../../components/common/DialogHeader";
+import PersonAddIcon from "@mui/icons-material/PersonAddAlt1Outlined";
+import PersonEditIcon from "@mui/icons-material/EditOutlined";
+import KeyIcon from "@mui/icons-material/VpnKeyOutlined";
+import BadgeIcon from "@mui/icons-material/BadgeOutlined";
+import AutoFixHighIcon from "@mui/icons-material/AutoFixHighOutlined";
 import ResetPasswordDialog from "../../components/common/ResetPasswordDialog";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
@@ -95,6 +101,14 @@ const emptyForm = {
     temporary_password: ""
 
 };
+
+function FormSection({ label }) {
+    return (
+        <Typography sx={{ fontSize: "0.72rem", fontWeight: 800, letterSpacing: 0.5, color: "text.secondary", mt: 2.5, mb: 1.25 }}>
+            {label}
+        </Typography>
+    );
+}
 
 function initials(t) {
     return `${(t.first_name || "?")[0]}${(t.last_name || "")[0] || ""}`.toUpperCase();
@@ -1230,22 +1244,19 @@ function TeachersPage() {
                 )}
             </Menu>
 
-            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-
-                <DialogTitle sx={{ fontWeight: 700 }}>
-
-                    {editingId ? "Edit Teacher" : "Add Teacher"}
-
-                </DialogTitle>
-
-                <DialogContent>
-
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth fullScreen={isPhone}>
+                <DialogHeader
+                    icon={editingId ? <PersonEditIcon /> : <PersonAddIcon />}
+                    title={editingId ? "Edit Teacher" : "Add Teacher"}
+                    subtitle={editingId ? "Update this teacher's details" : "Create a teacher profile, with an optional login"}
+                    onClose={() => setDialogOpen(false)}
+                />
+                <DialogContent dividers={false} sx={{ pt: 0.5 }}>
                     {formError && <Alert severity="error" sx={{ mb: 2 }}>{formError}</Alert>}
 
-                    <Grid container spacing={2} sx={{ mt: 0.5 }}>
-
+                    <FormSection label="BASIC DETAILS" />
+                    <Grid container spacing={2}>
                         <Grid size={{ xs: 12 }}>
-
                             <TextField
                                 label="Employee No"
                                 value={form.employee_no}
@@ -1253,11 +1264,8 @@ function TeachersPage() {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 6 }}>
-
                             <TextField
                                 label="First Name"
                                 value={form.first_name}
@@ -1265,11 +1273,8 @@ function TeachersPage() {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 6 }}>
-
                             <TextField
                                 label="Last Name"
                                 value={form.last_name}
@@ -1277,32 +1282,28 @@ function TeachersPage() {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
-                        <Grid size={{ xs: 12, sm: 6 }}>
-
-                            <TextField
-                                select
-                                label="Gender"
-                                value={form.gender}
-                                onChange={(e) => setForm({ ...form, gender: e.target.value })}
-                                fullWidth
-                                size="small"
-                            >
-
-                                <MenuItem value="">Select Gender</MenuItem>
-
-                                <MenuItem value="Male">Male</MenuItem>
-
-                                <MenuItem value="Female">Female</MenuItem>
-
-                            </TextField>
-
+                        <Grid size={{ xs: 12 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                                <Typography sx={{ fontSize: "0.82rem", fontWeight: 700, mr: 0.5 }}>Gender</Typography>
+                                {["Male", "Female"].map((g) => (
+                                    <Chip
+                                        key={g}
+                                        clickable
+                                        label={g}
+                                        onClick={() => setForm({ ...form, gender: form.gender === g ? "" : g })}
+                                        sx={form.gender === g
+                                            ? { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", fontWeight: 700 }
+                                            : { bgcolor: "transparent", border: "1.5px solid var(--sl-ink)", fontWeight: 700 }}
+                                    />
+                                ))}
+                            </Box>
                         </Grid>
+                    </Grid>
 
+                    <FormSection label="CONTACT" />
+                    <Grid container spacing={2}>
                         <Grid size={{ xs: 12, sm: 6 }}>
-
                             <TextField
                                 label="Phone"
                                 value={form.phone}
@@ -1310,11 +1311,8 @@ function TeachersPage() {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 6 }}>
-
                             <TextField
                                 label="Email"
                                 value={form.email}
@@ -1323,45 +1321,54 @@ function TeachersPage() {
                                 size="small"
                                 helperText={!editingId ? "This becomes the teacher's login email" : ""}
                             />
-
                         </Grid>
+                    </Grid>
 
-                        {!editingId && (
-
-                            <Grid size={{ xs: 12, sm: 6 }}>
-
-                                <TextField
-                                    label="Username (optional)"
-                                    value={form.username}
-                                    onChange={(e) => setForm({ ...form, username: e.target.value })}
-                                    fullWidth
-                                    size="small"
-                                    helperText="Lets this teacher log in with a username instead of email"
-                                />
-
+                    {!editingId && (
+                        <>
+                            <FormSection label="LOGIN (OPTIONAL)" />
+                            <Grid container spacing={2}>
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <TextField
+                                label="Username"
+                                value={form.username}
+                                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                                fullWidth
+                                size="small"
+                                    helperText="Log in with a username instead of email"
+                            />
+                                </Grid>
+                                <Grid size={{ xs: 12, sm: 6 }}>
+                                    <TextField
+                                        label="Temporary Password"
+                                        value={form.temporary_password}
+                                        onChange={(e) => setForm({ ...form, temporary_password: e.target.value })}
+                                        fullWidth
+                                        size="small"
+                                        helperText="Leave blank for a profile-only record with no login"
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: (
+                                                    <IconButton
+                                                        size="small"
+                                                        aria-label="Generate password"
+                                                        title="Generate a password"
+                                                        onClick={() => setForm({ ...form, temporary_password: generatePassword() })}
+                                                    >
+                                                        <AutoFixHighIcon fontSize="small" />
+                                                    </IconButton>
+                                                )
+                                            }
+                                        }}
+                                    />
+                                </Grid>
                             </Grid>
+                        </>
+                    )}
 
-                        )}
-
-                        {!editingId && (
-
-                            <Grid size={{ xs: 12, sm: 6 }}>
-
-                                <TextField
-                                    label="Temporary Password (optional)"
-                                    value={form.temporary_password}
-                                    onChange={(e) => setForm({ ...form, temporary_password: e.target.value })}
-                                    fullWidth
-                                    size="small"
-                                    helperText="Leave blank to create a profile-only record with no login"
-                                />
-
-                            </Grid>
-
-                        )}
-
+                    <FormSection label="PROFESSIONAL" />
+                    <Grid container spacing={2}>
                         <Grid size={{ xs: 12, sm: 6 }}>
-
                             <TextField
                                 label="Qualification"
                                 value={form.qualification}
@@ -1369,11 +1376,8 @@ function TeachersPage() {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 6 }}>
-
                             <TextField
                                 label="Experience (years)"
                                 type="number"
@@ -1382,11 +1386,8 @@ function TeachersPage() {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 6 }}>
-
                             <SchoolDatePicker
                                 label="Joining Date"
                                 value={form.joining_date}
@@ -1394,25 +1395,15 @@ function TeachersPage() {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
                     </Grid>
-
                 </DialogContent>
-
-                <DialogActions sx={{ px: 3, pb: 3 }}>
-
+                <DialogActions sx={{ px: 3, pb: 2.5, pt: 1 }}>
                     <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-
                     <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleSave} disabled={saving}>
-
-                        {saving ? "Saving..." : "Save"}
-
+                        {saving ? "Saving..." : editingId ? "Save changes" : "Add Teacher"}
                     </Button>
-
                 </DialogActions>
-
             </Dialog>
 
             <Dialog
@@ -1686,20 +1677,16 @@ function TeachersPage() {
                 </DialogActions>
             </Dialog>
 
-            <Dialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} maxWidth="xs" fullWidth>
-
-                <DialogTitle>
-
-                    Add Login for {loginTeacher ? `${loginTeacher.first_name} ${loginTeacher.last_name}` : "Teacher"}
-
-                </DialogTitle>
-
+            <Dialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} maxWidth="xs" fullWidth fullScreen={isPhone}>
+                <DialogHeader
+                    icon={<KeyIcon />}
+                    title="Add Login"
+                    subtitle={loginTeacher ? `${loginTeacher.first_name} ${loginTeacher.last_name}` : "Teacher"}
+                    onClose={() => setLoginDialogOpen(false)}
+                />
                 <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
-
                     {loginError && <Alert severity="error">{loginError}</Alert>}
-
                     {loginSuccess && <Alert severity="success">{loginSuccess}</Alert>}
-
                     <TextField
                         label="Login Email"
                         size="small"
@@ -1707,58 +1694,59 @@ function TeachersPage() {
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
                     />
-
                     <TextField
                         label="Username (optional)"
                         size="small"
                         fullWidth
                         value={loginUsername}
                         onChange={(e) => setLoginUsername(e.target.value)}
-                        helperText="Lets this teacher log in with a username instead of their email. Must be unique across all schools."
+                        helperText="Log in with a username instead of email. Must be unique across all schools."
                     />
-
                     <TextField
                         label="Temporary Password"
                         size="small"
                         fullWidth
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <IconButton
+                                        size="small"
+                                        aria-label="Generate password"
+                                        title="Generate a password"
+                                        onClick={() => setLoginPassword(generatePassword())}
+                                    >
+                                        <AutoFixHighIcon fontSize="small" />
+                                    </IconButton>
+                                )
+                            }
+                        }}
                     />
-
                 </DialogContent>
-
-                <DialogActions>
-
+                <DialogActions sx={{ px: 3, pb: 2.5 }}>
                     <Button onClick={() => setLoginDialogOpen(false)}>
-
                         Close
-
                     </Button>
-
                     <Button loading={addingLogin} loadingPosition="start"
                         variant="contained"
                         onClick={handleAddLogin}
                         disabled={addingLogin}
                     >
-
                         {addingLogin ? "Adding..." : "Add Login"}
-
                     </Button>
-
                 </DialogActions>
-
             </Dialog>
 
             <ResetPasswordDialog open={!!resetTeacher} userId={resetTeacher?.user_id} name={resetTeacher ? `${resetTeacher.first_name} ${resetTeacher.last_name}` : ""} onClose={() => setResetTeacher(null)} />
 
-<Dialog open={usernameDialogOpen} onClose={() => setUsernameDialogOpen(false)} maxWidth="xs" fullWidth>
-
-                <DialogTitle>
-
-                    {usernameTeacher && usernameTeacher.username ? "Edit" : "Set"} Username for {usernameTeacher ? `${usernameTeacher.first_name} ${usernameTeacher.last_name}` : "Teacher"}
-
-                </DialogTitle>
-
+<Dialog open={usernameDialogOpen} onClose={() => setUsernameDialogOpen(false)} maxWidth="xs" fullWidth fullScreen={isPhone}>
+                <DialogHeader
+                    icon={<BadgeIcon />}
+                    title={usernameTeacher && usernameTeacher.username ? "Edit Username" : "Set Username"}
+                    subtitle={usernameTeacher ? `${usernameTeacher.first_name} ${usernameTeacher.last_name}` : "Teacher"}
+                    onClose={() => setUsernameDialogOpen(false)}
+                />
                 <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
 
                     {usernameError && <Alert severity="error">{usernameError}</Alert>}

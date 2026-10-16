@@ -7,10 +7,13 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Typography
 } from "@mui/material";
 
+import DialogHeader from "./DialogHeader";
+import LockResetIcon from "@mui/icons-material/LockResetOutlined";
+import ContentCopyIcon from "@mui/icons-material/ContentCopyOutlined";
+import CheckIcon from "@mui/icons-material/CheckOutlined";
 import { resetUserPassword } from "../../services/passwordResetService";
 
 /**
@@ -71,7 +74,13 @@ export default function ResetPasswordDialog({ open, userId, name, onClose, onRes
 
         <Dialog open={open} onClose={loading ? undefined : onClose} maxWidth="xs" fullWidth>
 
-            <DialogTitle>Reset password{name ? ` for ${name}` : ""}</DialogTitle>
+            <DialogHeader
+                icon={<LockResetIcon />}
+                tone="warning"
+                title="Reset password"
+                subtitle={name}
+                onClose={loading ? undefined : onClose}
+            />
 
             <DialogContent>
 
@@ -79,10 +88,10 @@ export default function ResetPasswordDialog({ open, userId, name, onClose, onRes
 
                 {!password ? (
 
-                    <Typography sx={{ fontSize: "0.9rem" }}>
-                        This will replace the current password with a new temporary one.
-                        The old password will stop working immediately.
-                    </Typography>
+                    <Alert severity="warning" icon={false}>
+                        This replaces the current password with a new temporary one.
+                        The old password stops working immediately.
+                    </Alert>
 
                 ) : (
 
@@ -92,13 +101,15 @@ export default function ResetPasswordDialog({ open, userId, name, onClose, onRes
                         </Alert>
 
                         <Box sx={{
-                            p: 1.5,
-                            borderRadius: 2,
-                            bgcolor: "#F1F5F9",
+                            p: 2,
+                            borderRadius: 3,
+                            bgcolor: "var(--sl-soft, #F1F5F9)",
+                            border: "1.5px dashed var(--sl-ink, #111827)",
                             textAlign: "center",
                             fontFamily: "monospace",
-                            fontSize: "1.3rem",
-                            letterSpacing: 2,
+                            fontSize: "1.5rem",
+                            fontWeight: 700,
+                            letterSpacing: 3,
                             wordBreak: "break-all",
                             userSelect: "all"
                         }}>
@@ -114,7 +125,7 @@ export default function ResetPasswordDialog({ open, userId, name, onClose, onRes
 
             </DialogContent>
 
-            <DialogActions>
+            <DialogActions sx={{ px: 3, pb: 2.5 }}>
 
                 {!password ? (
                     <>
@@ -126,7 +137,7 @@ export default function ResetPasswordDialog({ open, userId, name, onClose, onRes
                     </>
                 ) : (
                     <>
-                        <Button onClick={handleCopy}>{copied ? "Copied" : "Copy"}</Button>
+                        <Button onClick={handleCopy} startIcon={copied ? <CheckIcon /> : <ContentCopyIcon />}>{copied ? "Copied" : "Copy"}</Button>
                         <Button variant="contained" onClick={onClose}>Done</Button>
                     </>
                 )}
