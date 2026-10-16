@@ -1,3 +1,4 @@
+import { pickLanguages } from "../common/AiAssistButton";
 import { useEffect, useState } from "react";
 
 import { Alert, Box, Button, MenuItem, TextField, Typography } from "@mui/material";
@@ -110,8 +111,8 @@ export default function ReportRemarksEditor({ studentId, examId, initial, onSave
                             onChange={(e) => setLanguage(e.target.value)}
                             sx={{ minWidth: 150 }}
                         >
-                            {ai.languages.map((l) => (
-                                <MenuItem key={l.code} value={l.code}>{l.name}</MenuItem>
+                            {pickLanguages(ai.languages).map((l) => (
+                                <MenuItem key={l.code} value={l.code}>{l.native === l.name ? l.name : `${l.native} (${l.name})`}</MenuItem>
                             ))}
                         </TextField>
 
