@@ -1477,6 +1477,7 @@ function TeachersPage() {
                                         sx={{
                                             display: "flex",
                                             alignItems: "center",
+                                            flexWrap: "wrap",
                                             gap: 1,
                                             px: 1.5,
                                             py: 0.75,
@@ -1485,7 +1486,7 @@ function TeachersPage() {
                                             bgcolor: "var(--sl-page2, #F8FAFC)"
                                         }}
                                     >
-                                        <Box sx={{ minWidth: 0, flex: 1 }}>
+                                        <Box sx={{ minWidth: 120, flex: 1 }}>
                                             <Typography sx={{ fontSize: "0.9rem", fontWeight: 700 }} noWrap>{a.subject_name}</Typography>
                                             <Typography sx={{ fontSize: "0.78rem", color: "text.secondary" }} noWrap>
                                                 {a.class_name} - {a.section_name}
@@ -1505,14 +1506,15 @@ function TeachersPage() {
                                                 ? { bgcolor: "#FEF3C7", color: "#92400E", fontWeight: 700 }
                                                 : { border: "1px dashed #94A3B8", bgcolor: "transparent", color: "text.secondary", fontWeight: 600 }}
                                         />
-                                        <IconButton
+                                        <Chip
                                             size="small"
+                                            clickable
                                             aria-label="Transfer to another teacher"
-                                            title="Transfer to another teacher"
                                             onClick={() => openTransfer(a)}
-                                        >
-                                            <SwapHorizIcon fontSize="small" />
-                                        </IconButton>
+                                            icon={<SwapHorizIcon sx={{ fontSize: 16 }} />}
+                                            label="Transfer"
+                                            sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }}
+                                        />
                                         <IconButton
                                             size="small"
                                             aria-label="Remove assignment"
