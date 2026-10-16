@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
-    Avatar,
     Box,
     Button,
     Card,
     Chip,
     CircularProgress,
     InputAdornment,
+    LinearProgress,
     Pagination,
     TextField,
     Typography
@@ -20,6 +20,9 @@ import CampaignIcon from "@mui/icons-material/CampaignOutlined";
 import ArrowBackIcon from "@mui/icons-material/ArrowBackOutlined";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import VisibilityIcon from "@mui/icons-material/VisibilityOutlined";
+import AddIcon from "@mui/icons-material/AddOutlined";
+import EventBusyIcon from "@mui/icons-material/EventBusyOutlined";
+import ForumIcon from "@mui/icons-material/ForumOutlined";
 
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
 import { getAllPosts, getAnnouncementById, getHomeworkById } from "../../services/postService";
@@ -30,6 +33,9 @@ const FILTERS = [
     { value: "announcement", label: "Announcements" },
     { value: "homework", label: "Homework" }
 ];
+
+const ANN = { color: "#DB2777", bg: "#FCE7F3" };
+const HW = { color: "var(--sl-primary)", bg: "var(--sl-soft)" };
 
 function AllPostsPage() {
 
@@ -71,6 +77,7 @@ function AllPostsPage() {
             const response = post.post_type === "announcement"
                 ? await getAnnouncementById(post.id)
                 : await getHomeworkById(post.id);
+
             if (response.success) {
                 setEditPost(post);
                 setEditRecord(response.data);
@@ -88,109 +95,145 @@ function AllPostsPage() {
 
     return (
 
-        <Box>
+        <Box sx={{ maxWidth: 1000 }}>
 
             <Box
                 onClick={() => navigate("/dashboard")}
-                sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "#64748B", cursor: "pointer", mb: 2, width: "fit-content" }}
+                sx={{ display: "flex", alignItems: "center", gap: 0.5, color: "text.secondary", cursor: "pointer", mb: 1.5, width: "fit-content" }}
             >
                 <ArrowBackIcon fontSize="small" />
                 <Typography sx={{ fontSize: "0.9rem" }}>Back to Dashboard</Typography>
             </Box>
 
-            <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
-                Posts &amp; Announcements
-            </Typography>
+            {/* ---------- header ---------- */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2, flexWrap: "wrap" }}>
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #E0F2FE)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <ForumIcon sx={{ color: "var(--sl-ink, #0369A1)" }} />
+                </Box>
+                <Box sx={{ flex: 1, minWidth: 200 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Posts &amp; Announcements</Typography>
+                    <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
+                        Tap any item to view it. Use Edit to change it.
+                    </Typography>
+                </Box>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                    <Button variant="outlined" startIcon={<EventBusyIcon />} onClick={() => navigate("/announcements/expired")}>
+                        Expired
+                    </Button>
+                    <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate("/create-announcement")}>
+                        New announcement
+                    </Button>
+                </Box>
+            </Box>
 
-            <Typography sx={{ color: "#64748B", fontSize: "0.9rem", mb: 3 }}>
-                Click any item to view it. Use Edit to change it.
-            </Typography>
-
-            <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap", alignItems: "center" }}>
+            {/* ---------- search + filter ---------- */}
+            <Box sx={{ display: "flex", gap: 1.5, mb: 2, flexWrap: "wrap", alignItems: "center" }}>
 
                 <TextField
                     placeholder="Search by title..."
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                     size="small"
-                    sx={{ minWidth: 260 }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon fontSize="small" sx={{ color: "#94A3B8" }} />
-                            </InputAdornment>
-                        )
+                    sx={{ flex: 1, minWidth: 220 }}
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon fontSize="small" sx={{ color: "#94A3B8" }} />
+                                </InputAdornment>
+                            )
+                        }
                     }}
                 />
 
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                    {FILTERS.map((f) => (
-                        <Chip
-                            key={f.value}
-                            label={f.label}
-                            clickable
-                            onClick={() => { setType(f.value); setPage(1); }}
-                            sx={{
-                                fontWeight: 600,
-                                bgcolor: type === f.value ? "var(--sl-primary-dark)" : "#F1F5F9",
-                                color: type === f.value ? "white" : "#475569",
-                                "&:hover": { bgcolor: type === f.value ? "var(--sl-primary-dark)" : "#E2E8F0" }
-                            }}
-                        />
-                    ))}
+                <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
+                    {FILTERS.map((f) => {
+                        const active = type === f.value;
+                        return (
+                            <Chip
+                                key={f.value}
+                                label={f.label}
+                                clickable
+                                onClick={() => { setType(f.value); setPage(1); }}
+                                sx={{
+                                    fontWeight: 700,
+                                    border: "1px solid",
+                                    borderColor: active ? "var(--sl-ink, #111827)" : "var(--sl-border, #E2E8F0)",
+                                    bgcolor: active ? "var(--sl-accent, #FFC400)" : "#fff",
+                                    color: active ? "var(--sl-ink, #111827)" : "text.secondary",
+                                    "&:hover": { bgcolor: active ? "var(--sl-accent, #FFC400)" : "var(--sl-soft, #F1F5F9)" }
+                                }}
+                            />
+                        );
+                    })}
                 </Box>
 
             </Box>
 
-            <Card sx={{ p: { xs: 1, sm: 2 } }}>
+            {/* ---------- list ---------- */}
+            {loading && (
+                <Box sx={{ display: "flex", justifyContent: "center", py: 5 }}>
+                    <CircularProgress size={28} />
+                </Box>
+            )}
 
-                {loading && (
-                    <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-                        <CircularProgress size={28} />
-                    </Box>
-                )}
-
-                {!loading && posts.length === 0 && (
-                    <Typography color="text.secondary" sx={{ p: 2 }}>
-                        No posts match your search.
+            {!loading && posts.length === 0 && (
+                <Card sx={{ p: 4, textAlign: "center", borderRadius: 3 }}>
+                    <Typography sx={{ fontWeight: 700, mb: 0.5 }}>
+                        {search || type ? "No posts match your search" : "No posts yet"}
                     </Typography>
-                )}
+                    <Typography color="text.secondary">
+                        {search || type ? "Try a different word or filter." : "Announcements and homework will appear here."}
+                    </Typography>
+                </Card>
+            )}
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
 
                 {!loading && posts.map((post) => {
 
                     const isAnn = post.post_type === "announcement";
+                    const tone = isAnn ? ANN : HW;
+                    const hasAck = post.total_students !== null && post.total_students !== undefined;
+                    const total = Number(post.total_students) || 0;
+                    const done = Number(post.acknowledged_count) || 0;
+                    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
                     return (
 
                         <Box
                             key={`${post.post_type}-${post.id}`}
+                            data-testid="post-row"
                             onClick={() => setViewPost(post)}
                             sx={{
                                 display: "flex",
                                 flexDirection: { xs: "column", sm: "row" },
                                 alignItems: { xs: "stretch", sm: "center" },
-                                justifyContent: "space-between",
-                                gap: { xs: 1, sm: 1.5 },
+                                gap: { xs: 1, sm: 1.75 },
                                 p: 1.5,
-                                borderRadius: 2,
+                                pl: 2,
+                                borderRadius: 3,
                                 cursor: "pointer",
-                                borderBottom: "1px solid #F1F5F9",
-                                "&:hover": { bgcolor: "#F8FAFC" }
+                                bgcolor: "#fff",
+                                border: "1px solid var(--sl-border, #E2E8F0)",
+                                borderLeft: `4px solid ${tone.color}`,
+                                boxShadow: "var(--sl-card-shadow, none)",
+                                "&:hover": { boxShadow: "var(--sl-card-shadow-hover, 0 4px 14px rgba(0,0,0,0.10))" }
                             }}
                         >
 
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 0, flex: 1 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0, flex: 1 }}>
 
-                                <Avatar sx={{ bgcolor: isAnn ? "#EDE9FE" : "var(--sl-soft)" }}>
+                                <Box sx={{ width: 40, height: 40, borderRadius: 2.5, bgcolor: tone.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                                     {isAnn
-                                        ? <CampaignIcon sx={{ color: "#7C3AED" }} fontSize="small" />
-                                        : <MenuBookIcon sx={{ color: "var(--sl-primary)" }} fontSize="small" />}
-                                </Avatar>
+                                        ? <CampaignIcon sx={{ color: tone.color }} fontSize="small" />
+                                        : <MenuBookIcon sx={{ color: tone.color }} fontSize="small" />}
+                                </Box>
 
                                 <Box sx={{ minWidth: 0 }}>
                                     <Typography
                                         sx={{
-                                            fontWeight: 600,
+                                            fontWeight: 700,
                                             overflowWrap: "anywhere",
                                             display: "-webkit-box",
                                             WebkitLineClamp: 2,
@@ -200,7 +243,7 @@ function AllPostsPage() {
                                     >
                                         {post.title}
                                     </Typography>
-                                    <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
+                                    <Typography sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
                                         {isAnn
                                             ? `Announcement · ${post.target_audience}`
                                             : `${post.class_name} - ${post.section_name} · ${post.subject_name}`}
@@ -216,50 +259,51 @@ function AllPostsPage() {
 
                             </Box>
 
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: { xs: "space-between", sm: "flex-end" },
-                                    flexWrap: "wrap",
-                                    gap: 1,
-                                    pl: { xs: 0, sm: 0 }
-                                }}
-                            >
+                            {/* acknowledgement progress */}
+                            <Box sx={{ width: { xs: "100%", sm: 170 }, flexShrink: 0 }}>
+                                {hasAck ? (
+                                    <>
+                                        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
+                                            <Typography sx={{ fontSize: "0.76rem", fontWeight: 700, color: "#166534" }}>
+                                                {done}/{total} acknowledged
+                                            </Typography>
+                                            {Number(post.pending_count) > 0 && (
+                                                <Typography sx={{ fontSize: "0.76rem", fontWeight: 700, color: "#B45309" }}>
+                                                    {post.pending_count} pending
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                        <LinearProgress
+                                            variant="determinate"
+                                            value={pct}
+                                            sx={{
+                                                height: 6,
+                                                borderRadius: 3,
+                                                bgcolor: "#E2E8F0",
+                                                "& .MuiLinearProgress-bar": { bgcolor: pct === 100 ? "#16A34A" : "#F59E0B", borderRadius: 3 }
+                                            }}
+                                        />
+                                    </>
+                                ) : (
+                                    <Chip size="small" label={post.target_audience} sx={{ bgcolor: "var(--sl-soft, var(--sl-soft))", fontWeight: 600 }} />
+                                )}
+                            </Box>
 
-                                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-
-                                    {post.total_students === null ? (
-                                        <Chip size="small" label={post.target_audience} />
-                                    ) : (
-                                        <>
-                                            <Chip size="small" color="success" label={`${post.acknowledged_count}/${post.total_students}`} />
-                                            <Chip size="small" color="warning" label={`${post.pending_count} Pending`} />
-                                        </>
-                                    )}
-
-                                </Box>
-
-                                <Box sx={{ display: "flex", gap: 0.5 }}>
-
-                                    <Button
-                                        size="small"
-                                        startIcon={<VisibilityIcon fontSize="small" />}
-                                        onClick={(e) => { e.stopPropagation(); setViewPost(post); }}
-                                    >
-                                        View
-                                    </Button>
-
-                                    <Button
-                                        size="small"
-                                        startIcon={<EditIcon fontSize="small" />}
-                                        onClick={(e) => { e.stopPropagation(); startEdit(post); }}
-                                    >
-                                        Edit
-                                    </Button>
-
-                                </Box>
-
+                            <Box sx={{ display: "flex", gap: 0.5, justifyContent: { xs: "flex-end", sm: "flex-start" } }}>
+                                <Button
+                                    size="small"
+                                    startIcon={<VisibilityIcon fontSize="small" />}
+                                    onClick={(e) => { e.stopPropagation(); setViewPost(post); }}
+                                >
+                                    View
+                                </Button>
+                                <Button
+                                    size="small"
+                                    startIcon={<EditIcon fontSize="small" />}
+                                    onClick={(e) => { e.stopPropagation(); startEdit(post); }}
+                                >
+                                    Edit
+                                </Button>
                             </Box>
 
                         </Box>
@@ -268,18 +312,18 @@ function AllPostsPage() {
 
                 })}
 
-                {totalPages > 1 && (
-                    <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-                        <Pagination
-                            count={totalPages}
-                            page={page}
-                            onChange={(e, value) => setPage(value)}
-                            color="primary"
-                        />
-                    </Box>
-                )}
+            </Box>
 
-            </Card>
+            {totalPages > 1 && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                    <Pagination
+                        count={totalPages}
+                        page={page}
+                        onChange={(e, value) => setPage(value)}
+                        color="primary"
+                    />
+                </Box>
+            )}
 
             <PostViewDialog
                 open={!!viewPost}

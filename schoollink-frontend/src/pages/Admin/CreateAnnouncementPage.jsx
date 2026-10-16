@@ -23,7 +23,27 @@ import { resolveFileUrl } from "../../config";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import AiAssistButton from "../../components/common/AiAssistButton";
 
-const audiences = ["All", "Teachers", "Parents", "Students", "School Admin"];
+const audiences = [
+    { value: "All", hint: "Everyone in the school" },
+    { value: "Parents", hint: "Parents only" },
+    { value: "Teachers", hint: "Teachers only" },
+    { value: "Students", hint: "Students only" },
+    { value: "School Admin", hint: "Admins only" }
+];
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function addDays(isoDate, days) {
+    const [y, m, d] = String(isoDate).slice(0, 10).split("-").map(Number);
+    const dt = new Date(Date.UTC(y, m - 1, d + days));
+    return dt.toISOString().slice(0, 10);
+}
+
+function prettyDate(isoDate) {
+    if (!isoDate) return "";
+    const [y, m, d] = String(isoDate).slice(0, 10).split("-");
+    return d + " " + MONTHS[Number(m) - 1] + " " + y;
+}
 
 const MAX_IMAGES = 3;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -43,6 +63,9 @@ function CreateAnnouncementPage() {
     );
 
     const [expiryDate, setExpiryDate] = useState("");
+
+    // bumped when a quick button sets the date, so the picker redraws its label correctly
+    const [expiryKey, setExpiryKey] = useState(0);
 
     const [images, setImages] = useState([]);
     const [uploadingImages, setUploadingImages] = useState(false);
@@ -190,13 +213,13 @@ function CreateAnnouncementPage() {
                         width: 40,
                         height: 40,
                         borderRadius: "10px",
-                        bgcolor: "#FCE7F3",
+                        bgcolor: "var(--sl-soft, #FCE7F3)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"
                     }}
                 >
-                    <CampaignIcon sx={{ color: "#DB2777" }} />
+                    <CampaignIcon sx={{ color: "var(--sl-ink, #DB2777)" }} />
                 </Box>
 
                 <Box>
@@ -224,8 +247,8 @@ function CreateAnnouncementPage() {
                     sx={{
                         p: { xs: 2, md: 3 },
                         borderRadius: 3,
-                        border: "1px solid #EEF2F7",
-                        boxShadow: "0 1px 3px rgba(15,23,42,.06)"
+                        border: "1px solid var(--sl-border, #EEF2F7)",
+                        boxShadow: "var(--sl-card-shadow, 0 1px 3px rgba(15,23,42,.06))"
                     }}
                 >
 
@@ -253,6 +276,10 @@ function CreateAnnouncementPage() {
                         />
 
                         <AiAssistButton value={description} onApply={setDescription} />
+
+                        <Typography sx={{ color: "text.secondary", fontSize: "0.76rem", mt: -1.5, textAlign: "right" }}>
+                            {description.length} characters
+                        </Typography>
 
                         {/* ---------- Images ---------- */}
                         <Box>
@@ -331,7 +358,7 @@ function CreateAnnouncementPage() {
                                             gap: 0.5,
                                             color: "#64748B",
                                             cursor: uploadingImages ? "default" : "pointer",
-                                            "&:hover": { borderColor: "var(--sl-primary)", color: "var(--sl-primary)", bgcolor: "#F8FAFC" }
+                                            "&:hover": { borderColor: "var(--sl-ink, var(--sl-primary))", color: "var(--sl-ink, var(--sl-primary))", bgcolor: "var(--sl-page2, #F8FAFC)" }
                                         }}
                                     >
                                         {uploadingImages ? (
@@ -360,22 +387,36 @@ function CreateAnnouncementPage() {
 
                         </Box>
 
-                        <TextField
-                            select
-                            label="Share with"
-                            value={targetAudience}
-                            onChange={(e) => setTargetAudience(e.target.value)}
-                            fullWidth
-                            helperText={
-                                targetAudience === "All"
+                        <Box>
+                            <Typography sx={{ fontWeight: 700, fontSize: "0.9rem", mb: 0.75 }}>
+                                Share with
+                            </Typography>
+                            <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
+                                {audiences.map((a) => {
+                                    const active = targetAudience === a.value;
+                                    return (
+                                        <Chip
+                                            key={a.value}
+                                            label={a.value}
+                                            clickable
+                                            onClick={() => setTargetAudience(a.value)}
+                                            sx={{
+                                                fontWeight: 700,
+                                                border: "1px solid",
+                                                borderColor: active ? "var(--sl-ink, #111827)" : "var(--sl-border, #E2E8F0)",
+                                                bgcolor: active ? "var(--sl-accent, #FFC400)" : "#fff",
+                                                color: active ? "var(--sl-ink, #111827)" : "text.secondary"
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </Box>
+                            <Typography sx={{ color: "text.secondary", fontSize: "0.8rem", mt: 0.75 }}>
+                                {targetAudience === "All"
                                     ? "Everyone in the school. Parents are notified and can acknowledge."
-                                    : "Acknowledgement tracking isn't tracked per-student for this audience."
-                            }
-                        >
-                            {audiences.map((a) => (
-                                <MenuItem key={a} value={a}>{a}</MenuItem>
-                            ))}
-                        </TextField>
+                                    : "Acknowledgement tracking isn't tracked per-student for this audience."}
+                            </Typography>
+                        </Box>
 
                         <Box
                             sx={{
@@ -392,11 +433,34 @@ function CreateAnnouncementPage() {
                             />
 
                             <SchoolDatePicker
+                                key={expiryKey}
                                 label="Expiry Date (optional)"
                                 value={expiryDate}
                                 onChange={setExpiryDate}
                                 fullWidth
                             />
+                        </Box>
+
+                        <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap", alignItems: "center", mt: -1 }}>
+                            <Typography sx={{ fontSize: "0.8rem", color: "text.secondary", mr: 0.5 }}>Expires:</Typography>
+                            {[
+                                { label: "Never", value: "" },
+                                { label: "In 7 days", value: addDays(publishDate, 7) },
+                                { label: "In 30 days", value: addDays(publishDate, 30) }
+                            ].map((o) => (
+                                <Chip
+                                    key={o.label}
+                                    size="small"
+                                    label={o.label}
+                                    clickable
+                                    onClick={() => { setExpiryDate(o.value); setExpiryKey((k) => k + 1); }}
+                                    sx={{
+                                        fontWeight: 600,
+                                        bgcolor: expiryDate === o.value ? "var(--sl-soft2, #E2E8F0)" : "#fff",
+                                        border: "1px solid var(--sl-border, #E2E8F0)"
+                                    }}
+                                />
+                            ))}
                         </Box>
 
                         <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.5 }}>
@@ -441,8 +505,8 @@ function CreateAnnouncementPage() {
                     <Card
                         sx={{
                             borderRadius: 3,
-                            border: "1px solid #EEF2F7",
-                            boxShadow: "0 1px 3px rgba(15,23,42,.06)",
+                            border: "1px solid var(--sl-border, #EEF2F7)",
+                            boxShadow: "var(--sl-card-shadow, 0 1px 3px rgba(15,23,42,.06))",
                             overflow: "hidden"
                         }}
                     >
@@ -489,6 +553,11 @@ function CreateAnnouncementPage() {
                                         }}
                                     >
                                         {description || "Your message will appear here."}
+                                    </Typography>
+
+                                    <Typography sx={{ color: "#94A3B8", fontSize: "0.76rem", mt: 1.25 }}>
+                                        {"Published " + prettyDate(publishDate)}
+                                        {expiryDate ? " · Visible until " + prettyDate(expiryDate) : " · No expiry"}
                                     </Typography>
 
                                     {images.length > 1 && (
