@@ -266,23 +266,44 @@ function EnterMarksPage() {
                         ))}
                     </Box>
 
-                    {examSubjects.length > 0 && (
+                    {myAssignments.length > 0 && (
                         <>
-                            <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", mb: 0.75 }}>Class and subject</Typography>
+                            <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", mb: 0.75, mt: 2 }}>Your classes</Typography>
                             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                                {examSubjects.map((es) => (
-                                    <Box
-                                        key={es.id}
-                                        role="button"
-                                        tabIndex={0}
-                                        onClick={() => { setExamSubjectId(es.id); setFilter("all"); }}
-                                        onKeyDown={(ev) => ev.key === "Enter" && setExamSubjectId(es.id)}
-                                        sx={pillSx(es.id === examSubjectId)}
-                                    >
-                                        {labelFor(es)}
-                                    </Box>
-                                ))}
+                                {myAssignments.map((a) => {
+                                    const es = examSubjects.find((x) => x.teacher_subject_id === a.teacher_subject_id);
+                                    const label = `${a.class_name}-${a.section_name} · ${a.subject_name}`;
+                                    if (!es) {
+                                        return (
+                                            <Box
+                                                key={a.teacher_subject_id}
+                                                data-testid="not-in-exam"
+                                                title="Not added to this exam yet"
+                                                sx={{ ...pillSx(false), opacity: 0.5, cursor: "not-allowed", borderStyle: "dashed", "&:hover": { bgcolor: "transparent" } }}
+                                            >
+                                                {label}
+                                            </Box>
+                                        );
+                                    }
+                                    return (
+                                        <Box
+                                            key={a.teacher_subject_id}
+                                            role="button"
+                                            tabIndex={0}
+                                            onClick={() => { setExamSubjectId(es.id); setFilter("all"); }}
+                                            onKeyDown={(ev) => ev.key === "Enter" && setExamSubjectId(es.id)}
+                                            sx={pillSx(es.id === examSubjectId)}
+                                        >
+                                            {label}
+                                        </Box>
+                                    );
+                                })}
                             </Box>
+                            {myAssignments.some((a) => !examSubjects.find((x) => x.teacher_subject_id === a.teacher_subject_id)) && (
+                                <Typography sx={{ fontSize: "0.76rem", color: "text.secondary", mt: 1 }}>
+                                    Dashed classes are not added to this exam yet. Ask your School Admin to add them under Exams, then Add subject.
+                                </Typography>
+                            )}
                         </>
                     )}
                 </Card>
