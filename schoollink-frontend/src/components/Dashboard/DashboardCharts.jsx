@@ -35,7 +35,7 @@ function DashboardCharts() {
                 }
             },
 
-            colors: ["var(--sl-primary)"],
+            colors: ["#4F46E5"],
 
             dataLabels: {
                 enabled: false
@@ -124,7 +124,7 @@ function DashboardCharts() {
                     sx={{
                         p: 3,
                         borderRadius: 4,
-                        border: "1px solid #EEF2F7",
+                        border: "1px solid var(--sl-border)",
                         boxShadow: "0 10px 30px rgba(0,0,0,.05)"
                     }}
                 >
@@ -160,7 +160,7 @@ function DashboardCharts() {
                     sx={{
                         p: 3,
                         borderRadius: 4,
-                        border: "1px solid #EEF2F7",
+                        border: "1px solid var(--sl-border)",
                         boxShadow: "0 10px 30px rgba(0,0,0,.05)"
                     }}
                 >

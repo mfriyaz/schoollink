@@ -1,13 +1,12 @@
 import { Card, Box, Typography } from "@mui/material";
-
 function PanelCard({ title, subtitle, action, children, sx = {} }) {
     return (
         <Card
             sx={{
                 height: "100%",
                 borderRadius: 3,
-                border: "1px solid #EEF2F7",
-                boxShadow: "0 1px 3px rgba(15,23,42,.06)",
+                border: "1px solid var(--sl-border)",
+                boxShadow: "var(--sl-card-shadow)",
                 p: { xs: 2, md: 2.5 },
                 ...sx
             }}
@@ -22,23 +21,21 @@ function PanelCard({ title, subtitle, action, children, sx = {} }) {
                 }}
             >
                 <Box sx={{ minWidth: 0 }}>
-                    <Typography sx={{ fontWeight: 700, fontSize: "1rem", lineHeight: 1.3 }}>
+                    <Typography sx={{ fontWeight: 800, fontSize: "1rem", lineHeight: 1.3, color: "var(--sl-ink)" }}>
                         {title}
                     </Typography>
                     {subtitle && (
-                        <Typography sx={{ color: "#64748B", fontSize: "0.76rem", mt: 0.25 }}>
+                        <Typography sx={{ color: "text.secondary", fontSize: "0.76rem", mt: 0.25 }}>
                             {subtitle}
                         </Typography>
                     )}
                 </Box>
                 {action}
             </Box>
-
             {children}
         </Card>
     );
 }
-
 export function EmptyState({ icon, text }) {
     return (
         <Box
@@ -54,5 +51,4 @@ export function EmptyState({ icon, text }) {
         </Box>
     );
 }
-
 export default PanelCard;

@@ -1,35 +1,19 @@
 import { Typography } from "@mui/material";
-
 function SectionTitle({
-
     children
-
 }){
-
     return(
-
         <Typography
-
-            variant="h5"
-
-            fontWeight={700}
-
+            fontWeight={800}
             sx={{
-
-                mb:3,
-
-                mt:2
-
+                fontSize: { xs: "1.1rem", md: "1.25rem" },
+                color: "var(--sl-ink)",
+                mb: 1.5,
+                mt: 1
             }}
-
         >
-
             {children}
-
         </Typography>
-
     );
-
 }
-
 export default SectionTitle;

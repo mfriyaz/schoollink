@@ -4,7 +4,6 @@ import {
     Typography,
     Box
 } from "@mui/material";
-
 function QuickActionCard({
     title,
     icon,
@@ -16,11 +15,11 @@ function QuickActionCard({
             sx={{
                 height: "100%",
                 borderRadius: 3,
-                boxShadow: "0 1px 3px rgba(15,23,42,.06)",
-                border: "1px solid #EEF2F7",
+                boxShadow: "var(--sl-card-shadow)",
+                border: "1px solid var(--sl-border)",
                 transition: ".2s",
                 "&:hover": {
-                    boxShadow: "0 4px 12px rgba(15,23,42,.08)"
+                    transform: "translateY(-1px)"
                 }
             }}
         >
@@ -41,9 +40,10 @@ function QuickActionCard({
                         width: 36,
                         height: 36,
                         minWidth: 36,
-                        borderRadius: "10px",
-                        bgcolor: color,
-                        color: "white",
+                        borderRadius: "12px",
+                        bgcolor: "var(--sl-accent)",
+                        border: "1.5px solid var(--sl-ink)",
+                        color: "var(--sl-ink)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -52,9 +52,8 @@ function QuickActionCard({
                 >
                     {icon}
                 </Box>
-
                 <Typography
-                    sx={{ fontWeight: 600, fontSize: { xs: "0.8rem", sm: "0.85rem" }, lineHeight: 1.25, minWidth: 0, overflowWrap: "anywhere" }}
+                    sx={{ fontWeight: 700, color: "var(--sl-ink)", fontSize: { xs: "0.8rem", sm: "0.85rem" }, lineHeight: 1.25, minWidth: 0, overflowWrap: "anywhere" }}
                 >
                     {title}
                 </Typography>
@@ -62,5 +61,4 @@ function QuickActionCard({
         </Card>
     );
 }
-
 export default QuickActionCard;

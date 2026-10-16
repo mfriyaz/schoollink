@@ -1,5 +1,4 @@
 import { Card, Box, Typography } from "@mui/material";
-
 function KpiCard({
     title,
     value,
@@ -17,11 +16,11 @@ function KpiCard({
                 alignItems: "center",
                 gap: { xs: 1, sm: 1.1 },
                 borderRadius: 3,
-                boxShadow: "0 1px 3px rgba(15,23,42,.06)",
-                border: "1px solid #EEF2F7",
+                boxShadow: "var(--sl-card-shadow)",
+                border: "1px solid var(--sl-border)",
                 transition: ".2s",
                 "&:hover": {
-                    boxShadow: "0 4px 12px rgba(15,23,42,.08)"
+                    transform: "translateY(-1px)"
                 }
             }}
         >
@@ -30,27 +29,26 @@ function KpiCard({
                     width: 40,
                     height: 40,
                     minWidth: 40,
-                    borderRadius: "10px",
-                    bgcolor: iconBg || "var(--sl-soft)",
-                    display: "flex",
+                    borderRadius: "12px",
+                    bgcolor: "var(--sl-accent)",
+                    border: "1.5px solid var(--sl-ink)",
+                                        display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    "& svg": { fontSize: 20 }
+                    "& svg": { fontSize: 20, color: "var(--sl-ink) !important" }
                 }}
             >
                 {icon}
             </Box>
-
             <Box sx={{ minWidth: 0 }}>
-                <Typography sx={{ fontWeight: 700, fontSize: "1.4rem", lineHeight: 1.1, overflowWrap: "anywhere" }}>
+                <Typography sx={{ fontWeight: 800, fontSize: "1.4rem", lineHeight: 1.1, color: "var(--sl-ink)", overflowWrap: "anywhere" }}>
                     {value}
                 </Typography>
-                <Typography sx={{ color: "#64748B", fontSize: "0.74rem", lineHeight: 1.25, mt: 0.25, overflowWrap: "break-word" }}>
+                <Typography sx={{ color: "text.secondary", fontSize: "0.74rem", lineHeight: 1.25, mt: 0.25, overflowWrap: "break-word" }}>
                     {title}
                 </Typography>
             </Box>
         </Card>
     );
 }
-
 export default KpiCard;
