@@ -262,7 +262,7 @@ function TeacherDashboardPage() {
     );
     const recentPosts = posts.slice(0, 5);
     const todayLabel = new Intl.DateTimeFormat(undefined, {
-        weekday: "long", day: "numeric", month: "long", timeZone: getSchoolTimezone()
+        weekday: "short", day: "numeric", month: "short", timeZone: getSchoolTimezone()
     }).format(new Date());
 
     return (
@@ -272,11 +272,11 @@ function TeacherDashboardPage() {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: 2,
-                    p: { xs: 2, sm: 2.75 },
-                    mb: 2.5,
-                    borderRadius: 4,
+                    gap: 1.5,
+                    px: { xs: 2, sm: 2.75 },
+                    py: { xs: 1.5, sm: 2 },
+                    mb: 2,
+                    borderRadius: 3.5,
                     bgcolor: "var(--sl-banner, #4F46E5)",
                     color: "var(--sl-on-banner, #fff)",
                     border: "var(--sl-banner-border, none)",
@@ -284,13 +284,13 @@ function TeacherDashboardPage() {
                 }}
             >
                 <Box sx={{ minWidth: 0 }}>
-                    <Typography sx={{ fontSize: "0.9rem", opacity: 0.85 }}>
+                    <Typography sx={{ fontSize: "0.8rem", opacity: 0.85 }} noWrap>
                         {getGreeting()} · {todayLabel}
                     </Typography>
-                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.5rem", sm: "1.9rem" }, lineHeight: 1.2, mt: 0.3 }}>
+                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.2rem", sm: "1.5rem" }, lineHeight: 1.2, mt: 0.2 }} noWrap>
                         {getTitledName(teacher, user)} 👋
                     </Typography>
-                    <Typography sx={{ mt: 0.5, fontSize: "0.92rem", opacity: 0.9 }}>
+                    <Typography sx={{ mt: 0.25, fontSize: "0.82rem", opacity: 0.9 }}>
                         {totalPending > 0
                             ? `${totalPending} acknowledgement${totalPending === 1 ? "" : "s"} still pending.`
                             : "You're all caught up. Here's what's happening today."}
@@ -298,9 +298,10 @@ function TeacherDashboardPage() {
                 </Box>
                 <Button
                     variant="contained"
+                    size="small"
                     startIcon={<AddIcon />}
                     onClick={() => navigate("/teacher/create-post")}
-                    sx={{ bgcolor: "var(--sl-on-banner, #fff)", color: "var(--sl-banner, #4F46E5)", "&:hover": { bgcolor: "var(--sl-on-banner, #fff)", opacity: 0.9 } }}
+                    sx={{ flexShrink: 0, bgcolor: "var(--sl-on-banner, #fff)", color: "var(--sl-banner, #4F46E5)", "&:hover": { bgcolor: "var(--sl-on-banner, #fff)", opacity: 0.9 } }}
                 >
                     Create Post
                 </Button>
