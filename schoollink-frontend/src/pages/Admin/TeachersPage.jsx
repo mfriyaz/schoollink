@@ -29,6 +29,7 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import BlockIcon from "@mui/icons-material/BlockOutlined";
 import RestoreIcon from "@mui/icons-material/RestoreOutlined";
 import SchoolIcon from "@mui/icons-material/SchoolOutlined";
+import SwapHorizIcon from "@mui/icons-material/SwapHorizOutlined";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentIndOutlined";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import PhoneIcon from "@mui/icons-material/PhoneOutlined";
@@ -62,6 +63,7 @@ import {
 
 import {
     getSchoolAssignments,
+    transferAssignmentToTeacher,
     createTeacherSubjectAssignment,
     getAssignmentsByTeacher,
     deleteTeacherSubjectAssignment,
@@ -166,6 +168,10 @@ function TeachersPage() {
 
     const [removingId, setRemovingId] = useState(null);
     const [togglingId, setTogglingId] = useState(null);
+    const [transferFrom, setTransferFrom] = useState(null);
+    const [transferTo, setTransferTo] = useState("");
+    const [transferring, setTransferring] = useState(false);
+    const [transferError, setTransferError] = useState("");
 
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
@@ -430,6 +436,36 @@ function TeachersPage() {
 
         }
 
+    }
+
+    function openTransfer(a) {
+        setTransferFrom(a);
+        setTransferTo("");
+        setTransferError("");
+    }
+
+    async function handleTransfer() {
+        if (!transferFrom || !transferTo) {
+            setTransferError("Choose the teacher to hand this over to.");
+            return;
+        }
+        try {
+            setTransferring(true);
+            setTransferError("");
+            const response = await transferAssignmentToTeacher(transferFrom.teacher_subject_id, transferTo);
+            if (response.success) {
+                setCurrentAssignments((prev) => prev.filter((x) => x.teacher_subject_id !== transferFrom.teacher_subject_id));
+                setAssignSuccess(`${transferFrom.subject_name} (${transferFrom.class_name}-${transferFrom.section_name}) moved to ${response.data.teacher_name}.`);
+                setTransferFrom(null);
+                loadAssignments();
+            } else {
+                setTransferError(response.message);
+            }
+        } catch (err) {
+            setTransferError(err.response?.data?.message || "Unable to transfer this assignment.");
+        } finally {
+            setTransferring(false);
+        }
     }
 
     async function handleRemoveAssignment(assignmentId) {
@@ -940,10 +976,10 @@ function TeachersPage() {
                             borderRadius: 2,
                             bgcolor: "#fff",
                             border: "1px solid var(--sl-border, #EEF2F7)",
-                            outline: filter === s.filter ? "2px solid var(--sl-accent, var(--sl-primary))" : "none"
+                            outline: filter === s.filter ? "2px solid var(--sl-accent, #4F46E5)" : "none"
                         }}
                     >
-                        <Typography sx={{ fontWeight: 800, fontSize: "1.05rem", lineHeight: 1.2, color: s.tone || "var(--sl-ink, var(--sl-ink))" }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.05rem", lineHeight: 1.2, color: s.tone || "var(--sl-ink, #0F172A)" }}>
                             {s.value}
                         </Typography>
                         <Typography sx={{ fontSize: "0.76rem", color: "text.secondary" }} noWrap>{s.label}</Typography>
@@ -977,9 +1013,9 @@ function TeachersPage() {
                             onClick={() => setFilter(id)}
                             sx={{
                                 fontWeight: 600,
-                                bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft, #F1F5F9)",
-                                color: filter === id ? "#fff" : "var(--sl-ink, var(--sl-ink))",
-                                "&:hover": { bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft2, #E2E8F0)" }
+                                bgcolor: filter === id ? "var(--sl-ink, #0F172A)" : "var(--sl-soft, #F1F5F9)",
+                                color: filter === id ? "#fff" : "var(--sl-ink, #0F172A)",
+                                "&:hover": { bgcolor: filter === id ? "var(--sl-ink, #0F172A)" : "var(--sl-soft2, #E2E8F0)" }
                             }}
                         />
                     ))}
@@ -1025,8 +1061,8 @@ function TeachersPage() {
                                 <Avatar
                                     sx={{
                                         width: 44, height: 44, fontWeight: 800,
-                                        bgcolor: teacher.is_active ? "var(--sl-soft, var(--sl-soft))" : "#F1F5F9",
-                                        color: teacher.is_active ? "var(--sl-ink, var(--sl-primary))" : "#94A3B8"
+                                        bgcolor: teacher.is_active ? "var(--sl-soft, #E0E7FF)" : "#F1F5F9",
+                                        color: teacher.is_active ? "var(--sl-ink, #4F46E5)" : "#94A3B8"
                                     }}
                                 >
                                     {initials(teacher)}
@@ -1471,6 +1507,14 @@ function TeachersPage() {
                                         />
                                         <IconButton
                                             size="small"
+                                            aria-label="Transfer to another teacher"
+                                            title="Transfer to another teacher"
+                                            onClick={() => openTransfer(a)}
+                                        >
+                                            <SwapHorizIcon fontSize="small" />
+                                        </IconButton>
+                                        <IconButton
+                                            size="small"
                                             aria-label="Remove assignment"
                                             onClick={() => handleRemoveAssignment(a.teacher_subject_id)}
                                             disabled={removingId === a.teacher_subject_id}
@@ -1546,9 +1590,9 @@ function TeachersPage() {
                                             onClick={() => setAssignSectionId(s.id)}
                                             sx={{
                                                 fontWeight: 700,
-                                                bgcolor: on ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft, #F1F5F9)",
-                                                color: on ? "#fff" : "var(--sl-ink, var(--sl-ink))",
-                                                "&:hover": { bgcolor: on ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft2, #E2E8F0)" }
+                                                bgcolor: on ? "var(--sl-ink, #0F172A)" : "var(--sl-soft, #F1F5F9)",
+                                                color: on ? "#fff" : "var(--sl-ink, #0F172A)",
+                                                "&:hover": { bgcolor: on ? "var(--sl-ink, #0F172A)" : "var(--sl-soft2, #E2E8F0)" }
                                             }}
                                         />
                                     );
@@ -1600,6 +1644,44 @@ function TeachersPage() {
 
                 </DialogActions>
 
+            </Dialog>
+
+            <Dialog open={!!transferFrom} onClose={() => !transferring && setTransferFrom(null)} maxWidth="xs" fullWidth fullScreen={isPhone}>
+                <DialogTitle sx={{ fontWeight: 800 }}>Transfer to another teacher</DialogTitle>
+                <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+                    {transferFrom && (
+                        <Box sx={{ p: 1.5, borderRadius: 2.5, border: "1px solid var(--sl-border, #E2E8F0)", bgcolor: "var(--sl-page2, #F8FAFC)" }}>
+                            <Typography sx={{ fontWeight: 700 }}>{transferFrom.subject_name}</Typography>
+                            <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
+                                {transferFrom.class_name} - {transferFrom.section_name}
+                                {assignTeacher ? ` · now with ${assignTeacher.first_name} ${assignTeacher.last_name || ""}` : ""}
+                            </Typography>
+                        </Box>
+                    )}
+                    <Typography sx={{ fontSize: "0.84rem", color: "text.secondary" }}>
+                        Attendance, homework and marks already recorded for this class and subject stay as they are, and move to the new teacher.
+                    </Typography>
+                    {transferError && <Alert severity="error">{transferError}</Alert>}
+                    <TextField
+                        select
+                        label="New teacher"
+                        fullWidth
+                        value={transferTo}
+                        onChange={(e) => setTransferTo(e.target.value)}
+                    >
+                        {teachers
+                            .filter((t) => (!assignTeacher || t.id !== assignTeacher.id) && t.is_active !== false)
+                            .map((t) => (
+                                <MenuItem key={t.id} value={t.id}>{t.first_name} {t.last_name}</MenuItem>
+                            ))}
+                    </TextField>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2 }}>
+                    <Button onClick={() => setTransferFrom(null)} disabled={transferring}>Cancel</Button>
+                    <Button variant="contained" onClick={handleTransfer} disabled={transferring || !transferTo}>
+                        {transferring ? "Transferring..." : "Transfer"}
+                    </Button>
+                </DialogActions>
             </Dialog>
 
             <Dialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} maxWidth="xs" fullWidth>

@@ -18,5 +18,6 @@ router.get("/early-warning", authenticate, authorizeRoles("School Admin"), contr
 router.post("/early-warning-note", authenticate, authorizeRoles("School Admin"), controller.earlyWarningNote);
 
 router.patch("/assignments/:id/class-teacher", authenticate, authorizeRoles("School Admin"), controller.setClassTeacher);
+router.patch("/assignments/:id/transfer", authenticate, authorizeRoles("School Admin"), controller.transferAssignment);
 
 module.exports = router;

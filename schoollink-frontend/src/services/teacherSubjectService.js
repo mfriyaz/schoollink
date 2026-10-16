@@ -39,3 +39,11 @@ export async function setClassTeacherFlag(id, isClassTeacher) {
     return response.data;
 
 }
+
+export async function transferAssignmentToTeacher(id, teacherId) {
+
+    const response = await api.patch(`/ai/assignments/${id}/transfer`, { teacher_id: teacherId });
+
+    return response.data;
+
+}

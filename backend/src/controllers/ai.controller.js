@@ -2,6 +2,7 @@ const response = require("../utils/response");
 const ai = require("../services/ai.service");
 const reportCardService = require("../services/reportCard.service");
 const classTeacherService = require("../services/classTeacher.service");
+const transferService = require("../services/assignmentTransfer.service");
 
 function fail(res, err) {
     if (err instanceof ai.AiError) return response.error(res, err.message, err.status);
@@ -74,6 +75,22 @@ async function setClassTeacher(req, res) {
     }
 }
 
+async function transferAssignment(req, res) {
+    try {
+        const id = Number(req.params.id);
+        const teacherId = Number(req.body && req.body.teacher_id);
+        if (!Number.isInteger(id) || !Number.isInteger(teacherId)) {
+            return response.error(res, "Choose a teacher to transfer to.", 400);
+        }
+        const row = await transferService.transferAssignment(req.user.school_id, id, teacherId);
+        return response.success(res, row, "Assignment transferred");
+    } catch (err) {
+        if (err instanceof transferService.TransferError) return response.error(res, err.message, err.status);
+        console.error("transferAssignment failed", err);
+        return response.error(res, "Unable to transfer this assignment.", 500);
+    }
+}
+
 async function getSchoolAi(req, res) {
     try {
         return response.success(res, await ai.getSchoolUsage(Number(req.params.id)), "AI usage");
@@ -86,4 +103,4 @@ async function updateSchoolAi(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
-module.exports = { status, improve, translate, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, setClassTeacher, getSchoolAi, updateSchoolAi };
+module.exports = { status, improve, translate, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, setClassTeacher, transferAssignment, getSchoolAi, updateSchoolAi };
