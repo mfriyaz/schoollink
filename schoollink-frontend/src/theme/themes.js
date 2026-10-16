@@ -70,23 +70,61 @@ export const THEMES = {
         loginBg: "#FFF8FA", loginPanel: "#FCE8ED"
     },
 
-    // 4) Violet (vibrant violet, travel-card style)
-    violet: {
-        id: "violet",
-        name: "Violet",
-        tagline: "Vibrant Violet & White",
-        primary: "#6D28D9", primaryDark: "#4C1D95", primaryLight: "#8B5CF6",
-        soft: "#EDE4FF", soft2: "#CDB8FA", ink: "#1E0B4B",
-        accent: "#A78BFA", accentDark: "#8B5CF6",
-        pageBg: "#F7F3FF", border: "#E4D9FA", page2: "#F7F3FF",
-        btnBg: "#7C3AED", btnHover: "#6D28D9", btnText: "#FFFFFF", btnBorder: "none",
-        btnShadowCss: "0 3px 0 #4C1D95", btnShadowHoverCss: "0 4px 0 #4C1D95", btnShadow: "rgba(109,40,217,0.30)",
-        cardShadow: "0 1px 0 rgba(76,29,149,0.08), 0 2px 8px rgba(76,29,149,0.07)", cardShadowHover: "0 2px 0 rgba(76,29,149,0.12), 0 8px 18px rgba(76,29,149,0.14)",
-        tabIndicator: "#7C3AED", metaColor: "#2A0F66",
-        sideBg: "#2A0F66", sideActive: "#FFFFFF", onActive: "#4C1D95", sideText: "#F3EEFF", sideMuted: "rgba(243,238,255,0.68)", glow: "rgba(0,0,0,0)",
-        navActive: "#7C3AED", onNavActive: "#FFFFFF",
-        banner: "#7C3AED", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "0 6px 16px rgba(109,40,217,0.28)",
-        loginBg: "#F7F3FF", loginPanel: "#EDE4FF"
+    // 4) Coral
+    coral: {
+        id: "coral",
+        name: "Coral",
+        tagline: "Soft Coral & Dark",
+        primary: "#2B1215", primaryDark: "#1F0D10", primaryLight: "#2B1215",
+        soft: "#FFE3E3", soft2: "#FFC4C4", ink: "#2B1215",
+        accent: "#FF8A8A", accentDark: "#FF6F6F",
+        pageBg: "#FFF6F5", border: "#F7D5D3", page2: "#FFF6F5",
+        btnBg: "#FF8A8A", btnHover: "#FF7878", btnText: "#2B1215", btnBorder: "1.5px solid #2B1215",
+        btnShadowCss: "0 3px 0 #2B1215", btnShadowHoverCss: "0 4px 0 #2B1215", btnShadow: "rgba(0,0,0,0.28)",
+        cardShadow: "0 1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.06)", cardShadowHover: "0 2px 0 rgba(0,0,0,0.12), 0 8px 18px rgba(0,0,0,0.12)",
+        tabIndicator: "#FF8A8A", metaColor: "#1F0D10",
+        sideBg: "#1F0D10", sideActive: "#FF8A8A", onActive: "#2B1215", sideText: "#FFF1F0", sideMuted: "rgba(255,241,240,0.68)", glow: "rgba(0,0,0,0)",
+        navActive: "#FF8A8A", onNavActive: "#2B1215",
+        banner: "#FF8A8A", onBanner: "#2B1215", bannerBorder: "1.5px solid #2B1215", bannerShadow: "0 3px 0 #2B1215",
+        loginBg: "#FFF6F5", loginPanel: "#FF8A8A"
+    },
+
+    // 5) Mint
+    mint: {
+        id: "mint",
+        name: "Mint",
+        tagline: "Fresh Mint & Dark",
+        primary: "#062B26", primaryDark: "#06231F", primaryLight: "#062B26",
+        soft: "#D8FBF4", soft2: "#A8F0E2", ink: "#062B26",
+        accent: "#77F1DB", accentDark: "#4FE0C6",
+        pageBg: "#F0FDFA", border: "#C6EFE7", page2: "#F0FDFA",
+        btnBg: "#77F1DB", btnHover: "#5FE8CE", btnText: "#062B26", btnBorder: "1.5px solid #062B26",
+        btnShadowCss: "0 3px 0 #062B26", btnShadowHoverCss: "0 4px 0 #062B26", btnShadow: "rgba(0,0,0,0.28)",
+        cardShadow: "0 1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.06)", cardShadowHover: "0 2px 0 rgba(0,0,0,0.12), 0 8px 18px rgba(0,0,0,0.12)",
+        tabIndicator: "#77F1DB", metaColor: "#06231F",
+        sideBg: "#06231F", sideActive: "#77F1DB", onActive: "#062B26", sideText: "#ECFFFB", sideMuted: "rgba(236,255,251,0.68)", glow: "rgba(0,0,0,0)",
+        navActive: "#77F1DB", onNavActive: "#062B26",
+        banner: "#77F1DB", onBanner: "#062B26", bannerBorder: "1.5px solid #062B26", bannerShadow: "0 3px 0 #062B26",
+        loginBg: "#F0FDFA", loginPanel: "#77F1DB"
+    },
+
+    // 6) Butter
+    butter: {
+        id: "butter",
+        name: "Butter",
+        tagline: "Soft Butter & Dark",
+        primary: "#2B2508", primaryDark: "#1C1805", primaryLight: "#2B2508",
+        soft: "#FBF3C6", soft2: "#F1E49C", ink: "#2B2508",
+        accent: "#F1DE77", accentDark: "#E8D04F",
+        pageBg: "#FFFDF0", border: "#EEE3B0", page2: "#FFFDF0",
+        btnBg: "#F1DE77", btnHover: "#EAD45E", btnText: "#2B2508", btnBorder: "1.5px solid #2B2508",
+        btnShadowCss: "0 3px 0 #2B2508", btnShadowHoverCss: "0 4px 0 #2B2508", btnShadow: "rgba(0,0,0,0.28)",
+        cardShadow: "0 1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.06)", cardShadowHover: "0 2px 0 rgba(0,0,0,0.12), 0 8px 18px rgba(0,0,0,0.12)",
+        tabIndicator: "#F1DE77", metaColor: "#1C1805",
+        sideBg: "#1C1805", sideActive: "#F1DE77", onActive: "#2B2508", sideText: "#FFFBE6", sideMuted: "rgba(255,251,230,0.68)", glow: "rgba(0,0,0,0)",
+        navActive: "#F1DE77", onNavActive: "#2B2508",
+        banner: "#F1DE77", onBanner: "#2B2508", bannerBorder: "1.5px solid #2B2508", bannerShadow: "0 3px 0 #2B2508",
+        loginBg: "#FFFDF0", loginPanel: "#F1DE77"
     },
 
     // Used only by the Super Admin console (not offered to schools)

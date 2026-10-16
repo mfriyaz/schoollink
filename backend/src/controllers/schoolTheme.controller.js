@@ -2,7 +2,7 @@ const pool = require("../config/database");
 const response = require("../utils/response");
 
 // Must match the ids in schoollink-frontend/src/theme/themes.js
-const THEMES = ["sunshine", "sky", "maroon", "violet"];
+const THEMES = ["sunshine", "sky", "maroon", "coral", "mint", "butter"];
 
 /**
  * Any logged-in user: the colour theme chosen by their school
