@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
     Alert,
     Box,
@@ -19,74 +18,45 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-
 import DomainIcon from "@mui/icons-material/DomainOutlined";
-
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import SearchIcon from "@mui/icons-material/SearchOutlined";
-
 import { updateSchoolGovernance } from "../../services/superAdminService";
 import { getPlatformSchools } from "../../services/platformAdminService";
 import { bytesLabel, changeLines, fmtDate, timeAgo } from "../../utils/platformUi";
-
 const statusOptions = ["ACTIVE", "SUSPENDED", "TRIAL", "EXPIRED"];
-
 const planOptions = ["STANDARD", "PREMIUM", "TRIAL"];
-
 const timezoneOptions = [
-
     { value: "Asia/Kolkata", label: "India (IST, UTC+5:30)" },
-
     { value: "Asia/Singapore", label: "Singapore (SGT, UTC+8)" },
-
     { value: "Asia/Dubai", label: "UAE (GST, UTC+4)" },
-
     { value: "Asia/Riyadh", label: "Saudi Arabia (AST, UTC+3)" },
-
     { value: "Asia/Kuala_Lumpur", label: "Malaysia (MYT, UTC+8)" },
-
     { value: "Asia/Jakarta", label: "Indonesia - Jakarta (WIB, UTC+7)" },
-
     { value: "Europe/London", label: "UK (GMT/BST)" },
-
     { value: "America/New_York", label: "US Eastern (ET)" }
-
 ];
-
 function SchoolCard({ school, onSaved }) {
-
     const navigate = useNavigate();
-
     const [editing, setEditing] = useState(false);
-
     const [plan, setPlan] = useState(school.subscription_plan || "STANDARD");
-
     const [status, setStatus] = useState(school.status || "ACTIVE");
-
     const [expiry, setExpiry] = useState(
         school.subscription_expiry
             ? school.subscription_expiry.slice(0, 10)
             : ""
     );
-
     const [maxClasses, setMaxClasses] = useState(school.max_classes ?? "");
-
     const [maxStudents, setMaxStudents] = useState(school.max_students ?? "");
-
     const [maxTeachers, setMaxTeachers] = useState(school.max_teachers ?? "");
     const [maxStorage, setMaxStorage] = useState(school.max_storage_mb ?? "");
-
     const [timezone, setTimezone] = useState(school.timezone || "Asia/Singapore");
-
     const [saving, setSaving] = useState(false);
-
     const [error, setError] = useState("");
-
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [pending, setPending] = useState([]);
     const [reason, setReason] = useState("");
-
     const current = {
         subscription_plan: school.subscription_plan || "STANDARD",
         status: school.status || "ACTIVE",
@@ -96,7 +66,6 @@ function SchoolCard({ school, onSaved }) {
         max_classes: school.max_classes ?? null,
         max_storage_mb: school.max_storage_mb ?? null
     };
-
     const next = {
         subscription_plan: plan,
         status,
@@ -106,49 +75,29 @@ function SchoolCard({ school, onSaved }) {
         max_classes: maxClasses === "" ? null : Number(maxClasses),
         max_storage_mb: maxStorage === "" ? null : Number(maxStorage)
     };
-
     const expiryChanged = current.subscription_expiry !== next.subscription_expiry;
-
     // Step 1: show exactly what is about to change and ask to confirm
     function requestSave() {
-
         setError("");
-
         const changes = {};
-
         for (const k of Object.keys(next)) {
-
             const a = current[k] === null ? null : String(current[k]);
             const b = next[k] === null ? null : String(next[k]);
-
             if (a !== b) changes[k] = { from: current[k], to: next[k] };
-
         }
-
         const lines = changeLines(changes);
-
         const tzChanged = timezone !== (school.timezone || "Asia/Singapore");
-
         if (lines.length === 0 && !tzChanged) {
-
             setError("Nothing has changed.");
-
             return;
-
         }
-
         if (tzChanged) {
-
             lines.push({ field: "timezone", label: "Time zone", from: school.timezone || "-", to: timezone });
-
         }
-
         setPending(lines);
         setReason("");
         setConfirmOpen(true);
-
     }
-
     // Step 2: confirmed - save, with the reason kept in the change history
     async function handleSave() {
         setError("");
@@ -183,74 +132,43 @@ function SchoolCard({ school, onSaved }) {
             setSaving(false);
         }
     }
-
     const expiryDays = school.subscription_expiry
         ? Math.round((new Date(`${String(school.subscription_expiry).slice(0, 10)}T00:00:00`) - new Date(new Date().toDateString())) / 86400000)
         : null;
-
     const statusColor =
         school.status === "ACTIVE" ? "success" :
         school.status === "SUSPENDED" ? "error" :
         school.status === "EXPIRED" ? "error" : "warning";
-
     return (
-
-        <Card sx={{ p: { xs: 2, sm: 3 }, mb: 2 }}>
-
+        <Card sx={{ border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)", borderRadius: 3, p: { xs: 2, sm: 3 }, mb: 2 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 1.5 }}>
-
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 0 }}>
-
                     <Box
-
                         sx={{
-
                             width: 44,
-
                             height: 44,
-
-                            borderRadius: "12px",
-
-                            bgcolor: "var(--sl-soft)",
-
+                            borderRadius: "13px",
+                            bgcolor: "var(--sl-accent)",
+                            border: "1.5px solid var(--sl-ink)",
                             display: "flex",
-
                             alignItems: "center",
-
                             justifyContent: "center"
-
                         }}
-
                     >
-
-                        <DomainIcon sx={{ color: "var(--sl-primary)" }} />
-
+                        <DomainIcon sx={{ color: "var(--sl-ink)" }} />
                     </Box>
-
                     <Box>
-
-                        <Typography sx={{ fontWeight: 700 }}>
-
+                        <Typography sx={{ fontWeight: 800, color: "var(--sl-ink)" }}>
                             {school.school_name}
-
                         </Typography>
-
                         <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
-
                             {school.school_code} · {school.city}, {school.country}
-
                         </Typography>
-
                     </Box>
-
                 </Box>
-
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
-
                     <Chip size="small" label={school.subscription_plan || "STANDARD"} />
-
                     <Chip size="small" color={statusColor} label={school.status || "ACTIVE"} />
-
                     <Button size="small" onClick={() => navigate(`/super-admin/schools/${school.id}`)}>
                         Details
                     </Button>
@@ -259,17 +177,11 @@ function SchoolCard({ school, onSaved }) {
                         startIcon={<EditIcon fontSize="small" />}
                         onClick={() => setEditing((v) => !v)}
                     >
-
                         {editing ? "Cancel" : "Manage"}
-
                     </Button>
-
                 </Box>
-
             </Box>
-
                         <Box sx={{ mt: 2 }}>
-
                 <Grid container spacing={1.5}>
                     {[
                         ["Students", school.students, school.max_students, null],
@@ -296,9 +208,7 @@ function SchoolCard({ school, onSaved }) {
                         );
                     })}
                 </Grid>
-
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mt: 1.5, alignItems: "center" }}>
-
                     {expiryDays === null ? (
                         <Chip size="small" variant="outlined" label="No expiry set" />
                     ) : (
@@ -307,30 +217,19 @@ function SchoolCard({ school, onSaved }) {
                                 ? `Expired ${-expiryDays} day${-expiryDays === 1 ? "" : "s"} ago (${fmtDate(school.subscription_expiry)})`
                                 : `Expires ${fmtDate(school.subscription_expiry)} (${expiryDays} day${expiryDays === 1 ? "" : "s"} left)`} />
                     )}
-
                     <Chip size="small" variant="outlined" label={`Last login: ${timeAgo(school.last_login)}`} />
-
                     {school.files > 0 && <Chip size="small" variant="outlined" label={`${school.files} files`} />}
-
                 </Box>
-
                 <Typography sx={{ color: "#64748B", fontSize: "0.8rem", mt: 1, overflowWrap: "anywhere" }}>
                     Admin: {school.admin_name ? `${school.admin_name}${school.admin_email ? ` - ${school.admin_email}` : ""}` : "no administrator found"}
                     {school.phone ? ` | Phone: ${school.phone}` : ""}
                 </Typography>
-
             </Box>
-
             {editing && (
-
                 <Box sx={{ mt: 3, pt: 3, borderTop: "1px solid #F1F5F9" }}>
-
                     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
                     <Grid container spacing={2}>
-
                         <Grid size={{ xs: 12, sm: 4 }}>
-
                             <TextField
                                 select
                                 label="Subscription Plan"
@@ -339,19 +238,12 @@ function SchoolCard({ school, onSaved }) {
                                 fullWidth
                                 size="small"
                             >
-
                                 {planOptions.map((p) => (
-
                                     <MenuItem key={p} value={p}>{p}</MenuItem>
-
                                 ))}
-
                             </TextField>
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 4 }}>
-
                             <TextField
                                 select
                                 label="Status"
@@ -360,19 +252,12 @@ function SchoolCard({ school, onSaved }) {
                                 fullWidth
                                 size="small"
                             >
-
                                 {statusOptions.map((s) => (
-
                                     <MenuItem key={s} value={s}>{s}</MenuItem>
-
                                 ))}
-
                             </TextField>
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 4 }}>
-
                             <SchoolDatePicker
                                 label="Subscription Expiry"
                                 value={expiry}
@@ -380,11 +265,8 @@ function SchoolCard({ school, onSaved }) {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 4 }}>
-
                             <TextField
                                 label="Max Classes"
                                 type="number"
@@ -394,11 +276,8 @@ function SchoolCard({ school, onSaved }) {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 4 }}>
-
                             <TextField
                                 label="Max Students"
                                 type="number"
@@ -408,11 +287,8 @@ function SchoolCard({ school, onSaved }) {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
-
                         <Grid size={{ xs: 12, sm: 4 }}>
-
                             <TextField
                                 label="Max Teachers"
                                 type="number"
@@ -422,7 +298,6 @@ function SchoolCard({ school, onSaved }) {
                                 fullWidth
                                 size="small"
                             />
-
                         </Grid>
                         <Grid size={{ xs: 12, sm: 4 }}>
                             <TextField
@@ -436,9 +311,7 @@ function SchoolCard({ school, onSaved }) {
                                 size="small"
                             />
                         </Grid>
-
                         <Grid size={{ xs: 12 }}>
-
                             <TextField
                                 select
                                 label="Timezone / Region"
@@ -448,35 +321,21 @@ function SchoolCard({ school, onSaved }) {
                                 size="small"
                                 helperText="Controls how post/attendance times are displayed to this school's users"
                             >
-
                                 {timezoneOptions.map((tz) => (
-
                                     <MenuItem key={tz.value} value={tz.value}>{tz.label}</MenuItem>
-
                                 ))}
-
                             </TextField>
-
                         </Grid>
-
                     </Grid>
-
                     <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-
                         <Button loading={saving} loadingPosition="start"
                             variant="contained"
                             onClick={requestSave} disabled={saving} >
-
                             {saving ? "Saving..." : "Save Changes"}
-
                         </Button>
-
                     </Box>
-
                 </Box>
-
             )}
-
                     <Dialog open={confirmOpen} onClose={saving ? undefined : () => setConfirmOpen(false)} maxWidth="xs" fullWidth>
                 <DialogTitle>Confirm changes for {school.school_name}</DialogTitle>
                 <DialogContent>
@@ -506,134 +365,69 @@ function SchoolCard({ school, onSaved }) {
                 </DialogActions>
             </Dialog>
         </Card>
-
     );
-
 }
-
 function SchoolsManagementPage() {
-
     const [schools, setSchools] = useState([]);
-
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
-
     useEffect(() => {
-
         loadSchools();
-
     }, []);
-
     async function loadSchools() {
-
         try {
-
             const response = await getPlatformSchools();
-
             if (response.success) {
-
                 setSchools(response.data);
-
             }
-
         } catch (err) {
-
             console.error(err);
-
         } finally {
-
             setLoading(false);
-
         }
-
     }
-
     function handleSaved() {
         // Reload so usage, expiry countdown and limits all refresh together
         loadSchools();
     }
-
     if (loading) {
-
         return (
-
             <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
-
                 <CircularProgress />
-
             </Box>
-
         );
-
     }
-
     return (
-
         <Box sx={{ maxWidth: 900 }}>
-
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 0.5 }}>
-
                 <Box
-
                     sx={{
-
-                        width: 40,
-
-                        height: 40,
-
-                        borderRadius: "10px",
-
-                        bgcolor: "#EDE9FE",
-
+                        width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)",
                         display: "flex",
-
                         alignItems: "center",
-
                         justifyContent: "center"
-
                     }}
-
                 >
-
-                    <DomainIcon sx={{ color: "#7C3AED" }} />
-
+                    <DomainIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
-
                 <Box>
-
                     <Typography sx={{ color: "#7C3AED", fontWeight: 700, fontSize: "0.75rem", letterSpacing: 0.5, textTransform: "uppercase" }}>
-
                         Platform Console
-
                     </Typography>
-
-                    <Typography variant="h5" sx={{ fontWeight: 700 }}>
-
+                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>
                         Schools
-
                     </Typography>
-
                 </Box>
-
             </Box>
-
             <Typography sx={{ color: "#64748B", mb: 3, ml: "56px" }}>
-
                 Manage every school on the platform - subscriptions, status, and capacity limits.
-
             </Typography>
-
             {schools.length === 0 && (
-
                 <Typography color="text.secondary">
-
                     No schools onboarded yet.
-
                 </Typography>
-
             )}
-
                         <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 2, alignItems: "center" }}>
                 <TextField
                     size="small" placeholder="Search school name, code or city" value={search}
@@ -642,23 +436,19 @@ function SchoolsManagementPage() {
                     slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> } }}
                 />
                 {["ALL", "ACTIVE", "TRIAL", "SUSPENDED", "EXPIRED"].map((st) => (
-                    <Chip key={st} size="small" clickable label={st === "ALL" ? `All (${schools.length})` : `${st} (${schools.filter((x) => x.status === st).length})`}
-                        color={statusFilter === st ? "primary" : "default"} variant={statusFilter === st ? "filled" : "outlined"}
-                        onClick={() => setStatusFilter(st)} />
+                    <Box key={st} role="button" tabIndex={0} onClick={() => setStatusFilter(st)}
+                        sx={{ px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none", fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", bgcolor: statusFilter === st ? "var(--sl-accent)" : "transparent", "&:hover": { bgcolor: statusFilter === st ? undefined : "var(--sl-soft)" } }}>
+                        {st === "ALL" ? `All (${schools.length})` : `${st} (${schools.filter((x) => x.status === st).length})`}
+                    </Box>
                 ))}
             </Box>
-
             {schools
                 .filter((x) => statusFilter === "ALL" || x.status === statusFilter)
                 .filter((x) => !search.trim() || `${x.school_name} ${x.school_code} ${x.city || ""}`.toLowerCase().includes(search.trim().toLowerCase()))
                 .map((school) => (
                     <SchoolCard key={school.id} school={school} onSaved={handleSaved} />
                 ))}
-
         </Box>
-
     );
-
 }
-
 export default SchoolsManagementPage;

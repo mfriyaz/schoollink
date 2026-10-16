@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
     Alert,
     Box,
@@ -12,184 +11,97 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-
 import AddBusinessIcon from "@mui/icons-material/AddBusinessOutlined";
-
 import { onboardSchool } from "../../services/platformService";
-
 const timezoneOptions = [
-
     { value: "Asia/Kolkata", label: "India (IST, UTC+5:30)" },
-
     { value: "Asia/Singapore", label: "Singapore (SGT, UTC+8)" },
-
     { value: "Asia/Dubai", label: "UAE (GST, UTC+4)" },
-
     { value: "Asia/Riyadh", label: "Saudi Arabia (AST, UTC+3)" },
-
     { value: "Asia/Kuala_Lumpur", label: "Malaysia (MYT, UTC+8)" },
-
     { value: "Asia/Jakarta", label: "Indonesia - Jakarta (WIB, UTC+7)" },
-
     { value: "Europe/London", label: "UK (GMT/BST)" },
-
     { value: "America/New_York", label: "US Eastern (ET)" }
-
 ];
-
 const emptySchool = {
-
     school_name: "",
     school_code: "",
     city: "",
     country: "",
     timezone: "Asia/Singapore",
     subscription_plan: "STANDARD"
-
 };
-
 const emptyAdmin = {
-
     full_name: "",
     email: "",
     mobile: "",
     password: ""
-
 };
-
 function CreateSchoolPage() {
-
     const navigate = useNavigate();
-
     const [school, setSchool] = useState(emptySchool);
-
     const [admin, setAdmin] = useState(emptyAdmin);
-
     const [error, setError] = useState("");
-
     const [success, setSuccess] = useState("");
-
     const [saving, setSaving] = useState(false);
-
     async function handleCreate() {
-
         setError("");
-
         setSuccess("");
-
         if (!school.school_name || !school.school_code) {
-
             setError("School Name and School Code are required.");
-
             return;
-
         }
-
         if (!admin.full_name || !admin.email || !admin.mobile || !admin.password) {
-
             setError("All School Admin fields are required.");
-
             return;
-
         }
-
         try {
-
             setSaving(true);
-
             const response = await onboardSchool({ school, admin });
-
             if (response.success) {
-
                 setSuccess(
-
                     `School "${response.data.school.school_name}" created, with admin account for ${response.data.administrator.email}.`
-
                 );
-
                 setSchool(emptySchool);
-
                 setAdmin(emptyAdmin);
-
                 setTimeout(() => {
-
                     navigate("/super-admin/schools");
-
                 }, 1500);
-
             } else {
-
                 setError(response.message);
-
             }
-
         } catch (err) {
-
             setError(
                 err.response?.data?.message ||
                 "Unable to create this school."
             );
-
         } finally {
-
             setSaving(false);
-
         }
-
     }
-
     return (
-
         <Box sx={{ maxWidth: 700 }}>
-
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-
                 <Box
-
                     sx={{
-
-                        width: 40,
-
-                        height: 40,
-
-                        borderRadius: "10px",
-
-                        bgcolor: "#EDE9FE",
-
+                        width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)",
                         display: "flex",
-
                         alignItems: "center",
-
                         justifyContent: "center"
-
                     }}
-
                 >
-
-                    <AddBusinessIcon sx={{ color: "#7C3AED" }} />
-
+                    <AddBusinessIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
-
-                <Typography variant="h5" sx={{ fontWeight: 700 }}>
-
+                <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>
                     Onboard New School
-
                 </Typography>
-
             </Box>
-
-            <Card sx={{ p: 3.5 }}>
-
+            <Card sx={{ border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)", borderRadius: 3, p: 3.5 }}>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
                 {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-
                 <Typography sx={{ fontWeight: 700, mb: 2 }}>School Details</Typography>
-
                 <Grid container spacing={2} sx={{ mb: 3 }}>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             label="School Name"
                             value={school.school_name}
@@ -197,11 +109,8 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         />
-
                     </Grid>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             label="School Code"
                             placeholder="e.g. GIS001"
@@ -210,11 +119,8 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         />
-
                     </Grid>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             label="City"
                             value={school.city}
@@ -222,11 +128,8 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         />
-
                     </Grid>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             label="Country"
                             value={school.country}
@@ -234,11 +137,8 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         />
-
                     </Grid>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             select
                             label="Timezone / Region"
@@ -247,19 +147,12 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         >
-
                             {timezoneOptions.map((tz) => (
-
                                 <MenuItem key={tz.value} value={tz.value}>{tz.label}</MenuItem>
-
                             ))}
-
                         </TextField>
-
                     </Grid>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             select
                             label="Subscription Plan"
@@ -268,27 +161,16 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         >
-
                             <MenuItem value="STANDARD">STANDARD</MenuItem>
-
                             <MenuItem value="PREMIUM">PREMIUM</MenuItem>
-
                             <MenuItem value="TRIAL">TRIAL</MenuItem>
-
                         </TextField>
-
                     </Grid>
-
                 </Grid>
-
                 <Divider sx={{ mb: 3 }} />
-
                 <Typography sx={{ fontWeight: 700, mb: 2 }}>School Administrator</Typography>
-
                 <Grid container spacing={2}>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             label="Full Name"
                             value={admin.full_name}
@@ -296,11 +178,8 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         />
-
                     </Grid>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             label="Email"
                             value={admin.email}
@@ -308,11 +187,8 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         />
-
                     </Grid>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             label="Mobile"
                             value={admin.mobile}
@@ -320,11 +196,8 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         />
-
                     </Grid>
-
                     <Grid size={{ xs: 12, sm: 6 }}>
-
                         <TextField
                             label="Temporary Password"
                             type="password"
@@ -333,29 +206,16 @@ function CreateSchoolPage() {
                             fullWidth
                             size="small"
                         />
-
                     </Grid>
-
                 </Grid>
-
                 <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 3 }}>
-
                     <Button onClick={() => navigate("/super-admin/schools")}>Cancel</Button>
-
                     <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleCreate} disabled={saving}>
-
                         {saving ? "Creating..." : "Create School"}
-
                     </Button>
-
                 </Box>
-
             </Card>
-
         </Box>
-
     );
-
 }
-
 export default CreateSchoolPage;
