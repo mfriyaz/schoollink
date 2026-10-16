@@ -192,11 +192,15 @@ export function applyFavicon(t) {
 
     try {
 
+        const outline = String(t.onBanner).toUpperCase() === "#FFFFFF" ? "none" : t.onBanner;
+
+        const page = (d) => '<path d="' + d + '" fill="#FFFFFF" stroke="' + outline + '" stroke-width="18" stroke-linejoin="round"/>';
+
         const svg =
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
             '<rect width="512" height="512" rx="112" fill="' + t.banner + '"/>' +
-            '<path d="M248 130C212 102 150 98 92 116L92 372C150 354 212 358 248 386Z" fill="' + t.onBanner + '"/>' +
-            '<path d="M264 130C300 102 362 98 420 116L420 372C362 354 300 358 264 386Z" fill="' + t.onBanner + '"/></svg>';
+            page("M248 130C212 102 150 98 92 116L92 372C150 354 212 358 248 386Z") +
+            page("M264 130C300 102 362 98 420 116L420 372C362 354 300 358 264 386Z") + '</svg>';
 
         let link = document.querySelector('link[rel="icon"]');
 

@@ -16,6 +16,7 @@ import { Link, useLocation } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMoreRounded";
 import CloseIcon from "@mui/icons-material/CloseRounded";
 
+import BrandBook from "../components/common/BrandBook";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import DashboardIcon from "@mui/icons-material/SpaceDashboardOutlined";
 import GroupsIcon from "@mui/icons-material/GroupsOutlined";
@@ -690,7 +691,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
             {/* Brand */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, p: collapsed ? 2 : 2.5, pb: 1.5, justifyContent: collapsed ? "center" : "flex-start", flexShrink: 0 }}>
                 <Box sx={{ width: 40, height: 40, borderRadius: "12px", background: theme.accent, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <MenuBookIcon sx={{ fontSize: 20, color: theme.onActive }} />
+                    <BrandBook size={26} outline={theme.onActive} />
                 </Box>
                 {!collapsed && (
                     <Box sx={{ minWidth: 0 }}>
