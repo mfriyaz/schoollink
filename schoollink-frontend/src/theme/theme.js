@@ -245,6 +245,36 @@ return createTheme({
             }
         },
 
+        MuiSwitch: {
+            styleOverrides: {
+                root: { width: 52, height: 30, padding: 0, overflow: "visible" },
+                switchBase: {
+                    padding: 3,
+                    color: "#9CA3AF",
+                    "&.Mui-checked": {
+                        transform: "translateX(22px)",
+                        color: "var(--sl-ink)",
+                        "& + .MuiSwitch-track": {
+                            backgroundColor: "var(--sl-accent)",
+                            opacity: 1
+                        }
+                    }
+                },
+                thumb: {
+                    width: 22,
+                    height: 22,
+                    boxShadow: "none",
+                    backgroundColor: "currentColor"
+                },
+                track: {
+                    borderRadius: 15,
+                    backgroundColor: "#FFFFFF",
+                    border: "1.5px solid var(--sl-ink)",
+                    opacity: 1,
+                    boxSizing: "border-box"
+                }
+            }
+        },
         MuiChip: {
             styleOverrides: {
                 root: { fontWeight: 600, borderRadius: 8 },
