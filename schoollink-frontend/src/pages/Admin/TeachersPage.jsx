@@ -41,6 +41,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import VpnKeyIcon from "@mui/icons-material/VpnKeyOutlined";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
 import DialogHeader, { generatePassword } from "../../components/common/DialogHeader";
 import PersonAddIcon from "@mui/icons-material/PersonAddAlt1Outlined";
 import PersonEditIcon from "@mui/icons-material/EditOutlined";
@@ -169,6 +170,7 @@ function TeachersPage() {
     const [assignSectionId, setAssignSectionId] = useState("");
 
     const [isClassTeacher, setIsClassTeacher] = useState(false);
+    const [ctConfirm, setCtConfirm] = useState(null);
 
     const [assigning, setAssigning] = useState(false);
 
@@ -520,6 +522,50 @@ function TeachersPage() {
 
         }
 
+    }
+
+    // Other sections this teacher is already class teacher of
+    // (a different class or section than the one being changed).
+    function otherClassRoles(classId, sectionId) {
+        return currentAssignments.filter((x) =>
+            x.is_class_teacher &&
+            !(String(x.class_id) === String(classId) && String(x.section_id) === String(sectionId))
+        );
+    }
+
+    function rolesText(list) {
+        const names = Array.from(new Set(list.map((x) => `${x.class_name}-${x.section_name}`)));
+        return names.join(", ");
+    }
+
+    function askToggleClassTeacher(a) {
+        if (!a.is_class_teacher) {
+            const others = otherClassRoles(a.class_id, a.section_id);
+            if (others.length > 0) {
+                setCtConfirm({ kind: "toggle", a, others });
+                return;
+            }
+        }
+        handleToggleClassTeacher(a);
+    }
+
+    function askAssign() {
+        if (isClassTeacher && assignClassId && assignSectionId) {
+            const others = otherClassRoles(assignClassId, assignSectionId);
+            if (others.length > 0) {
+                setCtConfirm({ kind: "assign", others });
+                return;
+            }
+        }
+        handleAssign();
+    }
+
+    function confirmCt() {
+        const c = ctConfirm;
+        setCtConfirm(null);
+        if (!c) return;
+        if (c.kind === "toggle") handleToggleClassTeacher(c.a);
+        else handleAssign();
     }
 
     async function handleToggleClassTeacher(a) {
@@ -1487,7 +1533,7 @@ function TeachersPage() {
                                             size="small"
                                             clickable
                                             aria-label="Toggle class teacher"
-                                            onClick={() => handleToggleClassTeacher(a)}
+                                            onClick={() => askToggleClassTeacher(a)}
                                             disabled={togglingId === a.teacher_subject_id}
                                             icon={a.is_class_teacher
                                                 ? <StarIcon sx={{ fontSize: 15, color: "#B45309 !important" }} />
@@ -1629,7 +1675,7 @@ function TeachersPage() {
                         loadingPosition="start"
                         variant="contained"
                         startIcon={<AddIcon />}
-                        onClick={handleAssign}
+                        onClick={askAssign}
                         disabled={assigning}
                     >
                         {assigning ? "Assigning..." : "Assign"}
@@ -1638,6 +1684,17 @@ function TeachersPage() {
                 </DialogActions>
 
             </Dialog>
+
+            <ConfirmDialog
+                open={!!ctConfirm}
+                title="Already a class teacher"
+                message={ctConfirm
+                    ? `${assignTeacher ? `${assignTeacher.first_name} ${assignTeacher.last_name || ""}`.trim() : "This teacher"} is already class teacher of ${rolesText(ctConfirm.others)}. Make them class teacher here as well?`
+                    : ""}
+                confirmLabel="Yes, make class teacher"
+                onConfirm={confirmCt}
+                onCancel={() => setCtConfirm(null)}
+            />
 
             <Dialog open={!!transferFrom} onClose={() => !transferring && setTransferFrom(null)} maxWidth="xs" fullWidth fullScreen={isPhone}>
                 <DialogTitle sx={{ fontWeight: 800 }}>Transfer to another teacher</DialogTitle>
