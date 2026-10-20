@@ -1,7 +1,7 @@
 # Debian-based (not Alpine) specifically because `sharp` (image
 # compression) needs this for its native bindings to work
 # reliably without extra configuration.
-FROM node:20-slim
+FROM node:22-slim
 
 WORKDIR /app
 
