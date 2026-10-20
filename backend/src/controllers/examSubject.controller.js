@@ -123,9 +123,21 @@ async function updateExamSubject(req, res) {
 
     try {
 
+        const max = Number(req.body && req.body.max_marks);
+        const pass = Number(req.body && req.body.pass_marks);
+
+        if (!(max > 0) || !(pass >= 0)) {
+            return response.error(res, "Max marks and pass marks are required", 400);
+        }
+
+        if (pass > max) {
+            return response.error(res, "Pass marks cannot be more than max marks", 400);
+        }
+
         const examSubject =
             await examSubjectService.updateExamSubject(
                 req.params.id,
+                req.user.school_id,
                 req.body
             );
 
@@ -150,7 +162,7 @@ async function updateExamSubject(req, res) {
         return response.error(
             res,
             err.message,
-            500
+            err.status || 500
         );
 
     }
@@ -166,7 +178,8 @@ async function deleteExamSubject(req, res) {
 
         const examSubject =
             await examSubjectService.deleteExamSubject(
-                req.params.id
+                req.params.id,
+                req.user.school_id
             );
 
         if (!examSubject) {
@@ -190,7 +203,7 @@ async function deleteExamSubject(req, res) {
         return response.error(
             res,
             err.message,
-            500
+            err.status || 500
         );
 
     }

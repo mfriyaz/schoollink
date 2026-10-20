@@ -12,7 +12,8 @@ async function createStudentMark(data) {
         `
         SELECT
             es.max_marks,
-            e.school_id
+            e.school_id,
+            e.is_active AS exam_is_active
         FROM exam_subjects es
         INNER JOIN exams e
             ON es.exam_id = e.id
@@ -23,6 +24,10 @@ async function createStudentMark(data) {
 
     if (examSubjectResult.rows.length === 0) {
         throw new Error("Exam Subject not found.");
+    }
+
+    if (examSubjectResult.rows[0].exam_is_active === false) {
+        throw new Error("This exam is archived, so marks can't be changed.");
     }
 
     const maxMarks = Number(examSubjectResult.rows[0].max_marks);
@@ -118,7 +123,8 @@ async function updateStudentMark(id, data) {
         `
         SELECT
             es.max_marks,
-            e.school_id
+            e.school_id,
+            e.is_active AS exam_is_active
         FROM exam_subjects es
         INNER JOIN exams e
             ON es.exam_id = e.id
@@ -129,6 +135,10 @@ async function updateStudentMark(id, data) {
 
     if (examSubjectResult.rows.length === 0) {
         throw new Error("Exam Subject not found.");
+    }
+
+    if (examSubjectResult.rows[0].exam_is_active === false) {
+        throw new Error("This exam is archived, so marks can't be changed.");
     }
 
     const maxMarks = Number(examSubjectResult.rows[0].max_marks);
@@ -189,7 +199,8 @@ async function bulkMarkExam(examSubjectId, records) {
         `
         SELECT
             es.max_marks,
-            e.school_id
+            e.school_id,
+            e.is_active AS exam_is_active
         FROM exam_subjects es
         INNER JOIN exams e
             ON es.exam_id = e.id
@@ -200,6 +211,10 @@ async function bulkMarkExam(examSubjectId, records) {
 
     if (examSubjectResult.rows.length === 0) {
         throw new Error("Exam Subject not found.");
+    }
+
+    if (examSubjectResult.rows[0].exam_is_active === false) {
+        throw new Error("This exam is archived, so marks can't be changed.");
     }
 
     const maxMarks = Number(examSubjectResult.rows[0].max_marks);

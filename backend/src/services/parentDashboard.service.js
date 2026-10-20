@@ -76,6 +76,7 @@ async function getParentDashboard(studentId) {
         INNER JOIN students s
             ON s.class_id = ts.class_id
         WHERE s.id=$1
+          AND e.is_active IS NOT FALSE
           AND e.start_date >= CURRENT_DATE
         `,
         [studentId]

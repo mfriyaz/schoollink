@@ -12,9 +12,9 @@ async function createExam(data) {
 /**
  * Get All Exams
  */
-async function getAllExams(schoolId) {
+async function getAllExams(schoolId, includeArchived = false) {
 
-    return await examModel.getAllExams(schoolId);
+    return await examModel.getAllExams(schoolId, includeArchived);
 
 }
 
@@ -30,22 +30,33 @@ async function getExamById(id, schoolId) {
 /**
  * Update Exam
  */
-async function updateExam(id, data) {
+async function updateExam(id, schoolId, data) {
 
-    return await examModel.updateExam(id, data);
+    return await examModel.updateExam(id, schoolId, data);
 
 }
 
 /**
  * Delete Exam
  */
-async function deleteExam(id) {
+async function deleteExam(id, schoolId) {
 
-    return await examModel.deleteExam(id);
+    return await examModel.deleteExam(id, schoolId);
+
+}
+
+/**
+ * Archive or restore an exam
+ */
+async function setExamArchived(id, schoolId, archived) {
+
+    return await examModel.setExamArchived(id, schoolId, archived);
 
 }
 
 module.exports = {
+
+    setExamArchived,
 
     createExam,
 

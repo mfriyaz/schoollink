@@ -33,7 +33,6 @@ async function getTeacherDashboard(teacherId) {
         FROM teacher_subjects
         WHERE teacher_id = $1
           AND is_active = true
-          AND ended_at IS NULL
         `,
         [teacherId]
     );
@@ -47,7 +46,6 @@ async function getTeacherDashboard(teacherId) {
         FROM teacher_subjects
         WHERE teacher_id = $1
           AND is_active = true
-          AND ended_at IS NULL
         `,
         [teacherId]
     );
@@ -63,7 +61,6 @@ async function getTeacherDashboard(teacherId) {
             ON s.class_id = ts.class_id
         WHERE ts.teacher_id = $1
           AND ts.is_active = true
-          AND ts.ended_at IS NULL
         `,
         [teacherId]
     );
@@ -113,6 +110,7 @@ async function getTeacherDashboard(teacherId) {
         INNER JOIN teacher_subjects ts
             ON es.teacher_subject_id = ts.id
         WHERE ts.teacher_id = $1
+          AND e.is_active IS NOT FALSE
           AND e.start_date >= CURRENT_DATE
         `,
         [teacherId]

@@ -64,7 +64,8 @@ async function getPrincipalDashboard() {
     const examResult = await db.query(`
         SELECT COUNT(*) AS upcoming_exams
         FROM exams
-        WHERE start_date >= CURRENT_DATE;
+        WHERE start_date >= CURRENT_DATE
+          AND is_active IS NOT FALSE;
     `);
 
     return {

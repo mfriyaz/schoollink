@@ -54,6 +54,16 @@ router.put(
 );
 
 /**
+ * Archive / restore Exam (keeps marks and report cards)
+ */
+router.patch(
+    "/:id/archived",
+    authenticate,
+    authorizeRoles("School Admin"),
+    examController.setExamArchived
+);
+
+/**
  * Delete Exam
  */
 router.delete(

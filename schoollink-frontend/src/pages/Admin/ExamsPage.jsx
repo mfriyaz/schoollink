@@ -9,6 +9,7 @@ import {
     Chip,
     CircularProgress,
     Dialog,
+    IconButton,
     DialogActions,
     DialogContent,
     DialogTitle,
@@ -22,12 +23,22 @@ import {
 import AddIcon from "@mui/icons-material/AddOutlined";
 import AssessmentIcon from "@mui/icons-material/AssessmentOutlined";
 import EventIcon from "@mui/icons-material/EventOutlined";
+import EditIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import ArchiveIcon from "@mui/icons-material/ArchiveOutlined";
+import UnarchiveIcon from "@mui/icons-material/UnarchiveOutlined";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import StatChips from "../../components/common/StatChips";
 
 import {
     createExam,
+    updateExam,
+    deleteExam,
+    setExamArchived,
+    updateExamSubject,
+    deleteExamSubject,
     getAllExams,
     assignSubjectToExam,
     getSubjectsByExam,
@@ -84,6 +95,22 @@ function ExamsPage() {
     const [endDate, setEndDate] = useState("");
     const [creatingExam, setCreatingExam] = useState(false);
     const [examError, setExamError] = useState("");
+    const [editingExamId, setEditingExamId] = useState(null);
+
+    // Edit marks of a subject inside an exam
+    const [editSubj, setEditSubj] = useState(null);
+    const [editMax, setEditMax] = useState("");
+    const [editPass, setEditPass] = useState("");
+    const [editSubjError, setEditSubjError] = useState("");
+    const [savingSubj, setSavingSubj] = useState(false);
+
+    // Generic "are you sure?" box
+    const [ask, setAsk] = useState(null);
+    function runAsk() {
+        const a = ask;
+        setAsk(null);
+        if (a?.run) a.run();
+    }
 
     // Add subject dialog
     const [subjectDialogOpen, setSubjectDialogOpen] = useState(false);
@@ -105,7 +132,7 @@ function ExamsPage() {
     async function loadInitial() {
         try {
             const [examsResponse, assignmentsResponse] = await Promise.all([
-                getAllExams(),
+                getAllExams(true),
                 getSchoolAssignments()
             ]);
 
@@ -113,7 +140,8 @@ function ExamsPage() {
 
             if (examsResponse.success) {
                 setExams(examsResponse.data);
-                if (examsResponse.data.length > 0) setSelectedExamId(examsResponse.data[0].id);
+                const firstLive = examsResponse.data.find((x) => x.is_active !== false);
+                if (firstLive) setSelectedExamId(firstLive.id);
                 loadCounts(examsResponse.data);
             }
         } catch (err) {
@@ -151,12 +179,134 @@ function ExamsPage() {
         }
     }
 
+    function openEditExam(e) {
+        setEditingExamId(e.id);
+        setExamName(e.exam_name || "");
+        setStartDate(day(e.start_date));
+        setEndDate(day(e.end_date));
+        setExamError("");
+        setExamDialogOpen(true);
+    }
+
     function openExamDialog() {
+        setEditingExamId(null);
         setExamName("");
         setStartDate("");
         setEndDate("");
         setExamError("");
         setExamDialogOpen(true);
+    }
+
+    function handleSaveExamClick() {
+        if (!editingExamId) { handleCreateExam(); return; }
+        setAsk({ title: "Save changes?", message: "This exam's name and dates will be updated.", confirmLabel: "Yes, save", run: handleCreateExam });
+    }
+
+    function pickFilter(f) {
+        setFilter(f);
+        const list = f === "archived"
+            ? exams.filter((x) => x.is_active === false)
+            : exams.filter((x) => x.is_active !== false && (f === "all" || examStatus(x).key === f));
+        if (list.length && !list.some((x) => x.id === selectedExamId)) setSelectedExamId(list[0].id);
+    }
+
+    async function reloadExams(keepId) {
+        const r = await getAllExams(true);
+        if (r.success) {
+            setExams(r.data);
+            const live = r.data.filter((x) => x.is_active !== false);
+            if (keepId && r.data.some((x) => x.id === keepId)) setSelectedExamId(keepId);
+            else setSelectedExamId(live[0]?.id || null);
+            if (!live.length) setExamSubjects([]);
+        }
+    }
+
+    async function handleArchive(exam, archived) {
+        try {
+            const r = await setExamArchived(exam.id, archived);
+            if (r.success) {
+                notify(archived ? "Exam archived. It is hidden but its marks are kept." : "Exam restored.");
+                if (archived && filter !== "archived") await reloadExams(null);
+                else await reloadExams(exam.id);
+                if (!archived) setFilter("all");
+            } else {
+                setPageError(r.message);
+            }
+        } catch (err) {
+            setPageError(err.response?.data?.message || "Unable to update this exam.");
+        }
+    }
+
+    async function handleDeleteExam(exam) {
+        try {
+            const r = await deleteExam(exam.id);
+            if (r.success) {
+                notify("Exam deleted.");
+                await reloadExams(null);
+            } else {
+                setPageError(r.message);
+            }
+        } catch (err) {
+            const msg = err.response?.data?.message || "Unable to delete this exam.";
+            if (err.response?.status === 409) {
+                setAsk({
+                    title: "This exam can't be deleted",
+                    message: msg,
+                    confirmLabel: "Archive instead",
+                    confirmColor: "warning",
+                    run: () => handleArchive(exam, true)
+                });
+            } else {
+                setPageError(msg);
+            }
+        }
+    }
+
+    function openEditSubject(es, label) {
+        setEditSubj({ id: es.id, label });
+        setEditMax(String(es.max_marks));
+        setEditPass(String(es.pass_marks));
+        setEditSubjError("");
+    }
+
+    async function saveEditSubject() {
+        if (!editMax || Number(editMax) <= 0 || editPass === "") {
+            setEditSubjError("Enter max marks and pass marks.");
+            return;
+        }
+        if (Number(editPass) > Number(editMax)) {
+            setEditSubjError("Pass marks cannot be more than max marks.");
+            return;
+        }
+        try {
+            setSavingSubj(true);
+            const r = await updateExamSubject(editSubj.id, { max_marks: editMax, pass_marks: editPass });
+            if (r.success) {
+                notify("Marks updated.");
+                setEditSubj(null);
+                await loadExamSubjects(selectedExamId);
+            } else {
+                setEditSubjError(r.message);
+            }
+        } catch (err) {
+            setEditSubjError(err.response?.data?.message || "Unable to update the marks.");
+        } finally {
+            setSavingSubj(false);
+        }
+    }
+
+    async function handleRemoveSubject(es) {
+        try {
+            const r = await deleteExamSubject(es.id);
+            if (r.success) {
+                notify("Subject removed from the exam.");
+                await loadExamSubjects(selectedExamId);
+            } else {
+                setPageError(r.message);
+            }
+        } catch (err) {
+            setPageError(err.response?.data?.message || "Unable to remove this subject.");
+        }
     }
 
     async function handleCreateExam() {
@@ -174,14 +324,21 @@ function ExamsPage() {
 
         try {
             setCreatingExam(true);
-            const response = await createExam({
+            const payload = {
                 exam_name: examName.trim(),
                 start_date: startDate,
                 end_date: endDate,
                 academic_year_id: 1
-            });
+            };
+            const response = editingExamId
+                ? await updateExam(editingExamId, payload)
+                : await createExam(payload);
 
-            if (response.success) {
+            if (response.success && editingExamId) {
+                setExamDialogOpen(false);
+                notify("Exam updated.");
+                await reloadExams(editingExamId);
+            } else if (response.success) {
                 setExamDialogOpen(false);
                 notify("Exam created.");
                 const examsResponse = await getAllExams();
@@ -195,7 +352,7 @@ function ExamsPage() {
                 setExamError(response.message);
             }
         } catch (err) {
-            setExamError(err.response?.data?.message || "Unable to create exam.");
+            setExamError(err.response?.data?.message || (editingExamId ? "Unable to update exam." : "Unable to create exam."));
         } finally {
             setCreatingExam(false);
         }
@@ -263,7 +420,9 @@ function ExamsPage() {
         }
     }
 
-    const withStatus = useMemo(() => exams.map((e) => ({ ...e, status: examStatus(e) })), [exams]);
+    const withStatusAll = useMemo(() => exams.map((e) => ({ ...e, status: examStatus(e), archived: e.is_active === false })), [exams]);
+    const withStatus = useMemo(() => withStatusAll.filter((e) => !e.archived), [withStatusAll]);
+    const archivedExams = useMemo(() => withStatusAll.filter((e) => e.archived), [withStatusAll]);
 
     const stats = useMemo(() => {
         const n = (k) => withStatus.filter((e) => e.status.key === k).length;
@@ -271,13 +430,16 @@ function ExamsPage() {
             { label: "Total exams", value: withStatus.length, filter: "all" },
             { label: "Ongoing", value: n("ongoing"), filter: "ongoing", tone: "#166534" },
             { label: "Upcoming", value: n("upcoming"), filter: "upcoming", tone: "#075985" },
-            { label: "Completed", value: n("completed"), filter: "completed", tone: "#475569" }
+            { label: "Completed", value: n("completed"), filter: "completed", tone: "#475569" },
+            ...(archivedExams.length ? [{ label: "Archived", value: archivedExams.length, filter: "archived", tone: "#92400E" }] : [])
         ];
-    }, [withStatus]);
+    }, [withStatus, archivedExams]);
 
-    const visible = withStatus.filter((e) => filter === "all" || e.status.key === filter);
+    const visible = filter === "archived"
+        ? archivedExams
+        : withStatus.filter((e) => filter === "all" || e.status.key === filter);
 
-    const selected = withStatus.find((e) => e.id === selectedExamId);
+    const selected = withStatusAll.find((e) => e.id === selectedExamId);
 
     // subjects grouped by class - section
     const grouped = useMemo(() => {
@@ -320,7 +482,7 @@ function ExamsPage() {
 
             {pageError && <Alert severity="error" sx={{ mb: 2 }}>{pageError}</Alert>}
 
-            <StatChips items={stats} active={filter} onPick={setFilter} />
+            <StatChips items={stats} active={filter} onPick={pickFilter} />
 
             {exams.length === 0 ? (
 
@@ -390,10 +552,33 @@ function ExamsPage() {
                                             {" · "}{grouped.length} class section{grouped.length === 1 ? "" : "s"}
                                         </Typography>
                                     </Box>
-                                    <Button variant="outlined" startIcon={<AddIcon />} onClick={openSubjectDialog} disabled={assignments.length === 0}>
+                                    <Button variant="outlined" startIcon={<AddIcon />} onClick={openSubjectDialog} disabled={assignments.length === 0 || selected.archived}>
                                         Add subject
                                     </Button>
                                 </Box>
+
+                                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1.5 }}>
+                                    <Chip clickable aria-label="Edit exam" icon={<EditIcon sx={{ fontSize: 16 }} />} label="Edit" onClick={() => openEditExam(selected)}
+                                        sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }} />
+                                    {selected.archived ? (
+                                        <Chip clickable aria-label="Restore exam" icon={<UnarchiveIcon sx={{ fontSize: 16 }} />} label="Restore"
+                                            onClick={() => setAsk({ title: "Restore this exam?", message: `${selected.exam_name} will show again for admins and teachers.`, confirmLabel: "Yes, restore", run: () => handleArchive(selected, false) })}
+                                            sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }} />
+                                    ) : (
+                                        <Chip clickable aria-label="Archive exam" icon={<ArchiveIcon sx={{ fontSize: 16 }} />} label="Archive"
+                                            onClick={() => setAsk({ title: "Archive this exam?", message: `${selected.exam_name} will be hidden from the list and from teachers. Marks and report cards are kept, and you can restore it any time.`, confirmLabel: "Yes, archive", confirmColor: "warning", run: () => handleArchive(selected, true) })}
+                                            sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }} />
+                                    )}
+                                    <Chip clickable aria-label="Delete exam" icon={<DeleteOutlineIcon sx={{ fontSize: 16, color: "#DC2626 !important" }} />} label="Delete"
+                                        onClick={() => setAsk({ title: "Delete this exam?", message: `${selected.exam_name} and its subject list will be removed. This only works if no marks are entered yet.`, confirmLabel: "Yes, delete", confirmColor: "error", run: () => handleDeleteExam(selected) })}
+                                        sx={{ border: "1.5px solid #DC2626", bgcolor: "transparent", fontWeight: 700, color: "#DC2626" }} />
+                                </Box>
+
+                                {selected.archived && (
+                                    <Alert severity="warning" sx={{ mb: 1.5 }}>
+                                        This exam is archived. It is hidden from teachers, and marks can't be changed. Marks and report cards are kept. Use Restore to bring it back.
+                                    </Alert>
+                                )}
 
                                 {assignments.length === 0 && (
                                     <Alert severity="info" sx={{ mb: 1.5 }}>
@@ -447,6 +632,23 @@ function ExamsPage() {
                                                     </Box>
                                                     <Chip size="small" label={`Max ${es.max_marks}`} />
                                                     <Chip size="small" label={`Pass ${es.pass_marks}`} sx={{ bgcolor: "#FEF3C7", color: "#92400E", fontWeight: 600 }} />
+                                                    {!selected.archived && (
+                                                        <>
+                                                            <IconButton size="small" aria-label="Edit marks" onClick={() => openEditSubject(es, a ? a.subject_name : "Subject")}>
+                                                                <EditIcon fontSize="small" />
+                                                            </IconButton>
+                                                            <IconButton size="small" aria-label="Remove subject"
+                                                                onClick={() => setAsk({
+                                                                    title: "Remove this subject?",
+                                                                    message: `${a ? a.subject_name : "This subject"} will be taken out of ${selected.exam_name}. Only possible while no marks are entered.`,
+                                                                    confirmLabel: "Yes, remove",
+                                                                    confirmColor: "error",
+                                                                    run: () => handleRemoveSubject(es)
+                                                                })}>
+                                                                <DeleteOutlineIcon fontSize="small" sx={{ color: "#DC2626" }} />
+                                                            </IconButton>
+                                                        </>
+                                                    )}
                                                 </Box>
                                             ))}
                                         </Box>
@@ -463,7 +665,7 @@ function ExamsPage() {
 
             {/* ---------- New exam dialog ---------- */}
             <Dialog open={examDialogOpen} onClose={() => setExamDialogOpen(false)} fullWidth maxWidth="xs" fullScreen={fullScreen}>
-                <DialogTitle sx={{ fontWeight: 800 }}>New exam</DialogTitle>
+                <DialogTitle sx={{ fontWeight: 800 }}>{editingExamId ? "Edit exam" : "New exam"}</DialogTitle>
                 <DialogContent>
                     {examError && <Alert severity="error" sx={{ mb: 2 }}>{examError}</Alert>}
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
@@ -481,8 +683,39 @@ function ExamsPage() {
                 </DialogContent>
                 <DialogActions sx={{ px: 2.5, pb: 2 }}>
                     <Button onClick={() => setExamDialogOpen(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={handleCreateExam} disabled={creatingExam}>
-                        {creatingExam ? "Creating..." : "Create exam"}
+                    <Button variant="contained" onClick={handleSaveExamClick} disabled={creatingExam}>
+                        {creatingExam ? "Saving..." : editingExamId ? "Save changes" : "Create exam"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <ConfirmDialog
+                open={!!ask}
+                title={ask?.title || ""}
+                message={ask?.message || ""}
+                confirmLabel={ask?.confirmLabel || "Proceed"}
+                confirmColor={ask?.confirmColor || "primary"}
+                onConfirm={runAsk}
+                onCancel={() => setAsk(null)}
+            />
+
+            {/* ---------- Edit marks dialog ---------- */}
+            <Dialog open={!!editSubj} onClose={() => !savingSubj && setEditSubj(null)} fullWidth maxWidth="xs" fullScreen={fullScreen}>
+                <DialogTitle sx={{ fontWeight: 800 }}>
+                    Edit marks
+                    {editSubj && <Typography sx={{ fontSize: "0.82rem", color: "text.secondary", fontWeight: 500 }}>{editSubj.label}</Typography>}
+                </DialogTitle>
+                <DialogContent>
+                    {editSubjError && <Alert severity="error" sx={{ mb: 2 }}>{editSubjError}</Alert>}
+                    <Box sx={{ display: "flex", gap: 2, pt: 1 }}>
+                        <TextField label="Max marks" type="number" value={editMax} onChange={(e) => setEditMax(e.target.value)} fullWidth />
+                        <TextField label="Pass marks" type="number" value={editPass} onChange={(e) => setEditPass(e.target.value)} fullWidth />
+                    </Box>
+                </DialogContent>
+                <DialogActions sx={{ px: 2.5, pb: 2 }}>
+                    <Button onClick={() => setEditSubj(null)} disabled={savingSubj}>Cancel</Button>
+                    <Button variant="contained" onClick={() => setAsk({ title: "Save changes?", message: "The max and pass marks for this subject will be updated.", confirmLabel: "Yes, save", run: saveEditSubject })} disabled={savingSubj}>
+                        {savingSubj ? "Saving..." : "Save changes"}
                     </Button>
                 </DialogActions>
             </Dialog>

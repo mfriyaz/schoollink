@@ -14,9 +14,64 @@ export async function createExam(data) {
 /**
  * Get all exams for the school
  */
-export async function getAllExams() {
+export async function getAllExams(includeArchived = false) {
 
-    const response = await api.get("/exams");
+    const response = await api.get(includeArchived ? "/exams?include_archived=1" : "/exams");
+
+    return response.data;
+
+}
+
+/**
+ * Edit an exam's name and dates
+ */
+export async function updateExam(id, data) {
+
+    const response = await api.put(`/exams/${id}`, data);
+
+    return response.data;
+
+}
+
+/**
+ * Delete an exam (only works while no marks are entered)
+ */
+export async function deleteExam(id) {
+
+    const response = await api.delete(`/exams/${id}`);
+
+    return response.data;
+
+}
+
+/**
+ * Archive (hide) or restore an exam
+ */
+export async function setExamArchived(id, archived) {
+
+    const response = await api.patch(`/exams/${id}/archived`, { archived });
+
+    return response.data;
+
+}
+
+/**
+ * Change max / pass marks of a subject in an exam
+ */
+export async function updateExamSubject(id, data) {
+
+    const response = await api.put(`/exam-subjects/${id}`, data);
+
+    return response.data;
+
+}
+
+/**
+ * Remove a subject from an exam (only while no marks are entered)
+ */
+export async function deleteExamSubject(id) {
+
+    const response = await api.delete(`/exam-subjects/${id}`);
 
     return response.data;
 

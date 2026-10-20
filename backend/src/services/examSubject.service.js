@@ -30,18 +30,18 @@ async function getExamSubjectById(id) {
 /**
  * Update Exam Subject
  */
-async function updateExamSubject(id, data) {
+async function updateExamSubject(id, schoolId, data) {
 
-    return await examSubjectModel.updateExamSubject(id, data);
+    return await examSubjectModel.updateExamSubject(id, schoolId, data);
 
 }
 
 /**
  * Delete Exam Subject
  */
-async function deleteExamSubject(id) {
+async function deleteExamSubject(id, schoolId) {
 
-    return await examSubjectModel.deleteExamSubject(id);
+    return await examSubjectModel.deleteExamSubject(id, schoolId);
 
 }
 
