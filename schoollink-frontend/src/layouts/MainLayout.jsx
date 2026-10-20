@@ -8,6 +8,7 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import BottomNav from "./BottomNav";
 import Notifier from "../components/common/Notifier";
+import ForcePasswordChangeDialog from "../components/common/ForcePasswordChangeDialog";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 function MainLayout() {
@@ -107,6 +108,7 @@ function MainLayout() {
             </Box>
 
             <Notifier />
+            <ForcePasswordChangeDialog />
             {isMobile && <BottomNav onMore={() => setMobileOpen(true)} />}
 
         </Box>

@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 
+const { checkNewPassword } = require("../utils/passwordRules");
 const userModel = require("../models/user.model");
 
 /**
@@ -66,6 +67,14 @@ async function changePassword(userId, currentPassword, newPassword) {
     if (!currentMatches) {
 
         throw new Error("Current password is incorrect");
+
+    }
+
+    const problem = checkNewPassword(newPassword, currentPassword);
+
+    if (problem) {
+
+        throw new Error(problem);
 
     }
 

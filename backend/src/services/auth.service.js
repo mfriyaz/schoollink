@@ -79,7 +79,8 @@ async function login(identifier, password, remember) {
             username: user.username,
             role: user.role_name,
             school: user.school_name,
-            school_timezone: user.school_timezone || "Asia/Singapore"
+            school_timezone: user.school_timezone || "Asia/Singapore",
+            must_change_password: user.must_change_password === true
         }
     };
 }

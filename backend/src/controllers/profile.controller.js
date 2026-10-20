@@ -83,16 +83,6 @@ async function changePassword(req, res) {
 
         }
 
-        if (new_password.length < 6) {
-
-            return response.error(
-                res,
-                "New password must be at least 6 characters",
-                400
-            );
-
-        }
-
         await profileService.changePassword(
             req.user.id,
             current_password,

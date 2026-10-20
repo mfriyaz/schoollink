@@ -54,7 +54,7 @@ async function resetUserPassword(req, res) {
 
         const hash = await bcrypt.hash(tempPassword, 10);
 
-        await userModel.updateUserPassword(target.id, hash);
+        await userModel.updateUserPassword(target.id, hash, undefined, true);
 
         await auditService.logAudit(req, {
             action: "reset_password",

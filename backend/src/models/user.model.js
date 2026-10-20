@@ -50,6 +50,7 @@ async function findUserByEmailOrUsername(identifier, db = pool) {
             u.mobile,
             u.password_hash,
             u.is_active,
+            u.must_change_password,
             r.role_name,
             s.school_name,
             s.timezone AS school_timezone,
@@ -124,11 +125,12 @@ async function createUser(data, db = pool) {
             username,
             mobile,
             password_hash,
-            is_active
+            is_active,
+            must_change_password
         )
         VALUES
         (
-            $1,$2,$3,$4,$5,$6,$7,true
+            $1,$2,$3,$4,$5,$6,$7,true,$8
         )
         RETURNING
             id,
@@ -156,7 +158,10 @@ async function createUser(data, db = pool) {
 
         data.mobile,
 
-        data.password_hash
+        data.password_hash,
+
+        // A password chosen by an admin must be replaced by the person themselves
+        data.must_change_password !== false
 
     ];
 
@@ -244,16 +249,17 @@ async function updateUserProfile(id, data, db = pool) {
 /**
  * Update a user's password hash
  */
-async function updateUserPassword(id, passwordHash, db = pool) {
+async function updateUserPassword(id, passwordHash, db = pool, mustChange = false) {
 
     const query = `
         UPDATE users
-        SET password_hash = $1
+        SET password_hash = $1,
+            must_change_password = $3
         WHERE id = $2
         RETURNING id;
     `;
 
-    const result = await db.query(query, [passwordHash, id]);
+    const result = await db.query(query, [passwordHash, id, mustChange]);
 
     return result.rows[0];
 

@@ -782,7 +782,7 @@ async function resetSchoolAdminPassword(req, userId) {
 
     const temp = generateTempPassword();
 
-    await userModel.updateUserPassword(target.id, await bcrypt.hash(temp, 10));
+    await userModel.updateUserPassword(target.id, await bcrypt.hash(temp, 10), undefined, true);
 
     await logActivity(
         req,
