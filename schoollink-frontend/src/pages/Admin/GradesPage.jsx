@@ -224,11 +224,11 @@ function GradesPage() {
         <Box sx={{ maxWidth: 900 }}>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #EDE9FE)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <GradeIcon sx={{ color: "var(--sl-accent, #7C3AED)" }} />
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <GradeIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Grading Scale</Typography>
+                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>Grading Scale</Typography>
                     <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
                         Percentage bands used to give each student a grade, e.g. 91-100% = A1
                     </Typography>
@@ -261,7 +261,7 @@ function GradesPage() {
                     <StatChips items={stats} />
 
                     {/* ---------- visual 0-100 scale ---------- */}
-                    <Card sx={{ p: 2, mb: 1.5, borderRadius: 3 }}>
+                    <Card sx={{ p: 2, mb: 1.5, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
                         <Typography sx={{ fontSize: "0.74rem", fontWeight: 800, letterSpacing: 0.4, color: "text.secondary", mb: 1 }}>
                             SCALE 0% - 100%
                         </Typography>

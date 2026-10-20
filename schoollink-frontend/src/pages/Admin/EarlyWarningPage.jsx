@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
+import NotificationImportantIcon from "@mui/icons-material/NotificationImportantOutlined";
 import {
     Alert, Box, Button, Card, Chip, CircularProgress, MenuItem, TextField, Typography
 } from "@mui/material";
@@ -154,7 +155,10 @@ export default function EarlyWarningPage() {
         <Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap", mb: 0.5 }}>
-                <Typography variant="h5" sx={{ fontWeight: 800, flex: 1 }}>Early Warning</Typography>
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <NotificationImportantIcon sx={{ color: "var(--sl-ink)" }} />
+                </Box>
+                <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)", flex: 1 }}>Early Warning</Typography>
                 <TextField
                     select
                     size="small"
@@ -168,7 +172,7 @@ export default function EarlyWarningPage() {
                 </TextField>
             </Box>
 
-            <Typography sx={{ color: "text.secondary", fontSize: "0.88rem", mb: 2 }}>
+            <Typography sx={{ color: "text.secondary", fontSize: "0.88rem", mb: 2, ml: { sm: 7.5 } }}>
                 Students who may need support, found from attendance and marks of the last 30 days.
             </Typography>
 

@@ -466,11 +466,11 @@ function ExamsPage() {
         <Box sx={{ maxWidth: 1100 }}>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #EDE9FE)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <AssessmentIcon sx={{ color: "var(--sl-accent, #7C3AED)" }} />
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <AssessmentIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Exams</Typography>
+                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>Exams</Typography>
                     <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
                         Create exams and choose which class subjects are tested
                     </Typography>

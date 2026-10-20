@@ -35,7 +35,7 @@ const FILTERS = [
 ];
 
 const ANN = { color: "#DB2777", bg: "#FCE7F3" };
-const HW = { color: "var(--sl-primary)", bg: "var(--sl-soft)" };
+const HW = { color: "#2563EB", bg: "#DBEAFE" };
 
 function AllPostsPage() {
 
@@ -107,11 +107,11 @@ function AllPostsPage() {
 
             {/* ---------- header ---------- */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2, flexWrap: "wrap" }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #E0F2FE)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <ForumIcon sx={{ color: "var(--sl-ink, #0369A1)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 200 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Posts &amp; Announcements</Typography>
+                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>Posts &amp; Announcements</Typography>
                     <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
                         Tap any item to view it. Use Edit to change it.
                     </Typography>
@@ -178,7 +178,7 @@ function AllPostsPage() {
             )}
 
             {!loading && posts.length === 0 && (
-                <Card sx={{ p: 4, textAlign: "center", borderRadius: 3 }}>
+                <Card sx={{ p: 4, textAlign: "center", borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
                     <Typography sx={{ fontWeight: 700, mb: 0.5 }}>
                         {search || type ? "No posts match your search" : "No posts yet"}
                     </Typography>
@@ -285,7 +285,7 @@ function AllPostsPage() {
                                         />
                                     </>
                                 ) : (
-                                    <Chip size="small" label={post.target_audience} sx={{ bgcolor: "var(--sl-soft, var(--sl-soft))", fontWeight: 600 }} />
+                                    <Chip size="small" label={post.target_audience} sx={{ bgcolor: "var(--sl-soft, #EEF2FF)", fontWeight: 600 }} />
                                 )}
                             </Box>
 

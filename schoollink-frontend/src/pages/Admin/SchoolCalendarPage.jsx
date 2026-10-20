@@ -297,11 +297,11 @@ function SchoolCalendarPage() {
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2, flexWrap: "wrap" }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #E0E7FF)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <EventIcon sx={{ color: "var(--sl-ink, #4F46E5)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 200 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>School Calendar</Typography>
+                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>School Calendar</Typography>
                     <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
                         Days school is closed. Teachers can't mark attendance on those days, and parents see "Weekend" or "Holiday".
                     </Typography>

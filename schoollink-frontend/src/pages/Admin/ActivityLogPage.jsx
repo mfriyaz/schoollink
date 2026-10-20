@@ -160,11 +160,11 @@ function ActivityLogPage() {
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #FEF3C7)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <HistoryIcon sx={{ color: "var(--sl-ink, #B45309)" }} />
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <HistoryIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Activity Log</Typography>
+                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>Activity Log</Typography>
                     <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
                         Who created, edited or deleted announcements, homework and marks. Entries can't be changed or removed.
                     </Typography>
@@ -229,7 +229,7 @@ function ActivityLogPage() {
             {!loading && error && <Alert severity="error">{error}</Alert>}
 
             {!loading && !error && logs.length === 0 && (
-                <Card sx={{ p: 4, textAlign: "center", borderRadius: 3 }}>
+                <Card sx={{ p: 4, textAlign: "center", borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
                     <Typography sx={{ fontWeight: 700, mb: 0.5 }}>
                         {filtersOn ? "No activity matches these filters" : "No activity yet"}
                     </Typography>
@@ -301,7 +301,7 @@ function ActivityLogPage() {
                                         </Box>
 
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <Avatar sx={{ width: 30, height: 30, fontSize: "0.8rem", fontWeight: 800, bgcolor: "var(--sl-soft, var(--sl-soft))", color: "var(--sl-ink, var(--sl-primary))" }}>
+                                            <Avatar sx={{ width: 30, height: 30, fontSize: "0.8rem", fontWeight: 800, bgcolor: "var(--sl-soft, #EEF2FF)", color: "var(--sl-ink, #4F46E5)" }}>
                                                 {who[0]}
                                             </Avatar>
                                             <Box>

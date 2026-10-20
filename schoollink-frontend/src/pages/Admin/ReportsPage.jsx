@@ -144,11 +144,11 @@ function ReportsPage() {
         <Box sx={{ maxWidth: 900 }}>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, var(--sl-soft))", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <DescriptionIcon sx={{ color: "var(--sl-ink, var(--sl-primary))" }} />
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <DescriptionIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box sx={{ minWidth: 0 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Reports</Typography>
+                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>Reports</Typography>
                     <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
                         Pick a student and an exam to see the report card
                     </Typography>
@@ -180,7 +180,7 @@ function ReportsPage() {
 
             {!student || !examId ? (
                 !report && (
-                    <Card sx={{ p: 4, textAlign: "center", borderRadius: 3 }}>
+                    <Card sx={{ p: 4, textAlign: "center", borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
                         <Typography sx={{ fontWeight: 700, mb: 0.5 }}>No report card selected</Typography>
                         <Typography color="text.secondary">Choose a student and an exam above and the report card appears here.</Typography>
                     </Card>
@@ -206,13 +206,13 @@ function ReportsPage() {
                             p: { xs: 2, sm: 2.5 },
                             mb: 2,
                             borderRadius: 4,
-                            bgcolor: "var(--sl-banner, var(--sl-primary))",
+                            bgcolor: "var(--sl-banner, #4F46E5)",
                             color: "var(--sl-on-banner, #fff)",
                             border: "var(--sl-banner-border, none)",
                             boxShadow: "var(--sl-banner-shadow, none)"
                         }}
                     >
-                        <Box sx={{ width: 56, height: 56, borderRadius: "50%", bgcolor: "var(--sl-on-banner, #fff)", color: "var(--sl-banner, var(--sl-primary))", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1.2rem" }}>
+                        <Box sx={{ width: 56, height: 56, borderRadius: "50%", bgcolor: "var(--sl-on-banner, #fff)", color: "var(--sl-banner, #4F46E5)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1.2rem" }}>
                             {initials(report.student.name)}
                         </Box>
 
