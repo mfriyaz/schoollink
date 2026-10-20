@@ -20,8 +20,6 @@ import {
     Typography
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/CloseOutlined";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutlineRounded";
-import DialogHeader from "../common/DialogHeader";
 import { useMediaQuery, useTheme } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAddOutlined";
 import ResetPasswordDialog from "../common/ResetPasswordDialog";
@@ -31,18 +29,41 @@ import {
     getParentsForStudent,
     setParentUsername
 } from "../../services/parentService";
-function Field({ label, value }) {
+function Field({ label, value, href }) {
     return (
-        <Box>
-            <Typography sx={{ color: "#64748B", fontSize: "0.78rem" }}>
-                {label}
-            </Typography>
-            <Typography sx={{ fontWeight: 500 }}>
-                {value || "-"}
-            </Typography>
+        <Box sx={{ minWidth: 0 }}>
+            {label && (
+                <Typography sx={{ color: "#64748B", fontSize: "0.78rem" }}>
+                    {label}
+                </Typography>
+            )}
+            {href && value ? (
+                <Typography component="a" href={href} sx={{ fontWeight: 600, color: "var(--sl-ink)", textDecorationColor: "var(--sl-accent)", wordBreak: "break-word" }}>
+                    {value}
+                </Typography>
+            ) : (
+                <Typography sx={{ fontWeight: 500, wordBreak: "break-word" }}>
+                    {value || "-"}
+                </Typography>
+            )}
         </Box>
     );
 }
+
+function SectionLabel({ children }) {
+    return (
+        <Typography sx={{ fontSize: "0.74rem", fontWeight: 800, letterSpacing: 0.5, color: "text.secondary", textTransform: "uppercase", mb: 1 }}>
+            {children}
+        </Typography>
+    );
+}
+
+function initialsOfStudent(st) {
+    const a = (st.first_name || "").trim()[0] || "";
+    const b = (st.last_name || "").trim()[0] || "";
+    return (a + b).toUpperCase() || "?";
+}
+
 const relationships = ["Father", "Mother", "Guardian", "Other"];
 function StudentViewDialog({ open, student, onClose }) {
     const themeV = useTheme();
@@ -179,15 +200,14 @@ function StudentViewDialog({ open, student, onClose }) {
     return (
         <>
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth fullScreen={isPhoneV}>
-            <DialogHeader icon={<PersonOutlineIcon />} title="Student Details" subtitle={`${student.first_name || ""} ${student.last_name || ""}`.trim()} onClose={onClose} />
-            <DialogContent>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
-                    <Avatar sx={{ width: 56, height: 56, bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", fontWeight: 800, fontSize: "1.3rem" }}>
-                        {student.first_name ? student.first_name[0] : "?"}
-                    </Avatar>
-                    <Box>
-                        <Typography variant="h6" sx={{ fontWeight: 800, color: "var(--sl-ink)" }}>
-                            {student.first_name} {student.last_name}
+            <DialogTitle component="div" sx={{ display: "flex", alignItems: "center", gap: 1.5, pb: 1.5 }}>
+                <Avatar sx={{ width: 52, height: 52, bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", fontWeight: 800, fontSize: "1.1rem" }}>
+                    {initialsOfStudent(student)}
+                </Avatar>
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                        <Typography data-testid="student-name" sx={{ fontWeight: 800, fontSize: "1.15rem", lineHeight: 1.25, color: "var(--sl-ink)" }}>
+                            {`${student.first_name || ""} ${student.last_name || ""}`.trim()}
                         </Typography>
                         <Chip
                             size="small"
@@ -195,20 +215,20 @@ function StudentViewDialog({ open, student, onClose }) {
                             label={student.is_active ? "Active" : "Inactive"}
                         />
                     </Box>
+                    <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
+                        {[
+                            student.class_name ? `${student.class_name}${student.section_name ? ` - ${student.section_name}` : ""}` : null,
+                            student.admission_no ? `Adm ${student.admission_no}` : null
+                        ].filter(Boolean).join(" · ")}
+                    </Typography>
                 </Box>
-                <Divider sx={{ mb: 2 }} />
-                <Grid container spacing={2.5}>
-                    <Grid size={{ xs: 6 }}>
-                        <Field label="Admission No" value={student.admission_no} />
-                    </Grid>
-                    <Grid size={{ xs: 6 }}>
-                        <Field
-                            label="Class"
-                            value={student.class_name
-                                ? `${student.class_name}${student.section_name ? ` - ${student.section_name}` : ""}`
-                                : null}
-                        />
-                    </Grid>
+                <IconButton aria-label="Close" onClick={onClose} size="small">
+                    <CloseIcon fontSize="small" />
+                </IconButton>
+            </DialogTitle>
+            <DialogContent sx={{ pt: 1.5 }}>
+                <SectionLabel>Student</SectionLabel>
+                <Grid container spacing={2} sx={{ mb: 2.5 }}>
                     <Grid size={{ xs: 6 }}>
                         <Field label="Gender" value={student.gender} />
                     </Grid>
@@ -218,6 +238,9 @@ function StudentViewDialog({ open, student, onClose }) {
                             value={student.date_of_birth ? student.date_of_birth.slice(0, 10) : null}
                         />
                     </Grid>
+                </Grid>
+                <SectionLabel>Family</SectionLabel>
+                <Grid container spacing={2} sx={{ mb: 2.5 }}>
                     <Grid size={{ xs: 6 }}>
                         <Field label="Father's Name" value={student.father_name} />
                     </Grid>
@@ -225,15 +248,14 @@ function StudentViewDialog({ open, student, onClose }) {
                         <Field label="Mother's Name" value={student.mother_name} />
                     </Grid>
                     <Grid size={{ xs: 6 }}>
-                        <Field label="Parent Phone" value={student.parent_phone} />
+                        <Field label="Parent Phone" value={student.parent_phone} href={student.parent_phone ? `tel:${student.parent_phone}` : null} />
                     </Grid>
                     <Grid size={{ xs: 6 }}>
-                        <Field label="Parent Email" value={student.parent_email} />
-                    </Grid>
-                    <Grid size={{ xs: 12 }}>
-                        <Field label="Address" value={student.address} />
+                        <Field label="Parent Email" value={student.parent_email} href={student.parent_email ? `mailto:${student.parent_email}` : null} />
                     </Grid>
                 </Grid>
+                <SectionLabel>Address</SectionLabel>
+                <Field label="" value={student.address} />
                 <Divider sx={{ my: 2.5 }} />
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
                     <Typography sx={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
