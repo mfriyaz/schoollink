@@ -341,7 +341,7 @@ function ExamsPage() {
             } else if (response.success) {
                 setExamDialogOpen(false);
                 notify("Exam created.");
-                const examsResponse = await getAllExams();
+                const examsResponse = await getAllExams(true);
                 if (examsResponse.success) {
                     setExams(examsResponse.data);
                     setFilter("all");
