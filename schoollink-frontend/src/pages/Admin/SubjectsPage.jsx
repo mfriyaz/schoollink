@@ -63,6 +63,8 @@ function ClassView({ subjects, assignments, ready, classKey, setClassKey, search
     });
     sections.sort((x, y) => String(x.name).localeCompare(String(y.name), undefined, { numeric: true }));
     const activeSubjects = subjects.filter((x) => x.is_active);
+    const years = new Set(assignments.map((a) => a.year_name).filter(Boolean));
+    const showYear = years.size > 1;
 
     if (!ready) {
         return <Box sx={{ display: "flex", justifyContent: "center", py: 5 }}><CircularProgress size={28} /></Box>;
@@ -111,6 +113,9 @@ function ClassView({ subjects, assignments, ready, classKey, setClassKey, search
                     const classTeacher = rows.find((a) => a.is_class_teacher);
                     const taught = new Set(rows.map((a) => a.subject_id));
                     const missing = activeSubjects.filter((x) => !taught.has(x.id));
+                    const teacherCount = {};
+                    rows.forEach((a) => { teacherCount[a.subject_id] = (teacherCount[a.subject_id] || 0) + 1; });
+                    const doubled = Object.values(teacherCount).filter((n) => n > 1).length;
                     const shown = rows
                         .filter((a) => !q || `${a.subject_name} ${a.first_name} ${a.last_name || ""}`.toLowerCase().includes(q))
                         .sort((x, y) => String(x.subject_name).localeCompare(String(y.subject_name)));
@@ -129,7 +134,8 @@ function ClassView({ subjects, assignments, ready, classKey, setClassKey, search
                                         {classes.find((c) => c.id === activeId)?.name} - {sec.name}
                                     </Typography>
                                     <Typography sx={{ color: "text.secondary", fontSize: "0.8rem" }} noWrap>
-                                        {rows.length} subject{rows.length === 1 ? "" : "s"}
+                                        {taught.size} subject{taught.size === 1 ? "" : "s"}
+                                        {doubled > 0 ? ` - ${doubled} with 2+ teachers` : ""}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -154,9 +160,23 @@ function ClassView({ subjects, assignments, ready, classKey, setClassKey, search
                                             <Box sx={{ width: 34, height: 34, minWidth: 34, borderRadius: "10px", bgcolor: bg, border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                                 <MenuBookIcon sx={{ color: fg, fontSize: 18 }} />
                                             </Box>
-                                            <Typography sx={{ fontWeight: 800, color: "var(--sl-ink)", flex: 1, minWidth: 0 }} noWrap>
+                                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                                            <Typography sx={{ fontWeight: 800, color: "var(--sl-ink)", minWidth: 0 }} noWrap>
                                                 {a.subject_name}
                                             </Typography>
+                                                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 0.25 }}>
+                                            {teacherCount[a.subject_id] > 1 && (
+                                                <Box component="span" data-testid="multi-teacher" sx={{ px: 1, py: 0.1, borderRadius: 99, fontSize: "0.7rem", fontWeight: 800, bgcolor: "#FFEDD5", color: "#C2410C", border: "1.5px solid #EA580C", whiteSpace: "nowrap" }}>
+                                                    {teacherCount[a.subject_id]} teachers
+                                                </Box>
+                                            )}
+                                            {showYear && a.year_name && (
+                                                <Box component="span" sx={{ px: 1, py: 0.1, borderRadius: 99, fontSize: "0.68rem", fontWeight: 700, bgcolor: "var(--sl-soft)", color: "var(--sl-ink)", border: "1px solid var(--sl-border)", whiteSpace: "nowrap" }}>
+                                                    {a.year_name}
+                                                </Box>
+                                            )}
+                                                </Box>
+                                            </Box>
                                             <Box sx={{ display: "flex", alignItems: "center", gap: 0.4, color: "text.secondary", fontSize: "0.82rem", minWidth: 0 }}>
                                                 <PersonIcon sx={{ fontSize: 16 }} />
                                                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
