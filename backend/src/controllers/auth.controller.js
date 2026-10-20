@@ -1,15 +1,11 @@
 const authService = require("../services/auth.service");
+const loginLimiter = require("../middleware/loginLimiter");
 
 async function login(req, res) {
 
-    console.log("========== LOGIN REQUEST ==========");
-    console.log("Headers:", req.headers);
-    console.log("Body:", req.body);
-    console.log("===================================");
-
     try {
 
-        const { identifier, email, password, remember } = req.body;
+        const { identifier, email, password, remember } = req.body || {};
 
         // Accept the older "email" field name too, so any
         // client that hasn't picked up the new field yet keeps
@@ -23,7 +19,23 @@ async function login(req, res) {
             });
         }
 
-        const result = await authService.login(loginIdentifier, password, remember);
+        const wait = loginLimiter.blockedMinutes(req, loginIdentifier);
+        if (wait) {
+            return res.status(429).json({
+                success: false,
+                message: `Too many wrong attempts. Please try again in ${wait} minute${wait === 1 ? "" : "s"}.`
+            });
+        }
+
+        let result;
+        try {
+            result = await authService.login(loginIdentifier, password, remember);
+        } catch (err) {
+            loginLimiter.recordFailure(req, loginIdentifier);
+            throw err;
+        }
+
+        loginLimiter.recordSuccess(req, loginIdentifier);
 
         return res.json({
             success: true,
@@ -33,7 +45,8 @@ async function login(req, res) {
 
     } catch (err) {
 
-        console.error("LOGIN ERROR:", err);
+        // Never log the request body or headers here: they contain passwords.
+        console.error("LOGIN ERROR:", err.message);
 
         return res.status(401).json({
             success: false,
