@@ -7,6 +7,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import BottomNav from "./BottomNav";
+import Notifier from "../components/common/Notifier";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 function MainLayout() {
@@ -105,6 +106,7 @@ function MainLayout() {
 
             </Box>
 
+            <Notifier />
             {isMobile && <BottomNav onMore={() => setMobileOpen(true)} />}
 
         </Box>

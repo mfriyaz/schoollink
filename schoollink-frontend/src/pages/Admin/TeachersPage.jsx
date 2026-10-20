@@ -42,6 +42,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import VpnKeyIcon from "@mui/icons-material/VpnKeyOutlined";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { notify } from "../../utils/notify";
 import DialogHeader, { generatePassword } from "../../components/common/DialogHeader";
 import PersonAddIcon from "@mui/icons-material/PersonAddAlt1Outlined";
 import PersonEditIcon from "@mui/icons-material/EditOutlined";
@@ -144,6 +145,13 @@ function TeachersPage() {
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const [editingId, setEditingId] = useState(null);
+    // Generic "are you sure?" box: { title, message, confirmLabel, confirmColor, run }
+    const [ask, setAsk] = useState(null);
+    function runAsk() {
+        const a = ask;
+        setAsk(null);
+        if (a?.run) a.run();
+    }
 
     const [form, setForm] = useState(emptyForm);
 
@@ -460,6 +468,20 @@ function TeachersPage() {
         setTransferError("");
     }
 
+    function askTransfer() {
+        if (!transferFrom || !transferTo) {
+            setTransferError("Choose the teacher to hand this over to.");
+            return;
+        }
+        const target = (teachers || []).find((t) => String(t.id) === String(transferTo));
+        setAsk({
+            title: "Transfer this assignment?",
+            message: `${transferFrom.subject_name} (${transferFrom.class_name}-${transferFrom.section_name}) will move${target ? ` to ${target.first_name} ${target.last_name || ""}`.trimEnd() : " to the selected teacher"}.`,
+            confirmLabel: "Proceed",
+            run: handleTransfer
+        });
+    }
+
     async function handleTransfer() {
         if (!transferFrom || !transferTo) {
             setTransferError("Choose the teacher to hand this over to.");
@@ -472,6 +494,7 @@ function TeachersPage() {
             if (response.success) {
                 setCurrentAssignments((prev) => prev.filter((x) => x.teacher_subject_id !== transferFrom.teacher_subject_id));
                 setAssignSuccess(`${transferFrom.subject_name} (${transferFrom.class_name}-${transferFrom.section_name}) moved to ${response.data.teacher_name}.`);
+                notify(`Moved to ${response.data.teacher_name}.`);
                 setTransferFrom(null);
                 loadAssignments();
             } else {
@@ -497,6 +520,8 @@ function TeachersPage() {
                 setCurrentAssignments((prev) =>
                     prev.filter((a) => a.teacher_subject_id !== assignmentId)
                 );
+
+                notify("Assignment removed.");
 
             } else {
 
@@ -539,6 +564,24 @@ function TeachersPage() {
     }
 
     function askToggleClassTeacher(a) {
+        if (!a.is_class_teacher && otherClassRoles(a.class_id, a.section_id).length === 0) {
+            setAsk({
+                title: "Make class teacher?",
+                message: `This teacher will become class teacher of ${a.class_name}-${a.section_name}.`,
+                run: () => handleToggleClassTeacher(a)
+            });
+            return;
+        }
+        if (a.is_class_teacher) {
+            setAsk({
+                title: "Remove class teacher?",
+                message: `This teacher will no longer be class teacher of ${a.class_name}-${a.section_name}.`,
+                confirmLabel: "Yes, remove",
+                confirmColor: "warning",
+                run: () => handleToggleClassTeacher(a)
+            });
+            return;
+        }
         if (!a.is_class_teacher) {
             const others = otherClassRoles(a.class_id, a.section_id);
             if (others.length > 0) {
@@ -557,7 +600,15 @@ function TeachersPage() {
                 return;
             }
         }
-        handleAssign();
+        if (!assignSubjectId || !assignClassId || !assignSectionId) {
+            handleAssign();
+            return;
+        }
+        setAsk({
+            title: "Assign this subject?",
+            message: "The teacher will be assigned to the chosen subject, class and section.",
+            run: handleAssign
+        });
     }
 
     function confirmCt() {
@@ -583,6 +634,8 @@ function TeachersPage() {
             await loadCurrentAssignments(assignTeacher.id);
 
             setAssignSuccess(a.is_class_teacher ? "Class teacher removed." : "Class teacher updated.");
+
+            notify(a.is_class_teacher ? "Class teacher removed." : "Class teacher updated.");
 
         } catch (err) {
 
@@ -633,6 +686,8 @@ function TeachersPage() {
             if (response.success) {
 
                 setAssignSuccess("Teacher assigned successfully!");
+
+                notify("Teacher assigned successfully.");
 
                 setAssignSubjectId("");
 
@@ -805,7 +860,20 @@ function TeachersPage() {
 
     }
 
-    async function handleSave() {
+    function handleSave() {
+        if (!editingId) {
+            doSave();
+            return;
+        }
+        setAsk({
+            title: "Save changes?",
+            message: "This teacher's details will be updated.",
+            confirmLabel: "Yes, save",
+            run: doSave
+        });
+    }
+
+    async function doSave() {
 
         setFormError("");
 
@@ -882,6 +950,8 @@ function TeachersPage() {
 
                 setDialogOpen(false);
 
+                notify(editingId ? "Teacher details updated." : "Teacher added.");
+
                 await loadTeachers();
 
             } else {
@@ -911,6 +981,8 @@ function TeachersPage() {
 
             await deactivateTeacherRecord(id);
 
+            notify("Teacher deactivated.");
+
             await loadTeachers();
 
         } catch (err) {
@@ -929,6 +1001,8 @@ function TeachersPage() {
         try {
 
             await reactivateTeacherRecord(id);
+
+            notify("Teacher reactivated.");
 
             await loadTeachers();
 
@@ -1279,12 +1353,12 @@ function TeachersPage() {
                     <MenuItem onClick={() => { const t = menu.teacher; setMenu(null); setResetTeacher(t); }}>Reset password</MenuItem>
                 )}
                 {menu && menu.teacher.is_active && (
-                    <MenuItem sx={{ color: "error.main" }} onClick={() => { const t = menu.teacher; setMenu(null); handleDeactivate(t.id); }}>
+                    <MenuItem sx={{ color: "error.main" }} onClick={() => { const t = menu.teacher; setMenu(null); setAsk({ title: "Deactivate this teacher?", message: `${t.first_name} ${t.last_name || ""}`.trim() + " will be marked inactive and can't log in until reactivated.", confirmLabel: "Yes, deactivate", confirmColor: "error", run: () => handleDeactivate(t.id) }); }}>
                         Deactivate
                     </MenuItem>
                 )}
                 {menu && !menu.teacher.is_active && (
-                    <MenuItem sx={{ color: "success.main" }} onClick={() => { const t = menu.teacher; setMenu(null); handleReactivate(t.id); }}>
+                    <MenuItem sx={{ color: "success.main" }} onClick={() => { const t = menu.teacher; setMenu(null); setAsk({ title: "Reactivate this teacher?", message: `${t.first_name} ${t.last_name || ""}`.trim() + " will be active again.", confirmLabel: "Yes, reactivate", run: () => handleReactivate(t.id) }); }}>
                         Reactivate
                     </MenuItem>
                 )}
@@ -1555,7 +1629,13 @@ function TeachersPage() {
                                         <IconButton
                                             size="small"
                                             aria-label="Remove assignment"
-                                            onClick={() => handleRemoveAssignment(a.teacher_subject_id)}
+                                            onClick={() => setAsk({
+                                                title: "Remove this assignment?",
+                                                message: `${a.subject_name} (${a.class_name}-${a.section_name}) will be removed from this teacher.`,
+                                                confirmLabel: "Yes, remove",
+                                                confirmColor: "error",
+                                                run: () => handleRemoveAssignment(a.teacher_subject_id)
+                                            })}
                                             disabled={removingId === a.teacher_subject_id}
                                         >
                                             <DeleteOutlineIcon fontSize="small" sx={{ color: "#DC2626" }} />
@@ -1686,6 +1766,16 @@ function TeachersPage() {
             </Dialog>
 
             <ConfirmDialog
+                open={!!ask}
+                title={ask?.title || ""}
+                message={ask?.message || ""}
+                confirmLabel={ask?.confirmLabel || "Proceed"}
+                confirmColor={ask?.confirmColor || "primary"}
+                onConfirm={runAsk}
+                onCancel={() => setAsk(null)}
+            />
+
+            <ConfirmDialog
                 open={!!ctConfirm}
                 title="Already a class teacher"
                 message={ctConfirm
@@ -1728,7 +1818,7 @@ function TeachersPage() {
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2 }}>
                     <Button onClick={() => setTransferFrom(null)} disabled={transferring}>Cancel</Button>
-                    <Button variant="contained" onClick={handleTransfer} disabled={transferring || !transferTo}>
+                    <Button variant="contained" onClick={askTransfer} disabled={transferring || !transferTo}>
                         {transferring ? "Transferring..." : "Transfer"}
                     </Button>
                 </DialogActions>
