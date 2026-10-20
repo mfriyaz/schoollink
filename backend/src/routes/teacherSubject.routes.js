@@ -57,6 +57,16 @@ router.get(
 );
 
 /**
+ * End Assignment (keeps history)
+ */
+router.patch(
+    "/:id/end",
+    authenticate,
+    authorizeRoles("School Admin"),
+    teacherSubjectController.endAssignment
+);
+
+/**
  * Delete Assignment
  */
 router.delete(

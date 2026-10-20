@@ -16,7 +16,7 @@ async function setClassTeacher(schoolId, assignmentId, value) {
         const found = await client.query(
             `SELECT id, class_id, section_id, academic_year_id
                FROM teacher_subjects
-              WHERE id = $1 AND school_id = $2
+              WHERE id = $1 AND school_id = $2 AND ended_at IS NULL
               FOR UPDATE`,
             [assignmentId, schoolId]
         );

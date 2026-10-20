@@ -205,6 +205,7 @@ function ExamsPage() {
     const classOptions = useMemo(() => {
         const map = new Map();
         assignments.forEach((a) => {
+            if (a.ended_at) return;
             const key = `${a.class_id}-${a.section_id}`;
             if (!map.has(key)) map.set(key, { key, label: `${a.class_name} - ${a.section_name}` });
         });
@@ -214,7 +215,7 @@ function ExamsPage() {
     const usedIds = useMemo(() => new Set(examSubjects.map((x) => x.teacher_subject_id)), [examSubjects]);
 
     const subjectOptions = useMemo(() => {
-        return assignments.filter((a) => `${a.class_id}-${a.section_id}` === pickClass && !usedIds.has(a.id));
+        return assignments.filter((a) => !a.ended_at && `${a.class_id}-${a.section_id}` === pickClass && !usedIds.has(a.id));
     }, [assignments, pickClass, usedIds]);
 
     function openSubjectDialog() {

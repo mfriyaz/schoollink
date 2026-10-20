@@ -230,6 +230,7 @@ async function teacherOwnsAssignment(userId, teacherSubjectId) {
         JOIN teachers t ON ts.teacher_id = t.id
         WHERE t.user_id = $1
         AND ts.id = $2
+        AND ts.ended_at IS NULL
         `,
         [userId, teacherSubjectId]
     );

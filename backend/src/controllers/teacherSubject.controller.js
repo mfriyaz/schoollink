@@ -45,7 +45,8 @@ async function getAssignmentsBySchool(req, res) {
 
         const assignments =
             await teacherSubjectService.getAssignmentsBySchool(
-                req.user.school_id
+                req.user.school_id,
+                req.query.include_ended === "1"
             );
 
         return response.success(
@@ -178,7 +179,50 @@ async function deleteAssignment(req, res) {
 
 }
 
+/**
+ * End Assignment - keeps attendance, homework and marks history
+ */
+async function endAssignment(req, res) {
+
+    try {
+
+        const assignment =
+            await teacherSubjectService.endAssignment(
+                req.params.id,
+                req.user.school_id
+            );
+
+        if (!assignment) {
+
+            return response.error(
+                res,
+                "Assignment not found or already ended",
+                404
+            );
+
+        }
+
+        return response.success(
+            res,
+            assignment,
+            "Assignment ended"
+        );
+
+    } catch (err) {
+
+        return response.error(
+            res,
+            err.message,
+            500
+        );
+
+    }
+
+}
+
 module.exports = {
+
+    endAssignment,
 
     createAssignment,
 

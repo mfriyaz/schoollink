@@ -50,7 +50,7 @@ export async function getSubjectsByExam(examId) {
  */
 export async function getSchoolAssignments() {
 
-    const response = await api.get("/teacher-subjects/mine");
+    const response = await api.get("/teacher-subjects/mine?include_ended=1");
 
     return response.data;
 

@@ -24,6 +24,14 @@ export async function deleteTeacherSubjectAssignment(id) {
 
 }
 
+export async function endTeacherSubjectAssignment(id) {
+
+    const response = await api.patch(`/teacher-subjects/${id}/end`);
+
+    return response.data;
+
+}
+
 export async function getSchoolAssignments() {
 
     const response = await api.get("/teacher-subjects/mine");

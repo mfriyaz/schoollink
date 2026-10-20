@@ -14,6 +14,7 @@ async function assignmentExists(data) {
         AND class_id = $3
         AND section_id = $4
         AND academic_year_id = $5
+        AND ended_at IS NULL
         `,
         [
 
@@ -74,7 +75,7 @@ async function createAssignment(data) {
 /**
  * Get Assignments By School
  */
-async function getAssignmentsBySchool(schoolId) {
+async function getAssignmentsBySchool(schoolId, includeEnded = false) {
 
     const query = `
         SELECT
@@ -97,6 +98,7 @@ async function getAssignmentsBySchool(schoolId) {
         JOIN academic_years ay
             ON ts.academic_year_id = ay.id
         WHERE ts.school_id = $1
+        ${includeEnded ? "" : "AND ts.ended_at IS NULL"}
         ORDER BY
             c.class_name,
             sec.section_name,
@@ -133,6 +135,7 @@ async function getAssignmentsByTeacher(teacherId) {
         JOIN sections sec
             ON ts.section_id = sec.id
         WHERE ts.teacher_id = $1
+        AND ts.ended_at IS NULL
         ORDER BY
             c.class_name,
             sec.section_name,
@@ -181,7 +184,34 @@ async function deleteAssignment(id, schoolId) {
 
 }
 
+/**
+ * End Assignment (soft-end): the teacher stops teaching this
+ * subject/class/section from now on, but every attendance,
+ * homework and marks record stays exactly as it was.
+ */
+async function endAssignment(id, schoolId) {
+
+    const result = await db.query(
+        `
+        UPDATE teacher_subjects
+        SET ended_at = CURRENT_TIMESTAMP,
+            is_class_teacher = false,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1
+        AND school_id = $2
+        AND ended_at IS NULL
+        RETURNING *;
+        `,
+        [id, schoolId]
+    );
+
+    return result.rows[0];
+
+}
+
 module.exports = {
+
+    endAssignment,
 
     createAssignment,
 

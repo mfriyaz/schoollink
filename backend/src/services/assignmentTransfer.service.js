@@ -23,7 +23,7 @@ async function transferAssignment(schoolId, assignmentId, newTeacherId) {
         const found = await client.query(
             `SELECT id, teacher_id, subject_id, class_id, section_id, academic_year_id
                FROM teacher_subjects
-              WHERE id = $1 AND school_id = $2
+              WHERE id = $1 AND school_id = $2 AND ended_at IS NULL
               FOR UPDATE`,
             [assignmentId, schoolId]
         );
@@ -46,7 +46,7 @@ async function transferAssignment(schoolId, assignmentId, newTeacherId) {
         const dup = await client.query(
             `SELECT 1 FROM teacher_subjects
               WHERE teacher_id = $1 AND subject_id = $2 AND class_id = $3
-                AND section_id = $4 AND academic_year_id = $5`,
+                AND section_id = $4 AND academic_year_id = $5 AND ended_at IS NULL`,
             [newTeacherId, row.subject_id, row.class_id, row.section_id, row.academic_year_id]
         );
 

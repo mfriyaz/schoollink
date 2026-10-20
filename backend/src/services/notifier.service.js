@@ -269,6 +269,7 @@ async function notifyTeachersOfAnnouncement(announcementId) {
             FROM teacher_subjects ts
             JOIN teachers t ON ts.teacher_id = t.id
             WHERE ts.class_id = ANY($1::int[])
+            AND ts.ended_at IS NULL
             AND t.school_id = $2
             AND t.user_id IS NOT NULL
             `,

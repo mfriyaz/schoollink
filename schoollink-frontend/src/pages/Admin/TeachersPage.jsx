@@ -29,6 +29,7 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import BlockIcon from "@mui/icons-material/BlockOutlined";
 import RestoreIcon from "@mui/icons-material/RestoreOutlined";
 import SchoolIcon from "@mui/icons-material/SchoolOutlined";
+import EventBusyIcon from "@mui/icons-material/EventBusyOutlined";
 import SwapHorizIcon from "@mui/icons-material/SwapHorizOutlined";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentIndOutlined";
 import SearchIcon from "@mui/icons-material/SearchRounded";
@@ -75,6 +76,7 @@ import {
     createTeacherSubjectAssignment,
     getAssignmentsByTeacher,
     deleteTeacherSubjectAssignment,
+    endTeacherSubjectAssignment,
     setClassTeacherFlag
 } from "../../services/teacherSubjectService";
 
@@ -507,6 +509,26 @@ function TeachersPage() {
         }
     }
 
+    async function handleEndAssignment(assignmentId) {
+        try {
+            setRemovingId(assignmentId);
+            const response = await endTeacherSubjectAssignment(assignmentId);
+            if (response.success) {
+                setCurrentAssignments((prev) =>
+                    prev.filter((a) => a.teacher_subject_id !== assignmentId)
+                );
+                notify("Assignment ended. Past records are kept.");
+                loadAssignments();
+            } else {
+                setAssignError(response.message);
+            }
+        } catch (err) {
+            setAssignError(err.response?.data?.message || "Unable to end this assignment.");
+        } finally {
+            setRemovingId(null);
+        }
+    }
+
     async function handleRemoveAssignment(assignmentId) {
 
         try {
@@ -536,7 +558,7 @@ function TeachersPage() {
             setAssignError(
 
                 /foreign key|violates|constraint/i.test(raw)
-                    ? "This assignment can't be removed because it already has attendance, homework or marks recorded. Those records are kept for the school's history."
+                    ? "This assignment can't be removed because it already has attendance, homework or marks recorded. Those records are kept for the school's history. Use End instead: it stops the assignment from now on and keeps all records."
                     : raw || "Unable to remove this assignment."
 
             );
@@ -1624,6 +1646,21 @@ function TeachersPage() {
                                             onClick={() => openTransfer(a)}
                                             icon={<SwapHorizIcon sx={{ fontSize: 16 }} />}
                                             label="Transfer"
+                                            sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }}
+                                        />
+                                        <Chip
+                                            size="small"
+                                            clickable
+                                            aria-label="End assignment"
+                                            onClick={() => setAsk({
+                                                title: "End this assignment?",
+                                                message: `${a.subject_name} (${a.class_name}-${a.section_name}) will stop for this teacher from now on. Past attendance, homework and marks are kept.`,
+                                                confirmLabel: "Yes, end it",
+                                                confirmColor: "warning",
+                                                run: () => handleEndAssignment(a.teacher_subject_id)
+                                            })}
+                                            icon={<EventBusyIcon sx={{ fontSize: 16 }} />}
+                                            label="End"
                                             sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }}
                                         />
                                         <IconButton

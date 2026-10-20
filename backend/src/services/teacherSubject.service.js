@@ -24,9 +24,9 @@ async function createAssignment(data) {
 /**
  * Get Assignments By School
  */
-async function getAssignmentsBySchool(schoolId) {
+async function getAssignmentsBySchool(schoolId, includeEnded = false) {
 
-    return await teacherSubjectModel.getAssignmentsBySchool(schoolId);
+    return await teacherSubjectModel.getAssignmentsBySchool(schoolId, includeEnded);
 
 }
 
@@ -57,7 +57,18 @@ async function deleteAssignment(id, schoolId) {
 
 }
 
+/**
+ * End Assignment (keeps all history)
+ */
+async function endAssignment(id, schoolId) {
+
+    return await teacherSubjectModel.endAssignment(id, schoolId);
+
+}
+
 module.exports = {
+
+    endAssignment,
 
     createAssignment,
 
