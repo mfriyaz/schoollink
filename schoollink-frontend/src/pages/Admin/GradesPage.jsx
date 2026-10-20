@@ -27,6 +27,7 @@ import GradeIcon from "@mui/icons-material/GradeOutlined";
 
 import StatChips from "../../components/common/StatChips";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { notify } from "../../utils/notify";
 
 import {
     getAllGrades,
@@ -63,6 +64,13 @@ function GradesPage() {
     const [saving, setSaving] = useState(false);
 
     const [deleting, setDeleting] = useState(null);
+    const [ask, setAsk] = useState(null);
+    function runAsk() {
+        const a = ask;
+        setAsk(null);
+        if (a?.run) a.run();
+    }
+
 
     useEffect(() => {
         loadGrades();
@@ -105,6 +113,11 @@ function GradesPage() {
         setDialogOpen(true);
     }
 
+    function handleSaveClick() {
+        if (!editingId) { handleSave(); return; }
+        setAsk({ title: "Save changes?", message: "This grade band will be updated.", confirmLabel: "Yes, save", run: handleSave });
+    }
+
     async function handleSave() {
         setFormError("");
 
@@ -136,6 +149,7 @@ function GradesPage() {
 
             if (response.success) {
                 setDialogOpen(false);
+                notify(editingId ? "Grade band updated." : "Grade band added.");
                 await loadGrades();
             } else {
                 setFormError(response.message);
@@ -154,6 +168,7 @@ function GradesPage() {
         try {
             const response = await deleteGrade(grade.id);
             if (response.success) {
+                notify("Grade band deleted.");
                 await loadGrades();
             } else {
                 setPageError(response.message);
@@ -209,8 +224,8 @@ function GradesPage() {
         <Box sx={{ maxWidth: 900 }}>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, var(--sl-soft))", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <GradeIcon sx={{ color: "var(--sl-accent, var(--sl-primary))" }} />
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #EDE9FE)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <GradeIcon sx={{ color: "var(--sl-accent, #7C3AED)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Grading Scale</Typography>
@@ -415,11 +430,21 @@ function GradesPage() {
                 </DialogContent>
                 <DialogActions sx={{ px: 2.5, pb: 2 }}>
                     <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={handleSave} disabled={saving}>
+                    <Button variant="contained" onClick={handleSaveClick} disabled={saving}>
                         {saving ? "Saving..." : "Save"}
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            <ConfirmDialog
+                open={!!ask}
+                title={ask?.title || ""}
+                message={ask?.message || ""}
+                confirmLabel={ask?.confirmLabel || "Proceed"}
+                confirmColor={ask?.confirmColor || "primary"}
+                onConfirm={runAsk}
+                onCancel={() => setAsk(null)}
+            />
 
             <ConfirmDialog
                 open={Boolean(deleting)}

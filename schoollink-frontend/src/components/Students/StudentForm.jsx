@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import ConfirmDialog from "../common/ConfirmDialog";
+import { notify } from "../../utils/notify";
 import {
     Dialog,
     DialogContent,
@@ -60,6 +62,7 @@ function StudentForm({
     const [sections, setSections] = useState([]);
     const [error, setError] = useState("");
     const [saving, setSaving] = useState(false);
+    const [confirmSave, setConfirmSave] = useState(false);
     useEffect(() => {
         if (open) {
             loadClasses();
@@ -168,6 +171,7 @@ function StudentForm({
                 : await createStudent(payload);
             if (response.success) {
                 setStudent(emptyStudent);
+                notify(selectedStudent ? "Student details updated." : "Student added.");
                 if (onSaved) {
                     await onSaved();
                 }
@@ -187,6 +191,7 @@ function StudentForm({
     const theme = useTheme();
     const isPhone = useMediaQuery(theme.breakpoints.down("sm"));
     return (
+        <>
         <Dialog
             open={open}
             onClose={onClose}
@@ -337,13 +342,22 @@ function StudentForm({
                 </Button>
                 <Button loading={saving} loadingPosition="start"
                     variant="contained"
-                    onClick={handleSave}
+                    onClick={() => (selectedStudent ? setConfirmSave(true) : handleSave())}
                     disabled={saving}
                 >
                     {saving ? "Saving..." : (selectedStudent ? "Update" : "Save")}
                 </Button>
             </DialogActions>
         </Dialog>
+            <ConfirmDialog
+                open={confirmSave}
+                title="Save changes?"
+                message="This student's details will be updated."
+                confirmLabel="Yes, save"
+                onConfirm={() => { setConfirmSave(false); handleSave(); }}
+                onCancel={() => setConfirmSave(false)}
+            />
+        </>
     );
 }
 export default StudentForm;

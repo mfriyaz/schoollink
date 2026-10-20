@@ -29,6 +29,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 import StatChips from "../../components/common/StatChips";
 import { getSchoolAssignments } from "../../services/teacherSubjectService";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { notify } from "../../utils/notify";
 import {
     getAllSubjectsForManagement,
     createSubjectRecord,
@@ -224,6 +225,13 @@ function SubjectsPage() {
     const [saving, setSaving] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [confirmTarget, setConfirmTarget] = useState(null);
+    const [ask, setAsk] = useState(null);
+    function runAsk() {
+        const a = ask;
+        setAsk(null);
+        if (a?.run) a.run();
+    }
+
     useEffect(() => {
         loadSubjects();
         getSchoolAssignments()
@@ -261,6 +269,10 @@ function SubjectsPage() {
         setFormError("");
         setDialogOpen(true);
     }
+    function handleSaveClick() {
+        if (!editingId) { handleSave(); return; }
+        setAsk({ title: "Save changes?", message: "This subject will be updated.", confirmLabel: "Yes, save", run: handleSave });
+    }
     async function handleSave() {
         setFormError("");
         if (!form.subject_name) {
@@ -274,6 +286,7 @@ function SubjectsPage() {
                 : await createSubjectRecord(form);
             if (response.success) {
                 setDialogOpen(false);
+                notify(editingId ? "Subject updated." : "Subject added.");
                 await loadSubjects();
             } else {
                 setFormError(response.message);
@@ -303,6 +316,7 @@ function SubjectsPage() {
                 ? await deactivateSubjectRecord(subject.id)
                 : await reactivateSubjectRecord(subject.id);
             if (response.success) {
+                notify(subject.is_active ? "Subject deactivated." : "Subject reactivated.");
                 await loadSubjects();
             } else {
                 setPageError(response.message);
@@ -559,11 +573,21 @@ function SubjectsPage() {
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 3 }}>
                     <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-                    <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleSave} disabled={saving}>
+                    <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleSaveClick} disabled={saving}>
                         {saving ? "Saving..." : "Save"}
                     </Button>
                 </DialogActions>
             </Dialog>
+            <ConfirmDialog
+                open={!!ask}
+                title={ask?.title || ""}
+                message={ask?.message || ""}
+                confirmLabel={ask?.confirmLabel || "Proceed"}
+                confirmColor={ask?.confirmColor || "primary"}
+                onConfirm={runAsk}
+                onCancel={() => setAsk(null)}
+            />
+
             <ConfirmDialog
                 open={confirmOpen}
                 title={confirmTarget?.is_active ? "Deactivate Subject" : "Reactivate Subject"}

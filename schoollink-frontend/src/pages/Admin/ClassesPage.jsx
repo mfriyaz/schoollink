@@ -26,6 +26,8 @@ import SearchIcon from "@mui/icons-material/SearchRounded";
 import StarIcon from "@mui/icons-material/StarRounded";
 import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 import StatChips from "../../components/common/StatChips";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { notify } from "../../utils/notify";
 import { getStudents } from "../../services/studentService";
 import { getSchoolAssignments } from "../../services/teacherSubjectService";
 import ClassIcon from "@mui/icons-material/ClassOutlined";
@@ -67,6 +69,12 @@ function ClassesPage() {
     const [classDialogOpen, setClassDialogOpen] = useState(false);
 
     const [editingClass, setEditingClass] = useState(null);
+    const [ask, setAsk] = useState(null);
+    function runAsk() {
+        const a = ask;
+        setAsk(null);
+        if (a?.run) a.run();
+    }
 
     const [classForm, setClassForm] = useState({ class_name: "", class_order: "" });
 
@@ -190,7 +198,12 @@ function ClassesPage() {
 
     }
 
-    async function handleSaveClass() {
+    function handleSaveClass() {
+        if (!editingClass) { doSaveClass(); return; }
+        setAsk({ title: "Save changes?", message: "This class will be updated.", confirmLabel: "Yes, save", run: doSaveClass });
+    }
+
+    async function doSaveClass() {
 
         setClassFormError("");
 
@@ -215,6 +228,8 @@ function ClassesPage() {
             if (response.success) {
 
                 setClassDialogOpen(false);
+
+                notify(editingClass ? "Class updated." : "Class added.");
 
                 await loadClasses();
 
@@ -252,6 +267,8 @@ function ClassesPage() {
                 : await reactivateClassRecord(classItem.id);
 
             if (response.success) {
+
+                notify(classItem.is_active ? "Class deactivated." : "Class reactivated.");
 
                 await loadClasses();
 
@@ -308,7 +325,12 @@ function ClassesPage() {
 
     }
 
-    async function handleSaveSection() {
+    function handleSaveSection() {
+        if (!editingSection) { doSaveSection(); return; }
+        setAsk({ title: "Save changes?", message: "This section will be updated.", confirmLabel: "Yes, save", run: doSaveSection });
+    }
+
+    async function doSaveSection() {
 
         setSectionFormError("");
 
@@ -333,6 +355,8 @@ function ClassesPage() {
             if (response.success) {
 
                 setSectionDialogOpen(false);
+
+                notify(editingSection ? "Section updated." : "Section added.");
 
                 await loadSections(sectionClassId);
 
@@ -370,6 +394,8 @@ function ClassesPage() {
                 : await reactivateSectionRecord(section.id);
 
             if (response.success) {
+
+                notify(section.is_active ? "Section deactivated." : "Section reactivated.");
 
                 await loadSections(classId);
 
@@ -486,9 +512,9 @@ function ClassesPage() {
                             onClick={() => setFilter(id)}
                             sx={{
                                 fontWeight: 600,
-                                bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft, #F1F5F9)",
-                                color: filter === id ? "#fff" : "var(--sl-ink, var(--sl-ink))",
-                                "&:hover": { bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft2, #E2E8F0)" }
+                                bgcolor: filter === id ? "var(--sl-ink, #0F172A)" : "var(--sl-soft, #F1F5F9)",
+                                color: filter === id ? "#fff" : "var(--sl-ink, #0F172A)",
+                                "&:hover": { bgcolor: filter === id ? "var(--sl-ink, #0F172A)" : "var(--sl-soft2, #E2E8F0)" }
                             }}
                         />
                     ))}
@@ -524,8 +550,8 @@ function ClassesPage() {
                             <Box
                                 sx={{
                                     width: 44, height: 44, borderRadius: 2.5, display: "flex", alignItems: "center", justifyContent: "center",
-                                    bgcolor: classItem.is_active ? "var(--sl-soft, var(--sl-soft))" : "#F1F5F9",
-                                    color: classItem.is_active ? "var(--sl-ink, var(--sl-primary))" : "#94A3B8"
+                                    bgcolor: classItem.is_active ? "var(--sl-soft, #E0E7FF)" : "#F1F5F9",
+                                    color: classItem.is_active ? "var(--sl-ink, #4F46E5)" : "#94A3B8"
                                 }}
                             >
                                 <ClassIcon />
@@ -638,18 +664,28 @@ function ClassesPage() {
                 );
             })}
 
+            <ConfirmDialog
+                open={!!ask}
+                title={ask?.title || ""}
+                message={ask?.message || ""}
+                confirmLabel={ask?.confirmLabel || "Proceed"}
+                confirmColor={ask?.confirmColor || "primary"}
+                onConfirm={runAsk}
+                onCancel={() => setAsk(null)}
+            />
+
             <Menu anchorEl={menu ? menu.anchor : null} open={!!menu} onClose={() => setMenu(null)}>
                 {menu && menu.kind === "class" && menu.classItem.is_active && (
-                    <MenuItem sx={{ color: "error.main" }} onClick={() => { const c = menu.classItem; setMenu(null); handleToggleClass(c); }}>Deactivate class</MenuItem>
+                    <MenuItem sx={{ color: "error.main" }} onClick={() => { const c = menu.classItem; setMenu(null); setAsk({ title: "Deactivate this class?", message: `${c.class_name} will be marked inactive. Existing records are kept.`, confirmLabel: "Yes, deactivate", confirmColor: "error", run: () => handleToggleClass(c) }); }}>Deactivate class</MenuItem>
                 )}
                 {menu && menu.kind === "class" && !menu.classItem.is_active && (
-                    <MenuItem sx={{ color: "success.main" }} onClick={() => { const c = menu.classItem; setMenu(null); handleToggleClass(c); }}>Reactivate class</MenuItem>
+                    <MenuItem sx={{ color: "success.main" }} onClick={() => { const c = menu.classItem; setMenu(null); setAsk({ title: "Reactivate this class?", message: `${c.class_name} will be active again.`, confirmLabel: "Yes, reactivate", run: () => handleToggleClass(c) }); }}>Reactivate class</MenuItem>
                 )}
                 {menu && menu.kind === "section" && menu.section.is_active && (
-                    <MenuItem sx={{ color: "error.main" }} onClick={() => { const m = menu; setMenu(null); handleToggleSection(m.classItem.id, m.section); }}>Deactivate section</MenuItem>
+                    <MenuItem sx={{ color: "error.main" }} onClick={() => { const m = menu; setMenu(null); setAsk({ title: "Deactivate this section?", message: `${m.classItem.class_name}-${m.section.section_name} will be marked inactive. Existing records are kept.`, confirmLabel: "Yes, deactivate", confirmColor: "error", run: () => handleToggleSection(m.classItem.id, m.section) }); }}>Deactivate section</MenuItem>
                 )}
                 {menu && menu.kind === "section" && !menu.section.is_active && (
-                    <MenuItem sx={{ color: "success.main" }} onClick={() => { const m = menu; setMenu(null); handleToggleSection(m.classItem.id, m.section); }}>Reactivate section</MenuItem>
+                    <MenuItem sx={{ color: "success.main" }} onClick={() => { const m = menu; setMenu(null); setAsk({ title: "Reactivate this section?", message: `${m.classItem.class_name}-${m.section.section_name} will be active again.`, confirmLabel: "Yes, reactivate", run: () => handleToggleSection(m.classItem.id, m.section) }); }}>Reactivate section</MenuItem>
                 )}
             </Menu>
 

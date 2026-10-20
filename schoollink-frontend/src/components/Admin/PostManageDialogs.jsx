@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import ConfirmDialog from "../common/ConfirmDialog";
+import { notify } from "../../utils/notify";
 import {
     Alert,
     Box,
@@ -120,6 +122,7 @@ export function PostViewDialog({ open, post, onClose, onEdit, onDeleted }) {
             setError("");
             const response = await deleteAnnouncement(post.id);
             if (response.success) {
+                notify("Post deleted.");
                 onDeleted();
             } else {
                 setError(response.message || "Unable to delete.");
@@ -154,8 +157,8 @@ export function PostViewDialog({ open, post, onClose, onEdit, onDeleted }) {
                             size="small"
                             label={isAnnouncement ? "Announcement" : "Homework"}
                             sx={{
-                                bgcolor: isAnnouncement ? "#FCE7F3" : "var(--sl-soft)",
-                                color: isAnnouncement ? "#BE185D" : "var(--sl-primary-dark)"
+                                bgcolor: isAnnouncement ? "#FCE7F3" : "#E0E7FF",
+                                color: isAnnouncement ? "#BE185D" : "#4338CA"
                             }}
                         />
                         {isAnnouncement && record && (
@@ -240,7 +243,7 @@ export function PostViewDialog({ open, post, onClose, onEdit, onDeleted }) {
                                     py: 0.75,
                                     borderRadius: 2,
                                     bgcolor: "#F1F5F9",
-                                    color: "var(--sl-primary)",
+                                    color: "#4F46E5",
                                     textDecoration: "none",
                                     fontSize: "0.85rem",
                                     fontWeight: 600
@@ -364,6 +367,7 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
     const [homeworkDate, setHomeworkDate] = useState("");
     const [dueDate, setDueDate] = useState("");
     const [images, setImages] = useState([]);
+    const [confirmSave, setConfirmSave] = useState(false);
 
     const [uploading, setUploading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -465,6 +469,7 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
             }
 
             if (response.success) {
+                notify("Changes saved.");
                 onSaved();
             } else {
                 setError(response.message || "Unable to save changes.");
@@ -480,6 +485,7 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
     if (!post) return null;
 
     return (
+        <>
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
 
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 3, pt: 2.5 }}>
@@ -544,7 +550,7 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
                                                     right: -8,
                                                     width: 22,
                                                     height: 22,
-                                                    bgcolor: "var(--sl-ink)",
+                                                    bgcolor: "#1E1B4B",
                                                     color: "white",
                                                     "&:hover": { bgcolor: "#DC2626" }
                                                 }}
@@ -569,7 +575,7 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
                                                 gap: 0.5,
                                                 color: "#64748B",
                                                 cursor: "pointer",
-                                                "&:hover": { borderColor: "var(--sl-primary)", color: "var(--sl-primary)" }
+                                                "&:hover": { borderColor: "#4F46E5", color: "#4F46E5" }
                                             }}
                                         >
                                             {uploading ? (
@@ -660,11 +666,20 @@ export function PostEditDialog({ open, post, record, onClose, onSaved }) {
                 <Button variant="outlined" onClick={onClose}>
                     Cancel
                 </Button>
-                <Button loading={saving} loadingPosition="start" variant="contained" onClick={handleSave} disabled={saving || uploading}>
+                <Button loading={saving} loadingPosition="start" variant="contained" onClick={() => { setError(""); if (!title.trim()) { setError("Title is required."); return; } setConfirmSave(true); }} disabled={saving || uploading}>
                     {saving ? "Saving..." : "Save changes"}
                 </Button>
             </DialogActions>
 
         </Dialog>
+            <ConfirmDialog
+                open={confirmSave}
+                title="Save changes?"
+                message="This post will be updated."
+                confirmLabel="Yes, save"
+                onConfirm={() => { setConfirmSave(false); handleSave(); }}
+                onCancel={() => setConfirmSave(false)}
+            />
+        </>
     );
 }

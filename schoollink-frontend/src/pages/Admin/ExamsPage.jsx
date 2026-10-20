@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { notify } from "../../utils/notify";
 import {
     Alert,
     Box,
@@ -182,6 +183,7 @@ function ExamsPage() {
 
             if (response.success) {
                 setExamDialogOpen(false);
+                notify("Exam created.");
                 const examsResponse = await getAllExams();
                 if (examsResponse.success) {
                     setExams(examsResponse.data);
@@ -249,6 +251,7 @@ function ExamsPage() {
             if (response.success) {
                 await loadExamSubjects(selectedExamId);
                 setSubjectDialogOpen(false);
+                notify("Subject added to the exam.");
             } else {
                 setAssignError(response.message);
             }
@@ -300,8 +303,8 @@ function ExamsPage() {
         <Box sx={{ maxWidth: 1100 }}>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, var(--sl-soft))", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <AssessmentIcon sx={{ color: "var(--sl-accent, var(--sl-primary))" }} />
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #EDE9FE)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <AssessmentIcon sx={{ color: "var(--sl-accent, #7C3AED)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>Exams</Typography>
@@ -351,7 +354,7 @@ function ExamsPage() {
                                     bgcolor: "#fff",
                                     border: "1px solid var(--sl-border, #E2E8F0)",
                                     boxShadow: "var(--sl-card-shadow, none)",
-                                    outline: e.id === selectedExamId ? "2px solid var(--sl-accent, var(--sl-primary))" : "none"
+                                    outline: e.id === selectedExamId ? "2px solid var(--sl-accent, #4F46E5)" : "none"
                                 }}
                             >
                                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>

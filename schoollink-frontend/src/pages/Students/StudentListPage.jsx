@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { notify } from "../../utils/notify";
 import { Box, Alert, MenuItem, TextField } from "@mui/material";
 import StudentToolbar, { SearchField } from "../../components/Students/StudentToolbar";
 import StudentStatistics from "../../components/Students/StudentStatistics";
@@ -88,6 +89,7 @@ export default function StudentListPage() {
                 ? await deleteStudent(student.id)
                 : await reactivateStudent(student.id);
             if (response.success) {
+                notify(student.is_active ? "Student deactivated." : "Student reactivated.");
                 await reload();
             } else {
                 setPageError(response.message);

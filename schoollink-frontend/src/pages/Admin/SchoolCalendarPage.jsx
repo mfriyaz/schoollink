@@ -29,6 +29,7 @@ import EventIcon from "@mui/icons-material/EventOutlined";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import StatChips from "../../components/common/StatChips";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { notify } from "../../utils/notify";
 
 import {
     getCalendar,
@@ -94,6 +95,13 @@ function SchoolCalendarPage() {
     const [formError, setFormError] = useState("");
 
     const [confirmDay, setConfirmDay] = useState(null);
+    const [ask, setAsk] = useState(null);
+    function runAsk() {
+        const a = ask;
+        setAsk(null);
+        if (a?.run) a.run();
+    }
+
 
     useEffect(() => {
         load();
@@ -124,6 +132,15 @@ function SchoolCalendarPage() {
         );
     }
 
+    function askWeekly() {
+        setAsk({ title: "Save weekly off days?", message: "The weekly off days for the whole school will be updated.", confirmLabel: "Yes, save", run: saveWeekly });
+    }
+
+    function askDay() {
+        if (!form || !form.id) { saveDay(); return; }
+        setAsk({ title: "Save changes?", message: "This calendar entry will be updated.", confirmLabel: "Yes, save", run: saveDay });
+    }
+
     async function saveWeekly() {
         try {
             setSavingWeekly(true);
@@ -133,6 +150,7 @@ function SchoolCalendarPage() {
             if (response.success) {
                 setSavedOff([...weeklyOff]);
                 setMessage("Weekly off days saved.");
+                notify("Weekly off days saved.");
             } else {
                 setError(response.message);
             }
@@ -167,6 +185,7 @@ function SchoolCalendarPage() {
             if (response.success) {
                 setForm(null);
                 setMessage(form.id ? "Entry updated." : "Entry added.");
+                notify(form.id ? "Entry updated." : "Entry added.");
                 await load();
             } else {
                 setFormError(response.message);
@@ -186,6 +205,7 @@ function SchoolCalendarPage() {
             const response = await deleteCalendarDay(d.id);
             if (response.success) {
                 setMessage("Entry removed.");
+                notify("Entry removed.");
                 await load();
             }
         } catch (err) {
@@ -277,8 +297,8 @@ function SchoolCalendarPage() {
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2, flexWrap: "wrap" }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, var(--sl-soft))", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <EventIcon sx={{ color: "var(--sl-ink, var(--sl-primary))" }} />
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-soft, #E0E7FF)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <EventIcon sx={{ color: "var(--sl-ink, #4F46E5)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 200 }}>
                     <Typography variant="h5" sx={{ fontWeight: 800, lineHeight: 1.2 }}>School Calendar</Typography>
@@ -394,7 +414,7 @@ function SchoolCalendarPage() {
                     )}
                     <Button
                         variant="contained"
-                        onClick={saveWeekly}
+                        onClick={askWeekly}
                         disabled={savingWeekly || weeklyOff.length >= 7 || !dirty}
                     >
                         {savingWeekly ? "Saving..." : "Save weekly off days"}
@@ -543,13 +563,23 @@ function SchoolCalendarPage() {
                         </DialogContent>
                         <DialogActions sx={{ px: 3, pb: 2.5 }}>
                             <Button onClick={() => setForm(null)}>Cancel</Button>
-                            <Button variant="contained" onClick={saveDay} disabled={saving}>
+                            <Button variant="contained" onClick={askDay} disabled={saving}>
                                 {saving ? "Saving..." : "Save"}
                             </Button>
                         </DialogActions>
                     </>
                 )}
             </Dialog>
+
+            <ConfirmDialog
+                open={!!ask}
+                title={ask?.title || ""}
+                message={ask?.message || ""}
+                confirmLabel={ask?.confirmLabel || "Proceed"}
+                confirmColor={ask?.confirmColor || "primary"}
+                onConfirm={runAsk}
+                onCancel={() => setAsk(null)}
+            />
 
             <ConfirmDialog
                 open={Boolean(confirmDay)}
