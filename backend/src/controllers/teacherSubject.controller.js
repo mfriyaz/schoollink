@@ -1,5 +1,6 @@
 const teacherSubjectService = require("../services/teacherSubject.service");
 const response = require("../utils/response");
+const { getCurrentYearId } = require("../services/currentYear.service");
 
 /**
  * Assign Teacher to Subject
@@ -13,7 +14,9 @@ async function createAssignment(req, res) {
 
                 ...req.body,
 
-                school_id: req.user.school_id
+                school_id: req.user.school_id,
+
+                academic_year_id: await getCurrentYearId(req.user.school_id)
 
             });
 

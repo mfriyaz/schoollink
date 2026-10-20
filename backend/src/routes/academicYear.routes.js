@@ -18,6 +18,31 @@ router.post(
 );
 
 /**
+ * Current year, year list and year-end rollover
+ * (always for the signed-in admin's own school)
+ */
+router.get(
+    "/current",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    academicYearController.getCurrentYear
+);
+
+router.get(
+    "/mine",
+    authenticate,
+    authorizeRoles("School Admin"),
+    academicYearController.listMyYears
+);
+
+router.post(
+    "/rollover",
+    authenticate,
+    authorizeRoles("School Admin"),
+    academicYearController.startNewYear
+);
+
+/**
  * Get All Academic Years By School
  */
 router.get(

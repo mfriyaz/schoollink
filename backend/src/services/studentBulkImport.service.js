@@ -1,6 +1,7 @@
 const XLSX = require("xlsx");
 
 const pool = require("../config/database");
+const { getCurrentYearId } = require("./currentYear.service");
 
 const studentService = require("./student.service");
 
@@ -84,6 +85,8 @@ async function generateTemplate(schoolId) {
  * back with a reason rather than aborting the whole import.
  */
 async function bulkImportStudents(schoolId, fileBuffer) {
+
+    const currentYearId = await getCurrentYearId(schoolId);
 
     const workbook = XLSX.read(fileBuffer, {
 
@@ -191,7 +194,7 @@ async function bulkImportStudents(schoolId, fileBuffer) {
 
                 school_id: schoolId,
 
-                academic_year_id: 1,
+                academic_year_id: currentYearId,
 
                 class_id: matchedClass.class_id,
 

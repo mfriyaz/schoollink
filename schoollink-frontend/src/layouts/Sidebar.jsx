@@ -38,6 +38,7 @@ import AddBusinessIcon from "@mui/icons-material/AddBusinessOutlined";
 import ArchiveIcon from "@mui/icons-material/ArchiveOutlined";
 import HistoryIcon from "@mui/icons-material/History";
 import EventIcon from "@mui/icons-material/EventOutlined";
+import EventRepeatIcon from "@mui/icons-material/EventRepeatOutlined";
 import EventNoteIcon from "@mui/icons-material/EventNoteOutlined";
 import WarningAmberIcon from "@mui/icons-material/WarningAmberRounded";
 
@@ -95,6 +96,12 @@ const adminMenus = [
         title: "Exams",
         path: "/exams",
         icon: <AssessmentIcon />
+    },
+
+    {
+        title: "Academic Year",
+        path: "/academic-year",
+        icon: <EventRepeatIcon />
     },
 
     {
@@ -303,7 +310,7 @@ const adminGroups = {
     "Dashboard": "Overview",
     "Teachers": "People", "Students": "People", "Classes": "People", "Subjects": "People",
     "Posts": "Communication", "Create Announcement": "Communication", "Expired Announcements": "Communication", "School Calendar": "Communication",
-    "Exams": "Academics", "Grading Scale": "Academics", "Reports": "Academics", "Early Warning": "Academics",
+    "Exams": "Academics", "Academic Year": "Academics", "Grading Scale": "Academics", "Reports": "Academics", "Early Warning": "Academics",
     "Activity Log": "Account", "Profile": "Account", "Settings": "Account"
 };
 

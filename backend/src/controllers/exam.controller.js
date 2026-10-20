@@ -1,5 +1,6 @@
 const examService = require("../services/exam.service");
 const response = require("../utils/response");
+const { getCurrentYearId } = require("../services/currentYear.service");
 
 /**
  * Create Exam
@@ -13,7 +14,9 @@ async function createExam(req, res) {
 
                 ...req.body,
 
-                school_id: req.user.school_id
+                school_id: req.user.school_id,
+
+                academic_year_id: await getCurrentYearId(req.user.school_id)
 
             });
 

@@ -1,6 +1,7 @@
 const classService = require("../services/class.service");
 const response = require("../utils/response");
 const { assertUnderLimit } = require("../utils/schoolLimits");
+const { getCurrentYearId } = require("../services/currentYear.service");
 
 /**
  * Create Class
@@ -15,7 +16,9 @@ async function createClass(req, res) {
 
             ...req.body,
 
-            school_id: req.user.school_id
+            school_id: req.user.school_id,
+
+            academic_year_id: await getCurrentYearId(req.user.school_id)
 
         });
 

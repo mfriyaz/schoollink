@@ -1,6 +1,7 @@
 const studentService = require("../services/student.service");
 const studentBulkImportService = require("../services/studentBulkImport.service");
 const response = require("../utils/response");
+const { getCurrentYearId } = require("../services/currentYear.service");
 const asyncHandler = require("../middleware/asyncHandler");
 const { assertUnderLimit } = require("../utils/schoolLimits");
 
@@ -62,7 +63,9 @@ const createStudent = asyncHandler(async (req, res) => {
 
         ...req.body,
 
-        school_id: req.user.school_id
+        school_id: req.user.school_id,
+
+        academic_year_id: await getCurrentYearId(req.user.school_id)
 
     });
 

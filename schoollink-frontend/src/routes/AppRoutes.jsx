@@ -26,6 +26,7 @@ import AllPostsPage from "../pages/Admin/AllPostsPage";
 import ActivityLogPage from "../pages/Admin/ActivityLogPage";
 import SchoolCalendarPage from "../pages/Admin/SchoolCalendarPage";
 import ExamsPage from "../pages/Admin/ExamsPage";
+import AcademicYearPage from "../pages/Admin/AcademicYearPage";
 
 import EnterMarksPage from "../pages/Teacher/EnterMarksPage";
 
@@ -136,6 +137,19 @@ export default function AppRoutes() {
                         <ProtectedRoute allowedRoles={["School Admin"]}>
 
                             <SubjectsPage />
+
+                        </ProtectedRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/academic-year"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["School Admin"]}>
+
+                            <AcademicYearPage />
 
                         </ProtectedRoute>
 
