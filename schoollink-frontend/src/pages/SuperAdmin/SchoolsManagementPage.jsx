@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { notify } from "../../utils/notify";
 import { useNavigate } from "react-router-dom";
 import {
     Alert,
@@ -117,6 +118,7 @@ function SchoolCard({ school, onSaved }) {
             if (response.success) {
                 setConfirmOpen(false);
                 setEditing(false);
+                notify("School settings updated.");
                 onSaved(response.data);
             } else {
                 setError(response.message);

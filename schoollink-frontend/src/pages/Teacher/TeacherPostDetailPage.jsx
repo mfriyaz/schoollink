@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { notify } from "../../utils/notify";
 import { useNavigate, useParams } from "react-router-dom";
 import {
     Alert,
@@ -44,6 +46,7 @@ function TeacherPostDetailPage() {
     const [images, setImages] = useState([]);
     const [uploadingImages, setUploadingImages] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [confirmSave, setConfirmSave] = useState(false);
     const [saveError, setSaveError] = useState("");
     const [saveSuccess, setSaveSuccess] = useState("");
     useEffect(() => {
@@ -143,6 +146,7 @@ function TeacherPostDetailPage() {
             if (response.success) {
                 setPost(response.data);
                 setSaveSuccess("Post updated successfully!");
+                notify("Post updated successfully.");
                 setEditing(false);
             } else {
                 setSaveError(response.message);
@@ -380,7 +384,7 @@ function TeacherPostDetailPage() {
                             loadingPosition="start"
                             variant="contained"
                             startIcon={<SaveIcon />}
-                            onClick={handleSave}
+                            onClick={() => setConfirmSave(true)}
                             disabled={saving}
                         >
                             {saving ? "Saving..." : "Save Changes"}
@@ -388,6 +392,14 @@ function TeacherPostDetailPage() {
                     </Box>
                 )}
             </Card>
+            <ConfirmDialog
+                open={confirmSave}
+                title="Save changes?"
+                message="This post will be updated."
+                confirmLabel="Yes, save"
+                onConfirm={() => { setConfirmSave(false); handleSave(); }}
+                onCancel={() => setConfirmSave(false)}
+            />
         </Box>
     );
 }

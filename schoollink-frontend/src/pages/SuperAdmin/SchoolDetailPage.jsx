@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import { notify } from "../../utils/notify";
 import { useNavigate, useParams } from "react-router-dom";
 import {
     Alert, Box, Button, Card, Chip, CircularProgress, Dialog, DialogActions,
@@ -64,6 +66,7 @@ export default function SchoolDetailPage() {
     const [statusDialog, setStatusDialog] = useState(null);
     const [reason, setReason] = useState("");
     const [statusBusy, setStatusBusy] = useState(false);
+    const [payToDelete, setPayToDelete] = useState(null);
     const [notes, setNotes] = useState("");
     const [notesBusy, setNotesBusy] = useState(false);
     const [notesMsg, setNotesMsg] = useState("");
@@ -86,6 +89,7 @@ export default function SchoolDetailPage() {
             await setSchoolStatus(school.id, statusDialog, reason);
             setStatusDialog(null);
             setReason("");
+            notify("School status updated.");
             load();
         } catch (err) {
             setError(err.response?.data?.message || "Unable to change the status.");
@@ -94,8 +98,12 @@ export default function SchoolDetailPage() {
         }
     }
     async function removePayment(paymentId) {
-        if (!window.confirm("Delete this payment record? The subscription dates will not change.")) return;
-        await deleteSchoolPayment(paymentId);
+        try {
+            await deleteSchoolPayment(paymentId);
+            notify("Payment record deleted.");
+        } catch (err) {
+            setError(err.response?.data?.message || "Unable to delete this payment.");
+        }
         load();
     }
     async function saveNotes() {
@@ -103,6 +111,7 @@ export default function SchoolDetailPage() {
             setNotesBusy(true);
             await saveSchoolNotes(school.id, notes);
             setNotesMsg("Saved");
+            notify("Notes saved.");
             setTimeout(() => setNotesMsg(""), 2000);
         } finally {
             setNotesBusy(false);
@@ -276,7 +285,7 @@ export default function SchoolDetailPage() {
                             </Typography>
                             {p.notes && <Typography sx={{ color: "#94A3B8", fontSize: "0.74rem" }}>{p.notes}</Typography>}
                         </Box>
-                        <IconButton size="small" onClick={() => removePayment(p.id)} aria-label="Delete payment">
+                        <IconButton size="small" onClick={() => setPayToDelete(p.id)} aria-label="Delete payment">
                             <DeleteIcon fontSize="small" />
                         </IconButton>
                     </Box>
@@ -327,6 +336,15 @@ export default function SchoolDetailPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <ConfirmDialog
+                open={payToDelete !== null}
+                title="Delete this payment record?"
+                message="The subscription dates will not change."
+                confirmLabel="Yes, delete"
+                confirmColor="error"
+                onConfirm={() => { const id = payToDelete; setPayToDelete(null); removePayment(id); }}
+                onCancel={() => setPayToDelete(null)}
+            />
         </Box>
     );
 }
