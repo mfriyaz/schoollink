@@ -24,6 +24,7 @@ router.get(
     ),
     tenant.param("student", "studentId"),
     tenant.param("exam", "examId"),
+    tenant.teacherParam("student", "studentId"),
     reportCardPdfController.downloadReportCard
 );
 

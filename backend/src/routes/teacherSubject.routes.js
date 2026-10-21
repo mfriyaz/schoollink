@@ -50,6 +50,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
     tenant.param("teacher", "teacherId"),
+    tenant.teacherParam("teacher", "teacherId"),
     teacherSubjectController.getAssignmentsByTeacher
 );
 

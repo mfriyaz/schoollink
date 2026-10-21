@@ -59,6 +59,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
     tenant.param("teacher_subject", "teacherSubjectId"),
+    tenant.teacherParam("teacher_subject", "teacherSubjectId"),
     attendanceController.getAttendanceByDate
 );
 
@@ -71,6 +72,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher", "Parent"),
     tenant.param("student", "studentId"),
+    tenant.teacherParam("student", "studentId"),
     attendanceController.getAttendanceByStudent
 );
 
@@ -82,6 +84,7 @@ router.put(
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
     tenant.param("attendance", "id"),
+    tenant.teacherParam("attendance", "id"),
     attendanceController.updateAttendance
 );
 

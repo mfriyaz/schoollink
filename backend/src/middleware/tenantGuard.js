@@ -115,6 +115,40 @@ function bodyList(kind, field, itemField) {
     }, { type: "list", kind, field, itemField });
 }
 
+
+// ---- Teachers: inside their own school they may only touch their own classes ----
+// (a Teacher cannot open or change another teacher's attendance, marks or dashboard)
+const TEACHER_OWNS = {
+    teacher: "SELECT 1 FROM teachers WHERE id = $1 AND user_id = $2",
+    teacher_subject:
+        "SELECT 1 FROM teacher_subjects ts JOIN teachers t ON t.id = ts.teacher_id WHERE ts.id = $1 AND t.user_id = $2",
+    attendance:
+        "SELECT 1 FROM attendance a JOIN teacher_subjects ts ON ts.id = a.teacher_subject_id JOIN teachers t ON t.id = ts.teacher_id WHERE a.id = $1 AND t.user_id = $2",
+    exam_subject:
+        "SELECT 1 FROM exam_subjects es JOIN teacher_subjects ts ON ts.id = es.teacher_subject_id JOIN teachers t ON t.id = ts.teacher_id WHERE es.id = $1 AND t.user_id = $2",
+    student_mark:
+        "SELECT 1 FROM student_marks m JOIN exam_subjects es ON es.id = m.exam_subject_id JOIN teacher_subjects ts ON ts.id = es.teacher_subject_id JOIN teachers t ON t.id = ts.teacher_id WHERE m.id = $1 AND t.user_id = $2",
+    homework:
+        "SELECT 1 FROM homework h JOIN teacher_subjects ts ON ts.id = h.teacher_subject_id JOIN teachers t ON t.id = ts.teacher_id WHERE h.id = $1 AND t.user_id = $2",
+    // a student in a class/section the teacher teaches
+    student:
+        "SELECT 1 FROM students s JOIN teacher_subjects ts ON ts.class_id = s.class_id AND ts.section_id = s.section_id AND ts.ended_at IS NULL JOIN teachers t ON t.id = ts.teacher_id WHERE s.id = $1 AND t.user_id = $2 LIMIT 1",
+};
+
+async function teacherOwns(req, kind, rawId) {
+    if (req.user.role !== "Teacher") return "ok";
+    const id = toId(rawId);
+    if (id === null) return "bad";
+    const r = await db.query(TEACHER_OWNS[kind], [id, req.user.id]);
+    return r.rows.length ? "ok" : "no";
+}
+
+/** Teacher only: the id in the URL must be theirs (School Admin / Parent are unaffected here). */
+function teacherParam(kind, name = "id") {
+    if (!TEACHER_OWNS[kind]) throw new Error(`tenantGuard: unknown teacher kind ${kind}`);
+    return wrap((req) => teacherOwns(req, kind, req.params[name]), { type: "teacherParam", kind, name });
+}
+
 /** A school id in the URL must be the user's own school. */
 function ownSchool(name = "schoolId") {
     return wrap((req) => {
@@ -123,4 +157,4 @@ function ownSchool(name = "schoolId") {
     }, { type: "ownSchool", name });
 }
 
-module.exports = { param, body, bodyList, ownSchool, OWNER };
+module.exports = { param, body, bodyList, ownSchool, teacherParam, OWNER, TEACHER_OWNS };

@@ -59,6 +59,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
     tenant.param("exam_subject", "examSubjectId"),
+    tenant.teacherParam("exam_subject", "examSubjectId"),
     studentMarkController.getMarksByExamSubject
 );
 
@@ -70,6 +71,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher", "Parent"),
     tenant.param("student", "studentId"),
+    tenant.teacherParam("student", "studentId"),
     studentMarkController.getMarksByStudent
 );
 
@@ -81,6 +83,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
     tenant.param("student_mark", "id"),
+    tenant.teacherParam("student_mark", "id"),
     studentMarkController.getStudentMarkById
 );
 
@@ -92,6 +95,7 @@ router.put(
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
     tenant.param("student_mark", "id"),
+    tenant.teacherParam("student_mark", "id"),
     studentMarkController.updateStudentMark
 );
 

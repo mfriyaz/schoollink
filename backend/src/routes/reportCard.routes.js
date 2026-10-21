@@ -28,6 +28,7 @@ router.get(
     ),
     tenant.param("student", "studentId"),
     tenant.param("exam", "examId"),
+    tenant.teacherParam("student", "studentId"),
     reportCardController.getStudentReportCard
 );
 
@@ -40,6 +41,7 @@ router.put(
     authorizeRoles("School Admin", "Teacher"),
     tenant.param("student", "studentId"),
     tenant.param("exam", "examId"),
+    tenant.teacherParam("student", "studentId"),
     remarksController.saveRemarks
 );
 
@@ -48,6 +50,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher", "Parent"),
     tenant.param("student", "studentId"),
+    tenant.teacherParam("student", "studentId"),
     remarksController.listStudentRemarks
 );
 

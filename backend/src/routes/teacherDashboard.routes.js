@@ -25,6 +25,7 @@ router.get(
         "School Admin"
     ),
     tenant.param("teacher", "teacherId"),
+    tenant.teacherParam("teacher", "teacherId"),
     teacherDashboardController.getTeacherDashboard
 );
 

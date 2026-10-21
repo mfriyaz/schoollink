@@ -23,6 +23,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
     tenant.param("homework", "homeworkId"),
+    tenant.teacherParam("homework", "homeworkId"),
     acknowledgementController.getHomeworkAckSummary
 );
 
@@ -46,6 +47,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher", "Parent"),
     tenant.param("student", "studentId"),
+    tenant.teacherParam("student", "studentId"),
     acknowledgementController.getAnnouncementsForStudent
 );
 

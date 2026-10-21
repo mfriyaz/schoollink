@@ -35,6 +35,7 @@ router.get(
     authenticate,
     authorizeRoles("School Admin", "Teacher", "Parent"),
     tenant.param("student", "studentId"),
+    tenant.teacherParam("student", "studentId"),
     homeworkController.getHomeworkForStudent
 );
 
