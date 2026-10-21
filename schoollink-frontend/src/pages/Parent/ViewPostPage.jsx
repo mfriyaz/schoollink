@@ -56,6 +56,16 @@ const REACTION_EMOJI = {
     heart: "❤️",
     star: "🌟"
 };
+/** Readable file name from a stored/temporary file link (no ?signature, no upload prefix). */
+function attachmentName(url) {
+    try {
+        const last = String(url || "").split("?")[0].split("/").pop() || "Attachment";
+        return decodeURIComponent(last).replace(/^\d+-[0-9a-f]{8}-/i, "") || "Attachment";
+    } catch {
+        return "Attachment";
+    }
+}
+
 function ViewPostPage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -491,7 +501,7 @@ function ViewPostPage() {
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                             <InsertDriveFileIcon sx={{ color: "var(--sl-ink)" }} />
                             <Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
-                                {post.attachment_url.split("/").pop()}
+                                {attachmentName(post.attachment_url)}
                             </Typography>
                         </Box>
                         <DownloadIcon sx={{ color: "var(--sl-ink)" }} />
