@@ -33,7 +33,13 @@ const privateFiles = require("./middleware/privateFiles");
 app.use(privateFiles.unsignRequests);
 app.use(privateFiles.signResponses);
 
-app.use("/uploads", express.static("uploads"));
+// Old local-disk uploads are only served when S3 is NOT configured (local
+// development). On the live site every file lives in private S3 storage and
+// is reached through temporary links, so nothing is served without a login.
+const { isS3Configured } = require("./services/fileStorage.service");
+if (!isS3Configured) {
+    app.use("/uploads", express.static("uploads"));
+}
 
 // ======================
 // Routes
