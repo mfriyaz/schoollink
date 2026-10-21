@@ -9,14 +9,16 @@ async function submitHomework(data) {
 
     const query = `
         INSERT INTO homework_submissions
-        (homework_id, student_id, parent_user_id, photo_urls, voice_url, remarks)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        (homework_id, student_id, parent_user_id, photo_urls, voice_url, remarks, is_late)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         ON CONFLICT (homework_id, student_id)
         DO UPDATE SET
             photo_urls = EXCLUDED.photo_urls,
             voice_url = EXCLUDED.voice_url,
             remarks = EXCLUDED.remarks,
             parent_user_id = EXCLUDED.parent_user_id,
+            is_late = EXCLUDED.is_late,
+            resubmit_count = homework_submissions.resubmit_count + 1,
             submitted_at = CURRENT_TIMESTAMP
         RETURNING *;
     `;
@@ -27,7 +29,8 @@ async function submitHomework(data) {
         data.parent_user_id,
         data.photo_urls || null,
         data.voice_url || null,
-        data.remarks || null
+        data.remarks || null,
+        Boolean(data.is_late)
     ];
 
     const result = await db.query(query, values);
@@ -104,7 +107,7 @@ async function reactToSubmission(submissionId, reaction, reviewedBy) {
     const result = await db.query(
         `
         UPDATE homework_submissions
-        SET reaction = $1, reviewed_at = CURRENT_TIMESTAMP, reviewed_by = $2
+        SET reaction = $1, reviewed_at = CURRENT_TIMESTAMP, reviewed_by = $2, locked = true
         WHERE id = $3
         RETURNING *;
         `,
@@ -140,9 +143,58 @@ async function getSubmissionById(submissionId) {
 
 }
 
+/**
+ * What a parent is allowed to do right now for this homework
+ * (open/closed and late, both judged in the school's own time zone).
+ */
+async function getHomeworkRules(homeworkId) {
+
+    const result = await db.query(
+        `
+        SELECT
+            hw.allow_photo_submission,
+            hw.allow_voice_submission,
+            (NOT hw.submissions_closed AND (hw.submissions_close_date IS NULL OR hw.submissions_close_date >= (NOW() AT TIME ZONE COALESCE(sch.timezone, 'Asia/Singapore'))::date)) AS open,
+            (hw.due_date IS NOT NULL AND hw.due_date < (NOW() AT TIME ZONE COALESCE(sch.timezone, 'Asia/Singapore'))::date) AS past_due
+        FROM homework hw
+        JOIN teacher_subjects ts ON ts.id = hw.teacher_subject_id
+        JOIN schools sch ON sch.id = ts.school_id
+        WHERE hw.id = $1
+        `,
+        [homeworkId]
+    );
+
+    return result.rows[0];
+
+}
+
+/**
+ * Teacher lets a parent change a reviewed submission again
+ * (and gives them a fresh set of re-submissions).
+ */
+async function unlockSubmission(submissionId) {
+
+    const result = await db.query(
+        `
+        UPDATE homework_submissions
+        SET locked = false, resubmit_count = 0
+        WHERE id = $1
+        RETURNING *;
+        `,
+        [submissionId]
+    );
+
+    return result.rows[0];
+
+}
+
 module.exports = {
 
     submitHomework,
+
+    getHomeworkRules,
+
+    unlockSubmission,
 
     getSubmission,
 

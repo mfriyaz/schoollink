@@ -73,6 +73,27 @@ router.put(
 );
 
 /**
+ * Close / reopen parent submissions
+ */
+router.patch(
+    "/:id/submissions/close",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    tenant.param("homework", "id"),
+    tenant.teacherParam("homework", "id"),
+    homeworkController.closeSubmissions
+);
+
+router.patch(
+    "/:id/submissions/reopen",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    tenant.param("homework", "id"),
+    tenant.teacherParam("homework", "id"),
+    homeworkController.reopenSubmissions
+);
+
+/**
  * Delete Homework
  */
 router.delete(

@@ -4,7 +4,22 @@ const notifierService = require("./notifier.service");
 
 const db = require("../config/database");
 
+const { deleteFileByUrl } = require("./fileStorage.service");
+
 const MAX_PHOTOS_PER_SUBMISSION = 5;
+
+// How many times a parent may replace an earlier submission
+const MAX_RESUBMITS = 3;
+
+function rule(message, status = 403) {
+
+    const err = new Error(message);
+
+    err.status = status;
+
+    return err;
+
+}
 
 const VALID_REACTIONS = ["thumbs_up", "heart", "star"];
 
@@ -26,7 +41,81 @@ async function submitHomework(data) {
 
     }
 
-    return await homeworkSubmissionModel.submitHomework(data);
+    const rules = await homeworkSubmissionModel.getHomeworkRules(data.homework_id);
+
+    if (!rules) {
+
+        throw rule("Homework not found.", 404);
+
+    }
+
+    if (!rules.open) {
+
+        throw rule("Submissions are closed for this homework. Please ask the teacher to reopen it.");
+
+    }
+
+    if (hasPhotos && rules.allow_photo_submission === false) {
+
+        throw rule("Photo submission is not allowed for this homework.");
+
+    }
+
+    if (hasVoice && rules.allow_voice_submission === false) {
+
+        throw rule("Voice submission is not allowed for this homework.");
+
+    }
+
+    const existing = await homeworkSubmissionModel.getSubmission(
+        data.homework_id,
+        data.student_id
+    );
+
+    if (existing) {
+
+        if (existing.locked) {
+
+            throw rule("The teacher has already reviewed this. Please ask the teacher to unlock it if you need to change it.");
+
+        }
+
+        if (existing.resubmit_count >= MAX_RESUBMITS) {
+
+            throw rule(`You have already replaced this ${MAX_RESUBMITS} times. Please ask the teacher to unlock it.`);
+
+        }
+
+    }
+
+    const saved = await homeworkSubmissionModel.submitHomework({
+
+        ...data,
+
+        is_late: rules.past_due
+
+    });
+
+    // Remove the files this submission replaced (best effort)
+    if (existing) {
+
+        const keep = new Set([...(data.photo_urls || []), data.voice_url].filter(Boolean));
+
+        const old = [...(existing.photo_urls || []), existing.voice_url].filter(Boolean);
+
+        for (const url of old) {
+
+            if (!keep.has(url)) {
+
+                await deleteFileByUrl(url);
+
+            }
+
+        }
+
+    }
+
+    return saved;
 
 }
 
@@ -156,6 +245,31 @@ async function reactToSubmission(submissionId, reaction, reviewedBy) {
  * Verify a parent (by their users.id) is actually linked to
  * the given student.
  */
+async function teacherOwnsSubmission(userId, submissionId) {
+
+    const result = await db.query(
+        `
+        SELECT 1
+        FROM homework_submissions hs
+        JOIN homework hw ON hw.id = hs.homework_id
+        JOIN teacher_subjects ts ON hw.teacher_subject_id = ts.id
+        JOIN teachers t ON ts.teacher_id = t.id
+        WHERE t.user_id = $1
+        AND hs.id = $2
+        `,
+        [userId, submissionId]
+    );
+
+    return result.rows.length > 0;
+
+}
+
+async function unlockSubmission(submissionId) {
+
+    return await homeworkSubmissionModel.unlockSubmission(submissionId);
+
+}
+
 async function parentOwnsStudent(userId, studentId) {
 
     const result = await db.query(
@@ -210,6 +324,10 @@ module.exports = {
 
     parentOwnsStudent,
 
-    teacherOwnsHomework
+    teacherOwnsHomework,
+
+    teacherOwnsSubmission,
+
+    unlockSubmission
 
 };

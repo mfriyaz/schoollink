@@ -83,4 +83,15 @@ router.patch(
     homeworkSubmissionController.reactToSubmission
 );
 
+/**
+ * Teacher lets a parent change a reviewed submission again
+ */
+router.patch(
+    "/:submissionId/unlock",
+    authenticate,
+    authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    tenant.param("submission", "submissionId"),
+    homeworkSubmissionController.unlockSubmission
+);
+
 module.exports = router;

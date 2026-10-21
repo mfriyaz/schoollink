@@ -4,7 +4,7 @@ const path = require("path");
 
 const crypto = require("crypto");
 
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 
 const AWS_S3_BUCKET = process.env.AWS_S3_BUCKET;
 
@@ -86,9 +86,58 @@ async function saveFile(buffer, originalName, mimetype, extensionOverride) {
 
 }
 
+/**
+ * Best-effort delete of a file we saved earlier (used when a
+ * parent replaces a submission, so old files don't pile up).
+ * Never throws: a failed delete must not block the parent.
+ */
+async function deleteFileByUrl(url) {
+
+    try {
+
+        if (!url || typeof url !== "string") return;
+
+        const clean = url.split("?")[0];
+
+        if (isS3Configured) {
+
+            const prefix = `https://${AWS_S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/`;
+
+            if (!clean.startsWith(prefix)) return;
+
+            const key = decodeURIComponent(clean.slice(prefix.length));
+
+            if (!key || key.includes("/") || key.includes("..")) return;
+
+            await s3Client.send(new DeleteObjectCommand({ Bucket: AWS_S3_BUCKET, Key: key }));
+
+            return;
+
+        }
+
+        if (clean.startsWith("/uploads/")) {
+
+            const name = path.basename(clean);
+
+            const filePath = path.join(uploadDir, name);
+
+            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+        }
+
+    } catch (err) {
+
+        console.error("Could not delete old file:", err.code || err.name || "error");
+
+    }
+
+}
+
 module.exports = {
 
     saveFile,
+
+    deleteFileByUrl,
 
     isS3Configured
 

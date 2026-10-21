@@ -20,11 +20,13 @@ async function createHomework(data) {
             image_urls,
             allow_photo_submission,
             allow_voice_submission,
-            allow_view_all_submissions
+            allow_view_all_submissions,
+            submissions_close_date
         )
         VALUES
         (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13
+            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,
+            COALESCE($14::date, $5::date + 3)
         )
         RETURNING *;
     `;
@@ -43,7 +45,8 @@ async function createHomework(data) {
         data.image_urls && data.image_urls.length > 0 ? data.image_urls : null,
         data.allow_photo_submission !== undefined ? data.allow_photo_submission : true,
         data.allow_voice_submission !== undefined ? data.allow_voice_submission : false,
-        data.allow_view_all_submissions !== undefined ? data.allow_view_all_submissions : false
+        data.allow_view_all_submissions !== undefined ? data.allow_view_all_submissions : false,
+        data.submissions_close_date || null
 
     ];
 
@@ -88,10 +91,14 @@ async function getHomeworkForStudent(studentId) {
             sec.section_name,
             COALESCE(a.is_acknowledged, false) AS is_acknowledged,
             a.acknowledged_at,
-            a.remarks
+            a.remarks,
+            (NOT hw.submissions_closed AND (hw.submissions_close_date IS NULL OR hw.submissions_close_date >= (NOW() AT TIME ZONE COALESCE(sch.timezone, 'Asia/Singapore'))::date)) AS submissions_open,
+            (hw.due_date IS NOT NULL AND hw.due_date < (NOW() AT TIME ZONE COALESCE(sch.timezone, 'Asia/Singapore'))::date) AS past_due
         FROM homework hw
         JOIN teacher_subjects ts
             ON hw.teacher_subject_id = ts.id
+        JOIN schools sch
+            ON sch.id = ts.school_id
         JOIN subjects s
             ON ts.subject_id = s.id
         JOIN teachers t
@@ -173,8 +180,9 @@ async function updateHomework(id, data) {
             allow_photo_submission = COALESCE($7, allow_photo_submission),
             allow_voice_submission = COALESCE($8, allow_voice_submission),
             allow_view_all_submissions = COALESCE($9, allow_view_all_submissions),
+            submissions_close_date = COALESCE($10::date, submissions_close_date),
             updated_at = NOW()
-        WHERE id = $10
+        WHERE id = $11
         RETURNING *;
     `;
 
@@ -189,11 +197,45 @@ async function updateHomework(id, data) {
         data.allow_photo_submission !== undefined ? data.allow_photo_submission : null,
         data.allow_voice_submission !== undefined ? data.allow_voice_submission : null,
         data.allow_view_all_submissions !== undefined ? data.allow_view_all_submissions : null,
+        data.submissions_close_date || null,
         id
 
     ];
 
     const result = await db.query(query, values);
+
+    return result.rows[0];
+
+}
+
+/**
+ * Close submissions now, or reopen them.
+ * Reopening gives everyone 3 more days (counted in the school's own time).
+ */
+async function setSubmissionsClosed(id, closed) {
+
+    const result = await db.query(
+        `
+        UPDATE homework hw
+        SET
+            submissions_closed = $2,
+            submissions_close_date = CASE
+                WHEN $2 THEN hw.submissions_close_date
+                ELSE (
+                    NOW() AT TIME ZONE COALESCE(
+                        (SELECT sch.timezone FROM teacher_subjects ts
+                         JOIN schools sch ON sch.id = ts.school_id
+                         WHERE ts.id = hw.teacher_subject_id),
+                        'Asia/Singapore'
+                    )
+                )::date + 3
+            END,
+            updated_at = NOW()
+        WHERE hw.id = $1
+        RETURNING *;
+        `,
+        [id, closed]
+    );
 
     return result.rows[0];
 
@@ -230,6 +272,8 @@ module.exports = {
     getHomeworkByIdForSchool,
 
     updateHomework,
+
+    setSubmissionsClosed,
 
     deleteHomework
 

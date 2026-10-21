@@ -87,6 +87,24 @@ async function updateHomework(id, schoolId, teacherId, data) {
 }
 
 /**
+ * Close or reopen parent submissions, with the same ownership
+ * scoping as update (a Teacher only for their own posts).
+ */
+async function setSubmissionsClosed(id, schoolId, teacherId, closed) {
+
+    const existing = await getHomeworkById(id, schoolId, teacherId);
+
+    if (!existing) {
+
+        return null;
+
+    }
+
+    return await homeworkModel.setSubmissionsClosed(id, closed);
+
+}
+
+/**
  * Delete Homework
  */
 async function deleteHomework(id) {
@@ -106,6 +124,8 @@ module.exports = {
     getHomeworkById,
 
     updateHomework,
+
+    setSubmissionsClosed,
 
     deleteHomework
 

@@ -63,7 +63,7 @@ async function submitHomework(req, res) {
         return response.error(
             res,
             err.message,
-            500
+            err.status || 500
         );
 
     }
@@ -267,11 +267,11 @@ async function reactToSubmission(req, res) {
 
         const { reaction } = req.body;
 
-        if (req.user.role === "Teacher" && req.body.homework_id) {
+        if (req.user.role === "Teacher") {
 
-            const owns = await homeworkSubmissionService.teacherOwnsHomework(
+            const owns = await homeworkSubmissionService.teacherOwnsSubmission(
                 req.user.id,
-                req.body.homework_id
+                submissionId
             );
 
             if (!owns) {
@@ -320,6 +320,48 @@ async function reactToSubmission(req, res) {
 
 }
 
+/**
+ * Teacher lets a parent change a reviewed submission again
+ */
+async function unlockSubmission(req, res) {
+
+    try {
+
+        const { submissionId } = req.params;
+
+        if (req.user.role === "Teacher") {
+
+            const owns = await homeworkSubmissionService.teacherOwnsSubmission(
+                req.user.id,
+                submissionId
+            );
+
+            if (!owns) {
+
+                return response.error(res, "This post is not one of yours", 403);
+
+            }
+
+        }
+
+        const submission = await homeworkSubmissionService.unlockSubmission(submissionId);
+
+        if (!submission) {
+
+            return response.error(res, "Submission not found", 404);
+
+        }
+
+        return response.success(res, submission, "Submission unlocked");
+
+    } catch (err) {
+
+        return response.error(res, err.message, 500);
+
+    }
+
+}
+
 module.exports = {
 
     submitHomework,
@@ -332,6 +374,8 @@ module.exports = {
 
     getSubmissionCount,
 
-    reactToSubmission
+    reactToSubmission,
+
+    unlockSubmission
 
 };

@@ -9,7 +9,8 @@ const HOMEWORK_FIELDS = {
     image_urls: "Photos",
     allow_photo_submission: "Allow photo submission",
     allow_voice_submission: "Allow voice submission",
-    allow_view_all_submissions: "Show submissions to all parents"
+    allow_view_all_submissions: "Show submissions to all parents",
+    submissions_close_date: "Accept submissions until"
 };
 
 const homeworkService = require("../services/homework.service");
@@ -250,6 +251,66 @@ async function updateHomework(req, res) {
 }
 
 /**
+ * Close (closed = true) or reopen parent submissions for a homework
+ */
+function setSubmissionsClosedHandler(closed) {
+
+    return async function (req, res) {
+
+        try {
+
+            let teacherId = null;
+
+            if (req.user.role === "Teacher") {
+
+                const teacher = await teacherService.getTeacherByUserId(req.user.id);
+
+                teacherId = teacher ? teacher.id : null;
+
+            }
+
+            const homework = await homeworkService.setSubmissionsClosed(
+                req.params.id,
+                req.user.school_id,
+                teacherId,
+                closed
+            );
+
+            if (!homework) {
+
+                return response.error(res, "Homework not found", 404);
+
+            }
+
+            await auditService.logAudit(req, {
+                action: "Edited",
+                entityType: "homework",
+                entityId: homework.id,
+                entityTitle: homework.title,
+                summary: closed ? "Submissions closed" : "Submissions reopened"
+            });
+
+            return response.success(
+                res,
+                homework,
+                closed ? "Submissions closed" : "Submissions reopened"
+            );
+
+        } catch (err) {
+
+            return response.error(res, err.message, 500);
+
+        }
+
+    };
+
+}
+
+const closeSubmissions = setSubmissionsClosedHandler(true);
+
+const reopenSubmissions = setSubmissionsClosedHandler(false);
+
+/**
  * Delete Homework
  */
 async function deleteHomework(req, res) {
@@ -320,6 +381,10 @@ module.exports = {
     getHomeworkById,
 
     updateHomework,
+
+    closeSubmissions,
+
+    reopenSubmissions,
 
     deleteHomework
 
