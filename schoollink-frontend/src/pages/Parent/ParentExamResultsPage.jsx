@@ -1,174 +1,231 @@
 import { useEffect, useState } from "react";
-import {
-    Box,
-    Card,
-    CircularProgress,
-    MenuItem,
-    TextField,
-    Typography
-} from "@mui/material";
+import { Box, Card, Chip, CircularProgress, LinearProgress, Typography } from "@mui/material";
 import AssessmentIcon from "@mui/icons-material/AssessmentOutlined";
+import DownloadIcon from "@mui/icons-material/FileDownloadOutlined";
 import { getMyChildren } from "../../services/postService";
 import { getMarksForStudent } from "../../services/examService";
-import { getStudentRemarks } from "../../services/reportCardService";
+import { getStudentRemarks, downloadReportCardPdf } from "../../services/reportCardService";
+import { notify } from "../../utils/notify";
+
 const panelSx = {
     p: { xs: 2, md: 2.5 },
     borderRadius: 3,
     border: "1px solid var(--sl-border)",
     boxShadow: "var(--sl-card-shadow)"
 };
+
+const pillSx = {
+    borderRadius: 99,
+    border: "1.5px solid var(--sl-ink)",
+    color: "var(--sl-ink)",
+    fontWeight: 700,
+    textTransform: "none",
+    px: 1.75,
+    py: 0.6,
+    fontSize: "0.85rem",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 0.75,
+    bgcolor: "#fff",
+    cursor: "pointer"
+};
+
+function barColor(pct) {
+    if (pct >= 75) return "#16A34A";
+    if (pct >= 50) return "#D97706";
+    return "#DC2626";
+}
+
 function ParentExamResultsPage() {
     const [children, setChildren] = useState([]);
-    const [selectedStudentId, setSelectedStudentId] = useState("");
+    const [studentId, setStudentId] = useState("");
     const [marks, setMarks] = useState([]);
     const [remarksByName, setRemarksByName] = useState({});
     const [loading, setLoading] = useState(true);
+    const [busyExam, setBusyExam] = useState(null);
+
     useEffect(() => {
-        loadChildren();
-    }, []);
-    async function loadChildren() {
-        try {
-            const response = await getMyChildren();
-            if (response.success && response.data.length > 0) {
-                setChildren(response.data);
-                setSelectedStudentId(response.data[0].student_id);
-                await loadMarks(response.data[0].student_id);
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    }
-    async function loadMarks(studentId) {
-        try {
-            const response = await getMarksForStudent(studentId);
-            if (response.success) {
-                setMarks(response.data);
-            }
+        (async () => {
             try {
-                const rem = await getStudentRemarks(studentId);
+                const res = await getMyChildren();
+                if (res.success && res.data.length > 0) {
+                    setChildren(res.data);
+                    setStudentId(res.data[0].student_id);
+                    await loadMarks(res.data[0].student_id);
+                }
+            } catch (e) { console.error(e); }
+            finally { setLoading(false); }
+        })();
+    }, []);
+
+    async function loadMarks(id) {
+        try {
+            const res = await getMarksForStudent(id);
+            setMarks(res.success ? res.data : []);
+            try {
+                const rem = await getStudentRemarks(id);
                 const map = {};
                 (rem.data || []).forEach((r) => { map[r.exam_name] = r.remarks; });
                 setRemarksByName(map);
-            } catch (e) {
-                setRemarksByName({});
-            }
-        } catch (err) {
-            console.error(err);
-        }
+            } catch (e) { setRemarksByName({}); }
+        } catch (e) { console.error(e); setMarks([]); }
     }
-    async function handleChildChange(studentId) {
-        setSelectedStudentId(studentId);
+
+    async function pickChild(id) {
+        if (id === studentId) return;
+        setStudentId(id);
         setLoading(true);
-        await loadMarks(studentId);
+        await loadMarks(id);
         setLoading(false);
     }
-    // Group by exam name so results read as one exam at a time
-    const marksByExam = marks.reduce((groups, mark) => {
-        if (!groups[mark.exam_name]) {
-            groups[mark.exam_name] = [];
+
+    async function downloadPdf(examId, examName) {
+        setBusyExam(examId);
+        try {
+            const blob = await downloadReportCardPdf(studentId, examId);
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Report Card - ${examName}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 5000);
+        } catch (e) {
+            notify("Report card is not ready yet.", "info");
+        } finally {
+            setBusyExam(null);
         }
-        groups[mark.exam_name].push(mark);
-        return groups;
-    }, {});
+    }
+
+    const groups = [];
+    marks.forEach((m) => {
+        const key = m.exam_id || m.exam_name;
+        let g = groups.find((x) => x.key === key);
+        if (!g) { g = { key, examId: m.exam_id, name: m.exam_name, items: [] }; groups.push(g); }
+        g.items.push(m);
+    });
+
     return (
         <Box sx={{ maxWidth: 700 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, flexWrap: "wrap", gap: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Box
-                        sx={{
-                            width: 46,
-                            height: 46,
-                            borderRadius: "14px",
-                            bgcolor: "var(--sl-accent)",
-                            border: "1.5px solid var(--sl-ink)",
-                            boxShadow: "2px 2px 0 var(--sl-ink)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center"
-                        }}
-                    >
-                        <AssessmentIcon sx={{ color: "var(--sl-ink)" }} />
-                    </Box>
-                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, color: "var(--sl-ink)" }}>
-                        Exam Results
-                    </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <AssessmentIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
-                {children.length > 1 && (
-                    <TextField
-                        select
-                        size="small"
-                        value={selectedStudentId}
-                        onChange={(e) => handleChildChange(e.target.value)}
-                        sx={{ minWidth: { xs: "100%", sm: 180 } }}
-                    >
-                        {children.map((c) => (
-                            <MenuItem key={c.student_id} value={c.student_id}>{c.first_name} {c.last_name}</MenuItem>
-                        ))}
-                    </TextField>
-                )}
+                <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, color: "var(--sl-ink)" }}>
+                    Exam Results
+                </Typography>
             </Box>
-            {loading && (
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
-                    <CircularProgress />
+
+            {children.length > 1 && (
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
+                    {children.map((c) => (
+                        <Chip
+                            key={c.student_id}
+                            label={c.first_name}
+                            onClick={() => pickChild(c.student_id)}
+                            sx={{
+                                fontWeight: 700,
+                                border: "1.5px solid var(--sl-ink)",
+                                bgcolor: c.student_id === studentId ? "var(--sl-accent)" : "#fff",
+                                color: "var(--sl-ink)"
+                            }}
+                        />
+                    ))}
                 </Box>
             )}
+
+            {loading && <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box>}
+
             {!loading && marks.length === 0 && (
-                <Card sx={{ ...panelSx }}>
-                    <Typography color="text.secondary">
-                        No exam results published yet.
-                    </Typography>
+                <Card sx={panelSx}>
+                    <Typography color="text.secondary">No exam results published yet.</Typography>
                 </Card>
             )}
-            {!loading && Object.entries(marksByExam).map(([examName, examMarks]) => (
-                <Card key={examName} sx={{ ...panelSx, mb: 2.5 }}>
-                    <Typography sx={{ fontWeight: 800, fontSize: "1.05rem", mb: 1.5, color: "var(--sl-ink)" }}>
-                        {examName}
-                    </Typography>
-                    {examMarks.map((mark) => (
-                        <Box
-                            key={mark.id}
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                py: 1.5,
-                                borderBottom: "1px solid var(--sl-border)",
-                                "&:last-of-type": { borderBottom: "none" }
-                            }}
-                        >
+
+            {!loading && groups.map((g) => {
+                const pcts = g.items.map((m) => Number(m.percentage) || 0);
+                const avg = pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : 0;
+                const total = g.items.reduce((a, m) => a + (Number(m.marks_obtained) || 0), 0);
+                const allPass = g.items.every((m) => m.result === "Pass");
+                return (
+                    <Card key={g.key} sx={{ ...panelSx, mb: 2.5 }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 1, flexWrap: "wrap" }}>
                             <Box>
-                                <Typography sx={{ fontWeight: 600 }}>
-                                    {mark.subject_name}
-                                </Typography>
+                                <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--sl-ink)" }}>{g.name}</Typography>
                                 <Typography sx={{ color: "text.secondary", fontSize: "0.82rem" }}>
-                                    {mark.marks_obtained} marks ({mark.percentage}%)
+                                    {g.items.length} subject{g.items.length > 1 ? "s" : ""} · Total {total} marks
                                 </Typography>
                             </Box>
-                            <Box component="span" sx={{
-                                px: 1.25, py: 0.25, borderRadius: 99, fontSize: "0.8rem", fontWeight: 800,
-                                border: "1.5px solid var(--sl-ink)",
-                                bgcolor: mark.result === "Pass" ? "#DCFCE7" : "#FEE2E2",
-                                color: mark.result === "Pass" ? "#15803D" : "#B91C1C"
-                            }}>
-                                {mark.grade_name}
+                            <Box sx={{ textAlign: "right" }}>
+                                <Typography sx={{ fontWeight: 800, fontSize: "1.6rem", lineHeight: 1, color: barColor(avg) }}>{avg}%</Typography>
+                                <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: allPass ? "#15803D" : "#B91C1C" }}>
+                                    {allPass ? "Passed all subjects" : "Needs attention"}
+                                </Typography>
                             </Box>
                         </Box>
-                    ))}
-                    {remarksByName[examName] && (
-                        <Box sx={{ mt: 1.5, p: 1.5, borderRadius: 2, bgcolor: "var(--sl-soft, #F1F5F9)", border: "1px dashed var(--sl-ink)" }}>
-                            <Typography sx={{ fontWeight: 700, fontSize: "0.82rem", mb: 0.5 }}>
-                                Teacher's remarks
-                            </Typography>
-                            <Typography sx={{ fontSize: "0.9rem", whiteSpace: "pre-wrap" }}>
-                                {remarksByName[examName]}
-                            </Typography>
+
+                        <Box sx={{ mt: 1.5 }}>
+                            {g.items.map((m) => {
+                                const pct = Number(m.percentage) || 0;
+                                const pass = m.result === "Pass";
+                                return (
+                                    <Box key={m.id} sx={{ py: 1.25, borderTop: "1px solid var(--sl-border)" }}>
+                                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
+                                            <Box sx={{ minWidth: 0 }}>
+                                                <Typography sx={{ fontWeight: 700 }} noWrap>{m.subject_name}</Typography>
+                                                <Typography sx={{ color: "text.secondary", fontSize: "0.8rem" }}>
+                                                    {m.marks_obtained} marks · {pct}%
+                                                </Typography>
+                                            </Box>
+                                            <Box component="span" sx={{
+                                                px: 1.25, py: 0.25, borderRadius: 99, fontSize: "0.8rem", fontWeight: 800,
+                                                border: "1.5px solid var(--sl-ink)",
+                                                bgcolor: pass ? "#DCFCE7" : "#FEE2E2",
+                                                color: pass ? "#15803D" : "#B91C1C"
+                                            }}>
+                                                {m.grade_name}
+                                            </Box>
+                                        </Box>
+                                        <LinearProgress
+                                            variant="determinate"
+                                            value={Math.min(100, pct)}
+                                            sx={{
+                                                mt: 0.9, height: 8, borderRadius: 99, bgcolor: "var(--sl-soft, #F1F5F9)",
+                                                "& .MuiLinearProgress-bar": { borderRadius: 99, bgcolor: barColor(pct) }
+                                            }}
+                                        />
+                                    </Box>
+                                );
+                            })}
                         </Box>
-                    )}
-                </Card>
-            ))}
+
+                        {remarksByName[g.name] && (
+                            <Box sx={{ mt: 1.5, p: 1.5, borderRadius: 2, bgcolor: "var(--sl-soft, #F1F5F9)", border: "1px dashed var(--sl-ink)" }}>
+                                <Typography sx={{ fontWeight: 700, fontSize: "0.82rem", mb: 0.5 }}>Teacher's remarks</Typography>
+                                <Typography sx={{ fontSize: "0.9rem", whiteSpace: "pre-wrap" }}>{remarksByName[g.name]}</Typography>
+                            </Box>
+                        )}
+
+                        {g.examId && (
+                            <Box sx={{ mt: 1.75 }}>
+                                <Box
+                                    component="button"
+                                    type="button"
+                                    disabled={busyExam === g.examId}
+                                    onClick={() => downloadPdf(g.examId, g.name)}
+                                    sx={{ ...pillSx, bgcolor: "var(--sl-accent)", opacity: busyExam === g.examId ? 0.6 : 1 }}
+                                >
+                                    <DownloadIcon sx={{ fontSize: 18 }} />
+                                    {busyExam === g.examId ? "Preparing…" : "Download report card"}
+                                </Box>
+                            </Box>
+                        )}
+                    </Card>
+                );
+            })}
         </Box>
     );
 }
+
 export default ParentExamResultsPage;
