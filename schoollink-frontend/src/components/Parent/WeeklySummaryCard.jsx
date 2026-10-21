@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { Alert, Box, Card, CircularProgress, IconButton, MenuItem, TextField, Tooltip, Typography } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesomeOutlined";
+import EventNoteIcon from "@mui/icons-material/EventNoteOutlined";
 import RefreshIcon from "@mui/icons-material/RefreshRounded";
 
 import { getWeeklySummary } from "../../services/aiService";
@@ -23,15 +24,16 @@ function Stat({ value, label, tone }) {
         <Box
             sx={{
                 flex: "1 1 0",
-                minWidth: 70,
+                minWidth: { xs: "calc(50% - 4px)", sm: 70 },
                 textAlign: "center",
                 py: 1,
                 px: 0.5,
-                borderRadius: 2,
-                bgcolor: "var(--sl-soft, #F1F5F9)"
+                borderRadius: 2.5,
+                bgcolor: "var(--sl-soft, #F1F5F9)",
+                border: "1.5px solid var(--sl-ink, #0F172A)"
             }}
         >
-            <Typography sx={{ fontWeight: 800, fontSize: "1.25rem", lineHeight: 1.1, color: tone || "var(--sl-ink, var(--sl-ink))" }}>
+            <Typography sx={{ fontWeight: 800, fontSize: "1.45rem", lineHeight: 1.1, color: tone || "var(--sl-ink, #0F172A)" }}>
                 {value}
             </Typography>
             <Typography sx={{ fontSize: "0.7rem", color: "text.secondary", mt: 0.3 }}>{label}</Typography>
@@ -84,8 +86,8 @@ export default function WeeklySummaryCard({ studentId, showEmpty }) {
         if (empty && !showEmpty) return null;
         if (empty) {
             return (
-                <Card data-testid="weekly-summary" sx={{ p: 2.5, borderRadius: 3, border: "1px solid var(--sl-border, #EEF2F7)" }}>
-                    <Typography sx={{ fontWeight: 700 }}>Nothing new this week for {f.first_name}.</Typography>
+                <Card data-testid="weekly-summary" sx={{ p: 2.5, borderRadius: 3, border: "1px solid var(--sl-border, #EEF2F7)", boxShadow: "var(--sl-card-shadow)" }}>
+                    <Typography sx={{ fontWeight: 800, color: "var(--sl-ink)" }}>Nothing new this week for {f.first_name}.</Typography>
                     <Typography sx={{ color: "text.secondary", fontSize: "0.88rem", mt: 0.5 }}>
                         Attendance, homework, notices and results from the last 7 days will show here.
                     </Typography>
@@ -107,9 +109,14 @@ export default function WeeklySummaryCard({ studentId, showEmpty }) {
         >
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5, flexWrap: "wrap" }}>
-                <Typography sx={{ fontWeight: 800, fontSize: "1.02rem", flex: 1 }}>
-                    This week{f ? ` for ${f.first_name}` : ""}
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1, minWidth: 0 }}>
+                    <Box sx={{ width: 38, height: 38, minWidth: 38, borderRadius: "12px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <EventNoteIcon sx={{ color: "var(--sl-ink)", fontSize: 22 }} />
+                    </Box>
+                    <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--sl-ink)", lineHeight: 1.2 }}>
+                        This week{f ? ` for ${f.first_name}` : ""}
+                    </Typography>
+                </Box>
                 <TextField
                     select
                     size="small"
@@ -140,14 +147,16 @@ export default function WeeklySummaryCard({ studentId, showEmpty }) {
                     </Box>
 
                     {f.marks.map((m) => (
-                        <Typography key={m.exam_name} sx={{ fontSize: "0.88rem", mb: 0.5 }}>
-                            Results published: <b>{m.exam_name}</b> - {m.percentage}% overall
-                        </Typography>
+                        <Box key={m.exam_name} sx={{ mb: 1, p: 1.25, borderRadius: 2, bgcolor: "#DCFCE7", border: "1.5px solid #16A34A" }}>
+                            <Typography sx={{ fontSize: "0.88rem", color: "#14532D" }}>
+                                Results published: <b>{m.exam_name}</b> - {m.percentage}% overall
+                            </Typography>
+                        </Box>
                     ))}
 
                     {f.homework.pending_ack.length > 0 && (
-                        <Box sx={{ mb: 1 }}>
-                            <Typography sx={{ fontSize: "0.82rem", fontWeight: 700, color: "#B45309" }}>
+                        <Box sx={{ mb: 1, p: 1.25, borderRadius: 2, bgcolor: "#FFEDD5", border: "1.5px solid #EA580C" }}>
+                            <Typography sx={{ fontSize: "0.82rem", fontWeight: 800, color: "#9A3412", mb: 0.25 }}>
                                 Waiting for your tick
                             </Typography>
                             {f.homework.pending_ack.map((h, i) => (
