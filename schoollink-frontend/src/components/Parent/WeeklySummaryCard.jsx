@@ -8,15 +8,14 @@ import RefreshIcon from "@mui/icons-material/RefreshRounded";
 import { getWeeklySummary } from "../../services/aiService";
 
 const LANGS = [
-    ["en", "English"], ["ta", "தமிழ்"], ["hi", "हिन्दी"], ["ml", "മലയാളം"], ["te", "తెలుగు"],
-    ["kn", "ಕನ್ನಡ"], ["bn", "বাংলা"], ["ur", "اردو"], ["ar", "العربية"], ["ms", "Bahasa Melayu"],
-    ["zh", "中文"], ["fr", "Français"], ["es", "Español"]
+    ["en", "English"], ["ta", "தமிழ்"], ["ms", "Bahasa Melayu"], ["zh", "中文"], ["hi", "हिन्दी"]
 ];
 
 const LANG_KEY = "sl_summary_lang";
 
 function readLang() {
-    try { return localStorage.getItem(LANG_KEY) || "en"; } catch (e) { return "en"; }
+    try { const v = localStorage.getItem(LANG_KEY);
+        return LANGS.some(([c]) => c === v) ? v : "en"; } catch (e) { return "en"; }
 }
 
 function Stat({ value, label, tone }) {
