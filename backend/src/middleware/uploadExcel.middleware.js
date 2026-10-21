@@ -2,8 +2,7 @@ const multer = require("multer");
 
 const allowedMimeTypes = [
 
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "application/vnd.ms-excel"
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 ];
 
@@ -15,7 +14,7 @@ function fileFilter(req, file, cb) {
 
     } else {
 
-        cb(new Error("Only Excel files (.xlsx, .xls) are allowed"));
+        cb(new Error("Please upload the Excel template as an .xlsx file"));
 
     }
 
