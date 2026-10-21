@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const morningGreetingController = require("../controllers/morningGreeting.controller");
@@ -19,6 +21,7 @@ router.post(
     "/",
     authenticate,
     authorizeRoles("Parent"),
+    tenant.body("student", "student_id"),
     morningGreetingController.submitGreeting
 );
 
@@ -29,6 +32,7 @@ router.get(
     "/student/:studentId/today",
     authenticate,
     authorizeRoles("Parent"),
+    tenant.param("student", "studentId"),
     morningGreetingController.getTodaysGreeting
 );
 
@@ -49,6 +53,7 @@ router.patch(
     "/:greetingId/react",
     authenticate,
     authorizeRoles("Teacher"),
+    tenant.param("greeting", "greetingId"),
     morningGreetingController.reactToGreeting
 );
 
@@ -59,6 +64,7 @@ router.patch(
     "/bulk-react",
     authenticate,
     authorizeRoles("Teacher"),
+    tenant.bodyList("greeting", "greeting_ids"),
     morningGreetingController.bulkReactToGreetings
 );
 
@@ -89,6 +95,7 @@ router.get(
     "/student/:studentId/classmates-today",
     authenticate,
     authorizeRoles("Parent"),
+    tenant.param("student", "studentId"),
     morningGreetingController.getTodaysGreetingsForClassmates
 );
 

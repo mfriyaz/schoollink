@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const parentController = require("../controllers/parent.controller");
@@ -29,6 +31,7 @@ router.post(
     "/",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.body("student", "student_id"),
     parentController.createOrLinkParent
 );
 
@@ -39,6 +42,7 @@ router.get(
     "/student/:studentId",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("student", "studentId"),
     parentController.getParentsForStudent
 );
 
@@ -50,6 +54,7 @@ router.patch(
     "/:parentUserId/set-username",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("user", "parentUserId"),
     parentController.setParentUsername
 );
 

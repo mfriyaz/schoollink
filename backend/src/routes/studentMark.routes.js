@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const studentMarkController =
@@ -20,6 +22,8 @@ router.post(
     "/",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.body("exam_subject", "exam_subject_id"),
+    tenant.body("student", "student_id"),
     studentMarkController.createStudentMark
 );
 
@@ -30,6 +34,8 @@ router.post(
     "/bulk",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.body("exam_subject", "exam_subject_id"),
+    tenant.bodyList("student", "records", "student_id"),
     studentMarkController.bulkMarkExam
 );
 
@@ -41,6 +47,7 @@ router.get(
     "/roster/:examSubjectId",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("exam_subject", "examSubjectId"),
     studentMarkController.getRosterWithMarks
 );
 
@@ -51,6 +58,7 @@ router.get(
     "/exam-subject/:examSubjectId",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("exam_subject", "examSubjectId"),
     studentMarkController.getMarksByExamSubject
 );
 
@@ -61,6 +69,7 @@ router.get(
     "/student/:studentId",
     authenticate,
     authorizeRoles("School Admin", "Teacher", "Parent"),
+    tenant.param("student", "studentId"),
     studentMarkController.getMarksByStudent
 );
 
@@ -71,6 +80,7 @@ router.get(
     "/:id",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("student_mark", "id"),
     studentMarkController.getStudentMarkById
 );
 
@@ -81,6 +91,7 @@ router.put(
     "/:id",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("student_mark", "id"),
     studentMarkController.updateStudentMark
 );
 
@@ -91,6 +102,7 @@ router.delete(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("student_mark", "id"),
     studentMarkController.deleteStudentMark
 );
 

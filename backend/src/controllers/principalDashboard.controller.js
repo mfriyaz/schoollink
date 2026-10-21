@@ -8,7 +8,7 @@ async function getPrincipalDashboard(req, res) {
     try {
 
         const dashboard =
-            await principalDashboardService.getPrincipalDashboard();
+            await principalDashboardService.getPrincipalDashboard(req.user.school_id);
 
         return res.status(200).json({
 

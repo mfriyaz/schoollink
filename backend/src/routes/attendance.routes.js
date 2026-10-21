@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const attendanceController =
@@ -20,6 +22,8 @@ router.post(
     "/",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.body("teacher_subject", "teacher_subject_id"),
+    tenant.body("student", "student_id"),
     attendanceController.createAttendance
 );
 
@@ -30,6 +34,8 @@ router.post(
     "/bulk",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.body("teacher_subject", "teacher_subject_id"),
+    tenant.bodyList("student", "records", "student_id"),
     attendanceController.bulkMarkAttendance
 );
 
@@ -41,6 +47,7 @@ router.get(
     "/roster/:teacherSubjectId/:attendanceDate",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("teacher_subject", "teacherSubjectId"),
     attendanceController.getRosterWithAttendance
 );
 
@@ -51,6 +58,7 @@ router.get(
     "/teacher-subject/:teacherSubjectId/date/:attendanceDate",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("teacher_subject", "teacherSubjectId"),
     attendanceController.getAttendanceByDate
 );
 
@@ -62,6 +70,7 @@ router.get(
     "/student/:studentId",
     authenticate,
     authorizeRoles("School Admin", "Teacher", "Parent"),
+    tenant.param("student", "studentId"),
     attendanceController.getAttendanceByStudent
 );
 
@@ -72,6 +81,7 @@ router.put(
     "/:id",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("attendance", "id"),
     attendanceController.updateAttendance
 );
 
@@ -82,6 +92,7 @@ router.delete(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("attendance", "id"),
     attendanceController.deleteAttendance
 );
 

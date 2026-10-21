@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const teacherController = require("../controllers/teacher.controller");
@@ -52,6 +54,7 @@ router.get(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("teacher", "id"),
     teacherController.getTeacherById
 );
 
@@ -62,6 +65,7 @@ router.put(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("teacher", "id"),
     teacherController.updateTeacher
 );
 
@@ -72,6 +76,7 @@ router.delete(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("teacher", "id"),
     teacherController.deactivateTeacher
 );
 
@@ -82,6 +87,7 @@ router.patch(
     "/:id/add-login",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("teacher", "id"),
     teacherController.addLoginToExistingTeacher
 );
 
@@ -93,6 +99,7 @@ router.patch(
     "/:id/set-username",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("teacher", "id"),
     teacherController.setTeacherUsername
 );
 
@@ -103,6 +110,7 @@ router.patch(
     "/:id/reactivate",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("teacher", "id"),
     teacherController.reactivateTeacher
 );
 

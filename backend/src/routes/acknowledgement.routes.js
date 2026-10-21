@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const acknowledgementController =
@@ -20,6 +22,7 @@ router.get(
     "/homework/:homeworkId/summary",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("homework", "homeworkId"),
     acknowledgementController.getHomeworkAckSummary
 );
 
@@ -30,6 +33,7 @@ router.get(
     "/announcement/:announcementId/summary",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("announcement", "announcementId"),
     acknowledgementController.getAnnouncementAckSummary
 );
 
@@ -41,6 +45,7 @@ router.get(
     "/announcement/student/:studentId",
     authenticate,
     authorizeRoles("School Admin", "Teacher", "Parent"),
+    tenant.param("student", "studentId"),
     acknowledgementController.getAnnouncementsForStudent
 );
 
@@ -51,6 +56,7 @@ router.post(
     "/",
     authenticate,
     authorizeRoles("Parent"),
+    tenant.body("student", "student_id"),
     acknowledgementController.acknowledgePost
 );
 

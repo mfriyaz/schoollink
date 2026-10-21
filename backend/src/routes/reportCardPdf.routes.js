@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const reportCardPdfController = require("../controllers/reportCardPdf.controller");
@@ -20,6 +22,8 @@ router.get(
         "Teacher",
         "Parent"
     ),
+    tenant.param("student", "studentId"),
+    tenant.param("exam", "examId"),
     reportCardPdfController.downloadReportCard
 );
 

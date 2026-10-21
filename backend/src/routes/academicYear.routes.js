@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const academicYearController = require("../controllers/academicYear.controller");
@@ -49,6 +51,7 @@ router.get(
     "/school/:schoolId",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.ownSchool("schoolId"),
     academicYearController.getAcademicYearsBySchool
 );
 
@@ -59,6 +62,7 @@ router.get(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("academic_year", "id"),
     academicYearController.getAcademicYearById
 );
 
@@ -69,6 +73,7 @@ router.put(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("academic_year", "id"),
     academicYearController.updateAcademicYear
 );
 
@@ -79,6 +84,7 @@ router.delete(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("academic_year", "id"),
     academicYearController.deleteAcademicYear
 );
 

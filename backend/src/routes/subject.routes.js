@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const subjectController = require("../controllers/subject.controller");
@@ -50,6 +52,7 @@ router.get(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("subject", "id"),
     subjectController.getSubjectById
 );
 
@@ -60,6 +63,7 @@ router.put(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("subject", "id"),
     subjectController.updateSubject
 );
 
@@ -70,6 +74,7 @@ router.delete(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("subject", "id"),
     subjectController.deactivateSubject
 );
 
@@ -80,6 +85,7 @@ router.patch(
     "/:id/reactivate",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("subject", "id"),
     subjectController.reactivateSubject
 );
 

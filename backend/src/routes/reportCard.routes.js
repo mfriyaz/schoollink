@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const reportCardController = require("../controllers/reportCard.controller");
@@ -24,6 +26,8 @@ router.get(
         "Teacher",
         "Parent"
     ),
+    tenant.param("student", "studentId"),
+    tenant.param("exam", "examId"),
     reportCardController.getStudentReportCard
 );
 
@@ -34,6 +38,8 @@ router.put(
     "/student/:studentId/exam/:examId/remarks",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("student", "studentId"),
+    tenant.param("exam", "examId"),
     remarksController.saveRemarks
 );
 
@@ -41,6 +47,7 @@ router.get(
     "/student/:studentId/remarks",
     authenticate,
     authorizeRoles("School Admin", "Teacher", "Parent"),
+    tenant.param("student", "studentId"),
     remarksController.listStudentRemarks
 );
 

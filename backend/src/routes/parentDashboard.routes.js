@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const parentDashboardController = require("../controllers/parentDashboard.controller");
@@ -22,6 +24,7 @@ router.get(
         "Parent",
         "School Admin"
     ),
+    tenant.param("student", "studentId"),
     parentDashboardController.getParentDashboard
 );
 

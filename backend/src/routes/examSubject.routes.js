@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const examSubjectController =
@@ -20,6 +22,8 @@ router.post(
     "/",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.body("exam", "exam_id"),
+    tenant.body("teacher_subject", "teacher_subject_id"),
     examSubjectController.createExamSubject
 );
 
@@ -30,6 +34,7 @@ router.get(
     "/exam/:examId",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("exam", "examId"),
     examSubjectController.getSubjectsByExam
 );
 
@@ -40,6 +45,7 @@ router.get(
     "/:id",
     authenticate,
     authorizeRoles("School Admin", "Teacher"),
+    tenant.param("exam_subject", "id"),
     examSubjectController.getExamSubjectById
 );
 
@@ -50,6 +56,7 @@ router.put(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("exam_subject", "id"),
     examSubjectController.updateExamSubject
 );
 
@@ -60,6 +67,7 @@ router.delete(
     "/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("exam_subject", "id"),
     examSubjectController.deleteExamSubject
 );
 

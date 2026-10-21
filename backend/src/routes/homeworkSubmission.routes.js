@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const homeworkSubmissionController = require("../controllers/homeworkSubmission.controller");
@@ -19,6 +21,8 @@ router.post(
     "/",
     authenticate,
     authorizeRoles("Parent"),
+    tenant.body("homework", "homework_id"),
+    tenant.body("student", "student_id"),
     homeworkSubmissionController.submitHomework
 );
 
@@ -29,6 +33,8 @@ router.get(
     "/homework/:homeworkId/student/:studentId",
     authenticate,
     authorizeRoles("Super Admin", "School Admin", "Teacher", "Parent"),
+    tenant.param("homework", "homeworkId"),
+    tenant.param("student", "studentId"),
     homeworkSubmissionController.getSubmission
 );
 
@@ -39,6 +45,7 @@ router.get(
     "/homework/:homeworkId/count",
     authenticate,
     authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    tenant.param("homework", "homeworkId"),
     homeworkSubmissionController.getSubmissionCount
 );
 
@@ -49,6 +56,7 @@ router.get(
     "/homework/:homeworkId",
     authenticate,
     authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    tenant.param("homework", "homeworkId"),
     homeworkSubmissionController.getSubmissionsByHomework
 );
 
@@ -60,6 +68,7 @@ router.get(
     "/homework/:homeworkId/shared",
     authenticate,
     authorizeRoles("Parent"),
+    tenant.param("homework", "homeworkId"),
     homeworkSubmissionController.getSubmissionsForParentView
 );
 
@@ -70,6 +79,7 @@ router.patch(
     "/:submissionId/react",
     authenticate,
     authorizeRoles("Super Admin", "School Admin", "Teacher"),
+    tenant.param("submission", "submissionId"),
     homeworkSubmissionController.reactToSubmission
 );
 

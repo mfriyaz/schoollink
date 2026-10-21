@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const calendarController = require("../controllers/calendar.controller");
@@ -30,6 +32,7 @@ router.put(
     "/days/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("calendar_day", "id"),
     calendarController.updateDay
 );
 
@@ -37,6 +40,7 @@ router.delete(
     "/days/:id",
     authenticate,
     authorizeRoles("School Admin"),
+    tenant.param("calendar_day", "id"),
     calendarController.deleteDay
 );
 

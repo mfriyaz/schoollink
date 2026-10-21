@@ -1,5 +1,7 @@
 const express = require("express");
 
+const tenant = require("../middleware/tenantGuard");
+
 const router = express.Router();
 
 const announcementController = require("../controllers/announcement.controller");
@@ -68,6 +70,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
+    tenant.param("announcement", "id"),
     announcementController.getAnnouncementById
 );
 
@@ -80,6 +83,7 @@ router.put(
     authorizeRoles(
         "School Admin"
     ),
+    tenant.param("announcement", "id"),
     announcementController.updateAnnouncement
 );
 
@@ -92,6 +96,7 @@ router.delete(
     authorizeRoles(
         "School Admin"
     ),
+    tenant.param("announcement", "id"),
     announcementController.deleteAnnouncement
 );
 
