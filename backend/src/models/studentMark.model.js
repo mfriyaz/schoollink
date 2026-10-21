@@ -73,6 +73,7 @@ async function getMarksByStudent(studentId) {
         `
         SELECT
             sm.*,
+            es.exam_id,
             e.exam_name,
             s.subject_name
         FROM student_marks sm
