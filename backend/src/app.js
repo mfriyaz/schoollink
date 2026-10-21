@@ -27,6 +27,12 @@ app.use(
 
 app.use(express.json());
 
+// Uploaded files are private: addresses sent out become temporary links,
+// and addresses sent back in are put back to their plain form.
+const privateFiles = require("./middleware/privateFiles");
+app.use(privateFiles.unsignRequests);
+app.use(privateFiles.signResponses);
+
 app.use("/uploads", express.static("uploads"));
 
 // ======================
@@ -111,7 +117,11 @@ app.use("/api/audit-logs", auditRoutes);
 app.use("/api/calendar", calendarRoutes);
 app.use("/api/users", passwordResetRoutes);
 app.use("/api/push", pushRoutes);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// The API documentation lists every endpoint, so it is switched off on the
+// live site. To use it while developing, set ENABLE_API_DOCS=true in .env.
+if (process.env.ENABLE_API_DOCS === "true") {
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/acknowledgements", acknowledgementRoutes);
 app.use("/api/parents", parentRoutes);
