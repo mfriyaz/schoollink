@@ -102,8 +102,8 @@ function ParentAttendanceCard({ attendance, calendar }) {
                 p: { xs: 2, md: 2.5 },
                 mb: 3,
                 borderRadius: 3,
-                border: "1px solid #EEF2F7",
-                boxShadow: "0 1px 3px rgba(15,23,42,.06)"
+                border: "1px solid var(--sl-border)",
+                boxShadow: "var(--sl-card-shadow)"
             }}
         >
 
@@ -119,7 +119,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                 }}
             >
                 <Box>
-                    <Typography sx={{ fontWeight: 700, fontSize: "1.05rem", lineHeight: 1.3 }}>
+                    <Typography sx={{ fontWeight: 800, fontSize: "1.15rem", lineHeight: 1.3, color: "var(--sl-ink)" }}>
                         Attendance
                     </Typography>
                     <Typography sx={{ color: "#64748B", fontSize: "0.76rem" }}>
@@ -129,7 +129,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                     </Typography>
                 </Box>
 
-                <Box sx={{ display: "flex", p: 0.4, bgcolor: "#F1F5F9", borderRadius: 5 }}>
+                <Box sx={{ display: "flex", p: 0.4, bgcolor: "var(--sl-soft, #F1F5F9)", borderRadius: 5, border: "1.5px solid var(--sl-ink)" }}>
                     {[
                         { value: "today", label: "Today" },
                         { value: "month", label: "This Month" }
@@ -143,10 +143,10 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                 borderRadius: 5,
                                 cursor: "pointer",
                                 fontSize: "0.8rem",
-                                fontWeight: 600,
-                                bgcolor: tab === t.value ? "#FFFFFF" : "transparent",
-                                color: tab === t.value ? "var(--sl-primary)" : "#64748B",
-                                boxShadow: tab === t.value ? "0 1px 2px rgba(15,23,42,.1)" : "none"
+                                fontWeight: 800,
+                                bgcolor: tab === t.value ? "var(--sl-accent)" : "transparent",
+                                color: "var(--sl-ink)",
+                                opacity: tab === t.value ? 1 : 0.7
                             }}
                         >
                             {t.label}
@@ -164,6 +164,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                         gap: 1.75,
                         p: 1.75,
                         borderRadius: 2.5,
+                        border: `1.5px solid ${todayStyle.fg}`,
                         bgcolor: todayStyle.bg
                     }}
                 >
@@ -229,6 +230,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                             py: 0.6,
                                             borderRadius: 2,
                                             bgcolor: STATUS[s].bg,
+                                            border: "1.5px solid var(--sl-ink)",
                                             minWidth: 64,
                                             textAlign: "center"
                                         }}
@@ -289,7 +291,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                             fontWeight: rec || isToday ? 700 : 500,
                                             bgcolor: st ? st.bg : offStyle ? offStyle.bg : "#F8FAFC",
                                             color: st ? st.fg : offStyle ? offStyle.fg : "#94A3B8",
-                                            border: isToday ? "2px solid var(--sl-primary)" : "2px solid transparent"
+                                            border: isToday ? "2px solid var(--sl-ink)" : "2px solid transparent"
                                         }}
                                     >
                                         {d}
@@ -316,7 +318,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
 
                         {/* Only the days that need attention */}
                         {exceptions.length > 0 && (
-                            <Box sx={{ mt: 2, pt: 1.5, borderTop: "1px solid #F1F5F9" }}>
+                            <Box sx={{ mt: 2, pt: 1.5, borderTop: "1px solid var(--sl-border)" }}>
                                 <Typography
                                     sx={{
                                         color: "#64748B",
@@ -367,7 +369,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                     sx={{
                         mt: 1.75,
                         pt: 1.25,
-                        borderTop: "1px solid #F1F5F9",
+                        borderTop: "1px solid var(--sl-border)",
                         display: "flex",
                         alignItems: "center",
                         gap: 1
