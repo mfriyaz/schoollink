@@ -48,6 +48,14 @@ export async function getSubmissionCount(homeworkId) {
 
 }
 
+export async function unlockSubmission(submissionId) {
+
+    const response = await api.patch(`/homework-submissions/${submissionId}/unlock`);
+
+    return response.data;
+
+}
+
 export async function reactToSubmission(submissionId, reaction, homeworkId) {
 
     const response = await api.patch(

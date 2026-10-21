@@ -66,6 +66,8 @@ function attachmentName(url) {
     }
 }
 
+const MAX_RESUBMITS = 3;
+
 function ViewPostPage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -355,6 +357,9 @@ function ViewPostPage() {
         );
     }
     const isAnnouncement = post.post_type === "announcement";
+    const subsOpen = post.submissions_open !== false;
+    const changesLeft = Math.max(0, MAX_RESUBMITS - (existingSubmission?.resubmit_count || 0));
+    const canChange = subsOpen && !(existingSubmission && existingSubmission.locked) && changesLeft > 0;
     async function handleAcknowledge() {
         setError("");
         try {
@@ -586,7 +591,17 @@ function ViewPostPage() {
                     </Typography>
                     {submissionError && <Alert severity="error" sx={{ mb: 2 }}>{submissionError}</Alert>}
                     {submissionSuccess && <Alert severity="success" sx={{ mb: 2 }}>{submissionSuccess}</Alert>}
-                    {existingSubmission && submissionPhotos.length === 0 && !submissionVoice ? (
+                    {subsOpen && post.past_due && !existingSubmission?.locked && (
+                        <Alert severity="warning" sx={{ mb: 2 }}>
+                            The due date has passed. Work you submit now will be marked Late.
+                        </Alert>
+                    )}
+                    {!subsOpen && !existingSubmission && (
+                        <Alert severity="info">
+                            Submissions are closed for this homework. Please ask the teacher if you still need to send it.
+                        </Alert>
+                    )}
+                    {(subsOpen || existingSubmission) && (existingSubmission && submissionPhotos.length === 0 && !submissionVoice ? (
                         <Box>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2, flexWrap: "wrap" }}>
                                 <CheckCircleIcon sx={{ color: "#16A34A" }} />
@@ -596,6 +611,9 @@ function ViewPostPage() {
                                         ` (${existingSubmission.photo_urls.length} photo${existingSubmission.photo_urls.length !== 1 ? "s" : ""})`}
                                     {existingSubmission.voice_url && " (voice recording)"}
                                 </Typography>
+                                {existingSubmission.is_late && (
+                                    <Chip size="small" label="Late" sx={{ bgcolor: "#FFEDD5", color: "#9A3412", fontWeight: 700, border: IMG_BORDER }} />
+                                )}
                                 {existingSubmission.reaction && (
                                     <Chip
                                         size="small"
@@ -625,7 +643,21 @@ function ViewPostPage() {
                                     <audio controls src={resolveFileUrl(existingSubmission.voice_url)} style={{ height: 36, maxWidth: 280 }} />
                                 </Box>
                             )}
-                            <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
+                            {!canChange && (
+                                <Alert severity="info">
+                                    {existingSubmission.locked
+                                        ? "The teacher has reviewed this work, so it can't be changed. Ask the teacher if you need to send it again."
+                                        : !subsOpen
+                                            ? "Submissions are closed, so this can't be changed now."
+                                            : `You have already replaced this ${MAX_RESUBMITS} times. Ask the teacher if you need to change it again.`}
+                                </Alert>
+                            )}
+                            {canChange && (
+                                <Typography sx={{ color: "text.secondary", fontSize: "0.8rem", mb: 1 }}>
+                                    You can replace this {changesLeft} more time{changesLeft === 1 ? "" : "s"}.
+                                </Typography>
+                            )}
+                            {canChange && <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap" }}>
                                 {post.allow_photo_submission && (
                                     <Button
                                         component="label"
@@ -651,7 +683,7 @@ function ViewPostPage() {
                                         Re-record Voice
                                     </Button>
                                 )}
-                            </Box>
+                            </Box>}
                         </Box>
                     ) : (
                         <Box>
@@ -768,7 +800,7 @@ function ViewPostPage() {
                                 </Button>
                             )}
                         </Box>
-                    )}
+                    ))}
                 </Card>
             )}
             {!isAnnouncement && post.allow_view_all_submissions && (

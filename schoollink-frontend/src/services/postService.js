@@ -157,6 +157,22 @@ export async function getHomeworkById(id) {
 
 }
 
+export async function closeHomeworkSubmissions(id) {
+
+    const response = await api.patch(`/homework/${id}/submissions/close`);
+
+    return response.data;
+
+}
+
+export async function reopenHomeworkSubmissions(id) {
+
+    const response = await api.patch(`/homework/${id}/submissions/reopen`);
+
+    return response.data;
+
+}
+
 export async function updateHomeworkPost(id, data) {
 
     const response = await api.put(`/homework/${id}`, data);

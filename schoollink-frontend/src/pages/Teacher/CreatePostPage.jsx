@@ -105,6 +105,7 @@ function CreatePostPage() {
     );
 
     const [dueDate, setDueDate] = useState("");
+    const [closeDate, setCloseDate] = useState("");
 
     const [attachment, setAttachment] = useState(null);
 
@@ -576,6 +577,8 @@ function CreatePostPage() {
 
                 due_date: dueDate,
 
+                submissions_close_date: closeDate || undefined,
+
                 attachment_url: attachment ? attachment.url : null,
 
                 image_urls: images.map((img) => img.url),
@@ -881,6 +884,14 @@ function CreatePostPage() {
                                         ))}
                                     </Box>
                                 </Box>
+                                {(allowPhotoSubmission || allowVoiceSubmission) && (
+                                    <Box>
+                                        <SchoolDatePicker label="Accept submissions until (optional)" value={closeDate} onChange={setCloseDate} fullWidth />
+                                        <Typography sx={{ color: "text.secondary", fontSize: "0.76rem", mt: 0.75 }}>
+                                            Leave blank for due date + 3 days. After the due date, parents can still submit until this date, marked Late.
+                                        </Typography>
+                                    </Box>
+                                )}
                                 <Box>
                                     <FieldLabel>Priority</FieldLabel>
                                     <Box sx={{ display: "flex", gap: 1 }}>

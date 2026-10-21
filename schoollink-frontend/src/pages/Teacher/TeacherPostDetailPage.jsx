@@ -21,6 +21,8 @@ import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import {
     getHomeworkById,
     updateHomeworkPost,
+    closeHomeworkSubmissions,
+    reopenHomeworkSubmissions,
     uploadAttachment
 } from "../../services/postService";
 import { resolveFileUrl } from "../../config";
@@ -40,6 +42,8 @@ function TeacherPostDetailPage() {
     const [priority, setPriority] = useState("Normal");
     const [homeworkDate, setHomeworkDate] = useState("");
     const [dueDate, setDueDate] = useState("");
+    const [closeDate, setCloseDate] = useState("");
+    const [togglingSubs, setTogglingSubs] = useState(false);
     const [allowPhotoSubmission, setAllowPhotoSubmission] = useState(true);
     const [allowVoiceSubmission, setAllowVoiceSubmission] = useState(false);
     const [allowViewAllSubmissions, setAllowViewAllSubmissions] = useState(false);
@@ -65,6 +69,7 @@ function TeacherPostDetailPage() {
                 setPriority(p.priority || "Normal");
                 setHomeworkDate(p.homework_date ? p.homework_date.slice(0, 10) : "");
                 setDueDate(p.due_date ? p.due_date.slice(0, 10) : "");
+                setCloseDate(p.submissions_close_date ? p.submissions_close_date.slice(0, 10) : "");
                 setAllowPhotoSubmission(
                     p.allow_photo_submission !== undefined ? p.allow_photo_submission : true
                 );
@@ -137,6 +142,7 @@ function TeacherPostDetailPage() {
                 priority,
                 homework_date: homeworkDate,
                 due_date: dueDate,
+                submissions_close_date: closeDate || undefined,
                 attachment_url: post.attachment_url,
                 image_urls: images.map((img) => img.url),
                 allow_photo_submission: allowPhotoSubmission,
@@ -160,6 +166,24 @@ function TeacherPostDetailPage() {
             setSaving(false);
         }
     }
+    async function toggleSubmissions(close) {
+        setTogglingSubs(true);
+        try {
+            const res = close ? await closeHomeworkSubmissions(id) : await reopenHomeworkSubmissions(id);
+            if (res.success) {
+                setPost((prev) => ({ ...prev, ...res.data }));
+                setCloseDate(res.data.submissions_close_date ? res.data.submissions_close_date.slice(0, 10) : "");
+                notify(close ? "Submissions closed." : "Submissions reopened for 3 more days.");
+            } else {
+                notify(res.message || "Could not change submissions.", "error");
+            }
+        } catch (err) {
+            notify(err.response?.data?.message || "Could not change submissions.", "error");
+        } finally {
+            setTogglingSubs(false);
+        }
+    }
+
     if (loading) {
         return (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
@@ -261,7 +285,11 @@ function TeacherPostDetailPage() {
                         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
                             <SchoolDatePicker label="Homework Date" value={homeworkDate} onChange={setHomeworkDate} fullWidth />
                             <SchoolDatePicker label="Due Date" value={dueDate} onChange={setDueDate} fullWidth />
+                            <SchoolDatePicker label="Accept submissions until" value={closeDate} onChange={setCloseDate} fullWidth />
                         </Box>
+                        <Typography sx={{ color: "text.secondary", fontSize: "0.76rem", mt: -1 }}>
+                            Parents can still submit after the due date (marked Late) until this date.
+                        </Typography>
 
                         <Box>
                             <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", mb: 0.5 }}>
@@ -312,6 +340,35 @@ function TeacherPostDetailPage() {
                         <Typography sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word", mb: 2 }}>
                             {post.description || "No description."}
                         </Typography>
+
+                        {(post.allow_photo_submission || post.allow_voice_submission) && (() => {
+                            const todayKey = new Intl.DateTimeFormat("en-CA", { timeZone: getSchoolTimezone() }).format(new Date());
+                            const closeKey = post.submissions_close_date ? post.submissions_close_date.slice(0, 10) : null;
+                            const closed = post.submissions_closed || (closeKey && closeKey < todayKey);
+                            return (
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, flexWrap: "wrap", p: 1.25, mb: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-ink)", bgcolor: closed ? "#FEE2E2" : "#DCFCE7" }}>
+                                    <Box sx={{ flex: 1, minWidth: 150 }}>
+                                        <Typography sx={{ fontWeight: 800, fontSize: "0.9rem", color: closed ? "#991B1B" : "#14532D" }}>
+                                            {closed ? "Submissions are closed" : "Submissions are open"}
+                                        </Typography>
+                                        <Typography sx={{ fontSize: "0.76rem", color: "text.secondary" }}>
+                                            {closed
+                                                ? "Parents can't add or change work."
+                                                : closeKey ? `Accepting until ${closeKey}` : "No closing date"}
+                                        </Typography>
+                                    </Box>
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        disabled={togglingSubs}
+                                        onClick={() => toggleSubmissions(!closed)}
+                                        sx={{ borderRadius: 99, textTransform: "none", fontWeight: 800, border: "1.5px solid var(--sl-ink)", color: "var(--sl-ink)", bgcolor: "#fff" }}
+                                    >
+                                        {closed ? "Reopen for 3 days" : "Close now"}
+                                    </Button>
+                                </Box>
+                            );
+                        })()}
 
                         {(post.allow_photo_submission || post.allow_voice_submission || post.allow_view_all_submissions) && (
                             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>

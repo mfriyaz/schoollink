@@ -17,7 +17,8 @@ import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
 
 import {
     getSubmissionsByHomework,
-    reactToSubmission
+    reactToSubmission,
+    unlockSubmission
 } from "../../services/homeworkSubmissionService";
 
 import { resolveFileUrl } from "../../config";
@@ -87,7 +88,35 @@ function SubmissionsDialog({ open, post, onClose }) {
             if (response.success) {
 
                 setSubmissions((prev) =>
-                    prev.map((s) => (s.id === submissionId ? response.data : s))
+                    prev.map((s) => (s.id === submissionId ? { ...s, ...response.data } : s))
+                );
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        } finally {
+
+            setReactingId(null);
+
+        }
+
+    }
+
+    async function handleUnlock(submissionId) {
+
+        try {
+
+            setReactingId(submissionId);
+
+            const response = await unlockSubmission(submissionId);
+
+            if (response.success) {
+
+                setSubmissions((prev) =>
+                    prev.map((s) => (s.id === submissionId ? { ...s, ...response.data } : s))
                 );
 
             }
@@ -275,7 +304,36 @@ function SubmissionsDialog({ open, post, onClose }) {
 
                             {submission.reviewed_at && " · Reviewed"}
 
+                            {submission.is_late && " · Late"}
+
+                            {submission.resubmit_count > 0 && ` · Replaced ${submission.resubmit_count}x`}
+
                         </Typography>
+
+                        {submission.locked && (
+
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1, flexWrap: "wrap" }}>
+
+                                <Typography sx={{ fontSize: "0.78rem", fontWeight: 700, color: "#475569" }}>
+                                    Locked: the parent can't change this.
+                                </Typography>
+
+                                <Box
+                                    component="button"
+                                    type="button"
+                                    disabled={reactingId === submission.id}
+                                    onClick={() => handleUnlock(submission.id)}
+                                    sx={{
+                                        border: "1.5px solid var(--sl-ink)", borderRadius: 99, bgcolor: "#fff",
+                                        px: 1.25, py: 0.2, fontSize: "0.76rem", fontWeight: 800, cursor: "pointer", color: "var(--sl-ink)"
+                                    }}
+                                >
+                                    Unlock
+                                </Box>
+
+                            </Box>
+
+                        )}
 
                         {submission.voice_url && (
 
