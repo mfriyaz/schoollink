@@ -90,6 +90,7 @@ function CreatePostPage() {
     const [title, setTitle] = useState("");
 
     const [description, setDescription] = useState("");
+    const [answerKey, setAnswerKey] = useState("");
 
     const [priority, setPriority] = useState("Normal");
 
@@ -580,6 +581,8 @@ function CreatePostPage() {
 
                 submissions_close_date: closeDate || undefined,
 
+                answer_key: answerKey || undefined,
+
                 attachment_url: attachment ? attachment.url : null,
 
                 image_urls: images.map((img) => img.url),
@@ -605,6 +608,8 @@ function CreatePostPage() {
                 setTitle("");
 
                 setDescription("");
+
+                setAnswerKey("");
 
                 setDueDate("");
 
@@ -738,8 +743,14 @@ function CreatePostPage() {
                                 </Box>
                                 <HomeworkAiButton
                                     assignment={selectedAssignment}
-                                    onUse={({ title: t, description: d }) => { setTitle(t); setDescription(d); }}
+                                    onUse={({ title: t, description: d, answer_key: k }) => { setTitle(t); setDescription(d); setAnswerKey(k || ""); }}
                                 />
+                                {answerKey && (
+                                    <Typography sx={{ fontSize: "0.78rem", color: "text.secondary", mt: -1.5 }}>
+                                        An answer key will be saved for you only (parents never see it).{" "}
+                                        <Box component="span" role="button" tabIndex={0} onClick={() => setAnswerKey("")} sx={{ fontWeight: 800, textDecoration: "underline", cursor: "pointer", color: "var(--sl-ink)" }}>Don't save it</Box>
+                                    </Typography>
+                                )}
                                 <TextField
                                     label="Title"
                                     placeholder="e.g. Math Exercise 4"

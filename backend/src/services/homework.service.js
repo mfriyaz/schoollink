@@ -1,12 +1,82 @@
 const homeworkModel = require("../models/homework.model");
 const notifierService = require("./notifier.service");
 
+const MAX_KEY_CHARS = 8000;
+
+function cleanKey(v) {
+
+    return typeof v === "string" ? v.replace(/\r/g, "").trim().slice(0, MAX_KEY_CHARS) : "";
+
+}
+
+/**
+ * Read the answer key, scoped like update (a Teacher only for their own posts)
+ */
+async function getAnswerKey(id, schoolId, teacherId) {
+
+    const existing = await getHomeworkById(id, schoolId, teacherId);
+
+    if (!existing) {
+
+        return undefined;
+
+    }
+
+    return await homeworkModel.getAnswerKey(id);
+
+}
+
+/**
+ * Save (or, when empty, remove) the answer key
+ */
+async function saveAnswerKey(id, schoolId, teacherId, text) {
+
+    const existing = await getHomeworkById(id, schoolId, teacherId);
+
+    if (!existing) {
+
+        return undefined;
+
+    }
+
+    const key = cleanKey(text);
+
+    if (!key) {
+
+        await homeworkModel.deleteAnswerKey(id);
+
+        return null;
+
+    }
+
+    // Edited by a person, so it is no longer purely AI-written
+    return await homeworkModel.saveAnswerKey(id, key, false);
+
+}
+
 /**
  * Create Homework
  */
 async function createHomework(data) {
 
     const homework = await homeworkModel.createHomework(data);
+
+    // Optional teacher-only answer key (kept out of the homework record)
+    const key = cleanKey(data.answer_key);
+
+    if (key) {
+
+        try {
+
+            await homeworkModel.saveAnswerKey(homework.id, key, true);
+
+        } catch (err) {
+
+            console.error("Failed to save answer key:", err.message);
+
+        }
+
+    }
 
     // Notification failures shouldn't block the post itself from
     // being created - log and move on rather than throwing.
@@ -126,6 +196,10 @@ module.exports = {
     updateHomework,
 
     setSubmissionsClosed,
+
+    getAnswerKey,
+
+    saveAnswerKey,
 
     deleteHomework
 

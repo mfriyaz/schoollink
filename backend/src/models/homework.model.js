@@ -242,6 +242,46 @@ async function setSubmissionsClosed(id, closed) {
 }
 
 /**
+ * Teacher-only answer key (separate table: never joined into parent queries)
+ */
+async function getAnswerKey(homeworkId) {
+
+    const result = await db.query(
+        `SELECT answer_key, ai_generated, updated_at FROM homework_answer_keys WHERE homework_id = $1`,
+        [homeworkId]
+    );
+
+    return result.rows[0] || null;
+
+}
+
+async function saveAnswerKey(homeworkId, text, aiGenerated) {
+
+    const result = await db.query(
+        `
+        INSERT INTO homework_answer_keys (homework_id, answer_key, ai_generated)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (homework_id)
+        DO UPDATE SET
+            answer_key = EXCLUDED.answer_key,
+            ai_generated = homework_answer_keys.ai_generated AND EXCLUDED.ai_generated,
+            updated_at = NOW()
+        RETURNING answer_key, ai_generated, updated_at;
+        `,
+        [homeworkId, text, aiGenerated]
+    );
+
+    return result.rows[0];
+
+}
+
+async function deleteAnswerKey(homeworkId) {
+
+    await db.query(`DELETE FROM homework_answer_keys WHERE homework_id = $1`, [homeworkId]);
+
+}
+
+/**
  * Delete Homework
  */
 async function deleteHomework(id) {
@@ -274,6 +314,12 @@ module.exports = {
     updateHomework,
 
     setSubmissionsClosed,
+
+    getAnswerKey,
+
+    saveAnswerKey,
+
+    deleteAnswerKey,
 
     deleteHomework
 

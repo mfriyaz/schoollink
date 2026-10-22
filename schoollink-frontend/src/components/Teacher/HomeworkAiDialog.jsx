@@ -49,7 +49,7 @@ function Label({ children }) {
  * (title, instructions, questions) plus a teacher-only answer key.
  * Nothing is saved or posted: "Use this" only fills the form.
  *   assignment  the chosen class/subject ({ teacher_subject_id, class_name, subject_name })
- *   onUse       called with { title, description }
+ *   onUse       called with { title, description, answer_key }
  * Hidden completely when the feature is off or AI is not set up.
  */
 export default function HomeworkAiButton({ assignment, onUse }) {
@@ -110,7 +110,8 @@ export default function HomeworkAiButton({ assignment, onUse }) {
         if (!draft) return;
         onUse({
             title: draft.title,
-            description: `${draft.instructions.trim()}\n\n${draft.questions.trim()}`
+            description: `${draft.instructions.trim()}\n\n${draft.questions.trim()}`,
+            answer_key: draft.answer_key
         });
         setOpen(false);
         setDraft(null);
@@ -229,7 +230,7 @@ export default function HomeworkAiButton({ assignment, onUse }) {
                                     <Typography sx={{ mt: 1, whiteSpace: "pre-wrap", fontSize: "0.88rem" }}>{draft.answer_key}</Typography>
                                 )}
                                 <Typography sx={{ mt: 0.75, fontSize: "0.74rem", color: "text.secondary" }}>
-                                    The answer key is not posted and is not saved. Copy it now if you want to keep it.
+                                    The answer key is not posted to parents. It is saved for you only and you can open it later on the homework page.
                                 </Typography>
                             </Box>
                             <Typography sx={{ fontSize: "0.75rem", color: "text.secondary" }}>

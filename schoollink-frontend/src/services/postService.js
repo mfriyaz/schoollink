@@ -157,6 +157,22 @@ export async function getHomeworkById(id) {
 
 }
 
+export async function getHomeworkAnswerKey(id) {
+
+    const response = await api.get(`/homework/${id}/answer-key`);
+
+    return response.data;
+
+}
+
+export async function saveHomeworkAnswerKey(id, answerKey) {
+
+    const response = await api.put(`/homework/${id}/answer-key`, { answer_key: answerKey });
+
+    return response.data;
+
+}
+
 export async function closeHomeworkSubmissions(id) {
 
     const response = await api.patch(`/homework/${id}/submissions/close`);

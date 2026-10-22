@@ -311,6 +311,76 @@ const closeSubmissions = setSubmissionsClosedHandler(true);
 const reopenSubmissions = setSubmissionsClosedHandler(false);
 
 /**
+ * Teacher-only answer key: read and save
+ */
+async function teacherIdFor(req) {
+
+    if (req.user.role !== "Teacher") return null;
+
+    const teacher = await teacherService.getTeacherByUserId(req.user.id);
+
+    return teacher ? teacher.id : -1;
+
+}
+
+async function getAnswerKey(req, res) {
+
+    try {
+
+        const teacherId = await teacherIdFor(req);
+
+        const key = await homeworkService.getAnswerKey(
+            req.params.id,
+            req.user.school_id,
+            teacherId
+        );
+
+        if (key === undefined) {
+
+            return response.error(res, "Homework not found", 404);
+
+        }
+
+        return response.success(res, key, "Answer key retrieved");
+
+    } catch (err) {
+
+        return response.error(res, err.message, 500);
+
+    }
+
+}
+
+async function saveAnswerKey(req, res) {
+
+    try {
+
+        const teacherId = await teacherIdFor(req);
+
+        const saved = await homeworkService.saveAnswerKey(
+            req.params.id,
+            req.user.school_id,
+            teacherId,
+            req.body && req.body.answer_key
+        );
+
+        if (saved === undefined) {
+
+            return response.error(res, "Homework not found", 404);
+
+        }
+
+        return response.success(res, saved, "Answer key saved");
+
+    } catch (err) {
+
+        return response.error(res, err.message, 500);
+
+    }
+
+}
+
+/**
  * Delete Homework
  */
 async function deleteHomework(req, res) {
@@ -385,6 +455,10 @@ module.exports = {
     closeSubmissions,
 
     reopenSubmissions,
+
+    getAnswerKey,
+
+    saveAnswerKey,
 
     deleteHomework
 

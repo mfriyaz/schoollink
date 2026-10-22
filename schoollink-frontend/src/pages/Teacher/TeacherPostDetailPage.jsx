@@ -18,6 +18,7 @@ import EditIcon from "@mui/icons-material/EditOutlined";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
 import ImageIcon from "@mui/icons-material/ImageOutlined";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
+import AnswerKeyPanel from "../../components/Teacher/AnswerKeyPanel";
 import {
     getHomeworkById,
     updateHomeworkPost,
@@ -377,6 +378,8 @@ function TeacherPostDetailPage() {
                                 {post.allow_view_all_submissions && <Chip size="small" variant="outlined" label="Shared view on" sx={{ fontWeight: 700, border: "1.5px solid var(--sl-ink)" }} />}
                             </Box>
                         )}
+
+                        <AnswerKeyPanel homeworkId={post.id} />
                     </>
                 )}
 

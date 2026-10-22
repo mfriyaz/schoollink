@@ -94,6 +94,27 @@ router.patch(
 );
 
 /**
+ * Teacher-only answer key (never open to Parent)
+ */
+router.get(
+    "/:id/answer-key",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    tenant.param("homework", "id"),
+    tenant.teacherParam("homework", "id"),
+    homeworkController.getAnswerKey
+);
+
+router.put(
+    "/:id/answer-key",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    tenant.param("homework", "id"),
+    tenant.teacherParam("homework", "id"),
+    homeworkController.saveAnswerKey
+);
+
+/**
  * Delete Homework
  */
 router.delete(
