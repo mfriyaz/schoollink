@@ -25,6 +25,7 @@ import ImageIcon from "@mui/icons-material/ImageOutlined";
 
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import AiAssistButton from "../../components/common/AiAssistButton";
+import HomeworkAiButton from "../../components/Teacher/HomeworkAiDialog";
 import StopCircleIcon from "@mui/icons-material/StopCircleOutlined";
 
 import { resolveFileUrl } from "../../config";
@@ -735,6 +736,10 @@ function CreatePostPage() {
                                         ))}
                                     </Box>
                                 </Box>
+                                <HomeworkAiButton
+                                    assignment={selectedAssignment}
+                                    onUse={({ title: t, description: d }) => { setTitle(t); setDescription(d); }}
+                                />
                                 <TextField
                                     label="Title"
                                     placeholder="e.g. Math Exercise 4"

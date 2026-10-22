@@ -12,6 +12,10 @@ export async function aiTranslate(language, text) {
     return (await api.post("/ai/translate", { language, text })).data;
 }
 
+export async function aiHomeworkDraft(payload) {
+    return (await api.post("/ai/homework-draft", payload)).data;
+}
+
 export async function getSchoolAi(id) {
     return (await api.get(`/platform/schools/${id}/ai`)).data;
 }

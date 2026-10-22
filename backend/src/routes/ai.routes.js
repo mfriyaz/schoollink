@@ -13,6 +13,7 @@ const writers = [authenticate, authorizeRoles("School Admin", "Teacher")];
 router.get("/status", ...writers, controller.status);
 router.post("/improve", ...writers, controller.improve);
 router.post("/translate", ...writers, controller.translate);
+router.post("/homework-draft", ...writers, tenant.body("teacher_subject", "teacher_subject_id"), controller.homeworkDraft);
 router.post("/report-remarks", ...writers, tenant.body("student", "student_id"), tenant.body("exam", "exam_id"), controller.reportRemarks);
 
 router.get("/weekly-summary/:studentId", authenticate, authorizeRoles("Parent"), tenant.param("student", "studentId"), controller.weeklySummary);

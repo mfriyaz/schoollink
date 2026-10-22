@@ -30,6 +30,12 @@ async function translate(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
+async function homeworkDraft(req, res) {
+    try {
+        return response.success(res, await ai.homeworkDraft(req.user, req.body), "Done");
+    } catch (err) { return fail(res, err); }
+}
+
 async function reportRemarks(req, res) {
     try {
         const { student_id, exam_id, language } = req.body || {};
@@ -103,4 +109,4 @@ async function updateSchoolAi(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
-module.exports = { status, improve, translate, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, setClassTeacher, transferAssignment, getSchoolAi, updateSchoolAi };
+module.exports = { status, improve, translate, homeworkDraft, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, setClassTeacher, transferAssignment, getSchoolAi, updateSchoolAi };
