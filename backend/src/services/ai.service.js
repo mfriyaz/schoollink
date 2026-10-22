@@ -105,7 +105,7 @@ async function getSchoolAi(schoolId) {
         let row;
         try {
             const r = await pool.query(
-                "SELECT ai_enabled, ai_monthly_limit, ai_features FROM schools WHERE id = $1",
+                "SELECT ai_enabled, ai_monthly_limit, ai_features, ai_curriculum FROM schools WHERE id = $1",
                 [schoolId]
             );
             row = r.rows[0];
@@ -122,6 +122,7 @@ async function getSchoolAi(schoolId) {
             enabled: !!row.ai_enabled,
             limit: Number(row.ai_monthly_limit),
             features: row.ai_features && typeof row.ai_features === "object" ? row.ai_features : {},
+            curriculum: row.ai_curriculum || "",
         };
     } catch (e) {
         // migration 053 not run yet
@@ -167,6 +168,7 @@ async function getStatus(schoolId) {
     return {
         available: configured() && ai.enabled,
         features: featureMap(ai),
+        curriculum: ai.curriculum || "",
         enabled: ai.enabled,
         configured: configured(),
         limit: ai.limit,
@@ -433,7 +435,7 @@ async function homeworkDraft(user, body) {
     const difficulty = HW_DIFFICULTY[b.difficulty] ? b.difficulty : "medium";
     const qtype = HW_TYPES[b.question_type] ? b.question_type : "mixed";
     const count = Math.min(15, Math.max(3, parseInt(b.count, 10) || 8));
-    const curriculum = clip(b.curriculum, 60);
+    let curriculum = clip(b.curriculum, 60);
     const notes = clip(b.notes, 300);
 
     let langName = "English";
@@ -441,6 +443,9 @@ async function homeworkDraft(user, body) {
         langName = LANGUAGES[b.language];
         if (!langName) throw new AiError("Unsupported language.");
     }
+
+    // No board typed by the teacher: use the school's setting (set by Super Admin)
+    if (!curriculum) curriculum = clip((await getSchoolAi(user.school_id)).curriculum, 60);
 
     const r = await pool.query(
         `SELECT c.class_name, s.subject_name
@@ -683,6 +688,7 @@ async function getSchoolUsage(schoolId) {
         enabled: ai.enabled,
         limit: ai.limit,
         features: featureMap(ai),
+        curriculum: ai.curriculum || "",
         feature_list: FEATURES,
         configured: configured(),
         requests,
@@ -693,7 +699,7 @@ async function getSchoolUsage(schoolId) {
     };
 }
 
-async function updateSchoolAi(schoolId, { enabled, limit, features }) {
+async function updateSchoolAi(schoolId, { enabled, limit, features, curriculum }) {
     const sets = [];
     const vals = [];
     if (typeof enabled === "boolean") { vals.push(enabled); sets.push(`ai_enabled = $${vals.length}`); }
@@ -707,6 +713,11 @@ async function updateSchoolAi(schoolId, { enabled, limit, features }) {
         const next = { ...current };
         FEATURES.forEach((f) => { if (typeof features[f.key] === "boolean") next[f.key] = features[f.key]; });
         vals.push(JSON.stringify(next)); sets.push(`ai_features = $${vals.length}::jsonb`);
+    }
+    if (curriculum !== undefined) {
+        const c = clip(curriculum, 80);
+        vals.push(c || null);
+        sets.push(`ai_curriculum = $${vals.length}`);
     }
     if (!sets.length) throw new AiError("Nothing to update.");
     vals.push(schoolId);

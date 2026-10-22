@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
 
-import { Alert, Box, Button, FormControlLabel, Switch, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, FormControlLabel, MenuItem, Switch, TextField, Typography } from "@mui/material";
 
 import { getSchoolAi, saveSchoolAi } from "../../services/aiService";
 import { usd } from "../../utils/platformUi";
+
+const CURRICULA = [
+    "CBSE",
+    "ICSE / ISC",
+    "Tamil Nadu State Board",
+    "Other Indian state board",
+    "Cambridge (IGCSE)",
+    "IB",
+    "Singapore MOE"
+];
+
+const OTHER = "__other__";
 
 /**
  * Super Admin: AI assistant switch, monthly limit and this month's usage for one school.
@@ -14,6 +26,8 @@ export default function AiSchoolCard({ schoolId }) {
     const [enabled, setEnabled] = useState(true);
     const [limit, setLimit] = useState("300");
     const [features, setFeatures] = useState({});
+    const [curriculum, setCurriculum] = useState("");
+    const [curriculumPick, setCurriculumPick] = useState("");
     const [busy, setBusy] = useState(false);
     const [msg, setMsg] = useState(null);
 
@@ -24,6 +38,9 @@ export default function AiSchoolCard({ schoolId }) {
                 setEnabled(r.data.enabled);
                 setLimit(String(r.data.limit));
                 setFeatures(r.data.features || {});
+                const c = r.data.curriculum || "";
+                setCurriculum(c);
+                setCurriculumPick(!c ? "" : CURRICULA.includes(c) ? c : OTHER);
             })
             .catch(() => setMsg({ type: "error", text: "Unable to load AI settings." }));
     }, [schoolId]);
@@ -32,9 +49,10 @@ export default function AiSchoolCard({ schoolId }) {
         setBusy(true);
         setMsg(null);
         try {
-            const r = await saveSchoolAi(schoolId, { enabled, limit: Number(limit), features });
+            const r = await saveSchoolAi(schoolId, { enabled, limit: Number(limit), features, curriculum: curriculum.trim() });
             setInfo(r.data);
             setFeatures(r.data.features || {});
+            setCurriculum(r.data.curriculum || "");
             setMsg({ type: "success", text: "AI settings saved." });
         } catch (err) {
             setMsg({ type: "error", text: err.response?.data?.message || "Unable to save." });
@@ -47,7 +65,7 @@ export default function AiSchoolCard({ schoolId }) {
 
     const list = (info && info.feature_list) || [];
     const featuresChanged = info && list.some((f) => (features[f.key] !== false) !== (info.features[f.key] !== false));
-    const changed = info && (enabled !== info.enabled || Number(limit) !== info.limit || featuresChanged);
+    const changed = info && (enabled !== info.enabled || Number(limit) !== info.limit || featuresChanged || curriculum.trim() !== (info.curriculum || ""));
 
     return (
         <Box>
@@ -82,6 +100,36 @@ export default function AiSchoolCard({ schoolId }) {
                     ))}
                 </Box>
             )}
+
+            <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start", flexWrap: "wrap", mt: 2 }}>
+                <TextField
+                    select
+                    size="small"
+                    label="Curriculum / board"
+                    value={curriculumPick}
+                    onChange={(e) => {
+                        const v = e.target.value;
+                        setCurriculumPick(v);
+                        setCurriculum(v === OTHER ? (CURRICULA.includes(curriculum) ? "" : curriculum) : v);
+                    }}
+                    helperText="Used by AI features such as the homework generator"
+                    sx={{ minWidth: 240 }}
+                >
+                    <MenuItem value="">Not set (general curriculum)</MenuItem>
+                    {CURRICULA.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+                    <MenuItem value={OTHER}>Other (type the name)</MenuItem>
+                </TextField>
+                {curriculumPick === OTHER && (
+                    <TextField
+                        size="small"
+                        label="Board name"
+                        value={curriculum}
+                        onChange={(e) => setCurriculum(e.target.value)}
+                        inputProps={{ maxLength: 80 }}
+                        sx={{ minWidth: 220 }}
+                    />
+                )}
+            </Box>
 
             <Box sx={{ display: "flex", gap: 1.5, alignItems: "center", flexWrap: "wrap", mt: 1.5 }}>
                 <TextField

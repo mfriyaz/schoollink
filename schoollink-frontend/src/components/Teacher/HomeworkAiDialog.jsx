@@ -22,12 +22,6 @@ const TYPES = [
     { id: "word", label: "Word problems" }
 ];
 
-const CURRICULUM_KEY = "sl_hw_curriculum";
-
-function readCurriculum() {
-    try { return localStorage.getItem(CURRICULUM_KEY) || ""; } catch (e) { return ""; }
-}
-
 const pillSx = (on) => ({
     px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none",
     fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)",
@@ -60,7 +54,7 @@ export default function HomeworkAiButton({ assignment, onUse }) {
     const [qtype, setQtype] = useState("mixed");
     const [count, setCount] = useState(8);
     const [language, setLanguage] = useState("en");
-    const [curriculum, setCurriculum] = useState(readCurriculum);
+    const [curriculum, setCurriculum] = useState("");
     const [notes, setNotes] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -71,7 +65,7 @@ export default function HomeworkAiButton({ assignment, onUse }) {
     useEffect(() => {
         let alive = true;
         getAiStatus()
-            .then((r) => { if (alive) setStatus(r.data); })
+            .then((r) => { if (alive) { setStatus(r.data); setCurriculum(r.data.curriculum || ""); } })
             .catch(() => { if (alive) setStatus(null); });
         return () => { alive = false; };
     }, []);
@@ -87,7 +81,6 @@ export default function HomeworkAiButton({ assignment, onUse }) {
         setLoading(true);
         setShowKey(false);
         try {
-            try { localStorage.setItem(CURRICULUM_KEY, curriculum); } catch (e) { /* ignore */ }
             const r = await aiHomeworkDraft({
                 teacher_subject_id: assignment.teacher_subject_id,
                 topic, difficulty, question_type: qtype, count: Number(count), language, curriculum, notes
@@ -186,8 +179,9 @@ export default function HomeworkAiButton({ assignment, onUse }) {
                                 </TextField>
                             </Box>
                             <TextField
-                                label="Curriculum or board (optional)"
+                                label="Curriculum or board"
                                 placeholder="e.g. CBSE, ICSE, Tamil Nadu State Board"
+                                helperText={status.curriculum && curriculum === status.curriculum ? "Set by your school. You can change it for this homework." : "Optional"}
                                 value={curriculum}
                                 onChange={(e) => setCurriculum(e.target.value)}
                                 inputProps={{ maxLength: 60 }}
