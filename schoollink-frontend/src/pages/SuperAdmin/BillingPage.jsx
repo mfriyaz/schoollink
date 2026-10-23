@@ -1,3 +1,4 @@
+import PageHeader from "../../components/common/PageHeader";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, Box, Button, Card, CircularProgress, MenuItem, Tab, Tabs, TextField, Typography } from "@mui/material";
@@ -56,17 +57,7 @@ export default function BillingPage() {
     const total = (rows || []).reduce((a, p) => a + p.amount, 0);
     return (
         <Box sx={{ maxWidth: 1000 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <PaymentsIcon sx={{ color: "var(--sl-ink)" }} />
-                </Box>
-                <Box>
-                    <Typography sx={{ color: "#3B5BDB", fontWeight: 700, fontSize: "0.75rem", letterSpacing: 0.5, textTransform: "uppercase" }}>
-                        Platform Console
-                    </Typography>
-                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>Billing</Typography>
-                </Box>
-            </Box>
+            <PageHeader eyebrow="Platform Console" title="Billing" subtitle="Payments recorded across all schools" avatar={<PaymentsIcon />} />
             {revenue && (
                 <Grid container spacing={1.5} sx={{ mb: 2 }}>
                     <Grid size={{ xs: 6, md: 3 }}><KpiCard title="This month" value={money(revenue.this_month)} icon={<PaymentsIcon sx={{ color: "#16A34A" }} />} iconBg="#DCFCE7" /></Grid>

@@ -7,7 +7,10 @@ import {
     Button,
     Card,
     Chip,
-        CircularProgress,
+        IconButton,
+        ListItemIcon,
+        Menu,
+        Skeleton,
     Dialog,
     DialogActions,
     DialogContent,
@@ -20,6 +23,11 @@ import {
     Typography
 } from "@mui/material";
 import DomainIcon from "@mui/icons-material/DomainOutlined";
+import MoreIcon from "@mui/icons-material/MoreVert";
+import OpenIcon from "@mui/icons-material/OpenInNewOutlined";
+import PayIcon from "@mui/icons-material/PaymentsOutlined";
+import PageHeader from "../../components/common/PageHeader";
+import PaymentDialog from "../../components/SuperAdmin/PaymentDialog";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import SearchIcon from "@mui/icons-material/SearchOutlined";
@@ -58,6 +66,8 @@ function SchoolCard({ school, onSaved }) {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [pending, setPending] = useState([]);
     const [reason, setReason] = useState("");
+    const [menuEl, setMenuEl] = useState(null);
+    const [payOpen, setPayOpen] = useState(false);
     const current = {
         subscription_plan: school.subscription_plan || "STANDARD",
         status: school.status || "ACTIVE",
@@ -141,94 +151,63 @@ function SchoolCard({ school, onSaved }) {
         school.status === "ACTIVE" ? "success" :
         school.status === "SUSPENDED" ? "error" :
         school.status === "EXPIRED" ? "error" : "warning";
+    const stuPct = school.max_students ? Math.min(100, Math.round((school.students / school.max_students) * 100)) : null;
+    const expiryText = expiryDays === null ? "No expiry" : expiryDays < 0 ? `Expired ${-expiryDays}d ago` : `${expiryDays}d left`;
+    const expiryTone = expiryDays === null ? "#64748B" : expiryDays < 0 ? "#DC2626" : expiryDays <= 30 ? "#B45309" : "#15803D";
+    const open = () => navigate(`/super-admin/schools/${school.id}`);
     return (
-        <Card sx={{ border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)", borderRadius: 3, p: { xs: 2, sm: 3 }, mb: 2 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 1.5 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 0 }}>
-                    <Box
-                        sx={{
-                            width: 44,
-                            height: 44,
-                            borderRadius: "13px",
-                            bgcolor: "var(--sl-accent)",
-                            border: "1.5px solid var(--sl-ink)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center"
-                        }}
-                    >
-                        <DomainIcon sx={{ color: "var(--sl-ink)" }} />
+        <Card sx={{ border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)", borderRadius: 3, mb: 1.25, overflow: "visible" }}>
+            <Box
+                onClick={open}
+                sx={{
+                    display: "grid", alignItems: "center", gap: { xs: 1, md: 2 }, p: { xs: 1.5, sm: 2 }, cursor: "pointer",
+                    gridTemplateColumns: { xs: "40px minmax(0,1fr) 36px", md: "40px minmax(0,2.2fr) minmax(0,1.3fr) minmax(0,1.1fr) minmax(0,1fr) 36px" },
+                    "&:hover": { bgcolor: "var(--sl-soft)" }
+                }}
+            >
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
+                    {(school.school_name || "S").charAt(0).toUpperCase()}
+                </Box>
+                <Box sx={{ minWidth: 0 }}>
+                    <Typography sx={{ fontWeight: 800, color: "var(--sl-ink)", fontSize: "0.95rem" }} noWrap>{school.school_name}</Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, flexWrap: "wrap", mt: 0.25 }}>
+                        <Chip size="small" label={school.subscription_plan || "STANDARD"} sx={{ height: 20, fontSize: "0.68rem" }} />
+                        <Chip size="small" color={statusColor} label={school.status || "ACTIVE"} sx={{ height: 20, fontSize: "0.68rem" }} />
+                        <Typography sx={{ color: "#64748B", fontSize: "0.74rem" }} noWrap>{school.school_code}{school.city ? ` · ${school.city}` : ""}</Typography>
                     </Box>
-                    <Box>
-                        <Typography sx={{ fontWeight: 800, color: "var(--sl-ink)" }}>
-                            {school.school_name}
-                        </Typography>
-                        <Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
-                            {school.school_code} · {school.city}, {school.country}
-                        </Typography>
+                    <Box sx={{ display: { xs: "block", md: "none" }, mt: 0.75 }}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", fontSize: "0.74rem", color: "#64748B", mb: 0.3 }}>
+                            <span>Students {school.students}{school.max_students ? ` / ${school.max_students}` : ""}</span>
+                            <span style={{ color: expiryTone, fontWeight: 700 }}>{expiryText}</span>
+                        </Box>
+                        {stuPct !== null && <LinearProgress variant="determinate" value={stuPct} color={stuPct >= 100 ? "error" : stuPct >= 90 ? "warning" : "primary"} sx={{ height: 5, borderRadius: 3, bgcolor: "#E2E8F0" }} />}
+                        <Typography sx={{ color: "#94A3B8", fontSize: "0.7rem", mt: 0.4 }}>Last login: {timeAgo(school.last_login)}</Typography>
                     </Box>
                 </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
-                    <Chip size="small" label={school.subscription_plan || "STANDARD"} />
-                    <Chip size="small" color={statusColor} label={school.status || "ACTIVE"} />
-                    <Button size="small" onClick={() => navigate(`/super-admin/schools/${school.id}`)}>
-                        Details
-                    </Button>
-                    <Button
-                        size="small"
-                        startIcon={<EditIcon fontSize="small" />}
-                        onClick={() => setEditing((v) => !v)}
-                    >
-                        {editing ? "Cancel" : "Manage"}
-                    </Button>
+                <Box sx={{ display: { xs: "none", md: "block" } }}>
+                    <Typography sx={{ fontSize: "0.8rem", fontWeight: 700 }}>{school.students}{school.max_students ? <span style={{ color: "#94A3B8", fontWeight: 500 }}> / {school.max_students}</span> : ""} students</Typography>
+                    {stuPct !== null && <LinearProgress variant="determinate" value={stuPct} color={stuPct >= 100 ? "error" : stuPct >= 90 ? "warning" : "primary"} sx={{ height: 6, borderRadius: 3, mt: 0.5, bgcolor: "#E2E8F0" }} />}
                 </Box>
-            </Box>
-                        <Box sx={{ mt: 2 }}>
-                <Grid container spacing={1.5}>
-                    {[
-                        ["Students", school.students, school.max_students, null],
-                        ["Teachers", school.teachers, school.max_teachers, null],
-                        ["Classes", school.classes, school.max_classes, null],
-                        ["Parents", school.parents, null, null],
-                        ["Storage", bytesLabel(school.storage_bytes), school.max_storage_mb ? `${school.max_storage_mb} MB` : null, school.max_storage_mb ? (school.storage_bytes / 1048576 / school.max_storage_mb) * 100 : null]
-                    ].map(([label, used, limit, pctOverride]) => {
-                        const pct = pctOverride !== null ? pctOverride : (limit && typeof used === "number" ? (used / limit) * 100 : null);
-                        return (
-                            <Grid key={label} size={{ xs: 6, sm: 4, md: 2.4 }}>
-                                <Box sx={{ p: 1.25, borderRadius: 2, bgcolor: "#F8FAFC", height: "100%" }}>
-                                    <Typography sx={{ color: "#94A3B8", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: 0.4 }}>{label}</Typography>
-                                    <Typography sx={{ fontWeight: 700, fontSize: "1.05rem", lineHeight: 1.3 }}>
-                                        {used}{limit ? <span style={{ color: "#94A3B8", fontWeight: 500, fontSize: "0.8rem" }}> / {limit}</span> : null}
-                                    </Typography>
-                                    {pct !== null && (
-                                        <LinearProgress variant="determinate" value={Math.min(100, pct)}
-                                            color={pct >= 100 ? "error" : pct >= 90 ? "warning" : "primary"}
-                                            sx={{ height: 5, borderRadius: 3, mt: 0.5, bgcolor: "#E2E8F0" }} />
-                                    )}
-                                </Box>
-                            </Grid>
-                        );
-                    })}
-                </Grid>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mt: 1.5, alignItems: "center" }}>
-                    {expiryDays === null ? (
-                        <Chip size="small" variant="outlined" label="No expiry set" />
-                    ) : (
-                        <Chip size="small" color={expiryDays < 0 ? "error" : expiryDays <= 30 ? "warning" : "success"} variant="outlined"
-                            label={expiryDays < 0
-                                ? `Expired ${-expiryDays} day${-expiryDays === 1 ? "" : "s"} ago (${fmtDate(school.subscription_expiry)})`
-                                : `Expires ${fmtDate(school.subscription_expiry)} (${expiryDays} day${expiryDays === 1 ? "" : "s"} left)`} />
-                    )}
-                    <Chip size="small" variant="outlined" label={`Last login: ${timeAgo(school.last_login)}`} />
-                    {school.files > 0 && <Chip size="small" variant="outlined" label={`${school.files} files`} />}
+                <Box sx={{ display: { xs: "none", md: "block" } }}>
+                    <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: expiryTone }}>{expiryText}</Typography>
+                    <Typography sx={{ fontSize: "0.72rem", color: "#94A3B8" }}>{school.subscription_expiry ? fmtDate(school.subscription_expiry) : "-"}</Typography>
                 </Box>
-                <Typography sx={{ color: "#64748B", fontSize: "0.8rem", mt: 1, overflowWrap: "anywhere" }}>
-                    Admin: {school.admin_name ? `${school.admin_name}${school.admin_email ? ` - ${school.admin_email}` : ""}` : "no administrator found"}
-                    {school.phone ? ` | Phone: ${school.phone}` : ""}
-                </Typography>
+                <Box sx={{ display: { xs: "none", md: "block" } }}>
+                    <Typography sx={{ fontSize: "0.72rem", color: "#94A3B8" }}>Last login</Typography>
+                    <Typography sx={{ fontSize: "0.8rem" }}>{timeAgo(school.last_login)}</Typography>
+                </Box>
+                <IconButton size="small" aria-label="School actions" onClick={(e) => { e.stopPropagation(); setMenuEl(e.currentTarget); }}>
+                    <MoreIcon />
+                </IconButton>
             </Box>
+            <Menu anchorEl={menuEl} open={!!menuEl} onClose={() => setMenuEl(null)}>
+                <MenuItem onClick={() => { setMenuEl(null); open(); }}><ListItemIcon><OpenIcon fontSize="small" /></ListItemIcon>Open school</MenuItem>
+                <MenuItem onClick={() => { setMenuEl(null); setPayOpen(true); }}><ListItemIcon><PayIcon fontSize="small" /></ListItemIcon>Record payment</MenuItem>
+                <MenuItem onClick={() => { setMenuEl(null); setEditing((v) => !v); }}><ListItemIcon><EditIcon fontSize="small" /></ListItemIcon>{editing ? "Close editor" : "Edit plan and limits"}</MenuItem>
+            </Menu>
+            <PaymentDialog open={payOpen} school={school} onClose={() => setPayOpen(false)} onSaved={() => onSaved()} />
             {editing && (
-                <Box sx={{ mt: 3, pt: 3, borderTop: "1px solid #F1F5F9" }}>
+                <Box sx={{ p: { xs: 1.5, sm: 2.5 }, borderTop: "1px solid var(--sl-border)" }}>
                     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12, sm: 4 }}>
@@ -374,6 +353,7 @@ function SchoolsManagementPage() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
+    const [sort, setSort] = useState("name");
     useEffect(() => {
         loadSchools();
     }, []);
@@ -395,40 +375,26 @@ function SchoolsManagementPage() {
     }
     if (loading) {
         return (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
-                <CircularProgress />
+            <Box sx={{ maxWidth: 900 }}>
+                <Skeleton variant="rounded" height={60} sx={{ mb: 2 }} />
+                {[0, 1, 2, 3].map((i) => <Skeleton key={i} variant="rounded" height={74} sx={{ mb: 1.25 }} />)}
             </Box>
         );
     }
     return (
         <Box sx={{ maxWidth: 900 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 0.5 }}>
-                <Box
-                    sx={{
-                        width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center"
-                    }}
-                >
-                    <DomainIcon sx={{ color: "var(--sl-ink)" }} />
-                </Box>
-                <Box>
-                    <Typography sx={{ color: "#3B5BDB", fontWeight: 700, fontSize: "0.75rem", letterSpacing: 0.5, textTransform: "uppercase" }}>
-                        Platform Console
-                    </Typography>
-                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>
-                        Schools
-                    </Typography>
-                </Box>
-            </Box>
-            <Typography sx={{ color: "#64748B", mb: 3, ml: "56px" }}>
-                Manage every school on the platform - subscriptions, status, and capacity limits.
-            </Typography>
+            <PageHeader
+                eyebrow="Platform Console"
+                title="Schools"
+                subtitle="Every school on the platform. Tap a school to open it."
+                avatar={<DomainIcon />}
+            />
             {schools.length === 0 && (
-                <Typography color="text.secondary">
-                    No schools onboarded yet.
-                </Typography>
+                <Box sx={{ textAlign: "center", py: 5, color: "text.secondary" }}>
+                    <DomainIcon sx={{ fontSize: 40, opacity: 0.5 }} />
+                    <Typography sx={{ fontWeight: 700 }}>No schools onboarded yet</Typography>
+                    <Typography sx={{ fontSize: "0.85rem" }}>Use Onboard School to add the first one.</Typography>
+                </Box>
             )}
                         <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 2, alignItems: "center" }}>
                 <TextField
@@ -444,7 +410,19 @@ function SchoolsManagementPage() {
                     </Box>
                 ))}
             </Box>
-            {schools
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5, flexWrap: "wrap" }}>
+                <Typography sx={{ fontSize: "0.78rem", color: "#64748B" }}>Sort:</Typography>
+                {[["name", "Name"], ["expiry", "Expiry soonest"], ["students", "Most students"]].map(([k, l]) => (
+                    <Box key={k} role="button" tabIndex={0} onClick={() => setSort(k)}
+                        sx={{ px: 1.25, py: 0.35, borderRadius: 99, cursor: "pointer", fontSize: "0.76rem", fontWeight: 700, color: "var(--sl-ink)", border: "1px solid var(--sl-border)", bgcolor: sort === k ? "var(--sl-soft)" : "transparent" }}>
+                        {l}
+                    </Box>
+                ))}
+            </Box>
+            {[...schools]
+                .sort((a, b) => sort === "students" ? (b.students || 0) - (a.students || 0)
+                    : sort === "expiry" ? (a.subscription_expiry ? new Date(a.subscription_expiry).getTime() : Infinity) - (b.subscription_expiry ? new Date(b.subscription_expiry).getTime() : Infinity)
+                    : String(a.school_name).localeCompare(String(b.school_name)))
                 .filter((x) => statusFilter === "ALL" || x.status === statusFilter)
                 .filter((x) => !search.trim() || `${x.school_name} ${x.school_code} ${x.city || ""}`.toLowerCase().includes(search.trim().toLowerCase()))
                 .map((school) => (

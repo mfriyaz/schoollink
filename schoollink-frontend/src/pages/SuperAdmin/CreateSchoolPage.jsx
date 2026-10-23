@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "../../components/common/PageHeader";
 import {
     Alert,
     Box,
@@ -81,22 +82,8 @@ function CreateSchoolPage() {
     }
     return (
         <Box sx={{ maxWidth: 700 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
-                <Box
-                    sx={{
-                        width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center"
-                    }}
-                >
-                    <AddBusinessIcon sx={{ color: "var(--sl-ink)" }} />
-                </Box>
-                <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>
-                    Onboard New School
-                </Typography>
-            </Box>
-            <Card sx={{ border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)", borderRadius: 3, p: 3.5 }}>
+            <PageHeader eyebrow="Platform Console" title="Onboard New School" subtitle="Create the school and its first administrator" avatar={<AddBusinessIcon />} />
+            <Card sx={{ border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)", borderRadius: 3, p: { xs: 2, sm: 3.5 } }}>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
                 {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
                 <Typography sx={{ fontWeight: 700, mb: 2 }}>School Details</Typography>

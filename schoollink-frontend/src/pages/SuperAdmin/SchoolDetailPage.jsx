@@ -182,7 +182,7 @@ export default function SchoolDetailPage() {
                 <Tab value="overview" label="Overview" />
                 <Tab value="ai" label="AI" />
                 <Tab value="billing" label="Billing" />
-                <Tab value="records" label="School records" />
+                <Tab value="records" label="Records" />
             </Tabs>
             {tab === "records" ? (
                 <SchoolRecords schoolId={school.id} />
