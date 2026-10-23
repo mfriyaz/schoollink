@@ -252,7 +252,26 @@ async function getResults(homeworkId, quizId) {
 
 }
 
+/** Is this child in the class/section the homework was posted to? (teacher side) */
+async function studentInHomework(studentId, homeworkId) {
+
+    const r = await db.query(
+        `
+        SELECT st.id, st.first_name, st.last_name
+        FROM homework hw
+        JOIN teacher_subjects ts ON ts.id = hw.teacher_subject_id
+        JOIN students st ON st.class_id = ts.class_id AND st.section_id = ts.section_id
+        WHERE hw.id = $1 AND st.id = $2
+        `,
+        [homeworkId, studentId]
+    );
+
+    return r.rows[0] || null;
+
+}
+
 module.exports = {
+    studentInHomework,
     getResults,
     featureOn,
     getQuizByHomework,

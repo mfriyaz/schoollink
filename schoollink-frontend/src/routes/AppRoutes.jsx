@@ -13,6 +13,7 @@ import TakeAttendancePage from "../pages/Teacher/TakeAttendancePage";
 import TeacherAnnouncementsPage from "../pages/Teacher/TeacherAnnouncementsPage";
 import TeacherPostsPage from "../pages/Teacher/TeacherPostsPage";
 import TeacherPostDetailPage from "../pages/Teacher/TeacherPostDetailPage";
+import QuizResultsPage from "../pages/Teacher/QuizResultsPage";
 
 import ParentDashboardPage from "../pages/Parent/ParentDashboardPage";
 import ParentExamResultsPage from "../pages/Parent/ParentExamResultsPage";
@@ -426,6 +427,19 @@ export default function AppRoutes() {
                         <ProtectedRoute allowedRoles={["Teacher"]}>
 
                             <TeacherPostDetailPage />
+
+                        </ProtectedRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/teacher/posts/:id/quiz-results"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["Teacher"]}>
+
+                            <QuizResultsPage />
 
                         </ProtectedRoute>
 

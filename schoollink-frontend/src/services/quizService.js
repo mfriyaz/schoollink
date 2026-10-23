@@ -47,3 +47,11 @@ export async function getQuizResults(homeworkId) {
     return response.data;
 
 }
+
+export async function getQuizStudentDetail(homeworkId, studentId) {
+
+    const response = await api.get(`/quiz/homework/${homeworkId}/results/student/${studentId}`);
+
+    return response.data;
+
+}

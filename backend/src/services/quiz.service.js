@@ -325,5 +325,46 @@ async function getResults(homeworkId) {
 
 }
 
+/** One child's tries with every answer, for the teacher */
+async function getStudentDetail(homeworkId, studentId) {
+
+    const quiz = await quizModel.getQuizByHomework(homeworkId);
+
+    if (!quiz) return null;
+
+    const kid = await quizModel.studentInHomework(studentId, homeworkId);
+
+    if (!kid) throw new QuizError("This child is not in this homework's class.", 404);
+
+    const [questions, attempts] = await Promise.all([
+        quizModel.getQuestionsWithAnswers(quiz.id),
+        quizModel.getAttempts(quiz.id, studentId)
+    ]);
+
+    return {
+        student: { id: kid.id, name: `${kid.first_name || ""} ${kid.last_name || ""}`.trim() },
+        attempts: attempts.map((a, n) => ({
+            number: n + 1,
+            score: a.score,
+            total: a.total,
+            is_late: a.is_late,
+            submitted_at: a.submitted_at,
+            items: questions.map((q, i) => {
+                const chosen = a.answers && a.answers[q.id] !== undefined ? a.answers[q.id] : null;
+                return {
+                    number: i + 1,
+                    question_text: q.question_text,
+                    qtype: q.qtype,
+                    chosen_text: chosen === null ? null : q.qtype === "fill" ? String(chosen) : q.options[chosen],
+                    correct: isCorrect(q, chosen),
+                    correct_text: q.qtype === "fill" ? (q.accepted_answers || []).join("  |  ") : q.options[q.correct_index]
+                };
+            })
+        }))
+    };
+
+}
+
 module.exports = {
+    getStudentDetail,
     getResults, QuizError, saveQuiz, getForManage, removeQuiz, getForStudent, submitAttempt, cleanQuestions };

@@ -55,6 +55,16 @@ router.get(
     quizController.getResults
 );
 
+router.get(
+    "/homework/:homeworkId/results/student/:studentId",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    tenant.param("homework", "homeworkId"),
+    tenant.param("student", "studentId"),
+    tenant.teacherParam("homework", "homeworkId"),
+    quizController.getStudentDetail
+);
+
 router.put(
     "/homework/:homeworkId",
     authenticate,
