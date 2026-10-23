@@ -402,11 +402,10 @@ function EnterMarksPage() {
 
                     <Box
                         sx={{
-                            // Phone: fixed just above the bottom menu, so it never covers the list.
-                            // Desktop: sticks to the bottom of the page.
-                            position: { xs: "fixed", md: "sticky" },
-                            left: { xs: 12, md: "auto" }, right: { xs: 12, md: "auto" },
-                            bottom: { xs: "calc(76px + env(safe-area-inset-bottom))", md: 12 },
+                            // Phone: the bar sits right under the last student, so it never hides anyone.
+                            // Laptop: it sticks to the bottom of the page.
+                            position: { xs: "static", md: "sticky" },
+                            bottom: { md: 12 },
                             mt: 2, zIndex: 5,
                             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1.5,
                             p: 1.25, pl: 2, borderRadius: 3, bgcolor: "#fff",
@@ -429,7 +428,6 @@ function EnterMarksPage() {
                             {saving ? "Saving..." : "Save Marks"}
                         </Button>
                     </Box>
-                    <Box sx={{ height: { xs: 84, md: 0 } }} />
                 </>
             )}
         </Box>
