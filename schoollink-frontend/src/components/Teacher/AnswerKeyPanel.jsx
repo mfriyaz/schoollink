@@ -15,7 +15,7 @@ const pillSx = {
  * Teacher-only answer key for one homework.
  * Parents never get this: it is loaded from a separate, teacher-only endpoint.
  */
-export default function AnswerKeyPanel({ homeworkId }) {
+export default function AnswerKeyPanel({ homeworkId, hide = false }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [key, setKey] = useState(null);
@@ -60,6 +60,20 @@ export default function AnswerKeyPanel({ homeworkId }) {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch (e) { /* ignore */ }
+    }
+
+    // Quiz homework keeps its answers inside the quiz, so this card is not needed there
+    if (hide) return null;
+
+    // Nothing saved yet: just a small link instead of a whole card
+    if (!loading && !error && !key && !editing) {
+        return (
+            <Box sx={{ mt: 2 }}>
+                <Box role="button" tabIndex={0} onClick={() => { setDraft(""); setEditing(true); }} sx={{ ...pillSx, display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+                    <KeyIcon sx={{ fontSize: 15 }} /> + Add answer key (only you can see it)
+                </Box>
+            </Box>
+        );
     }
 
     return (

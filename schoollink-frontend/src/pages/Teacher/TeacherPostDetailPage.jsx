@@ -36,6 +36,7 @@ function TeacherPostDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
+    const [hasQuiz, setHasQuiz] = useState(null);
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState("");
     const [editing, setEditing] = useState(false);
@@ -380,9 +381,9 @@ function TeacherPostDetailPage() {
                             </Box>
                         )}
 
-                        <QuizPanel homeworkId={post.id} />
+                        <QuizPanel homeworkId={post.id} onChange={setHasQuiz} />
 
-                        <AnswerKeyPanel homeworkId={post.id} />
+                        <AnswerKeyPanel homeworkId={post.id} hide={hasQuiz !== false} />
                     </>
                 )}
 

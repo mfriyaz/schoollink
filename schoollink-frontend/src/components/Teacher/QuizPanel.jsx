@@ -20,7 +20,7 @@ const LETTERS = ["A", "B", "C", "D"];
  * Teacher / admin view of the practice quiz on one homework (with the correct answers).
  * Shows nothing when the homework has no quiz.
  */
-export default function QuizPanel({ homeworkId }) {
+export default function QuizPanel({ homeworkId, onChange }) {
     const [loading, setLoading] = useState(true);
     const [quiz, setQuiz] = useState(null);
     const [show, setShow] = useState(false);
@@ -34,8 +34,8 @@ export default function QuizPanel({ homeworkId }) {
         let alive = true;
         setLoading(true);
         getQuizForManage(homeworkId)
-            .then((r) => { if (alive) setQuiz(r.success ? r.data : null); })
-            .catch(() => { if (alive) setQuiz(null); })
+            .then((r) => { if (alive) { setQuiz(r.success ? r.data : null); if (onChange) onChange(Boolean(r.success && r.data)); } })
+            .catch(() => { if (alive) { setQuiz(null); if (onChange) onChange(false); } })
             .finally(() => { if (alive) setLoading(false); });
         return () => { alive = false; };
     }, [homeworkId]);
@@ -46,6 +46,7 @@ export default function QuizPanel({ homeworkId }) {
             const r = await removeQuiz(homeworkId, typed);
             if (r.success) {
                 setQuiz(null);
+                if (onChange) onChange(false);
                 setConfirm(false);
                 setTyped("");
                 notify("Quiz removed.");
