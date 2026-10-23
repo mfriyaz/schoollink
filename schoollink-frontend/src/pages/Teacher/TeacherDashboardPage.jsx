@@ -273,38 +273,62 @@ function TeacherDashboardPage() {
                     justifyContent: "space-between",
                     alignItems: "center",
                     gap: 1.5,
-                    px: { xs: 2, sm: 2.75 },
-                    py: { xs: 1.5, sm: 2 },
-                    mb: 2,
-                    borderRadius: 3.5,
-                    bgcolor: "var(--sl-banner, #4F46E5)",
-                    color: "var(--sl-on-banner, #fff)",
-                    border: "var(--sl-banner-border, none)",
-                    boxShadow: "var(--sl-banner-shadow, none)"
+                    pb: { xs: 1.75, sm: 2.25 },
+                    mb: { xs: 2, sm: 2.5 },
+                    borderBottom: "1px solid var(--sl-border, #E5E7EB)"
                 }}
             >
                 <Box sx={{ minWidth: 0 }}>
-                    <Typography sx={{ fontSize: "0.8rem", opacity: 0.85 }} noWrap>
-                        {getGreeting()} · {todayLabel}
-                    </Typography>
-                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.2rem", sm: "1.5rem" }, lineHeight: 1.2, mt: 0.2 }} noWrap>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.9 }}>
+                        <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "var(--sl-accent, #FFC400)", border: "1.5px solid var(--sl-ink, #111827)" }} />
+                        <Typography sx={{ fontSize: "0.8rem", fontWeight: 600, color: "text.secondary", letterSpacing: 0.2 }} noWrap>
+                            {getGreeting()} · {todayLabel}
+                        </Typography>
+                    </Box>
+                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.45rem", sm: "1.9rem" }, lineHeight: 1.2, mt: 0.4, color: "var(--sl-ink, #111827)" }} noWrap>
                         {getTitledName(teacher, user)} 👋
                     </Typography>
-                    <Typography sx={{ mt: 0.25, fontSize: "0.82rem", opacity: 0.9 }}>
-                        {totalPending > 0
-                            ? `${totalPending} acknowledgement${totalPending === 1 ? "" : "s"} still pending.`
-                            : "You're all caught up. Here's what's happening today."}
-                    </Typography>
+                    {totalPending > 0 ? (
+                        <Box
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => navigate("/teacher/posts")}
+                            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/teacher/posts"); } }}
+                            sx={{
+                                display: "inline-flex", alignItems: "center", gap: 0.75, mt: 0.9, px: 1.25, py: 0.35, whiteSpace: "nowrap",
+                                borderRadius: 99, cursor: "pointer", fontSize: "0.8rem", fontWeight: 700,
+                                color: "#9A3412", bgcolor: "#FFEDD5", border: "1px solid #FDBA74",
+                                "&:hover": { bgcolor: "#FED7AA" }
+                            }}
+                        >
+                            <Box component="span" sx={{ width: 7, height: 7, borderRadius: "50%", bgcolor: "#EA580C" }} />
+                            {totalPending}
+                            <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>&nbsp;acknowledgement{totalPending === 1 ? "" : "s"}</Box>
+                            &nbsp;pending
+                        </Box>
+                    ) : (
+                        <Typography sx={{ mt: 0.6, fontSize: "0.85rem", color: "#15803D", fontWeight: 600 }}>
+                            ✓ You're all caught up
+                        </Typography>
+                    )}
                 </Box>
-                <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<AddIcon />}
+                <Box
+                    role="button"
+                    tabIndex={0}
                     onClick={() => navigate("/teacher/create-post")}
-                    sx={{ flexShrink: 0, bgcolor: "var(--sl-on-banner, #fff)", color: "var(--sl-banner, #4F46E5)", "&:hover": { bgcolor: "var(--sl-on-banner, #fff)", opacity: 0.9 } }}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/teacher/create-post"); } }}
+                    sx={{
+                        flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 0.5, cursor: "pointer", userSelect: "none",
+                        px: { xs: 1.5, sm: 2.25 }, py: { xs: 0.8, sm: 1 }, borderRadius: 99,
+                        fontSize: { xs: "0.85rem", sm: "0.92rem" }, fontWeight: 800,
+                        color: "var(--sl-ink, #111827)", bgcolor: "var(--sl-accent, #FFC400)",
+                        border: "1.5px solid var(--sl-ink, #111827)", boxShadow: "2px 2px 0 var(--sl-ink, #111827)",
+                        "&:hover": { filter: "brightness(0.97)" },
+                        "&:active": { transform: "translate(1px, 1px)", boxShadow: "1px 1px 0 var(--sl-ink, #111827)" }
+                    }}
                 >
-                    Create Post
-                </Button>
+                    <AddIcon sx={{ fontSize: 20 }} /> Create Post
+                </Box>
             </Box>
 
             <Grid container spacing={{ xs: 1.5, md: 2 }} sx={{ mb: 3 }}>
