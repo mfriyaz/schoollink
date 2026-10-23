@@ -26,6 +26,7 @@ import ImageIcon from "@mui/icons-material/ImageOutlined";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import AiAssistButton from "../../components/common/AiAssistButton";
 import HomeworkAiButton from "../../components/Teacher/HomeworkAiDialog";
+import { saveQuiz } from "../../services/quizService";
 import StopCircleIcon from "@mui/icons-material/StopCircleOutlined";
 
 import { resolveFileUrl } from "../../config";
@@ -91,6 +92,7 @@ function CreatePostPage() {
 
     const [description, setDescription] = useState("");
     const [answerKey, setAnswerKey] = useState("");
+    const [quizDraft, setQuizDraft] = useState(null);
 
     const [priority, setPriority] = useState("Normal");
 
@@ -603,7 +605,29 @@ function CreatePostPage() {
 
             if (response.success) {
 
-                setSuccess("Post published successfully.");
+                let quizFailed = false;
+
+                if (quizDraft && response.data && response.data.id) {
+
+                    try {
+
+                        const q = await saveQuiz(response.data.id, quizDraft);
+
+                        if (!q.success) quizFailed = true;
+
+                    } catch (e) {
+
+                        quizFailed = true;
+
+                    }
+
+                }
+
+                setSuccess(quizFailed
+                    ? "Homework published, but the quiz could not be saved. Please tell your admin."
+                    : "Post published successfully.");
+
+                setQuizDraft(null);
 
                 setTitle("");
 
@@ -743,8 +767,14 @@ function CreatePostPage() {
                                 </Box>
                                 <HomeworkAiButton
                                     assignment={selectedAssignment}
-                                    onUse={({ title: t, description: d, answer_key: k }) => { setTitle(t); setDescription(d); setAnswerKey(k || ""); }}
+                                    onUse={({ title: t, description: d, answer_key: k, quiz }) => { setTitle(t); setDescription(d); setAnswerKey(k || ""); setQuizDraft(quiz || null); }}
                                 />
+                                {quizDraft && (
+                                    <Typography sx={{ fontSize: "0.78rem", color: "text.secondary", mt: -1.5 }}>
+                                        A practice quiz with {quizDraft.questions.length} questions will be added to this homework.{" "}
+                                        <Box component="span" role="button" tabIndex={0} onClick={() => setQuizDraft(null)} sx={{ fontWeight: 800, textDecoration: "underline", cursor: "pointer", color: "var(--sl-ink)" }}>Don't add it</Box>
+                                    </Typography>
+                                )}
                                 {answerKey && (
                                     <Typography sx={{ fontSize: "0.78rem", color: "text.secondary", mt: -1.5 }}>
                                         An answer key will be saved for you only (parents never see it).{" "}

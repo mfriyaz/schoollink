@@ -82,6 +82,7 @@ const settingsRoutes = require("./routes/settings.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const postsRoutes = require("./routes/posts.routes");
 const homeworkSubmissionRoutes = require("./routes/homeworkSubmission.routes");
+const quizRoutes = require("./routes/quiz.routes");
 const morningGreetingRoutes = require("./routes/morningGreeting.routes");
 const aiRoutes = require("./routes/ai.routes");
 
@@ -136,6 +137,7 @@ app.use("/api/settings", settingsRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/posts", postsRoutes);
 app.use("/api/homework-submissions", homeworkSubmissionRoutes);
+app.use("/api/quiz", quizRoutes);
 app.use("/api/morning-greetings", morningGreetingRoutes);
 app.use("/api/ai", aiRoutes);
 

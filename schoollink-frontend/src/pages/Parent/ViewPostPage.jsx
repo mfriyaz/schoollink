@@ -35,6 +35,7 @@ import {
 } from "../../services/homeworkSubmissionService";
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
 import { resolveFileUrl } from "../../config";
+import QuizCard from "../../components/Parent/QuizCard";
 const CARD = { p: { xs: 2, md: 3 }, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" };
 const pillSx = (active) => ({
     px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none",
@@ -584,6 +585,7 @@ function ViewPostPage() {
                     </Box>
                 )}
             </Card>
+            {!isAnnouncement && student && <QuizCard homeworkId={post.id} studentId={student.student_id} />}
             {!isAnnouncement && !loadingSubmission && (post.allow_photo_submission || post.allow_voice_submission) && (
                 <Card sx={{ ...CARD, mt: 2.5 }}>
                     <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--sl-ink)", mb: 2 }}>

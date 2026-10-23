@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
     Alert, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent,
-    MenuItem, TextField, Typography
+    MenuItem, Radio, TextField, Typography
 } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesomeOutlined";
 import DialogHeader from "../common/DialogHeader";
@@ -19,7 +19,8 @@ const TYPES = [
     { id: "short", label: "Short answer" },
     { id: "mcq", label: "Multiple choice" },
     { id: "fill", label: "Fill in the blanks" },
-    { id: "word", label: "Word problems" }
+    { id: "word", label: "Word problems" },
+    { id: "quiz", label: "Interactive quiz" }
 ];
 
 const pillSx = (on) => ({
@@ -61,6 +62,7 @@ export default function HomeworkAiButton({ assignment, onUse }) {
     const [draft, setDraft] = useState(null);
     const [showKey, setShowKey] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [maxAttempts, setMaxAttempts] = useState(2);
 
     useEffect(() => {
         let alive = true;
@@ -90,7 +92,8 @@ export default function HomeworkAiButton({ assignment, onUse }) {
                 title: r.data.title,
                 instructions: r.data.instructions,
                 questions: r.data.questions,
-                answer_key: r.data.answer_key
+                answer_key: r.data.answer_key,
+                quiz: r.data.quiz ? r.data.quiz.questions : null
             });
         } catch (err) {
             setError(err.response?.data?.message || "Unable to reach the AI. Please try again.");
@@ -99,8 +102,42 @@ export default function HomeworkAiButton({ assignment, onUse }) {
         }
     }
 
+    function setQ(i, patch) {
+        setDraft((d) => ({ ...d, quiz: d.quiz.map((q, k) => (k === i ? { ...q, ...patch } : q)) }));
+    }
+
+    function setOpt(i, k, value) {
+        setDraft((d) => ({
+            ...d,
+            quiz: d.quiz.map((q, n) => (n === i ? { ...q, options: q.options.map((o, m) => (m === k ? value : o)) } : q))
+        }));
+    }
+
     function use() {
         if (!draft) return;
+        if (draft.quiz) {
+            for (let i = 0; i < draft.quiz.length; i++) {
+                const q = draft.quiz[i];
+                const opts = q.options.map((o) => o.trim());
+                if (!q.question_text.trim() || opts.some((o) => !o)) {
+                    setError(`Question ${i + 1} needs its text and four answer options.`);
+                    return;
+                }
+                if (new Set(opts.map((o) => o.toLowerCase())).size !== 4) {
+                    setError(`Question ${i + 1} has two options that are the same.`);
+                    return;
+                }
+            }
+            setError("");
+            onUse({
+                title: draft.title,
+                description: `${draft.instructions.trim()}\n\nThis is a practice quiz. Open this homework in the app and choose the answers.`,
+                quiz: { questions: draft.quiz, max_attempts: Number(maxAttempts) }
+            });
+            setOpen(false);
+            setDraft(null);
+            return;
+        }
         onUse({
             title: draft.title,
             description: `${draft.instructions.trim()}\n\n${draft.questions.trim()}`,
@@ -211,7 +248,35 @@ export default function HomeworkAiButton({ assignment, onUse }) {
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1.25 }}>
                             <TextField label="Title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} fullWidth />
                             <TextField label="Instructions" value={draft.instructions} onChange={(e) => setDraft({ ...draft, instructions: e.target.value })} multiline fullWidth />
+                            {draft.quiz && (
+                                <>
+                                    <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
+                                        Check each question. Tap the round button to choose the correct answer. Children only see the right answers after they have tried.
+                                    </Typography>
+                                    {draft.quiz.map((q, i) => (
+                                        <Box key={i} sx={{ p: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-ink)" }}>
+                                            <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}>
+                                                <TextField label={`Question ${i + 1}`} value={q.question_text} onChange={(e) => setQ(i, { question_text: e.target.value })} multiline fullWidth size="small" />
+                                                <Box role="button" tabIndex={0} aria-label="Remove question" onClick={() => setDraft((d) => ({ ...d, quiz: d.quiz.filter((_, k) => k !== i) }))} sx={{ ...pillSx(false), mt: 0.5, whiteSpace: "nowrap" }}>Remove</Box>
+                                            </Box>
+                                            {q.options.map((o, k) => (
+                                                <Box key={k} sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.75 }}>
+                                                    <Radio checked={q.correct_index === k} onChange={() => setQ(i, { correct_index: k })} sx={{ color: "var(--sl-ink)", "&.Mui-checked": { color: "#16A34A" }, p: 0.75 }} inputProps={{ "aria-label": `Option ${k + 1} is correct` }} />
+                                                    <TextField value={o} onChange={(e) => setOpt(i, k, e.target.value)} fullWidth size="small" />
+                                                </Box>
+                                            ))}
+                                            <TextField label="Why (shown after they try)" value={q.explanation || ""} onChange={(e) => setQ(i, { explanation: e.target.value })} fullWidth size="small" sx={{ mt: 1 }} />
+                                        </Box>
+                                    ))}
+                                    <TextField select label="Tries allowed per child" value={maxAttempts} onChange={(e) => setMaxAttempts(e.target.value)} size="small">
+                                        {[1, 2, 3, 5].map((n) => <MenuItem key={n} value={n}>{n}</MenuItem>)}
+                                    </TextField>
+                                </>
+                            )}
+                            {!draft.quiz && (
                             <TextField label="Questions" value={draft.questions} onChange={(e) => setDraft({ ...draft, questions: e.target.value })} multiline minRows={6} fullWidth />
+                            )}
+                            {!draft.quiz && (
                             <Box sx={{ p: 1.5, borderRadius: 2.5, border: "1.5px dashed var(--sl-ink)", bgcolor: "var(--sl-soft)" }}>
                                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1, flexWrap: "wrap" }}>
                                     <Typography sx={{ fontWeight: 800, fontSize: "0.85rem" }}>Answer key (only you see this)</Typography>
@@ -227,6 +292,7 @@ export default function HomeworkAiButton({ assignment, onUse }) {
                                     The answer key is not posted to parents. It is saved for you only and you can open it later on the homework page.
                                 </Typography>
                             </Box>
+                            )}
                             <Typography sx={{ fontSize: "0.75rem", color: "text.secondary" }}>
                                 Written by AI. Please check every question and answer before you post. {status.remaining} AI uses left this month.
                             </Typography>

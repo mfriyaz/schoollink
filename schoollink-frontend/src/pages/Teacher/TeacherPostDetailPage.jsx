@@ -19,6 +19,7 @@ import SaveIcon from "@mui/icons-material/SaveOutlined";
 import ImageIcon from "@mui/icons-material/ImageOutlined";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import AnswerKeyPanel from "../../components/Teacher/AnswerKeyPanel";
+import QuizPanel from "../../components/Teacher/QuizPanel";
 import {
     getHomeworkById,
     updateHomeworkPost,
@@ -378,6 +379,8 @@ function TeacherPostDetailPage() {
                                 {post.allow_view_all_submissions && <Chip size="small" variant="outlined" label="Shared view on" sx={{ fontWeight: 700, border: "1.5px solid var(--sl-ink)" }} />}
                             </Box>
                         )}
+
+                        <QuizPanel homeworkId={post.id} />
 
                         <AnswerKeyPanel homeworkId={post.id} />
                     </>
