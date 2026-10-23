@@ -4,6 +4,10 @@ export async function getPlatformOverview() {
     return (await api.get("/platform/overview")).data;
 }
 
+export async function getPlatformAiUsage() {
+    return (await api.get("/platform/ai-usage")).data;
+}
+
 export async function getPlatformSchools() {
     return (await api.get("/platform/schools")).data;
 }

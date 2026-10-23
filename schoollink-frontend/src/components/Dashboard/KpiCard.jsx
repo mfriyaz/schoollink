@@ -3,7 +3,8 @@ function KpiCard({
     title,
     value,
     icon,
-    iconBg
+    iconBg,
+    note
 }) {
     return (
         <Card
@@ -47,6 +48,11 @@ function KpiCard({
                 <Typography sx={{ color: "text.secondary", fontSize: "0.74rem", lineHeight: 1.25, mt: 0.25, overflowWrap: "break-word" }}>
                     {title}
                 </Typography>
+                {note && (
+                    <Typography sx={{ color: "#15803D", fontSize: "0.7rem", fontWeight: 700, mt: 0.2 }}>
+                        {note}
+                    </Typography>
+                )}
             </Box>
         </Card>
     );

@@ -3,13 +3,14 @@ import ConfirmDialog from "../../components/common/ConfirmDialog";
 import { notify } from "../../utils/notify";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-    Alert, Box, Button, Card, Chip, CircularProgress, Dialog, DialogActions,
-    DialogContent, DialogTitle, IconButton, LinearProgress, Tab, Tabs, TextField, Typography
+    Alert, Box, Button, Card, Chip, Dialog, DialogActions,
+    DialogContent, DialogTitle, IconButton, LinearProgress, Skeleton, Tab, Tabs, TextField, Typography
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import ArrowBackIcon from "@mui/icons-material/ArrowBackOutlined";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import AddIcon from "@mui/icons-material/AddOutlined";
+import PageHeader from "../../components/common/PageHeader";
 import HistoryList from "../../components/SuperAdmin/HistoryList";
 import AiSchoolCard from "../../components/SuperAdmin/AiSchoolCard";
 import PaymentDialog from "../../components/SuperAdmin/PaymentDialog";
@@ -77,7 +78,15 @@ export default function SchoolDetailPage() {
     }, [id]);
     useEffect(() => { load(); }, [load]);
     if (error) return <Alert severity="error">{error}</Alert>;
-    if (!data) return <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box>;
+    if (!data) {
+        return (
+            <Box sx={{ maxWidth: 1000 }}>
+                <Skeleton variant="rounded" height={70} sx={{ mb: 2 }} />
+                <Skeleton variant="rounded" height={36} width={280} sx={{ mb: 2 }} />
+                <Skeleton variant="rounded" height={200} />
+            </Box>
+        );
+    }
     const { school, admins, payments, activity, actions_30d, storage } = data;
     const suspended = school.status === "SUSPENDED";
     const daysLeft = school.subscription_expiry
@@ -123,25 +132,40 @@ export default function SchoolDetailPage() {
                 <ArrowBackIcon sx={{ fontSize: 18 }} />
                 All schools
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 1.5, mb: 2 }}>
-                <Box>
-                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>{school.school_name}</Typography>
-                    <Typography sx={{ color: "#64748B", fontSize: "0.85rem" }}>
-                        {school.school_code}{school.city ? ` - ${school.city}` : ""}{school.country ? `, ${school.country}` : ""}
-                    </Typography>
-                    <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-                        <Chip size="small" label={school.subscription_plan} />
-                        <Chip size="small" color={statusColor(school.status)} label={school.status} />
+            <PageHeader
+                eyebrow={`${school.school_code}${school.city ? ` - ${school.city}` : ""}${school.country ? `, ${school.country}` : ""}`}
+                title={school.school_name}
+                avatar={(school.school_name || "S").charAt(0).toUpperCase()}
+                avatarSize={52}
+                mb={{ xs: 1.5, sm: 2 }}
+                action={
+                    <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setPayOpen(true)}>Record payment</Button>
+                        {suspended ? (
+                            <Button color="success" variant="outlined" onClick={() => setStatusDialog("ACTIVE")}>Reactivate</Button>
+                        ) : (
+                            <Button color="error" variant="outlined" onClick={() => setStatusDialog("SUSPENDED")}>Suspend</Button>
+                        )}
                     </Box>
+                }
+            >
+                <Box sx={{ display: "flex", gap: 1, mt: 0.75, flexWrap: "wrap", alignItems: "center" }}>
+                    <Chip size="small" label={school.subscription_plan} />
+                    <Chip size="small" color={statusColor(school.status)} label={school.status} />
                 </Box>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                    <Button variant="contained" startIcon={<AddIcon />} onClick={() => setPayOpen(true)}>Record payment</Button>
-                    {suspended ? (
-                        <Button color="success" variant="outlined" onClick={() => setStatusDialog("ACTIVE")}>Reactivate</Button>
-                    ) : (
-                        <Button color="error" variant="outlined" onClick={() => setStatusDialog("SUSPENDED")}>Suspend</Button>
-                    )}
-                </Box>
+            </PageHeader>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(4, 1fr)" }, gap: 1, mb: 2 }}>
+                {[
+                    ["Students", school.max_students ? `${school.students} / ${school.max_students}` : school.students],
+                    ["Teachers", school.max_teachers ? `${school.teachers} / ${school.max_teachers}` : school.teachers],
+                    ["Expiry", daysLeft === null ? "No expiry" : daysLeft >= 0 ? `${daysLeft} days left` : `${-daysLeft} days overdue`],
+                    ["Last login", timeAgo(school.last_login)]
+                ].map(([k, v]) => (
+                    <Box key={k} sx={{ border: "1px solid var(--sl-border)", borderRadius: 2.5, px: 1.5, py: 1, boxShadow: "var(--sl-card-shadow)", bgcolor: "background.paper" }}>
+                        <Typography sx={{ color: "text.secondary", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: 0.4 }}>{k}</Typography>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1rem", color: "var(--sl-ink)" }}>{v}</Typography>
+                    </Box>
+                ))}
             </Box>
             {suspended && (
                 <Alert severity="error" sx={{ mb: 2 }}>
@@ -156,12 +180,15 @@ export default function SchoolDetailPage() {
             )}
             <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, minHeight: 0, "& .MuiTabs-indicator": { display: "none" }, "& .MuiTabs-flexContainer": { gap: 1, flexWrap: "wrap" }, "& .MuiTab-root": { textTransform: "none", fontWeight: 700, minHeight: 36, py: 0.5, px: 1.75, borderRadius: 99, color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", "&.Mui-selected": { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)" } } }}>
                 <Tab value="overview" label="Overview" />
+                <Tab value="ai" label="AI" />
+                <Tab value="billing" label="Billing" />
                 <Tab value="records" label="School records" />
             </Tabs>
             {tab === "records" ? (
                 <SchoolRecords schoolId={school.id} />
             ) : (
                 <>
+            {tab === "overview" && (<>
             <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Section title="Subscription">
@@ -189,9 +216,9 @@ export default function SchoolDetailPage() {
                     </Section>
                 </Grid>
             </Grid>
-            <Section title="AI assistant">
-                <AiSchoolCard schoolId={id} />
-            </Section>
+            </>)}
+            {tab === "ai" && <AiSchoolCard schoolId={id} />}
+            {tab === "overview" && (<>
             <Section title="Storage (photos, voice notes, files)">
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -244,9 +271,13 @@ export default function SchoolDetailPage() {
                     </Grid>
                 </Grid>
             </Section>
+            </>)}
+            {tab === "billing" && (<>
             <Section title="Subscription history (who changed what)">
                 <HistoryList rows={data.history || []} />
             </Section>
+            </>)}
+            {tab === "overview" && (<>
             <Section title="Contact">
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12, sm: 4 }}><Field label="School email" value={school.email} /></Grid>
@@ -268,6 +299,8 @@ export default function SchoolDetailPage() {
                     </Box>
                 ))}
             </Section>
+            </>)}
+            {tab === "billing" && (<>
             <Section title="Payments" action={<Typography sx={{ color: "#64748B", fontSize: "0.82rem" }}>
                 Total: {money(payments.reduce((a, p) => a + p.amount, 0), payments[0]?.currency)}
             </Typography>}>
@@ -291,6 +324,8 @@ export default function SchoolDetailPage() {
                     </Box>
                 ))}
             </Section>
+            </>)}
+            {tab === "overview" && (<>
             <Section title="Internal notes" action={notesMsg && <Typography sx={{ color: "#16A34A", fontSize: "0.8rem" }}>{notesMsg}</Typography>}>
                 <Typography sx={{ color: "#94A3B8", fontSize: "0.75rem", mb: 1 }}>Only visible to Super Admins.</Typography>
                 <TextField multiline minRows={3} fullWidth value={notes} onChange={(e) => setNotes(e.target.value)}
@@ -308,6 +343,7 @@ export default function SchoolDetailPage() {
                     </Box>
                 ))}
             </Section>
+            </>)}
                 </>
             )}
             <PaymentDialog open={payOpen} school={school} onClose={() => setPayOpen(false)} onSaved={load} />

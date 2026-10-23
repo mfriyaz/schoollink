@@ -27,6 +27,7 @@ router.post(
 const sa = [authenticate, authorizeRoles("Super Admin")];
 
 router.get("/overview", ...sa, admin.overview);
+router.get("/ai-usage", ...sa, aiAdmin.platformAiUsage);
 router.get("/schools", ...sa, admin.listSchools);
 router.get("/schools/:id", ...sa, admin.schoolDetail);
 router.get("/schools/:id/records/:type", ...sa, admin.schoolRecords);

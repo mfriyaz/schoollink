@@ -798,6 +798,43 @@ async function earlyWarningNote(user, studentId) {
 }
 
 // ---------- Super Admin helpers ----------
+// Super Admin: this month's AI use for every school, against its limit
+async function getPlatformUsage() {
+    let rows = [];
+    try {
+        const r = await pool.query(
+            `SELECT s.id, s.school_name, s.ai_enabled, s.ai_monthly_limit,
+                    COALESCE(u.n, 0)::int AS used
+               FROM schools s
+               LEFT JOIN (
+                    SELECT school_id, COUNT(*) AS n FROM ai_usage
+                     WHERE created_at >= date_trunc('month', NOW())
+                     GROUP BY school_id
+               ) u ON u.school_id = s.id
+              WHERE s.is_active = true AND s.id <> 1
+              ORDER BY COALESCE(u.n, 0) DESC, s.school_name`
+        );
+        rows = r.rows;
+    } catch (e) { /* table missing */ }
+
+    const schools = rows.map((x) => {
+        const limit = Number(x.ai_monthly_limit) || 0;
+        return {
+            id: x.id,
+            school_name: x.school_name,
+            enabled: x.ai_enabled !== false,
+            limit,
+            used: x.used,
+            percent: limit ? Math.round((x.used / limit) * 100) : 0,
+        };
+    });
+    return {
+        total_used: schools.reduce((a, b) => a + b.used, 0),
+        near_limit: schools.filter((s) => s.enabled && s.limit && s.percent >= 80).length,
+        schools,
+    };
+}
+
 async function getSchoolUsage(schoolId) {
     const ai = await getSchoolAi(schoolId);
     let rows = [];
@@ -865,4 +902,4 @@ async function updateSchoolAi(schoolId, { enabled, limit, features, curriculum }
     return getSchoolUsage(schoolId);
 }
 
-module.exports = { homeworkDraft, AiError, ACTIONS, LANGUAGES, getStatus, improve, translate, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, getSchoolUsage, updateSchoolAi };
+module.exports = { homeworkDraft, AiError, ACTIONS, LANGUAGES, getStatus, improve, translate, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, getSchoolUsage, updateSchoolAi, getPlatformUsage };

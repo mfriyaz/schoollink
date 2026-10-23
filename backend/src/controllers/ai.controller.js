@@ -103,10 +103,16 @@ async function getSchoolAi(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
+async function platformAiUsage(req, res) {
+    try {
+        return response.success(res, await ai.getPlatformUsage(), "AI usage");
+    } catch (err) { return fail(res, err); }
+}
+
 async function updateSchoolAi(req, res) {
     try {
         return response.success(res, await ai.updateSchoolAi(Number(req.params.id), req.body || {}), "AI settings saved");
     } catch (err) { return fail(res, err); }
 }
 
-module.exports = { status, improve, translate, homeworkDraft, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, setClassTeacher, transferAssignment, getSchoolAi, updateSchoolAi };
+module.exports = { status, improve, translate, homeworkDraft, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, setClassTeacher, transferAssignment, getSchoolAi, updateSchoolAi, platformAiUsage };
