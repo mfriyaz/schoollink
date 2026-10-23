@@ -1,3 +1,4 @@
+import PageHeader from "../../components/common/PageHeader";
 import { useEffect, useState } from "react";
 
 import {
@@ -200,48 +201,24 @@ function ProfilePage() {
 
         <Box sx={{ maxWidth: 900 }}>
 
-            {/* ---------- banner ---------- */}
-            <Box
-                data-testid="profile-banner"
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                    flexWrap: "wrap",
-                    p: { xs: 2, sm: 3 },
-                    mb: 2,
-                    borderRadius: 4,
-                    bgcolor: "var(--sl-banner, #4F46E5)",
-                    color: "var(--sl-on-banner, #fff)",
-                    border: "var(--sl-banner-border, none)",
-                    boxShadow: "var(--sl-banner-shadow, none)"
-                }}
-            >
-                <Avatar
-                    sx={{
-                        width: 72,
-                        height: 72,
-                        fontSize: "1.7rem",
-                        fontWeight: 800,
-                        bgcolor: "var(--sl-on-banner, #fff)",
-                        color: "var(--sl-banner, #4F46E5)"
-                    }}
+            {/* ---------- header ---------- */}
+            <Box data-testid="profile-banner">
+                <PageHeader
+                    avatar={initials(profile?.full_name)}
+                    avatarSize={68}
+                    title={profile ? profile.full_name : ""}
                 >
-                    {initials(profile?.full_name)}
-                </Avatar>
-
-                <Box sx={{ flex: 1, minWidth: 200 }}>
-                    <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", sm: "1.55rem" }, lineHeight: 1.2 }}>
-                        {profile ? profile.full_name : ""}
-                    </Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.75, flexWrap: "wrap" }}>
-                        <Chip
-                            size="small"
-                            label={profile ? profile.role : ""}
-                            sx={{ bgcolor: "var(--sl-on-banner, #fff)", color: "var(--sl-banner, #4F46E5)", fontWeight: 800 }}
-                        />
+                    <Box
+                        component="span"
+                        sx={{
+                            display: "inline-block", mt: 0.6, px: 1.25, py: 0.25, borderRadius: 99,
+                            fontSize: "0.78rem", fontWeight: 800, color: "var(--sl-ink, #111827)",
+                            bgcolor: "var(--sl-soft, #F8FAFC)", border: "1.5px solid var(--sl-ink, #111827)"
+                        }}
+                    >
+                        {profile ? profile.role : ""}
                     </Box>
-                </Box>
+                </PageHeader>
             </Box>
 
             {/* ---------- quick facts ---------- */}

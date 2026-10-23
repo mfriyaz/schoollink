@@ -206,27 +206,26 @@ function ReportsPage() {
                             p: { xs: 2, sm: 2.5 },
                             mb: 2,
                             borderRadius: 4,
-                            bgcolor: "var(--sl-banner, #4F46E5)",
-                            color: "var(--sl-on-banner, #fff)",
-                            border: "var(--sl-banner-border, none)",
-                            boxShadow: "var(--sl-banner-shadow, none)"
+                            bgcolor: "#fff",
+                            border: "1px solid var(--sl-border, #E2E8F0)",
+                            boxShadow: "var(--sl-card-shadow, none)"
                         }}
                     >
-                        <Box sx={{ width: 56, height: 56, borderRadius: "50%", bgcolor: "var(--sl-on-banner, #fff)", color: "var(--sl-banner, #4F46E5)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1.2rem" }}>
+                        <Box sx={{ width: 56, height: 56, borderRadius: "50%", bgcolor: "var(--sl-accent, #FFC400)", color: "var(--sl-ink, #111827)", border: "1.5px solid var(--sl-ink, #111827)", boxShadow: "2px 2px 0 var(--sl-ink, #111827)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1.2rem" }}>
                             {initials(report.student.name)}
                         </Box>
 
                         <Box sx={{ flex: 1, minWidth: 180 }}>
-                            <Typography sx={{ fontWeight: 800, fontSize: "1.25rem", lineHeight: 1.2 }}>{report.student.name}</Typography>
-                            <Typography sx={{ fontSize: "0.86rem", opacity: 0.9 }}>
+                            <Typography sx={{ fontWeight: 800, fontSize: "1.25rem", lineHeight: 1.2, color: "var(--sl-ink, #111827)" }}>{report.student.name}</Typography>
+                            <Typography sx={{ fontSize: "0.86rem", color: "text.secondary" }}>
                                 {report.student.admission_no} · {report.student.class} - {report.student.section}
                             </Typography>
-                            <Typography sx={{ fontSize: "0.86rem", opacity: 0.9 }}>{report.exam}</Typography>
+                            <Typography sx={{ fontSize: "0.86rem", color: "text.secondary" }}>{report.exam}</Typography>
                         </Box>
 
-                        <Box sx={{ textAlign: "center" }}>
-                            <Typography sx={{ fontWeight: 800, fontSize: "2rem", lineHeight: 1 }}>{overall}%</Typography>
-                            <Typography sx={{ fontSize: "0.74rem", fontWeight: 700, opacity: 0.9 }}>OVERALL</Typography>
+                        <Box sx={{ textAlign: "center", px: 1.75, py: 0.75, borderRadius: 3, bgcolor: "var(--sl-soft, #F8FAFC)", border: "1.5px solid var(--sl-ink, #111827)" }}>
+                            <Typography sx={{ fontWeight: 800, fontSize: "1.8rem", lineHeight: 1, color: "var(--sl-ink, #111827)" }}>{overall}%</Typography>
+                            <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, color: "text.secondary", letterSpacing: 0.4 }}>OVERALL</Typography>
                         </Box>
 
                         <Button

@@ -1,3 +1,4 @@
+import ChildHeader from "../../components/Parent/ChildHeader";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -344,78 +345,14 @@ function ParentDashboardPage() {
     );
     return (
         <Box>
-            {/* ---------- Slim child bar ---------- */}
-            <Box
-                sx={{
-                    mb: 1.5,
-                    px: { xs: 1.5, md: 2 },
-                    py: { xs: 1, md: 1.1 },
-                    borderRadius: 3,
-                    color: "var(--sl-on-banner)",
-                    bgcolor: "var(--sl-banner)",
-                    border: "var(--sl-banner-border)",
-                    boxShadow: "var(--sl-banner-shadow, none)",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1.25,
-                    flexWrap: "wrap"
-                }}
-            >
-                <Avatar
-                    sx={{
-                        width: 38,
-                        height: 38,
-                        bgcolor: "var(--sl-on-banner)",
-                        color: "var(--sl-banner)",
-                        fontWeight: 800,
-                        fontSize: "1rem"
-                    }}
-                >
-                    {selectedChild ? selectedChild.first_name[0] : "?"}
-                </Avatar>
-                <Box sx={{ minWidth: 0, flex: 1 }}>
-                    <Typography
-                        sx={{ fontWeight: 700, fontSize: { xs: "0.95rem", md: "1rem" }, lineHeight: 1.2 }}
-                        noWrap
-                    >
-                        {selectedChild
-                            ? `${selectedChild.first_name} ${selectedChild.last_name}`
-                            : "Your child"}
-                        {selectedChild && (
-                            <Box
-                                component="span"
-                                sx={{ fontWeight: 500, opacity: 0.85, fontSize: "0.8rem", ml: 1 }}
-                            >
-                                {selectedChild.class_name} - {selectedChild.section_name}
-                            </Box>
-                        )}
-                    </Typography>
-                    <Typography sx={{ opacity: 0.85, fontSize: "0.74rem", lineHeight: 1.3 }} noWrap>
-                        {getGreeting()}, {user ? user.full_name : "Parent"} 🤝
-                    </Typography>
-                </Box>
-                {children.length > 1 && (
-                    <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap", width: { xs: "100%", sm: "auto" } }}>
-                        {children.map((c) => (
-                            <Box
-                                key={c.student_id}
-                                role="button"
-                                tabIndex={0}
-                                onClick={() => handleChildChange(c.student_id)}
-                                sx={{
-                                    px: 1.25, py: 0.4, borderRadius: 99, cursor: "pointer", userSelect: "none",
-                                    fontSize: "0.8rem", fontWeight: 700,
-                                    border: "1.5px solid var(--sl-on-banner)",
-                                    bgcolor: c.student_id === selectedStudentId ? "var(--sl-on-banner)" : "transparent",
-                                    color: c.student_id === selectedStudentId ? "var(--sl-banner)" : "var(--sl-on-banner)"
-                                }}
-                            >
-                                {c.first_name}
-                            </Box>
-                        ))}
-                    </Box>
-                )}
-            </Box>
+            {/* ---------- Child header ---------- */}
+            <ChildHeader
+                child={selectedChild}
+                kids={children}
+                selectedId={selectedStudentId}
+                onSelect={handleChildChange}
+                eyebrow={`${getGreeting()}, ${user ? user.full_name : "Parent"} 🤝`}
+            />
             {/* ---------- At-a-glance tiles ---------- */}
             {(() => {
                 const dayFmt = new Intl.DateTimeFormat("en-CA", { timeZone: getSchoolTimezone() });
