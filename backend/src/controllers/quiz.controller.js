@@ -37,6 +37,13 @@ async function getForManage(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
+async function getResults(req, res) {
+    try {
+        const data = await quizService.getResults(req.params.homeworkId);
+        return response.success(res, data, "Quiz results retrieved");
+    } catch (err) { return fail(res, err); }
+}
+
 async function saveQuiz(req, res) {
     try {
         const data = await quizService.saveQuiz(req.params.homeworkId, req.user.school_id, req.body);
@@ -51,4 +58,4 @@ async function removeQuiz(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
-module.exports = { getForStudent, submitAttempt, getForManage, saveQuiz, removeQuiz };
+module.exports = { getForStudent, submitAttempt, getForManage, getResults, saveQuiz, removeQuiz };

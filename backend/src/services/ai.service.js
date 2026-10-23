@@ -55,7 +55,7 @@ const FEATURES = [
     { key: "weekly_summary", label: "Weekly summary for parents" },
     { key: "early_warning", label: "Early warning suggestions" },
     { key: "homework_generator", label: "Homework generator for teachers" },
-    { key: "quiz", label: "Practice quizzes (multiple choice)" },
+    { key: "quiz", label: "Practice quizzes" },
 ];
 
 const FEATURE_OF = {
@@ -431,6 +431,31 @@ EXPLANATION: one short sentence saying why
 Q2. question text
 (continue the same way for every question)`;
 
+const HW_QUIZ_MIXED_PROMPT = HW_QUIZ_SYSTEM_PROMPT
+    .replace("prepare a multiple-choice practice quiz", "prepare a practice quiz with a mix of question types")
+    .replace("- Every question has exactly four options, labelled A) B) C) D), and exactly one correct option. The wrong options must be believable but clearly wrong.",
+        `- Use a mix of three question types, whichever suits the topic best:
+  MCQ = four options labelled A) B) C) D) and exactly one correct option (wrong options believable but clearly wrong).
+  TF = a statement that is clearly true or clearly false.
+  FILL = a question with ONE short correct answer (a number or one or two words) that a child types. Only use FILL when the answer is unambiguous. List every acceptable spelling or form, separated by |  (for example: 56 | fifty-six).`)
+    .replace(/Q1\. question text[\s\S]*$/, `Q1. question text
+TYPE: MCQ
+A) option
+B) option
+C) option
+D) option
+ANSWER: the letter of the correct option
+EXPLANATION: one short sentence saying why
+Q2. statement
+TYPE: TF
+ANSWER: TRUE or FALSE
+EXPLANATION: one short sentence saying why
+Q3. question text
+TYPE: FILL
+ANSWER: accepted answer | another accepted answer
+EXPLANATION: one short sentence saying why
+(continue the same way for every question)`);
+
 function shuffled(list) {
     const a = list.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -458,20 +483,41 @@ function parseQuizDraft(text) {
         const qLines = [];
         const opts = {};
         let answer = null;
+        let rawAnswer = "";
         let explanation = "";
+        let kind = null;
         for (const l of lines) {
             let m;
-            if ((m = l.match(/^([A-D])[.)]\s*(.+)$/))) opts[m[1]] = m[2].trim();
-            else if ((m = l.match(/^ANSWER:\s*\(?([A-D])/i))) answer = m[1].toUpperCase();
+            if ((m = l.match(/^TYPE:\s*(MCQ|TF|FILL)/i))) kind = m[1].toLowerCase();
+            else if ((m = l.match(/^([A-D])[.)]\s*(.+)$/)) && !(kind === "tf" || kind === "fill")) opts[m[1]] = m[2].trim();
+            else if ((m = l.match(/^ANSWER:\s*(.+)$/i))) { rawAnswer = m[1].trim(); const L = rawAnswer.match(/^\(?([A-D])\b/i); answer = L ? L[1].toUpperCase() : null; }
             else if ((m = l.match(/^EXPLANATION:\s*(.+)$/i))) explanation = m[1].trim();
             else if (!Object.keys(opts).length) qLines.push(l);
         }
+        if (!qLines.length) continue;
+        if (!kind) kind = "mcq";
+
+        if (kind === "tf") {
+            const v = rawAnswer.replace(/[^a-z]/gi, "").toLowerCase();
+            if (v !== "true" && v !== "false") continue;
+            questions.push({ qtype: "tf", question_text: qLines.join(" "), options: ["True", "False"], correct_index: v === "true" ? 0 : 1, explanation });
+            continue;
+        }
+
+        if (kind === "fill") {
+            const acc = rawAnswer.split("|").map((x) => x.trim()).filter(Boolean).slice(0, 5);
+            if (!acc.length) continue;
+            questions.push({ qtype: "fill", question_text: qLines.join(" "), options: [], correct_index: 0, accepted_answers: acc, explanation });
+            continue;
+        }
+
         const letters = ["A", "B", "C", "D"];
-        if (!qLines.length || !answer || letters.some((k) => !opts[k])) continue;
+        if (!answer || letters.some((k) => !opts[k])) continue;
         const ordered = letters.map((k) => ({ text: opts[k], correct: k === answer }));
         if (new Set(ordered.map((o) => o.text.toLowerCase())).size !== 4) continue;
         const mixed = shuffled(ordered);
         questions.push({
+            qtype: "mcq",
             question_text: qLines.join(" "),
             options: mixed.map((o) => o.text),
             correct_index: mixed.findIndex((o) => o.correct),
@@ -544,7 +590,7 @@ async function homeworkDraft(user, body) {
         `Subject: ${r.rows[0].subject_name}`,
         `Topic: ${topic}`,
         `Number of questions: ${count}`,
-        `Question style: ${isQuiz ? "multiple-choice quiz questions" : HW_TYPES[qtype]}`,
+        `Question style: ${isQuiz ? (b.quiz_mix === "mixed" ? "a mix of multiple-choice, True/False and fill-in-the-blank quiz questions" : "multiple-choice quiz questions") : HW_TYPES[qtype]}`,
         `Difficulty: ${HW_DIFFICULTY[difficulty]}`,
         `Curriculum or board: ${curriculum || "general school curriculum"}`,
         `Language: write everything (title, instructions, questions and answers) in ${langName}`,
@@ -557,7 +603,7 @@ async function homeworkDraft(user, body) {
             "quiz_draft",
             "Prepare the quiz described below.",
             spec,
-            { system: HW_QUIZ_SYSTEM_PROMPT, maxTokens: 6000, timeoutMs: 60000, temperature: 0.6 }
+            { system: b.quiz_mix === "mixed" ? HW_QUIZ_MIXED_PROMPT : HW_QUIZ_SYSTEM_PROMPT, maxTokens: 6000, timeoutMs: 60000, temperature: 0.6 }
         );
         const quiz = parseQuizDraft(qres.text);
         if (!quiz) throw new AiError("The AI answer was not in the right shape. Please try again.", 502);

@@ -39,3 +39,11 @@ export async function removeQuiz(homeworkId) {
     return response.data;
 
 }
+
+export async function getQuizResults(homeworkId) {
+
+    const response = await api.get(`/quiz/homework/${homeworkId}/results`);
+
+    return response.data;
+
+}

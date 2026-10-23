@@ -10,6 +10,39 @@ class QuizError extends Error {
     }
 }
 
+const QTYPES = ["mcq", "tf", "fill"];
+
+/** Lower case, single spaces, no trailing full stop: "  Fifty-Six. " -> "fifty-six" */
+const norm = (v) => String(v == null ? "" : v).normalize("NFC").toLowerCase().replace(/\s+/g, " ").trim().replace(/[.\s]+$/, "");
+
+const NUM = /^-?\d+(\.\d+)?$/;
+
+/** Typed answer matches any accepted answer (numbers compare as numbers: 56 = 56.0 = 56.) */
+function sameAnswer(given, accepted) {
+
+    const g = norm(given).replace(/,/g, "");
+
+    if (!g) return false;
+
+    return (accepted || []).some((a) => {
+        const x = norm(a).replace(/,/g, "");
+        if (g === x) return true;
+        return NUM.test(g) && NUM.test(x) && Number(g) === Number(x);
+    });
+
+}
+
+/** Is this answer right for this question? (server side only) */
+function isCorrect(q, v) {
+
+    if (v === null || v === undefined) return false;
+
+    if (q.qtype === "fill") return typeof v === "string" && sameAnswer(v, q.accepted_answers);
+
+    return typeof v === "number" && v === q.correct_index;
+
+}
+
 const text = (v, n) => String(v == null ? "" : v).replace(/\r/g, "").trim().slice(0, n);
 
 /** Check what a teacher sends; throws QuizError with a clear message */
@@ -24,6 +57,36 @@ function cleanQuestions(list) {
         const question_text = text(q && q.question_text, 500);
         if (!question_text) throw new QuizError(`Question ${n} is empty.`);
 
+        const qtype = QTYPES.includes(q && q.qtype) ? q.qtype : "mcq";
+        const explanation = text(q.explanation, 300);
+
+        if (qtype === "fill") {
+
+            const raw = Array.isArray(q.accepted_answers) ? q.accepted_answers : [];
+            const seen = new Set();
+            const accepted = [];
+
+            for (const a of raw) {
+                const t = text(a, 100);
+                if (t && !seen.has(norm(t))) { seen.add(norm(t)); accepted.push(t); }
+            }
+
+            if (accepted.length === 0) throw new QuizError(`Question ${n} needs at least one accepted answer.`);
+            if (accepted.length > 5) throw new QuizError(`Question ${n} can have up to 5 accepted answers.`);
+
+            return { qtype, question_text, options: [], correct_index: 0, accepted_answers: accepted, explanation };
+
+        }
+
+        if (qtype === "tf") {
+
+            const correct = Number(q.correct_index);
+            if (correct !== 0 && correct !== 1) throw new QuizError(`Question ${n} needs True or False as the answer.`);
+
+            return { qtype, question_text, options: ["True", "False"], correct_index: correct, accepted_answers: null, explanation };
+
+        }
+
         const opts = q && Array.isArray(q.options) ? q.options.map((o) => text(o, 200)) : [];
         if (opts.length !== 4 || opts.some((o) => !o)) throw new QuizError(`Question ${n} needs four answer options.`);
         if (new Set(opts.map((o) => o.toLowerCase())).size !== 4) throw new QuizError(`Question ${n} has two options that are the same.`);
@@ -31,7 +94,7 @@ function cleanQuestions(list) {
         const correct = Number(q.correct_index);
         if (!Number.isInteger(correct) || correct < 0 || correct > 3) throw new QuizError(`Question ${n} needs one correct answer.`);
 
-        return { question_text, options: opts, correct_index: correct, explanation: text(q.explanation, 300) };
+        return { qtype: "mcq", question_text, options: opts, correct_index: correct, accepted_answers: null, explanation };
 
     });
 
@@ -123,12 +186,17 @@ async function getForStudent(user, homeworkId, studentId) {
             attempt_id: last.id,
             score: last.score,
             total: last.total,
-            items: withAnswers.map((q) => ({
-                question_id: q.id,
-                chosen: last.answers && last.answers[q.id] !== undefined ? last.answers[q.id] : null,
-                correct_index: q.correct_index,
-                explanation: q.explanation || ""
-            }))
+            items: withAnswers.map((q) => {
+                const chosen = last.answers && last.answers[q.id] !== undefined ? last.answers[q.id] : null;
+                return {
+                    question_id: q.id,
+                    chosen,
+                    correct: isCorrect(q, chosen),
+                    correct_index: q.qtype === "fill" ? null : q.correct_index,
+                    correct_text: q.qtype === "fill" ? (q.accepted_answers || [])[0] || "" : null,
+                    explanation: q.explanation || ""
+                };
+            })
         };
 
     }
@@ -164,11 +232,26 @@ async function submitAttempt(user, homeworkId, studentId, rawAnswers) {
     for (const q of questions) {
 
         const v = given[q.id];
-        const n = v === null || v === undefined || v === "" ? null : Number(v);
 
-        if (n !== null && Number.isInteger(n) && n >= 0 && n <= 3) {
+        if (q.qtype === "fill") {
+
+            const t = typeof v === "string" ? v.trim().slice(0, 100) : "";
+
+            if (t) {
+                answers[q.id] = t;
+                if (isCorrect(q, t)) score++;
+            }
+
+            continue;
+
+        }
+
+        const n = v === null || v === undefined || v === "" ? null : Number(v);
+        const max = q.qtype === "tf" ? 1 : 3;
+
+        if (n !== null && Number.isInteger(n) && n >= 0 && n <= max) {
             answers[q.id] = n;
-            if (n === q.correct_index) score++;
+            if (isCorrect(q, n)) score++;
         }
 
     }
@@ -181,4 +264,66 @@ async function submitAttempt(user, homeworkId, studentId, rawAnswers) {
 
 }
 
-module.exports = { QuizError, saveQuiz, getForManage, removeQuiz, getForStudent, submitAttempt, cleanQuestions };
+/** Teacher results: who tried, scores, and which questions were missed most on the first try */
+async function getResults(homeworkId) {
+
+    const quiz = await quizModel.getQuizByHomework(homeworkId);
+
+    if (!quiz) return null;
+
+    const [questions, data] = await Promise.all([
+        quizModel.getQuestionsWithAnswers(quiz.id),
+        quizModel.getResults(homeworkId, quiz.id)
+    ]);
+
+    const byStudent = new Map();
+
+    for (const a of data.attempts) {
+        if (!byStudent.has(a.student_id)) byStudent.set(a.student_id, []);
+        byStudent.get(a.student_id).push(a);
+    }
+
+    const students = data.students.map((st) => {
+
+        const list = byStudent.get(st.id) || [];
+        const best = list.reduce((b, a) => (!b || a.score > b.score ? a : b), null);
+        const last = list[list.length - 1] || null;
+
+        return {
+            id: st.id,
+            name: `${st.first_name || ""} ${st.last_name || ""}`.trim(),
+            admission_no: st.admission_no,
+            tries: list.length,
+            best: best ? { score: best.score, total: best.total } : null,
+            last_at: last ? last.submitted_at : null,
+            any_late: list.some((a) => a.is_late)
+        };
+
+    });
+
+    // first try of each child that attempted
+    const firsts = [];
+    for (const list of byStudent.values()) firsts.push(list[0]);
+
+    const qstats = questions.map((q, i) => {
+        const right = firsts.filter((a) => isCorrect(q, a.answers ? a.answers[q.id] : undefined)).length;
+        return { id: q.id, number: i + 1, question_text: q.question_text, qtype: q.qtype, right, total: firsts.length };
+    });
+
+    const tried = students.filter((s2) => s2.tries > 0);
+    const avg = tried.length
+        ? Math.round((tried.reduce((sum, s2) => sum + (s2.best.total ? s2.best.score / s2.best.total : 0), 0) / tried.length) * 100)
+        : null;
+
+    return {
+        max_attempts: quiz.max_attempts,
+        question_count: questions.length,
+        summary: { students: students.length, tried: tried.length, average_percent: avg },
+        students,
+        questions: qstats
+    };
+
+}
+
+module.exports = {
+    getResults, QuizError, saveQuiz, getForManage, removeQuiz, getForStudent, submitAttempt, cleanQuestions };

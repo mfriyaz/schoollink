@@ -36,7 +36,7 @@ async function getQuizByHomework(homeworkId) {
 async function getQuestionsWithAnswers(quizId) {
 
     const r = await db.query(
-        `SELECT id, position, question_text, options, correct_index, explanation
+        `SELECT id, position, qtype, question_text, options, correct_index, accepted_answers, explanation
            FROM quiz_questions WHERE quiz_id = $1 ORDER BY position`,
         [quizId]
     );
@@ -49,7 +49,7 @@ async function getQuestionsWithAnswers(quizId) {
 async function getQuestionsForTaking(quizId) {
 
     const r = await db.query(
-        `SELECT id, position, question_text, options
+        `SELECT id, position, qtype, question_text, options
            FROM quiz_questions WHERE quiz_id = $1 ORDER BY position`,
         [quizId]
     );
@@ -88,9 +88,10 @@ async function replaceQuiz(homeworkId, maxAttempts, questions) {
             const x = questions[i];
 
             await client.query(
-                `INSERT INTO quiz_questions (quiz_id, position, question_text, options, correct_index, explanation)
-                 VALUES ($1, $2, $3, $4::jsonb, $5, $6)`,
-                [quiz.id, i + 1, x.question_text, JSON.stringify(x.options), x.correct_index, x.explanation || null]
+                `INSERT INTO quiz_questions (quiz_id, position, qtype, question_text, options, correct_index, accepted_answers, explanation)
+                 VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7::jsonb, $8)`,
+                [quiz.id, i + 1, x.qtype, x.question_text, JSON.stringify(x.options), x.correct_index,
+                    x.accepted_answers ? JSON.stringify(x.accepted_answers) : null, x.explanation || null]
             );
 
         }
@@ -223,7 +224,36 @@ async function saveAttempt(quiz, studentId, parentUserId, answers, score, total,
 
 }
 
+/**
+ * Class results for the teacher: every child in the homework's class/section with
+ * their tries and best score, plus how many got each question right on their FIRST try.
+ */
+async function getResults(homeworkId, quizId) {
+
+    const kids = await db.query(
+        `
+        SELECT st.id, st.first_name, st.last_name, st.admission_no
+        FROM homework hw
+        JOIN teacher_subjects ts ON ts.id = hw.teacher_subject_id
+        JOIN students st ON st.class_id = ts.class_id AND st.section_id = ts.section_id
+        WHERE hw.id = $1 AND COALESCE(st.is_active, true) = true
+        ORDER BY st.first_name, st.last_name
+        `,
+        [homeworkId]
+    );
+
+    const att = await db.query(
+        `SELECT id, student_id, answers, score, total, is_late, submitted_at
+           FROM quiz_attempts WHERE quiz_id = $1 ORDER BY id`,
+        [quizId]
+    );
+
+    return { students: kids.rows, attempts: att.rows };
+
+}
+
 module.exports = {
+    getResults,
     featureOn,
     getQuizByHomework,
     getQuestionsWithAnswers,

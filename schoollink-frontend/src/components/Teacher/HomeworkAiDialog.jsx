@@ -20,7 +20,8 @@ const TYPES = [
     { id: "mcq", label: "Multiple choice" },
     { id: "fill", label: "Fill in the blanks" },
     { id: "word", label: "Word problems" },
-    { id: "quiz", label: "Interactive quiz" }
+    { id: "quiz", label: "Quiz: multiple choice" },
+    { id: "quizmix", label: "Quiz: mixed types" }
 ];
 
 const pillSx = (on) => ({
@@ -85,7 +86,7 @@ export default function HomeworkAiButton({ assignment, onUse }) {
         try {
             const r = await aiHomeworkDraft({
                 teacher_subject_id: assignment.teacher_subject_id,
-                topic, difficulty, question_type: qtype, count: Number(count), language, curriculum, notes
+                topic, difficulty, question_type: qtype === "quizmix" ? "quiz" : qtype, quiz_mix: qtype === "quizmix" ? "mixed" : undefined, count: Number(count), language, curriculum, notes
             });
             setStatus((s) => ({ ...s, remaining: r.data.remaining, used: s.limit - r.data.remaining }));
             setDraft({
@@ -113,26 +114,68 @@ export default function HomeworkAiButton({ assignment, onUse }) {
         }));
     }
 
+    function changeType(i, qtype) {
+        const base = qtype === "mcq"
+            ? { options: ["", "", "", ""], correct_index: 0, accepted_answers: undefined }
+            : qtype === "tf"
+                ? { options: ["True", "False"], correct_index: 0, accepted_answers: undefined }
+                : { options: [], correct_index: 0, accepted_answers: [""] };
+        setQ(i, { qtype, ...base });
+    }
+
+    function addQuestion(qtype) {
+        const q = { question_text: "", explanation: "", qtype };
+        const base = qtype === "mcq"
+            ? { options: ["", "", "", ""], correct_index: 0 }
+            : qtype === "tf"
+                ? { options: ["True", "False"], correct_index: 0 }
+                : { options: [], correct_index: 0, accepted_answers: [""] };
+        setDraft((d) => ({ ...d, quiz: [...d.quiz, { ...q, ...base }] }));
+    }
+
+    function setAccepted(i, k, value) {
+        setDraft((d) => ({
+            ...d,
+            quiz: d.quiz.map((q, n) => (n === i ? { ...q, accepted_answers: q.accepted_answers.map((a, m) => (m === k ? value : a)) } : q))
+        }));
+    }
+
     function use() {
         if (!draft) return;
         if (draft.quiz) {
             for (let i = 0; i < draft.quiz.length; i++) {
                 const q = draft.quiz[i];
-                const opts = q.options.map((o) => o.trim());
-                if (!q.question_text.trim() || opts.some((o) => !o)) {
-                    setError(`Question ${i + 1} needs its text and four answer options.`);
+                const kind = q.qtype || "mcq";
+                if (!q.question_text.trim()) {
+                    setError(`Question ${i + 1} is empty.`);
                     return;
                 }
-                if (new Set(opts.map((o) => o.toLowerCase())).size !== 4) {
-                    setError(`Question ${i + 1} has two options that are the same.`);
-                    return;
+                if (kind === "fill") {
+                    if (!(q.accepted_answers || []).some((x) => x.trim())) {
+                        setError(`Question ${i + 1} needs at least one accepted answer.`);
+                        return;
+                    }
+                } else if (kind === "mcq") {
+                    const opts = q.options.map((o) => o.trim());
+                    if (opts.some((o) => !o)) {
+                        setError(`Question ${i + 1} needs its text and four answer options.`);
+                        return;
+                    }
+                    if (new Set(opts.map((o) => o.toLowerCase())).size !== 4) {
+                        setError(`Question ${i + 1} has two options that are the same.`);
+                        return;
+                    }
                 }
+            }
+            if (!draft.quiz.length) {
+                setError("Add at least one question.");
+                return;
             }
             setError("");
             onUse({
                 title: draft.title,
                 description: `${draft.instructions.trim()}\n\nThis is a practice quiz. Open this homework in the app and choose the answers.`,
-                quiz: { questions: draft.quiz, max_attempts: Number(maxAttempts) }
+                quiz: { questions: draft.quiz.map((q) => (q.qtype === "fill" ? { ...q, accepted_answers: (q.accepted_answers || []).map((x) => x.trim()).filter(Boolean) } : q)), max_attempts: Number(maxAttempts) }
             });
             setOpen(false);
             setDraft(null);
@@ -251,7 +294,7 @@ export default function HomeworkAiButton({ assignment, onUse }) {
                             {draft.quiz && (
                                 <>
                                     <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
-                                        Check each question. Tap the round button to choose the correct answer. Children only see the right answers after they have tried.
+                                        Check each question. Tap the round button to choose the correct answer, or type the accepted answers for a fill-in-the-blank. Children only see the right answers after they have tried.
                                     </Typography>
                                     {draft.quiz.map((q, i) => (
                                         <Box key={i} sx={{ p: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-ink)" }}>
@@ -259,15 +302,45 @@ export default function HomeworkAiButton({ assignment, onUse }) {
                                                 <TextField label={`Question ${i + 1}`} value={q.question_text} onChange={(e) => setQ(i, { question_text: e.target.value })} multiline fullWidth size="small" />
                                                 <Box role="button" tabIndex={0} aria-label="Remove question" onClick={() => setDraft((d) => ({ ...d, quiz: d.quiz.filter((_, k) => k !== i) }))} sx={{ ...pillSx(false), mt: 0.5, whiteSpace: "nowrap" }}>Remove</Box>
                                             </Box>
-                                            {q.options.map((o, k) => (
+                                            <Box sx={{ display: "flex", gap: 0.75, mt: 1, flexWrap: "wrap" }}>
+                                                {[["mcq", "Multiple choice"], ["tf", "True / False"], ["fill", "Fill in the blank"]].map(([id, label]) => (
+                                                    <Box key={id} role="button" tabIndex={0} onClick={() => { if ((q.qtype || "mcq") !== id) changeType(i, id); }} sx={pillSx((q.qtype || "mcq") === id)}>{label}</Box>
+                                                ))}
+                                            </Box>
+                                            {(q.qtype || "mcq") === "mcq" && q.options.map((o, k) => (
                                                 <Box key={k} sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.75 }}>
                                                     <Radio checked={q.correct_index === k} onChange={() => setQ(i, { correct_index: k })} sx={{ color: "var(--sl-ink)", "&.Mui-checked": { color: "#16A34A" }, p: 0.75 }} inputProps={{ "aria-label": `Option ${k + 1} is correct` }} />
                                                     <TextField value={o} onChange={(e) => setOpt(i, k, e.target.value)} fullWidth size="small" />
                                                 </Box>
                                             ))}
+                                            {q.qtype === "tf" && ["True", "False"].map((o, k) => (
+                                                <Box key={k} sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}>
+                                                    <Radio checked={q.correct_index === k} onChange={() => setQ(i, { correct_index: k })} sx={{ color: "var(--sl-ink)", "&.Mui-checked": { color: "#16A34A" }, p: 0.75 }} inputProps={{ "aria-label": `${o} is the correct answer` }} />
+                                                    <Typography sx={{ fontSize: "0.92rem" }}>{o}</Typography>
+                                                </Box>
+                                            ))}
+                                            {q.qtype === "fill" && (
+                                                <Box sx={{ mt: 1 }}>
+                                                    <Typography sx={{ fontSize: "0.78rem", color: "text.secondary", mb: 0.5 }}>
+                                                        Answers you will accept (capital letters and spaces do not matter):
+                                                    </Typography>
+                                                    {(q.accepted_answers || [""]).map((a, k) => (
+                                                        <TextField key={k} value={a} onChange={(e) => setAccepted(i, k, e.target.value)} placeholder={k === 0 ? "Correct answer" : "Another accepted answer"} inputProps={{ maxLength: 100, "aria-label": `Accepted answer ${k + 1}` }} fullWidth size="small" sx={{ mb: 0.75 }} />
+                                                    ))}
+                                                    {(q.accepted_answers || []).length < 5 && (
+                                                        <Box role="button" tabIndex={0} onClick={() => setQ(i, { accepted_answers: [...(q.accepted_answers || []), ""] })} sx={{ ...pillSx(false), display: "inline-block" }}>+ Add another accepted answer</Box>
+                                                    )}
+                                                </Box>
+                                            )}
                                             <TextField label="Why (shown after they try)" value={q.explanation || ""} onChange={(e) => setQ(i, { explanation: e.target.value })} fullWidth size="small" sx={{ mt: 1 }} />
                                         </Box>
                                     ))}
+                                    <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap", alignItems: "center" }}>
+                                        <Typography sx={{ fontSize: "0.82rem", fontWeight: 700 }}>Add a question:</Typography>
+                                        {[["mcq", "Multiple choice"], ["tf", "True / False"], ["fill", "Fill in the blank"]].map(([id, label]) => (
+                                            <Box key={id} role="button" tabIndex={0} onClick={() => addQuestion(id)} sx={pillSx(false)}>{label}</Box>
+                                        ))}
+                                    </Box>
                                     <TextField select label="Tries allowed per child" value={maxAttempts} onChange={(e) => setMaxAttempts(e.target.value)} size="small">
                                         {[1, 2, 3, 5].map((n) => <MenuItem key={n} value={n}>{n}</MenuItem>)}
                                     </TextField>

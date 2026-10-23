@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Box, Button, Card, CircularProgress, Radio, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, Radio, TextField, Typography } from "@mui/material";
 import QuizIcon from "@mui/icons-material/QuizOutlined";
 import CheckIcon from "@mui/icons-material/CheckCircleRounded";
 import CloseIcon from "@mui/icons-material/CancelRounded";
@@ -95,7 +95,9 @@ export default function QuizCard({ homeworkId, studentId }) {
                     {quiz.questions.map((q, i) => {
                         const it = review.items.find((x) => x.question_id === q.id);
                         if (!it) return null;
-                        const right = it.chosen === it.correct_index;
+                        const right = it.correct === true;
+                        const isFill = q.qtype === "fill";
+                        const shown = it.chosen === null || it.chosen === "" ? "no answer" : (isFill ? it.chosen : q.options[it.chosen]);
                         return (
                             <Box key={q.id} sx={{ py: 1.25, borderTop: "1px solid var(--sl-border)" }}>
                                 <Box sx={{ display: "flex", gap: 0.75, alignItems: "flex-start" }}>
@@ -105,11 +107,11 @@ export default function QuizCard({ homeworkId, studentId }) {
                                     <Typography sx={{ fontWeight: 700 }}>{i + 1}. {q.question_text}</Typography>
                                 </Box>
                                 <Typography sx={{ ml: 3.5, fontSize: "0.86rem", color: right ? "#15803D" : "#B91C1C" }}>
-                                    Your answer: {it.chosen === null ? "no answer" : q.options[it.chosen]}
+                                    Your answer: {shown}
                                 </Typography>
                                 {!right && (
                                     <Typography sx={{ ml: 3.5, fontSize: "0.86rem", color: "#15803D", fontWeight: 700 }}>
-                                        Correct answer: {q.options[it.correct_index]}
+                                        Correct answer: {isFill ? it.correct_text : q.options[it.correct_index]}
                                     </Typography>
                                 )}
                                 {it.explanation && (
@@ -150,7 +152,21 @@ export default function QuizCard({ homeworkId, studentId }) {
                     {quiz.questions.map((q, i) => (
                         <Box key={q.id} sx={{ py: 1.25, borderTop: i ? "1px solid var(--sl-border)" : "none" }}>
                             <Typography sx={{ fontWeight: 700, mb: 0.5 }}>{i + 1}. {q.question_text}</Typography>
-                            {q.options.map((o, k) => {
+                            {q.qtype === "fill" ? (
+                                <TextField
+                                    value={answers[q.id] || ""}
+                                    onChange={(e) => {
+                                        const v = e.target.value;
+                                        const next = { ...answers };
+                                        if (v.trim()) next[q.id] = v; else delete next[q.id];
+                                        setAnswers(next);
+                                    }}
+                                    placeholder="Type your answer"
+                                    inputProps={{ maxLength: 100, "aria-label": `Answer to question ${i + 1}` }}
+                                    fullWidth
+                                    size="small"
+                                />
+                            ) : q.options.map((o, k) => {
                                 const on = answers[q.id] === k;
                                 return (
                                     <Box
@@ -168,7 +184,7 @@ export default function QuizCard({ homeworkId, studentId }) {
                                         }}
                                     >
                                         <Radio checked={on} tabIndex={-1} sx={{ color: "var(--sl-ink)", "&.Mui-checked": { color: "var(--sl-ink)" } }} />
-                                        <Typography sx={{ fontSize: "0.92rem" }}><b>{LETTERS[k]}.</b> {o}</Typography>
+                                        <Typography sx={{ fontSize: "0.92rem" }}>{q.qtype === "tf" ? <b>{o}</b> : <><b>{LETTERS[k]}.</b> {o}</>}</Typography>
                                     </Box>
                                 );
                             })}
