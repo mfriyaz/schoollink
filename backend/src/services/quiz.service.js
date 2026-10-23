@@ -131,13 +131,46 @@ async function getForManage(homeworkId) {
 
     const questions = await quizModel.getQuestionsWithAnswers(quiz.id);
 
-    return { id: quiz.id, max_attempts: quiz.max_attempts, questions };
+    return {
+        id: quiz.id,
+        max_attempts: quiz.max_attempts,
+        closed: Boolean(quiz.closed),
+        attempt_count: await quizModel.countAttempts(quiz.id),
+        questions
+    };
 
 }
 
-async function removeQuiz(homeworkId) {
+/**
+ * Delete a quiz. If children have already tried it, the teacher must send confirm = "REMOVE",
+ * so results are never lost by one careless tap. Returns how many tries were deleted.
+ */
+async function removeQuiz(homeworkId, confirm) {
+
+    const quiz = await quizModel.getQuizByHomework(homeworkId);
+
+    if (!quiz) return { attempts: 0, existed: false };
+
+    const attempts = await quizModel.countAttempts(quiz.id);
+
+    if (attempts > 0 && confirm !== "REMOVE") {
+        throw new QuizError(`${attempts} ${attempts === 1 ? "try has" : "tries have"} been saved for this quiz. Type REMOVE to confirm deleting the quiz and all results.`, 409);
+    }
 
     await quizModel.deleteQuiz(homeworkId);
+
+    return { attempts, existed: true };
+
+}
+
+/** Close (no new tries, results kept) or reopen a quiz */
+async function setClosed(homeworkId, closed) {
+
+    const ok = await quizModel.setClosed(homeworkId, Boolean(closed));
+
+    if (!ok) throw new QuizError("There is no quiz for this homework.", 404);
+
+    return { closed: Boolean(closed) };
 
 }
 
@@ -170,7 +203,8 @@ async function getForStudent(user, homeworkId, studentId) {
         attempts: attempts.map((a) => ({ id: a.id, score: a.score, total: a.total, is_late: a.is_late, submitted_at: a.submitted_at })),
         best: best ? { score: best.score, total: best.total } : null,
         attempts_left: Math.max(0, quiz.max_attempts - attempts.length),
-        open: Boolean(rules && rules.open),
+        closed: Boolean(quiz.closed),
+        open: Boolean(rules && rules.open) && !quiz.closed,
         past_due: Boolean(rules && rules.past_due),
         review: null
     };
@@ -220,7 +254,7 @@ async function submitAttempt(user, homeworkId, studentId, rawAnswers) {
 
     const rules = await quizModel.getHomeworkRules(homeworkId);
 
-    if (!rules || !rules.open) throw new QuizError("This quiz is closed. Please ask the teacher if you still need to try it.", 403);
+    if (quiz.closed || !rules || !rules.open) throw new QuizError("This quiz is closed. Please ask the teacher if you still need to try it.", 403);
 
     const questions = await quizModel.getQuestionsWithAnswers(quiz.id);
 
@@ -366,5 +400,6 @@ async function getStudentDetail(homeworkId, studentId) {
 }
 
 module.exports = {
+    setClosed,
     getStudentDetail,
     getResults, QuizError, saveQuiz, getForManage, removeQuiz, getForStudent, submitAttempt, cleanQuestions };

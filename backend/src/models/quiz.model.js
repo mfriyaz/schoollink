@@ -270,7 +270,25 @@ async function studentInHomework(studentId, homeworkId) {
 
 }
 
+async function setClosed(homeworkId, closed) {
+
+    const r = await db.query("UPDATE quizzes SET closed = $2 WHERE homework_id = $1 RETURNING id", [homeworkId, closed]);
+
+    return r.rows.length > 0;
+
+}
+
+async function getHomeworkTitle(homeworkId) {
+
+    const r = await db.query("SELECT title FROM homework WHERE id = $1", [homeworkId]);
+
+    return r.rows[0] ? r.rows[0].title : null;
+
+}
+
 module.exports = {
+    setClosed,
+    getHomeworkTitle,
     studentInHomework,
     getResults,
     featureOn,

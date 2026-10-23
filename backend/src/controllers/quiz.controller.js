@@ -1,5 +1,7 @@
 const quizService = require("../services/quiz.service");
 const response = require("../utils/response");
+const auditService = require("../services/audit.service");
+const quizModel = require("../models/quiz.model");
 
 function fail(res, err) {
 
@@ -60,9 +62,36 @@ async function saveQuiz(req, res) {
 
 async function removeQuiz(req, res) {
     try {
-        await quizService.removeQuiz(req.params.homeworkId);
+        const title = await quizModel.getHomeworkTitle(req.params.homeworkId);
+        const out = await quizService.removeQuiz(req.params.homeworkId, req.body && req.body.confirm);
+        if (out.existed) {
+            await auditService.logAudit(req, {
+                action: "Deleted",
+                entityType: "homework",
+                entityId: Number(req.params.homeworkId),
+                entityTitle: title,
+                summary: out.attempts > 0
+                    ? `Practice quiz removed (${out.attempts} ${out.attempts === 1 ? "try" : "tries"} deleted)`
+                    : "Practice quiz removed"
+            });
+        }
         return response.success(res, null, "Quiz removed");
     } catch (err) { return fail(res, err); }
 }
 
-module.exports = { getForStudent, submitAttempt, getForManage, getResults, getStudentDetail, saveQuiz, removeQuiz };
+async function setClosed(req, res) {
+    try {
+        const closed = Boolean(req.body && req.body.closed);
+        const data = await quizService.setClosed(req.params.homeworkId, closed);
+        await auditService.logAudit(req, {
+            action: "Edited",
+            entityType: "homework",
+            entityId: Number(req.params.homeworkId),
+            entityTitle: await quizModel.getHomeworkTitle(req.params.homeworkId),
+            summary: closed ? "Practice quiz closed" : "Practice quiz reopened"
+        });
+        return response.success(res, data, closed ? "Quiz closed" : "Quiz reopened");
+    } catch (err) { return fail(res, err); }
+}
+
+module.exports = { getForStudent, submitAttempt, getForManage, setClosed, getResults, getStudentDetail, saveQuiz, removeQuiz };

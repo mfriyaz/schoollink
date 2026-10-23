@@ -32,9 +32,9 @@ export async function saveQuiz(homeworkId, payload) {
 
 }
 
-export async function removeQuiz(homeworkId) {
+export async function removeQuiz(homeworkId, confirm) {
 
-    const response = await api.delete(`/quiz/homework/${homeworkId}`);
+    const response = await api.delete(`/quiz/homework/${homeworkId}`, { data: { confirm } });
 
     return response.data;
 
@@ -51,6 +51,14 @@ export async function getQuizResults(homeworkId) {
 export async function getQuizStudentDetail(homeworkId, studentId) {
 
     const response = await api.get(`/quiz/homework/${homeworkId}/results/student/${studentId}`);
+
+    return response.data;
+
+}
+
+export async function setQuizClosed(homeworkId, closed) {
+
+    const response = await api.put(`/quiz/homework/${homeworkId}/closed`, { closed });
 
     return response.data;
 

@@ -74,6 +74,15 @@ router.put(
     quizController.saveQuiz
 );
 
+router.put(
+    "/homework/:homeworkId/closed",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    tenant.param("homework", "homeworkId"),
+    tenant.teacherParam("homework", "homeworkId"),
+    quizController.setClosed
+);
+
 router.delete(
     "/homework/:homeworkId",
     authenticate,
