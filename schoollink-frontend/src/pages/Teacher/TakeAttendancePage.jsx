@@ -387,7 +387,12 @@ function TakeAttendancePage() {
 
                     <Box
                         sx={{
-                            position: "sticky", bottom: { xs: 76, md: 12 }, mt: 2, zIndex: 5,
+                            // Phone: fixed just above the bottom menu, so it never covers the list.
+                            // Desktop: sticks to the bottom of the page.
+                            position: { xs: "fixed", md: "sticky" },
+                            left: { xs: 12, md: "auto" }, right: { xs: 12, md: "auto" },
+                            bottom: { xs: "calc(76px + env(safe-area-inset-bottom))", md: 12 },
+                            mt: 2, zIndex: 5,
                             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1.5,
                             p: 1.25, pl: 2, borderRadius: 3, bgcolor: "#fff",
                             border: "1.5px solid var(--sl-ink)", boxShadow: "3px 3px 0 var(--sl-ink)"
@@ -402,10 +407,12 @@ function TakeAttendancePage() {
                             variant="contained"
                             onClick={handleSave}
                             disabled={saving}
+                            sx={{ whiteSpace: "nowrap", flexShrink: 0 }}
                         >
                             {saving ? "Saving..." : "Save Attendance"}
                         </Button>
                     </Box>
+                    <Box sx={{ height: { xs: 84, md: 0 } }} />
                 </>
             )}
         </Box>
