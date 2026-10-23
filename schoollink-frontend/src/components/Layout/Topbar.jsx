@@ -386,7 +386,7 @@ function Topbar({ onToggleSidebar }) {
 
                                 fontSize: "0.75rem",
 
-                                color: user && user.role === "Super Admin" ? "#7C3AED" : "#64748B",
+                                color: user && user.role === "Super Admin" ? "#3B5BDB" : "#64748B",
 
                                 fontWeight: user && user.role === "Super Admin" ? 700 : 400
 
@@ -400,7 +400,7 @@ function Topbar({ onToggleSidebar }) {
 
                     </Box>
 
-                    <Avatar sx={{ bgcolor: user && user.role === "Super Admin" ? "#7C3AED" : "var(--sl-primary)" }}>
+                    <Avatar sx={{ bgcolor: user && user.role === "Super Admin" ? "#3B5BDB" : "var(--sl-primary)" }}>
 
                         {user && user.full_name ? user.full_name[0] : "?"}
 

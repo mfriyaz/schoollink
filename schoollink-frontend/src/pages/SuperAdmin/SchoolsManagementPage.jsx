@@ -414,7 +414,7 @@ function SchoolsManagementPage() {
                     <DomainIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box>
-                    <Typography sx={{ color: "#7C3AED", fontWeight: 700, fontSize: "0.75rem", letterSpacing: 0.5, textTransform: "uppercase" }}>
+                    <Typography sx={{ color: "#3B5BDB", fontWeight: 700, fontSize: "0.75rem", letterSpacing: 0.5, textTransform: "uppercase" }}>
                         Platform Console
                     </Typography>
                     <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>

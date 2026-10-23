@@ -107,7 +107,7 @@ function Distribution({ data, colors }) {
     );
 }
 const statusColors = { ACTIVE: "#16A34A", TRIAL: "#0EA5E9", SUSPENDED: "#EF4444", EXPIRED: "#F59E0B" };
-const planColors = { PREMIUM: "#7C3AED", STANDARD: "var(--sl-primary)", TRIAL: "#0EA5E9" };
+const planColors = { PREMIUM: "#3B5BDB", STANDARD: "var(--sl-primary-light)", TRIAL: "#0EA5E9" };
 export default function PlatformDashboardPage() {
     const navigate = useNavigate();
     const [data, setData] = useState(null);
@@ -142,8 +142,8 @@ export default function PlatformDashboardPage() {
                 avatar={(firstName || "S").charAt(0).toUpperCase()}
             />
             <Grid container spacing={1.5} sx={{ mb: 1.5 }}>
-                <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Schools" value={totals.schools} note={newThisMonth ? `+${newThisMonth} this month` : null} icon={<DomainIcon sx={{ color: "#7C3AED" }} />} iconBg="#EDE9FE" /></Grid>
-                <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Students" value={totals.students} icon={<SchoolIcon sx={{ color: "var(--sl-primary)" }} />} iconBg="var(--sl-soft)" /></Grid>
+                <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Schools" value={totals.schools} note={newThisMonth ? `+${newThisMonth} this month` : null} icon={<DomainIcon sx={{ color: "#3B5BDB" }} />} iconBg="var(--sl-soft)" /></Grid>
+                <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Students" value={totals.students} icon={<SchoolIcon sx={{ color: "var(--sl-primary-light)" }} />} iconBg="var(--sl-soft)" /></Grid>
                 <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Teachers" value={totals.teachers} icon={<PeopleIcon sx={{ color: "#0D9488" }} />} iconBg="#CCFBF1" /></Grid>
                 <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Parents" value={totals.parents} icon={<FamilyIcon sx={{ color: "#DB2777" }} />} iconBg="#FCE7F3" /></Grid>
             </Grid>
@@ -247,7 +247,7 @@ export default function PlatformDashboardPage() {
                                     </Typography>
                                 </Box>
                                 <Box sx={{ height: 8, borderRadius: 4, bgcolor: "#F1F5F9", overflow: "hidden" }}>
-                                    <Box sx={{ height: "100%", width: `${Math.max(2, s.share)}%`, bgcolor: s.percent_of_limit >= 90 ? "#EF4444" : "#7C3AED" }} />
+                                    <Box sx={{ height: "100%", width: `${Math.max(2, s.share)}%`, bgcolor: s.percent_of_limit >= 90 ? "#EF4444" : "#3B5BDB" }} />
                                 </Box>
                             </Box>
                         ))}

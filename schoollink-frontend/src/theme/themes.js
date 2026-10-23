@@ -133,18 +133,18 @@ export const THEMES = {
         hidden: true,
         name: "Platform",
         tagline: "Super Admin",
-        primary: "#5B21B6", primaryDark: "#4C1D95", primaryLight: "#8B5CF6",
-        soft: "#EDE9FE", soft2: "#C4B5FD", ink: "#2E1065",
-        accent: "#7C3AED", accentDark: "#6D28D9",
-        pageBg: "#F6F3FF", border: "#E3DCF7", page2: "#F6F3FF",
-        btnBg: "#7C3AED", btnHover: "#6D28D9", btnText: "#FFFFFF", btnBorder: "none",
-        btnShadowCss: "0 3px 0 #4C1D95", btnShadowHoverCss: "0 4px 0 #4C1D95", btnShadow: "rgba(91,33,182,0.30)",
-        cardShadow: "0 1px 0 rgba(46,16,101,0.08), 0 2px 8px rgba(46,16,101,0.06)", cardShadowHover: "0 2px 0 rgba(46,16,101,0.12), 0 8px 18px rgba(46,16,101,0.12)",
-        tabIndicator: "#7C3AED", metaColor: "#2E1065",
-        sideBg: "#2E1065", sideActive: "#7C3AED", onActive: "#FFFFFF", sideText: "#DDD6FE", sideMuted: "rgba(221,214,254,0.55)", glow: "rgba(0,0,0,0)",
-        navActive: "#7C3AED", onNavActive: "#FFFFFF",
-        banner: "#7C3AED", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "0 6px 16px rgba(91,33,182,0.22)",
-        loginBg: "#F6F3FF", loginPanel: "#EDE9FE"
+        primary: "#1E3A8A", primaryDark: "#172554", primaryLight: "#3B5BDB",
+        soft: "#E0E7FF", soft2: "#A5B4FC", ink: "#0F1B3D",
+        accent: "#3B5BDB", accentDark: "#2F49B5",
+        pageBg: "#F8FAFC", border: "#E2E8F0", page2: "#F8FAFC",
+        btnBg: "#3B5BDB", btnHover: "#2F49B5", btnText: "#FFFFFF", btnBorder: "none",
+        btnShadowCss: "0 3px 0 #1E3A8A", btnShadowHoverCss: "0 4px 0 #1E3A8A", btnShadow: "rgba(30,58,138,0.30)",
+        cardShadow: "0 1px 0 rgba(15,27,61,0.06), 0 2px 8px rgba(15,27,61,0.05)", cardShadowHover: "0 2px 0 rgba(15,27,61,0.10), 0 8px 18px rgba(15,27,61,0.10)",
+        tabIndicator: "#3B5BDB", metaColor: "#0F1B3D",
+        sideBg: "#0F1B3D", sideActive: "#3B5BDB", onActive: "#FFFFFF", sideText: "#CBD5F5", sideMuted: "rgba(203,213,245,0.55)", glow: "rgba(0,0,0,0)",
+        navActive: "#3B5BDB", onNavActive: "#FFFFFF",
+        banner: "#3B5BDB", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "0 6px 16px rgba(30,58,138,0.22)",
+        loginBg: "#F8FAFC", loginPanel: "#E0E7FF"
     }
 
 };

@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import { monthLabel } from "../../utils/platformUi";
 
 /** Small dependency-free bar chart: data = [{ month: "2026-05", value: 3 }] */
-export default function MiniBars({ data, color = "#7C3AED", format = (v) => v }) {
+export default function MiniBars({ data, color = "#3B5BDB", format = (v) => v }) {
 
     const max = Math.max(1, ...data.map((d) => d.value));
 

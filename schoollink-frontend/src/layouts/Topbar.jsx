@@ -590,7 +590,7 @@ function Topbar({ onToggleSidebar }) {
 
                                 fontSize: "0.75rem",
 
-                                color: user && user.role === "Super Admin" ? "#7C3AED" : "#64748B",
+                                color: user && user.role === "Super Admin" ? "#3B5BDB" : "#64748B",
 
                                 fontWeight: user && user.role === "Super Admin" ? 700 : 400
 

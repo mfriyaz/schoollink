@@ -211,8 +211,8 @@ function Sidebar({ collapsed }) {
     const isSuperAdmin = user && user.role === "Super Admin";
 
     const theme = isSuperAdmin
-        ? { bg: "#1E1B3A", accent: "#7C3AED", accentSoft: "rgba(124,58,237,0.15)", brand: "SchoolLink Platform" }
-        : { bg: "var(--sl-ink)", accent: "var(--sl-primary)", accentSoft: "color-mix(in srgb, var(--sl-primary) 15%, transparent)", brand: "SchoolLink" };
+        ? { bg: "#0F1B3D", accent: "#3B5BDB", accentSoft: "rgba(59,91,219,0.18)", brand: "SchoolLink Platform" }
+        : { bg: "#1E1B4B", accent: "#4F46E5", accentSoft: "rgba(79,70,229,0.15)", brand: "SchoolLink" };
 
     const sidebarWidth = collapsed ? 76 : 260;
 
