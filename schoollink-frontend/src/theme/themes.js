@@ -185,6 +185,8 @@ export function applyThemeVars(t) {
 
     applyFavicon(t);
 
+    applyTouchIcon(t);
+
 }
 
 /** Browser tab icon: the SchoolLink book in the school's theme colours */
@@ -221,6 +223,74 @@ export function applyFavicon(t) {
     } catch (e) {
 
         // the tab icon is cosmetic - never break the app over it
+
+    }
+
+}
+
+
+/**
+ * Phone home-screen icon (iPhone "Add to Home Screen"): the same book in the school's theme colour.
+ * iPhone ignores the SVG tab icon and needs a square PNG, so it is drawn here from the same picture.
+ * It is full-bleed (no rounded corners) because the phone rounds the corners itself.
+ */
+export function applyTouchIcon(t) {
+
+    try {
+
+        const outline = String(t.onBanner).toUpperCase() === "#FFFFFF" ? "none" : t.onBanner;
+
+        const page = (d) => '<path d="' + d + '" fill="#FFFFFF" stroke="' + outline + '" stroke-width="18" stroke-linejoin="round"/>';
+
+        const svg =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">' +
+            '<rect width="512" height="512" fill="' + t.banner + '"/>' +
+            page("M248 130C212 102 150 98 92 116L92 372C150 354 212 358 248 386Z") +
+            page("M264 130C300 102 362 98 420 116L420 372C362 354 300 358 264 386Z") + '</svg>';
+
+        const img = new Image();
+
+        img.onload = () => {
+
+            try {
+
+                const canvas = document.createElement("canvas");
+
+                canvas.width = 180;
+
+                canvas.height = 180;
+
+                canvas.getContext("2d").drawImage(img, 0, 0, 180, 180);
+
+                let link = document.querySelector('link[rel="apple-touch-icon"]');
+
+                if (!link) {
+
+                    link = document.createElement("link");
+
+                    link.rel = "apple-touch-icon";
+
+                    document.head.appendChild(link);
+
+                }
+
+                link.setAttribute("sizes", "180x180");
+
+                link.href = canvas.toDataURL("image/png");
+
+            } catch (e) {
+
+                // cosmetic only - keep the default icon
+
+            }
+
+        };
+
+        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+
+    } catch (e) {
+
+        // cosmetic only
 
     }
 
