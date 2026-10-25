@@ -18,6 +18,8 @@ router.post("/report-remarks", ...writers, tenant.body("student", "student_id"),
 
 router.get("/weekly-summary/:studentId", authenticate, authorizeRoles("Parent"), tenant.param("student", "studentId"), controller.weeklySummary);
 router.get("/early-warning", authenticate, authorizeRoles("School Admin"), controller.earlyWarning);
+router.get("/early-warning-settings", authenticate, authorizeRoles("School Admin"), controller.getWarningSettings);
+router.put("/early-warning-settings", authenticate, authorizeRoles("School Admin"), controller.saveWarningSettings);
 router.post("/early-warning-note", authenticate, authorizeRoles("School Admin"), tenant.body("student", "student_id"), controller.earlyWarningNote);
 
 router.patch("/assignments/:id/class-teacher", authenticate, authorizeRoles("School Admin"), tenant.param("teacher_subject"), controller.setClassTeacher);

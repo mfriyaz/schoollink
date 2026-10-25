@@ -1,5 +1,7 @@
 const response = require("../utils/response");
 const ai = require("../services/ai.service");
+const insights = require("../services/insights.service");
+const auditService = require("../services/audit.service");
 const reportCardService = require("../services/reportCard.service");
 const classTeacherService = require("../services/classTeacher.service");
 const transferService = require("../services/assignmentTransfer.service");
@@ -59,6 +61,31 @@ async function earlyWarning(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
+async function getWarningSettings(req, res) {
+    try {
+        return response.success(res, { attendance_limit: await insights.getAttendanceLimit(req.user.school_id) }, "Warning settings");
+    } catch (err) { return fail(res, err); }
+}
+
+async function saveWarningSettings(req, res) {
+    try {
+        const r = await insights.setAttendanceLimit(req.user.school_id, (req.body || {}).attendance_limit);
+        if (r.before !== r.after) {
+            await auditService.logAudit(req, {
+                action: "Edited",
+                entityType: "Early warning",
+                entityId: req.user.school_id,
+                entityTitle: "Attendance warning level",
+                summary: `Attendance warning level changed from ${r.before}% to ${r.after}%`
+            });
+        }
+        return response.success(res, { attendance_limit: r.after }, "Warning level saved");
+    } catch (err) {
+        if (err.status === 400) return response.error(res, err.message, 400);
+        return fail(res, err);
+    }
+}
+
 async function earlyWarningNote(req, res) {
     try {
         const { student_id } = req.body || {};
@@ -115,4 +142,4 @@ async function updateSchoolAi(req, res) {
     } catch (err) { return fail(res, err); }
 }
 
-module.exports = { status, improve, translate, homeworkDraft, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, setClassTeacher, transferAssignment, getSchoolAi, updateSchoolAi, platformAiUsage };
+module.exports = { getWarningSettings, saveWarningSettings, status, improve, translate, homeworkDraft, reportRemarks, weeklySummary, earlyWarning, earlyWarningNote, setClassTeacher, transferAssignment, getSchoolAi, updateSchoolAi, platformAiUsage };

@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 
 import NotificationImportantIcon from "@mui/icons-material/NotificationImportantOutlined";
 import {
-    Alert, Box, Button, Card, Chip, CircularProgress, MenuItem, TextField, Typography
+    Alert, Box, Button, Card, Chip, CircularProgress, InputAdornment, MenuItem, Skeleton, TextField, Typography
 } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesomeOutlined";
 
 import { getAllClassesForManagement } from "../../services/classManagementService";
-import { getAiStatus, getEarlyWarning, aiEarlyWarningNote } from "../../services/aiService";
+import PageHeader from "../../components/common/PageHeader";
+import { notify } from "../../utils/notify";
+import { getAiStatus, getEarlyWarning, aiEarlyWarningNote, saveWarningSettings } from "../../services/aiService";
 
 const SEVERITY = {
     high: { label: "Needs attention", fg: "#B91C1C", bg: "#FEE2E2" },
@@ -122,6 +124,9 @@ export default function EarlyWarningPage() {
     const [aiAvailable, setAiAvailable] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [limitInput, setLimitInput] = useState("");
+    const [limitBusy, setLimitBusy] = useState(false);
+    const [limitError, setLimitError] = useState("");
 
     useEffect(() => {
         getAllClassesForManagement()
@@ -137,7 +142,7 @@ export default function EarlyWarningPage() {
         setError("");
         try {
             const res = await getEarlyWarning(classId);
-            if (res.success) setData(res.data);
+            if (res.success) { setData(res.data); setLimitInput(String(res.data.attendance_limit ?? 85)); }
             else setError(res.message || "Unable to load early warnings.");
         } catch (err) {
             setError(err.response?.data?.message || "Unable to load early warnings.");
@@ -148,38 +153,83 @@ export default function EarlyWarningPage() {
 
     useEffect(() => { load(); }, [load]);
 
+    async function saveLimit() {
+        setLimitError("");
+        const n = Number(limitInput);
+        if (!Number.isInteger(n) || n < 50 || n > 100) {
+            setLimitError("Enter a whole number from 50 to 100.");
+            return;
+        }
+        try {
+            setLimitBusy(true);
+            await saveWarningSettings(n);
+            notify("Warning level saved.");
+            await load();
+        } catch (err) {
+            setLimitError(err.response?.data?.message || "Unable to save.");
+        } finally {
+            setLimitBusy(false);
+        }
+    }
+
+    const limit = data ? (data.attendance_limit ?? 85) : 85;
     const items = data ? data.items : [];
     const high = items.filter((i) => i.severity === "high").length;
 
     return (
         <Box>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap", mb: 0.5 }}>
-                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <NotificationImportantIcon sx={{ color: "var(--sl-ink)" }} />
-                </Box>
-                <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)", flex: 1 }}>Early Warning</Typography>
-                <TextField
-                    select
-                    size="small"
-                    label="Class"
-                    value={classId}
-                    onChange={(e) => setClassId(e.target.value)}
-                    sx={{ minWidth: { xs: "100%", sm: 180 } }}
-                >
-                    <MenuItem value="">All classes</MenuItem>
-                    {classes.map((c) => <MenuItem key={c.id} value={c.id}>{c.class_name}</MenuItem>)}
-                </TextField>
-            </Box>
+            <PageHeader
+                eyebrow="Students who may need support"
+                title="Early Warning"
+                subtitle="Found from attendance and marks of the last 30 days."
+                avatar={<NotificationImportantIcon />}
+                action={
+                    <TextField
+                        select
+                        size="small"
+                        label="Class"
+                        value={classId}
+                        onChange={(e) => setClassId(e.target.value)}
+                        sx={{ minWidth: { xs: "100%", sm: 180 } }}
+                    >
+                        <MenuItem value="">All classes</MenuItem>
+                        {classes.map((c) => <MenuItem key={c.id} value={c.id}>{c.class_name}</MenuItem>)}
+                    </TextField>
+                }
+            />
 
-            <Typography sx={{ color: "text.secondary", fontSize: "0.88rem", mb: 2, ml: { sm: 7.5 } }}>
-                Students who may need support, found from attendance and marks of the last 30 days.
-            </Typography>
+            <Card sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
+                    <Box sx={{ flex: "1 1 220px", minWidth: 0 }}>
+                        <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>Attendance warning level</Typography>
+                        <Typography sx={{ color: "text.secondary", fontSize: "0.78rem" }}>
+                            Warn when a student's attendance is below this. "Needs attention" starts 10 points lower.
+                        </Typography>
+                    </Box>
+                    <TextField
+                        size="small"
+                        type="number"
+                        value={limitInput}
+                        onChange={(e) => setLimitInput(e.target.value)}
+                        error={!!limitError}
+                        sx={{ width: 110 }}
+                        slotProps={{ input: { endAdornment: <InputAdornment position="end">%</InputAdornment> }, htmlInput: { min: 50, max: 100, "aria-label": "Attendance warning level" } }}
+                    />
+                    <Button variant="contained" onClick={saveLimit} disabled={limitBusy || !data || Number(limitInput) === limit} loading={limitBusy} loadingPosition="start">
+                        Save
+                    </Button>
+                </Box>
+                {limitError && <Typography sx={{ color: "error.main", fontSize: "0.78rem", mt: 0.75 }}>{limitError}</Typography>}
+            </Card>
 
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
             {loading && !data && (
-                <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}><CircularProgress /></Box>
+                <>
+                    <Skeleton variant="rounded" height={110} sx={{ mb: 1.5 }} />
+                    <Skeleton variant="rounded" height={110} />
+                </>
             )}
 
             {data && (
@@ -193,7 +243,7 @@ export default function EarlyWarningPage() {
             {items.map((it) => <StudentRow key={it.student_id} item={it} aiAvailable={aiAvailable} />)}
 
             <Typography sx={{ color: "text.secondary", fontSize: "0.76rem", mt: 2 }}>
-                A student is flagged for attendance below 85% (at least 5 days recorded), 3 or more absent days in a row,
+                A student is flagged for attendance below {limit}% (at least 5 days recorded), 3 or more absent days in a row,
                 a drop of 10 points or more between the last two exams, or marks below the pass mark in the latest exam.
                 These are signals to start a conversation, not a judgement.
             </Typography>

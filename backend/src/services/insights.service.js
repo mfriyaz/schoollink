@@ -9,8 +9,8 @@ const pool = require("../config/database");
 const WEEK_DAYS = 7;
 const WARN_DAYS = 30;
 const MIN_ATTENDANCE_RECORDS = 5;
-const LOW_ATTENDANCE = 85;
-const VERY_LOW_ATTENDANCE = 75;
+const DEFAULT_LOW_ATTENDANCE = 85;
+const VERY_LOW_GAP = 10;
 const STREAK_FLAG = 3;
 const STREAK_HIGH = 5;
 const MARKS_DROP = 10;
@@ -22,6 +22,29 @@ async function schoolToday(schoolId) {
         [schoolId]
     );
     return r.rows[0] ? r.rows[0].today : new Date().toISOString().slice(0, 10);
+}
+
+// The attendance warning level is a school setting (default 85)
+async function getAttendanceLimit(schoolId) {
+    try {
+        const r = await pool.query("SELECT warn_attendance_pct FROM schools WHERE id = $1", [schoolId]);
+        const n = Number(r.rows[0] && r.rows[0].warn_attendance_pct);
+        return Number.isInteger(n) && n >= 50 && n <= 100 ? n : DEFAULT_LOW_ATTENDANCE;
+    } catch (e) {
+        return DEFAULT_LOW_ATTENDANCE; // column not added yet
+    }
+}
+
+async function setAttendanceLimit(schoolId, value) {
+    const n = Number(value);
+    if (!Number.isInteger(n) || n < 50 || n > 100) {
+        const err = new Error("The warning level must be a whole number from 50 to 100.");
+        err.status = 400;
+        throw err;
+    }
+    const before = await getAttendanceLimit(schoolId);
+    await pool.query("UPDATE schools SET warn_attendance_pct = $1 WHERE id = $2", [n, schoolId]);
+    return { before, after: n };
 }
 
 const r1 = (n) => Math.round(n * 10) / 10;
@@ -207,6 +230,8 @@ function hasAnything(f) {
 async function getEarlyWarnings(schoolId, { classId, studentId } = {}) {
 
     const today = await schoolToday(schoolId);
+    const LOW_ATTENDANCE = await getAttendanceLimit(schoolId);
+    const VERY_LOW_ATTENDANCE = Math.max(0, LOW_ATTENDANCE - VERY_LOW_GAP);
 
     const sv = [schoolId];
     let sw = "s.school_id = $1 AND COALESCE(s.is_active, true) = true";
@@ -222,7 +247,7 @@ async function getEarlyWarnings(schoolId, { classId, studentId } = {}) {
           WHERE ${sw}`,
         sv
     );
-    if (!studs.rows.length) return { as_of: today, total_students: 0, items: [] };
+    if (!studs.rows.length) return { as_of: today, total_students: 0, attendance_limit: LOW_ATTENDANCE, items: [] };
 
     const ids = studs.rows.map((s) => s.id);
 
@@ -354,7 +379,7 @@ async function getEarlyWarnings(schoolId, { classId, studentId } = {}) {
     );
     items.forEach((i) => delete i._score);
 
-    return { as_of: today, total_students: studs.rows.length, items };
+    return { as_of: today, total_students: studs.rows.length, attendance_limit: LOW_ATTENDANCE, items };
 }
 
-module.exports = { getWeeklyFacts, factsToText, hasAnything, getEarlyWarnings, schoolToday };
+module.exports = { getAttendanceLimit, setAttendanceLimit, getWeeklyFacts, factsToText, hasAnything, getEarlyWarnings, schoolToday };

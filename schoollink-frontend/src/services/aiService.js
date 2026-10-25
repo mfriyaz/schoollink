@@ -42,3 +42,11 @@ export async function getEarlyWarning(classId) {
 export async function aiEarlyWarningNote(studentId) {
     return (await api.post("/ai/early-warning-note", { student_id: studentId })).data;
 }
+
+export async function getWarningSettings() {
+    return (await api.get("/ai/early-warning-settings")).data;
+}
+
+export async function saveWarningSettings(attendanceLimit) {
+    return (await api.put("/ai/early-warning-settings", { attendance_limit: attendanceLimit })).data;
+}
