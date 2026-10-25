@@ -139,7 +139,7 @@ async function deleteAttendance(id) {
  * with any attendance already marked for the given date -
  * powers the Take Attendance screen)
  */
-async function getRosterWithAttendance(teacherSubjectId, attendanceDate) {
+async function getRosterWithAttendance(teacherSubjectId, attendanceDate, session = "Day") {
 
     const query = `
         SELECT
@@ -161,13 +161,14 @@ async function getRosterWithAttendance(teacherSubjectId, attendanceDate) {
             ON a.teacher_subject_id = ts.id
             AND a.student_id = st.id
             AND a.attendance_date = $2
+            AND a.session = $3
         WHERE ts.id = $1
         ORDER BY st.first_name;
     `;
 
     const result = await db.query(
         query,
-        [teacherSubjectId, attendanceDate]
+        [teacherSubjectId, attendanceDate, session]
     );
 
     return result.rows;
@@ -179,7 +180,7 @@ async function getRosterWithAttendance(teacherSubjectId, attendanceDate) {
  * (upserts one row per student for a given class/date -
  * relies on the existing uq_attendance_student_date constraint)
  */
-async function bulkUpsertAttendance(teacherSubjectId, attendanceDate, records) {
+async function bulkUpsertAttendance(teacherSubjectId, attendanceDate, records, session = "Day") {
 
     const results = [];
 
@@ -187,9 +188,9 @@ async function bulkUpsertAttendance(teacherSubjectId, attendanceDate, records) {
 
         const query = `
             INSERT INTO attendance
-            (teacher_subject_id, student_id, attendance_date, status, remarks)
-            VALUES ($1, $2, $3, $4, $5)
-            ON CONFLICT (teacher_subject_id, student_id, attendance_date)
+            (teacher_subject_id, student_id, attendance_date, status, remarks, session)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            ON CONFLICT (teacher_subject_id, student_id, attendance_date, session)
             DO UPDATE SET
                 status = EXCLUDED.status,
                 remarks = EXCLUDED.remarks,
@@ -204,7 +205,8 @@ async function bulkUpsertAttendance(teacherSubjectId, attendanceDate, records) {
                 record.student_id,
                 attendanceDate,
                 record.status,
-                record.remarks || null
+                record.remarks || null,
+                session
             ]
         );
 
@@ -260,7 +262,59 @@ async function parentOwnsStudent(userId, studentId) {
 
 }
 
+const ATTENDANCE_MODES = ["subject", "daily", "half_day"];
+
+/**
+ * How this school takes attendance: by subject (default), once a day,
+ * or morning and afternoon.
+ */
+async function getAttendanceMode(schoolId) {
+
+    try {
+
+        const r = await db.query("SELECT attendance_mode FROM schools WHERE id = $1", [schoolId]);
+
+        const mode = r.rows[0] && r.rows[0].attendance_mode;
+
+        return ATTENDANCE_MODES.includes(mode) ? mode : "subject";
+
+    } catch (e) {
+
+        return "subject"; // column not added yet
+
+    }
+
+}
+
+async function setAttendanceMode(schoolId, mode) {
+
+    await db.query("UPDATE schools SET attendance_mode = $1 WHERE id = $2", [mode, schoolId]);
+
+}
+
+/**
+ * Is this assignment the class teacher's (the one who takes the daily attendance)?
+ */
+async function isClassTeacherAssignment(teacherSubjectId) {
+
+    const r = await db.query(
+        "SELECT is_class_teacher FROM teacher_subjects WHERE id = $1",
+        [teacherSubjectId]
+    );
+
+    return !!(r.rows[0] && r.rows[0].is_class_teacher);
+
+}
+
 module.exports = {
+
+    ATTENDANCE_MODES,
+
+    getAttendanceMode,
+
+    setAttendanceMode,
+
+    isClassTeacherAssignment,
 
     createAttendance,
 

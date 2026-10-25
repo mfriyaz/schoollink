@@ -15,6 +15,7 @@ import EmailIcon from "@mui/icons-material/EmailOutlined";
 import NotificationsIcon from "@mui/icons-material/NotificationsOutlined";
 import PushAlertsToggle from "../../components/common/PushAlertsToggle";
 import ThemePicker from "../../components/common/ThemePicker";
+import AttendanceModeCard from "../../components/common/AttendanceModeCard";
 import {
     getMySettings,
     updateMySettings
@@ -149,6 +150,7 @@ function SettingsPage() {
                 </Box>
             </Card>
             {isSchoolAdmin && <ThemePicker />}
+            {isSchoolAdmin && <AttendanceModeCard />}
         </Box>
     );
 }

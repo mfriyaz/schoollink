@@ -120,10 +120,17 @@ async function bulkMarkAttendance(req, res) {
 
         }
 
+        const { session } = await attendanceService.resolveSession(
+            req.user,
+            teacher_subject_id,
+            req.body.session
+        );
+
         const result = await attendanceService.bulkMarkAttendance(
             teacher_subject_id,
             attendance_date,
-            records
+            records,
+            session
         );
 
         return response.success(
@@ -138,7 +145,7 @@ async function bulkMarkAttendance(req, res) {
         return response.error(
             res,
             err.message,
-            500
+            err.status || 500
         );
 
     }
@@ -173,9 +180,16 @@ async function getRosterWithAttendance(req, res) {
 
         }
 
+        const { session } = await attendanceService.resolveSession(
+            req.user,
+            teacherSubjectId,
+            req.query.session
+        );
+
         const roster = await attendanceService.getRosterWithAttendance(
             teacherSubjectId,
-            attendanceDate
+            attendanceDate,
+            session
         );
 
         return response.success(
@@ -189,7 +203,7 @@ async function getRosterWithAttendance(req, res) {
         return response.error(
             res,
             err.message,
-            500
+            err.status || 500
         );
 
     }

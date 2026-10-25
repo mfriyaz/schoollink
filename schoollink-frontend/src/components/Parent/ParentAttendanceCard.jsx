@@ -12,7 +12,8 @@ import { dayInfo, prettyDate } from "../../utils/calendarUtils";
 const STATUS = {
     Present: { fg: "#16A34A", bg: "#DCFCE7", icon: <CheckCircleIcon /> },
     Late: { fg: "#EA580C", bg: "#FFEDD5", icon: <AccessTimeIcon /> },
-    Absent: { fg: "#DC2626", bg: "#FEE2E2", icon: <CancelIcon /> }
+    Absent: { fg: "#DC2626", bg: "#FEE2E2", icon: <CancelIcon /> },
+    "Half day": { fg: "#B45309", bg: "#FEF3C7", icon: <AccessTimeIcon /> }
 };
 
 const OFF_STYLE = {
@@ -22,6 +23,34 @@ const OFF_STYLE = {
 };
 
 const NOT_MARKED = { fg: "#64748B", bg: "#F1F5F9", icon: <EventBusyIcon /> };
+
+/**
+ * Schools that take attendance in the morning and afternoon have two records
+ * a day. Show them as one day: "Half day" when only one session was missed.
+ * Other schools' records are left exactly as they are.
+ */
+function collapseSessions(records) {
+    const groups = new Map();
+    records.forEach((r) => {
+        if (!groups.has(r.key)) groups.set(r.key, []);
+        groups.get(r.key).push(r);
+    });
+    const out = [];
+    groups.forEach((g) => {
+        if (!g.some((r) => r.session && r.session !== "Day")) { out.push(...g); return; }
+        const n = g.length;
+        const c = (st) => g.filter((r) => r.status === st).length;
+        const absent = c("Absent");
+        const status = absent === n ? "Absent" : absent > 0 ? "Half day" : c("Late") > 0 ? "Late" : "Present";
+        out.push({
+            ...g[0],
+            status,
+            units: { Present: c("Present") / n, Late: c("Late") / n, Absent: absent / n },
+            detail: g.map((r) => `${r.session}: ${r.status}`).join(", ")
+        });
+    });
+    return out;
+}
 
 const weekDays = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -49,10 +78,10 @@ function ParentAttendanceCard({ attendance, calendar }) {
     const monthKey = monthFmt.format(now);
 
     // "2026-10-09" for each record
-    const records = attendance.map((r) => ({
+    const records = collapseSessions(attendance.map((r) => ({
         ...r,
         key: dayFmt.format(toUtcDate(r.attendance_date))
-    }));
+    })));
 
     const todayRecord = records.find((r) => r.key === todayKey);
     const monthRecords = records.filter((r) => r.key.slice(0, 7) === monthKey);
@@ -62,7 +91,13 @@ function ParentAttendanceCard({ attendance, calendar }) {
 
     const counts = { Present: 0, Late: 0, Absent: 0 };
     monthRecords.forEach((r) => {
-        if (counts[r.status] !== undefined) counts[r.status]++;
+        if (r.units) {
+            counts.Present += r.units.Present;
+            counts.Late += r.units.Late;
+            counts.Absent += r.units.Absent;
+        } else if (counts[r.status] !== undefined) {
+            counts[r.status]++;
+        }
     });
 
     const marked = counts.Present + counts.Late + counts.Absent;
@@ -83,7 +118,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
     const monthLabel = new Date(year, month, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 
     const exceptions = monthRecords
-        .filter((r) => r.status === "Late" || r.status === "Absent")
+        .filter((r) => r.status === "Late" || r.status === "Absent" || r.status === "Half day")
         .sort((a, b) => (a.key < b.key ? 1 : -1));
 
     const todayOff = !todayRecord ? dayInfo(todayKey, calendar) : { off: false };
@@ -191,7 +226,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                         </Typography>
                         <Typography sx={{ color: "#475569", fontSize: "0.8rem", mt: 0.25 }}>
                             {todayRecord
-                                ? (todayRecord.remarks || "Marked by the class teacher")
+                                ? (todayRecord.remarks || todayRecord.detail || "Marked by the class teacher")
                                 : todayOff.off
                                     ? (todayOff.reason === "Holiday" ? `${todayOff.name} - no school today.` : "No school today.")
                                     : "The teacher hasn't marked attendance today."}
@@ -236,7 +271,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                         }}
                                     >
                                         <Typography sx={{ fontWeight: 700, fontSize: "1.05rem", color: STATUS[s].fg, lineHeight: 1.2 }}>
-                                            {counts[s]}
+                                            {Number.isInteger(counts[s]) ? counts[s] : counts[s].toFixed(1)}
                                         </Typography>
                                         <Typography sx={{ fontSize: "0.68rem", color: STATUS[s].fg, fontWeight: 600 }}>
                                             {s}
@@ -347,7 +382,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                                 })}
                                             </Typography>
                                             <Typography sx={{ fontSize: "0.8rem", color: st.fg, fontWeight: 600 }}>
-                                                {r.status}
+                                                {r.status}{r.detail ? ` (${r.detail})` : ""}
                                             </Typography>
                                             {r.remarks && (
                                                 <Typography sx={{ fontSize: "0.76rem", color: "#94A3B8", flex: 1, minWidth: 0 }} noWrap>

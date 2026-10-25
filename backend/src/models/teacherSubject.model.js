@@ -124,6 +124,7 @@ async function getAssignmentsByTeacher(teacherId) {
             ts.class_id,
             ts.section_id,
             ts.subject_id,
+            ts.is_class_teacher,
             s.subject_name,
             c.class_name,
             sec.section_name

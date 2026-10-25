@@ -35,6 +35,15 @@ async function getAttendanceLimit(schoolId) {
     }
 }
 
+async function getAttendanceMode(schoolId) {
+    try {
+        const r = await pool.query("SELECT attendance_mode FROM schools WHERE id = $1", [schoolId]);
+        return (r.rows[0] && r.rows[0].attendance_mode) || "subject";
+    } catch (e) {
+        return "subject";
+    }
+}
+
 async function setAttendanceLimit(schoolId, value) {
     const n = Number(value);
     if (!Number.isInteger(n) || n < 50 || n > 100) {
@@ -231,6 +240,7 @@ async function getEarlyWarnings(schoolId, { classId, studentId } = {}) {
 
     const today = await schoolToday(schoolId);
     const LOW_ATTENDANCE = await getAttendanceLimit(schoolId);
+    const halfDay = (await getAttendanceMode(schoolId)) === "half_day";
     const VERY_LOW_ATTENDANCE = Math.max(0, LOW_ATTENDANCE - VERY_LOW_GAP);
 
     const sv = [schoolId];
@@ -254,7 +264,8 @@ async function getEarlyWarnings(schoolId, { classId, studentId } = {}) {
     // Attendance, one status per student per day
     const att = await pool.query(
         `SELECT student_id, attendance_date::text AS d,
-                (COUNT(*) FILTER (WHERE status = 'Absent') * 2 > COUNT(*)) AS absent
+                (COUNT(*) FILTER (WHERE status = 'Absent') * 2 > COUNT(*)) AS absent,
+                (COUNT(*) FILTER (WHERE status = 'Absent'))::float / COUNT(*) AS absent_frac
            FROM attendance
           WHERE student_id = ANY($1::int[])
             AND attendance_date > ($2::date - $3::int)
@@ -302,7 +313,10 @@ async function getEarlyWarnings(schoolId, { classId, studentId } = {}) {
         // ----- attendance -----
         const days = attBy.get(s.id) || [];
         if (days.length >= MIN_ATTENDANCE_RECORDS) {
-            const presentDays = days.filter((d) => !d.absent).length;
+            // Morning and afternoon mode: a half day absent counts as half a day
+            const presentDays = halfDay
+                ? days.reduce((a, d) => a + (1 - Number(d.absent_frac || 0)), 0)
+                : days.filter((d) => !d.absent).length;
             const rate = r1((presentDays / days.length) * 100);
             metrics.attendance_rate = rate;
             metrics.attendance_days = days.length;

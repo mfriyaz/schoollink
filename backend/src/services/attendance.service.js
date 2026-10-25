@@ -51,11 +51,12 @@ async function deleteAttendance(id) {
 /**
  * Get Roster With Attendance
  */
-async function getRosterWithAttendance(teacherSubjectId, attendanceDate) {
+async function getRosterWithAttendance(teacherSubjectId, attendanceDate, session = "Day") {
 
     return await attendanceModel.getRosterWithAttendance(
         teacherSubjectId,
-        attendanceDate
+        attendanceDate,
+        session
     );
 
 }
@@ -63,7 +64,7 @@ async function getRosterWithAttendance(teacherSubjectId, attendanceDate) {
 /**
  * Bulk Mark Attendance
  */
-async function bulkMarkAttendance(teacherSubjectId, attendanceDate, records) {
+async function bulkMarkAttendance(teacherSubjectId, attendanceDate, records, session = "Day") {
 
     const today = new Date().toISOString().slice(0, 10);
 
@@ -76,7 +77,8 @@ async function bulkMarkAttendance(teacherSubjectId, attendanceDate, records) {
     return await attendanceModel.bulkUpsertAttendance(
         teacherSubjectId,
         attendanceDate,
-        records
+        records,
+        session
     );
 
 }
@@ -102,7 +104,70 @@ async function parentOwnsStudent(userId, studentId) {
 
 }
 
+function httpError(message, status) {
+    const err = new Error(message);
+    err.status = status;
+    return err;
+}
+
+/**
+ * Work out which session a save/read belongs to, and check who may take it.
+ *  - subject mode: always "Day", any assigned teacher (as before)
+ *  - daily mode:   "Day", the class teacher only
+ *  - half_day:     "Morning" or "Afternoon", the class teacher only
+ * School Admins are allowed in every mode.
+ */
+async function resolveSession(user, teacherSubjectId, requestedSession) {
+
+    const mode = await attendanceModel.getAttendanceMode(user.school_id);
+
+    if (mode === "subject") return { mode, session: "Day" };
+
+    if (user.role === "Teacher") {
+
+        const isClassTeacher = await attendanceModel.isClassTeacherAssignment(teacherSubjectId);
+
+        if (!isClassTeacher) {
+            throw httpError("In this school attendance is taken by the class teacher only.", 403);
+        }
+
+    }
+
+    if (mode === "daily") return { mode, session: "Day" };
+
+    if (requestedSession !== "Morning" && requestedSession !== "Afternoon") {
+        throw httpError("Choose Morning or Afternoon.", 400);
+    }
+
+    return { mode, session: requestedSession };
+
+}
+
+async function getAttendanceMode(schoolId) {
+    return await attendanceModel.getAttendanceMode(schoolId);
+}
+
+async function setAttendanceMode(schoolId, mode) {
+
+    if (!attendanceModel.ATTENDANCE_MODES.includes(mode)) {
+        throw httpError("Choose subject-wise, once a day, or morning and afternoon.", 400);
+    }
+
+    const before = await attendanceModel.getAttendanceMode(schoolId);
+
+    await attendanceModel.setAttendanceMode(schoolId, mode);
+
+    return { before, after: mode };
+
+}
+
 module.exports = {
+
+    resolveSession,
+
+    getAttendanceMode,
+
+    setAttendanceMode,
 
     createAttendance,
 

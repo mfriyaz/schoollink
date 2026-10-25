@@ -4,6 +4,7 @@ const router = express.Router();
 
 const settingsController = require("../controllers/settings.controller");
 const schoolThemeController = require("../controllers/schoolTheme.controller");
+const attendanceModeController = require("../controllers/attendanceMode.controller");
 
 const {
     authenticate
@@ -47,6 +48,20 @@ router.get(
     authenticate,
     authorizeRoles("School Admin"),
     schoolThemeController.getSubscriptionNotice
+);
+
+router.get(
+    "/attendance-mode",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    attendanceModeController.getAttendanceMode
+);
+
+router.put(
+    "/attendance-mode",
+    authenticate,
+    authorizeRoles("School Admin"),
+    attendanceModeController.updateAttendanceMode
 );
 
 module.exports = router;

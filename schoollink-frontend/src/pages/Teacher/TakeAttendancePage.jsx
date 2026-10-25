@@ -15,6 +15,8 @@ import AccessTimeIcon from "@mui/icons-material/AccessTimeOutlined";
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
 import SchoolDatePicker from "../../components/common/SchoolDatePicker";
 import { getDayStatus } from "../../services/calendarService";
+import { getAttendanceMode } from "../../services/settingsService";
+import PageHeader from "../../components/common/PageHeader";
 import { prettyDate } from "../../utils/calendarUtils";
 import {
     getMyTeacherProfile,
@@ -47,6 +49,8 @@ function initialsOf(s) {
 }
 function TakeAttendancePage() {
     const [assignments, setAssignments] = useState([]);
+    const [mode, setMode] = useState("subject");
+    const [session, setSession] = useState("Morning");
     const [teacherSubjectId, setTeacherSubjectId] = useState("");
     const [date, setDate] = useState(
         new Intl.DateTimeFormat("en-CA", { timeZone: getSchoolTimezone() }).format(new Date())
@@ -77,7 +81,7 @@ function TakeAttendancePage() {
         if (teacherSubjectId && date) {
             loadRoster();
         }
-    }, [teacherSubjectId, date]);
+    }, [teacherSubjectId, date, session]);
     async function loadAssignments() {
         try {
             const profileResponse = await getMyTeacherProfile();
@@ -85,15 +89,23 @@ function TakeAttendancePage() {
                 setError(profileResponse.message);
                 return;
             }
+            let schoolMode = "subject";
+            try {
+                const modeResponse = await getAttendanceMode();
+                if (modeResponse.success) schoolMode = modeResponse.data.mode || "subject";
+            } catch { /* older server: keep subject-wise */ }
+            setMode(schoolMode);
             const assignmentsResponse = await getMyAssignments(
                 profileResponse.data.id
             );
             if (assignmentsResponse.success) {
-                setAssignments(assignmentsResponse.data);
-                if (assignmentsResponse.data.length > 0) {
-                    setTeacherSubjectId(
-                        assignmentsResponse.data[0].teacher_subject_id
-                    );
+                // Once a day / morning and afternoon: only the class teacher takes attendance
+                const list = schoolMode === "subject"
+                    ? assignmentsResponse.data
+                    : assignmentsResponse.data.filter((a) => a.is_class_teacher);
+                setAssignments(list);
+                if (list.length > 0) {
+                    setTeacherSubjectId(list[0].teacher_subject_id);
                 }
             }
         } catch (err) {
@@ -110,7 +122,7 @@ function TakeAttendancePage() {
         setSuccess("");
         try {
             setLoadingRoster(true);
-            const response = await getAttendanceRoster(teacherSubjectId, date);
+            const response = await getAttendanceRoster(teacherSubjectId, date, mode === "half_day" ? session : undefined);
             if (response.success) {
                 setRoster(
                     response.data.map((s) => ({
@@ -143,6 +155,7 @@ function TakeAttendancePage() {
             const response = await bulkMarkAttendance({
                 teacher_subject_id: teacherSubjectId,
                 attendance_date: date,
+                session: mode === "half_day" ? session : undefined,
                 records: roster.map((s) => ({
                     student_id: s.student_id,
                     status: s.status
@@ -218,7 +231,7 @@ function TakeAttendancePage() {
                     </Typography>
                     <Typography sx={{ color: "text.secondary", fontSize: "0.85rem" }}>
                         {selectedAssignment
-                            ? `${selectedAssignment.class_name} - ${selectedAssignment.section_name} · ${selectedAssignment.subject_name}`
+                            ? `${selectedAssignment.class_name} - ${selectedAssignment.section_name}${mode === "subject" ? ` · ${selectedAssignment.subject_name}` : mode === "half_day" ? ` · ${session}` : " · Full day"}`
                             : "Mark who is present, absent or late."}
                     </Typography>
                 </Box>
@@ -229,13 +242,14 @@ function TakeAttendancePage() {
 
             {assignments.length === 0 ? (
                 <Alert severity="warning">
-                    You don't have any classes/subjects assigned yet.
-                    Please contact your School Admin.
+                    {mode === "subject"
+                        ? "You don't have any classes/subjects assigned yet. Please contact your School Admin."
+                        : "In this school attendance is taken by the class teacher once a day. You are not a class teacher yet. Please contact your School Admin."}
                 </Alert>
             ) : (
                 <Card sx={{ p: { xs: 2, md: 2.5 }, mb: 2, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
                     <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", mb: 0.75 }}>
-                        Class and subject
+                        {mode === "subject" ? "Class and subject" : "Your class"}
                     </Typography>
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
                         {assignments.map((a) => (
@@ -247,10 +261,24 @@ function TakeAttendancePage() {
                                 onKeyDown={(e) => e.key === "Enter" && setTeacherSubjectId(a.teacher_subject_id)}
                                 sx={pillSx(a.teacher_subject_id === teacherSubjectId)}
                             >
-                                {a.class_name}-{a.section_name} · {a.subject_name}
+                                {a.class_name}-{a.section_name}{mode === "subject" ? ` · ${a.subject_name}` : ""}
                             </Box>
                         ))}
                     </Box>
+
+                    {mode === "half_day" && (
+                        <Box sx={{ display: "flex", gap: 0.75, mb: 2, alignItems: "center", flexWrap: "wrap" }}>
+                            <Typography sx={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", mr: 0.5 }}>Session</Typography>
+                            {["Morning", "Afternoon"].map((x) => (
+                                <Box key={x} role="button" tabIndex={0} aria-pressed={session === x}
+                                    onClick={() => { setSession(x); setFilter("all"); }}
+                                    onKeyDown={(e) => e.key === "Enter" && setSession(x)}
+                                    sx={pillSx(session === x)}>
+                                    {x}
+                                </Box>
+                            ))}
+                        </Box>
+                    )}
 
                     <Box sx={{ display: "flex", gap: 1.5, alignItems: "flex-start", flexWrap: "wrap" }}>
                         <Box sx={{ width: { xs: "100%", sm: 220 } }}>

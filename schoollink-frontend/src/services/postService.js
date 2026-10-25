@@ -117,10 +117,11 @@ export async function getAttendanceForStudent(studentId) {
 /**
  * Get class roster with any existing attendance for a date
  */
-export async function getAttendanceRoster(teacherSubjectId, date) {
+export async function getAttendanceRoster(teacherSubjectId, date, session) {
 
     const response = await api.get(
-        `/attendance/roster/${teacherSubjectId}/${date}`
+        `/attendance/roster/${teacherSubjectId}/${date}`,
+        { params: session ? { session } : {} }
     );
 
     return response.data;

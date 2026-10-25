@@ -15,3 +15,19 @@ export async function updateMySettings(data) {
     return response.data;
 
 }
+
+export async function getAttendanceMode() {
+
+    const response = await api.get("/settings/attendance-mode");
+
+    return response.data;
+
+}
+
+export async function saveAttendanceMode(mode) {
+
+    const response = await api.put("/settings/attendance-mode", { mode });
+
+    return response.data;
+
+}
