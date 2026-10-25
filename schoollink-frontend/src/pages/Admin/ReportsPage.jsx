@@ -18,7 +18,8 @@ import DescriptionIcon from "@mui/icons-material/DescriptionOutlined";
 import DownloadIcon from "@mui/icons-material/DownloadOutlined";
 
 import ReportRemarksEditor from "../../components/Admin/ReportRemarksEditor";
-import { getStudents } from "../../services/studentService";
+import { getStudentsOfClass, getStudentsOfSection } from "../../services/studentService";
+import { getAllClassesForManagement, getAllSectionsForClass } from "../../services/classManagementService";
 import { getAllExams } from "../../services/examService";
 import {
     getReportCard,
@@ -44,6 +45,11 @@ function studentLabel(s) {
 function ReportsPage() {
 
     const [students, setStudents] = useState([]);
+    const [classes, setClasses] = useState([]);
+    const [sections, setSections] = useState([]);
+    const [classId, setClassId] = useState("");
+    const [sectionId, setSectionId] = useState("");
+    const [loadingStudents, setLoadingStudents] = useState(false);
     const [exams, setExams] = useState([]);
 
     const [student, setStudent] = useState(null);
@@ -71,13 +77,47 @@ function ReportsPage() {
 
     async function loadOptions() {
         try {
-            const [studentsResponse, examsResponse] = await Promise.all([getStudents(), getAllExams()]);
-            if (studentsResponse.success) setStudents(studentsResponse.data);
+            const [classesResponse, examsResponse] = await Promise.all([getAllClassesForManagement(), getAllExams()]);
+            if (classesResponse.success) setClasses(classesResponse.data.filter((c) => c.is_active !== false));
             if (examsResponse.success) setExams(examsResponse.data);
         } catch (err) {
-            setError(err.response?.data?.message || "Unable to load students/exams.");
+            setError(err.response?.data?.message || "Unable to load classes/exams.");
         } finally {
             setLoadingOptions(false);
+        }
+    }
+
+    // Only the chosen class (or section) is loaded, never the whole school
+    async function pickClass(id) {
+        setClassId(id);
+        setSectionId("");
+        setStudent(null);
+        setStudents([]);
+        setSections([]);
+        if (!id) return;
+        try {
+            setLoadingStudents(true);
+            const [studentsResponse, sectionsResponse] = await Promise.all([getStudentsOfClass(id), getAllSectionsForClass(id)]);
+            if (studentsResponse.success) setStudents(studentsResponse.data.filter((x) => x.is_active !== false));
+            if (sectionsResponse.success) setSections(sectionsResponse.data.filter((x) => x.is_active !== false));
+        } catch (err) {
+            setError(err.response?.data?.message || "Unable to load students.");
+        } finally {
+            setLoadingStudents(false);
+        }
+    }
+
+    async function pickSection(id) {
+        setSectionId(id);
+        setStudent(null);
+        try {
+            setLoadingStudents(true);
+            const res = id ? await getStudentsOfSection(id) : await getStudentsOfClass(classId);
+            if (res.success) setStudents(res.data.filter((x) => x.is_active !== false));
+        } catch (err) {
+            setError(err.response?.data?.message || "Unable to load students.");
+        } finally {
+            setLoadingStudents(false);
         }
     }
 
@@ -150,7 +190,7 @@ function ReportsPage() {
                 <Box sx={{ minWidth: 0 }}>
                     <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>Reports</Typography>
                     <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>
-                        Pick a student and an exam to see the report card
+                        Pick a class, student and exam to see the report card
                     </Typography>
                 </Box>
             </Box>
@@ -160,14 +200,28 @@ function ReportsPage() {
 
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1.4fr 1fr" }, gap: 2 }}>
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
+                    <TextField select label="Class" value={classId} onChange={(e) => pickClass(e.target.value)} disabled={loadingOptions}>
+                        {classes.map((c) => (
+                            <MenuItem key={c.id} value={c.id}>{c.class_name}</MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField select label="Section" value={sectionId} onChange={(e) => pickSection(e.target.value)} disabled={!classId || sections.length === 0}>
+                        <MenuItem value="">All sections</MenuItem>
+                        {sections.map((x) => (
+                            <MenuItem key={x.id} value={x.id}>{x.section_name}</MenuItem>
+                        ))}
+                    </TextField>
                     <Autocomplete
                         options={students}
                         value={student}
+                        loading={loadingStudents}
+                        disabled={!classId}
                         onChange={(e, v) => setStudent(v)}
                         getOptionLabel={studentLabel}
                         isOptionEqualToValue={(a, b) => a.id === b.id}
-                        renderInput={(params) => <TextField {...params} label="Student" placeholder="Type a name or admission no." />}
+                        noOptionsText={classId ? "No students in this class" : "Choose a class first"}
+                        renderInput={(params) => <TextField {...params} label="Student" placeholder={classId ? "Pick or type a name" : "Choose a class first"} />}
                     />
                     <TextField select label="Exam" value={examId} onChange={(e) => setExamId(e.target.value)}>
                         {exams.map((e) => (
@@ -182,7 +236,7 @@ function ReportsPage() {
                 !report && (
                     <Card sx={{ p: 4, textAlign: "center", borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
                         <Typography sx={{ fontWeight: 700, mb: 0.5 }}>No report card selected</Typography>
-                        <Typography color="text.secondary">Choose a student and an exam above and the report card appears here.</Typography>
+                        <Typography color="text.secondary">Choose a class, a student and an exam above and the report card appears here.</Typography>
                     </Card>
                 )
             ) : null}

@@ -73,3 +73,24 @@ export async function reactivateStudent(id) {
     return response.data;
 
 }
+/**
+ * Students of one class (all sections)
+ */
+export async function getStudentsOfClass(classId) {
+
+    const response = await api.get(`/students/class/${classId}`);
+
+    return response.data;
+
+}
+
+/**
+ * Students of one section
+ */
+export async function getStudentsOfSection(sectionId) {
+
+    const response = await api.get(`/students/section/${sectionId}`);
+
+    return response.data;
+
+}
