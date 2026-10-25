@@ -21,6 +21,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBackOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import HistoryIcon from "@mui/icons-material/HistoryRounded";
 import CampaignIcon from "@mui/icons-material/CampaignOutlined";
+import FactCheckIcon from "@mui/icons-material/FactCheckOutlined";
 import MenuBookIcon from "@mui/icons-material/MenuBookOutlined";
 import GradeIcon from "@mui/icons-material/GradeOutlined";
 
@@ -44,13 +45,15 @@ const ACTION_STYLE = {
 const TYPE_LABEL = {
     announcement: "Announcement",
     homework: "Homework",
-    marks: "Marks"
+    marks: "Marks",
+    attendance: "Attendance"
 };
 
 const TYPE_ICON = {
     announcement: <CampaignIcon fontSize="small" />,
     homework: <MenuBookIcon fontSize="small" />,
-    marks: <GradeIcon fontSize="small" />
+    marks: <GradeIcon fontSize="small" />,
+    attendance: <FactCheckIcon fontSize="small" />
 };
 
 function dayKey(value) {
@@ -301,7 +304,7 @@ function ActivityLogPage() {
                                         </Box>
 
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                            <Avatar sx={{ width: 30, height: 30, fontSize: "0.8rem", fontWeight: 800, bgcolor: "var(--sl-soft, #EEF2FF)", color: "var(--sl-ink, #4F46E5)" }}>
+                                            <Avatar sx={{ width: 30, height: 30, fontSize: "0.8rem", fontWeight: 800, bgcolor: "var(--sl-soft, var(--sl-soft))", color: "var(--sl-ink, var(--sl-primary))" }}>
                                                 {who[0]}
                                             </Avatar>
                                             <Box>

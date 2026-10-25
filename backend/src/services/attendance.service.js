@@ -161,7 +161,47 @@ async function setAttendanceMode(schoolId, mode) {
 
 }
 
+/**
+ * Compare what is being saved with what is already there.
+ * Returns the students whose status changes, and whether the day was empty.
+ */
+async function describeSave(teacherSubjectId, attendanceDate, session, records) {
+
+    const existing = await attendanceModel.getExistingForSave(teacherSubjectId, attendanceDate, session);
+
+    const before = new Map(existing.map((r) => [Number(r.student_id), r]));
+
+    const changes = [];
+
+    (records || []).forEach((rec) => {
+
+        const old = before.get(Number(rec.student_id));
+
+        if (old && old.status !== rec.status) {
+
+            changes.push({
+                field: `${old.first_name} ${old.last_name || ""}`.trim(),
+                from: old.status,
+                to: rec.status
+            });
+
+        }
+
+    });
+
+    return { hadRecords: existing.length > 0, changes };
+
+}
+
+async function getAssignmentLabel(teacherSubjectId) {
+    return await attendanceModel.getAssignmentLabel(teacherSubjectId);
+}
+
 module.exports = {
+
+    describeSave,
+
+    getAssignmentLabel,
 
     resolveSession,
 

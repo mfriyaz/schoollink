@@ -5,6 +5,10 @@ import {
     Button,
     Card,
     CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Typography
 } from "@mui/material";
 import StatChips from "../../components/common/StatChips";
@@ -60,6 +64,7 @@ function TakeAttendancePage() {
     const [loadingRoster, setLoadingRoster] = useState(false);
     const [dayStatus, setDayStatus] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [confirmOpen, setConfirmOpen] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [filter, setFilter] = useState("all");
@@ -127,7 +132,8 @@ function TakeAttendancePage() {
                 setRoster(
                     response.data.map((s) => ({
                         ...s,
-                        status: s.status || "Present"
+                        status: s.status || "Present",
+                        saved_status: s.status || null
                     }))
                 );
             }
@@ -147,7 +153,21 @@ function TakeAttendancePage() {
             )
         );
     }
+    // Saving an earlier day, or changing what was already saved, asks first
+    function requestSave() {
+        const isPast = date < todayIsoNow();
+        const changed = roster.filter((s) => s.saved_status && s.saved_status !== s.status);
+        if (isPast || changed.length > 0) {
+            setConfirmOpen(true);
+        } else {
+            handleSave();
+        }
+    }
+    function todayIsoNow() {
+        return new Intl.DateTimeFormat("en-CA", { timeZone: getSchoolTimezone() }).format(new Date());
+    }
     async function handleSave() {
+        setConfirmOpen(false);
         setError("");
         setSuccess("");
         try {
@@ -208,6 +228,13 @@ function TakeAttendancePage() {
         Present: roster.filter((s) => s.status === "Present").length,
         Absent: roster.filter((s) => s.status === "Absent").length,
         Late: roster.filter((s) => s.status === "Late").length
+    };
+
+    const changedRows = roster.filter((s) => s.saved_status && s.saved_status !== s.status);
+    const before = {
+        Present: roster.filter((s) => (s.saved_status || s.status) === "Present").length,
+        Absent: roster.filter((s) => (s.saved_status || s.status) === "Absent").length,
+        Late: roster.filter((s) => (s.saved_status || s.status) === "Late").length
     };
 
     const shown = filter === "all" ? roster : roster.filter((s) => s.status === filter);
@@ -306,6 +333,15 @@ function TakeAttendancePage() {
                         ? `a school holiday (${dayStatus.name})`
                         : dayStatus.reason === "Weekend" ? "a weekend" : "a weekly off day"}.
                     {" "}Attendance isn't taken on this day. Pick another date. If school is open, ask the School Admin to add a Working Day in School Calendar.
+                </Alert>
+            )}
+
+            {!offDay && date < todayIso && roster.length > 0 && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                    You are looking at an earlier day ({prettyDate(date, { weekday: "short", day: "numeric", month: "short", year: "numeric" })}), not today.
+                    {roster.some((s) => s.saved_status)
+                        ? " Attendance was already saved for this day. Any change you save is recorded in the Activity Log."
+                        : " Saving now is recorded in the Activity Log as late entry."}
                 </Alert>
             )}
 
@@ -432,7 +468,7 @@ function TakeAttendancePage() {
                             loading={saving}
                             loadingPosition="start"
                             variant="contained"
-                            onClick={handleSave}
+                            onClick={requestSave}
                             disabled={saving}
                             sx={{ whiteSpace: "nowrap", flexShrink: 0 }}
                         >
@@ -441,6 +477,46 @@ function TakeAttendancePage() {
                     </Box>
                 </>
             )}
+            <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="xs" fullWidth>
+                <DialogTitle>Save this attendance?</DialogTitle>
+                <DialogContent>
+                    {date < todayIso && (
+                        <Typography sx={{ fontSize: "0.9rem", mb: 1.25 }}>
+                            This is for <b>{prettyDate(date, { weekday: "long", day: "numeric", month: "short", year: "numeric" })}</b>, not today.
+                        </Typography>
+                    )}
+                    {changedRows.length > 0 ? (
+                        <>
+                            <Typography sx={{ fontSize: "0.88rem", fontWeight: 700, mb: 0.5 }}>
+                                {changedRows.length} change{changedRows.length === 1 ? "" : "s"} from what was saved:
+                            </Typography>
+                            {changedRows.slice(0, 8).map((s) => (
+                                <Typography key={s.student_id} sx={{ fontSize: "0.88rem" }}>
+                                    {s.first_name} {s.last_name}: <span style={{ color: "#B91C1C" }}>{s.saved_status}</span> → <b style={{ color: "#15803D" }}>{s.status}</b>
+                                </Typography>
+                            ))}
+                            {changedRows.length > 8 && (
+                                <Typography sx={{ fontSize: "0.82rem", color: "text.secondary" }}>and {changedRows.length - 8} more</Typography>
+                            )}
+                            <Typography sx={{ fontSize: "0.84rem", color: "text.secondary", mt: 1 }}>
+                                Before: {before.Present} present, {before.Absent} absent, {before.Late} late<br />
+                                Now: {counts.Present} present, {counts.Absent} absent, {counts.Late} late
+                            </Typography>
+                        </>
+                    ) : (
+                        <Typography sx={{ fontSize: "0.88rem" }}>
+                            Now: {counts.Present} present, {counts.Absent} absent, {counts.Late} late.
+                        </Typography>
+                    )}
+                    <Typography sx={{ fontSize: "0.8rem", color: "text.secondary", mt: 1.25 }}>
+                        This is recorded in the school's Activity Log.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={handleSave}>Yes, save</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

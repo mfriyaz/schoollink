@@ -262,6 +262,49 @@ async function parentOwnsStudent(userId, studentId) {
 
 }
 
+/**
+ * What is already saved for this class, date and session (used to work out
+ * what a save is about to change).
+ */
+async function getExistingForSave(teacherSubjectId, attendanceDate, session) {
+
+    const result = await db.query(
+        `
+        SELECT a.student_id, a.status, st.first_name, st.last_name
+        FROM attendance a
+        JOIN students st ON st.id = a.student_id
+        WHERE a.teacher_subject_id = $1
+          AND a.attendance_date = $2
+          AND a.session = $3
+        `,
+        [teacherSubjectId, attendanceDate, session]
+    );
+
+    return result.rows;
+
+}
+
+/**
+ * "4std", "A", "Maths" for the activity log
+ */
+async function getAssignmentLabel(teacherSubjectId) {
+
+    const result = await db.query(
+        `
+        SELECT c.class_name, sec.section_name, sub.subject_name
+        FROM teacher_subjects ts
+        LEFT JOIN classes c ON c.id = ts.class_id
+        LEFT JOIN sections sec ON sec.id = ts.section_id
+        LEFT JOIN subjects sub ON sub.id = ts.subject_id
+        WHERE ts.id = $1
+        `,
+        [teacherSubjectId]
+    );
+
+    return result.rows[0] || {};
+
+}
+
 const ATTENDANCE_MODES = ["subject", "daily", "half_day"];
 
 /**
@@ -309,6 +352,10 @@ async function isClassTeacherAssignment(teacherSubjectId) {
 module.exports = {
 
     ATTENDANCE_MODES,
+
+    getExistingForSave,
+
+    getAssignmentLabel,
 
     getAttendanceMode,
 

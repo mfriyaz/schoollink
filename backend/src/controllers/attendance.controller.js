@@ -1,6 +1,8 @@
 const calendarService = require("../services/calendar.service");
 const attendanceService = require("../services/attendance.service");
 const response = require("../utils/response");
+const auditService = require("../services/audit.service");
+const insights = require("../services/insights.service");
 
 /**
  * Mark Attendance
@@ -126,12 +128,62 @@ async function bulkMarkAttendance(req, res) {
             req.body.session
         );
 
+        // Work out what this save changes BEFORE it is saved
+        const dateOnly = String(attendance_date).slice(0, 10);
+
+        const diff = await attendanceService.describeSave(
+            teacher_subject_id,
+            dateOnly,
+            session,
+            records
+        );
+
         const result = await attendanceService.bulkMarkAttendance(
             teacher_subject_id,
             attendance_date,
             records,
             session
         );
+
+        // Activity log: changed attendance, or attendance entered for an earlier day
+        try {
+
+            const today = await insights.schoolToday(req.user.school_id);
+
+            const label = await attendanceService.getAssignmentLabel(teacher_subject_id);
+
+            const place = `${label.class_name || ""}-${label.section_name || ""}`
+                + (session === "Day" ? "" : ` ${session}`);
+
+            if (diff.changes.length > 0) {
+
+                await auditService.logAudit(req, {
+                    action: "Edited",
+                    entityType: "attendance",
+                    entityId: Number(teacher_subject_id),
+                    entityTitle: `${place} on ${dateOnly}`,
+                    summary: `Attendance changed for ${diff.changes.length} student${diff.changes.length === 1 ? "" : "s"}`
+                        + (dateOnly < today ? " (an earlier day)" : ""),
+                    changes: diff.changes.slice(0, 200)
+                });
+
+            } else if (dateOnly < today && !diff.hadRecords) {
+
+                await auditService.logAudit(req, {
+                    action: "Created",
+                    entityType: "attendance",
+                    entityId: Number(teacher_subject_id),
+                    entityTitle: `${place} on ${dateOnly}`,
+                    summary: `Attendance entered late for ${records.length} student${records.length === 1 ? "" : "s"} (an earlier day)`
+                });
+
+            }
+
+        } catch (e) {
+
+            console.error("Attendance log failed:", e.message);
+
+        }
 
         return response.success(
             res,
