@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import QuizTag from "../../components/common/QuizTag";
 import { useNavigate } from "react-router-dom";
 import {
     Box,
@@ -235,6 +236,9 @@ function TeacherPostsPage() {
                                             <Typography sx={{ color: "text.secondary", fontSize: "0.82rem" }}>
                                                 {post.class_name} - {post.section_name} · {post.subject_name} · {formatPostTime(post.created_at)}
                                             </Typography>
+                                            <Box sx={{ mt: 0.5 }}>
+                                                <QuizTag post={post} variant="staff" onClick={() => navigate(`/teacher/posts/${post.id}/quiz-results`)} />
+                                            </Box>
                                             {post.image_urls && post.image_urls.length > 0 && (
                                                 <Box sx={{ display: "flex", gap: 0.75, mt: 1 }}>
                                                     {post.image_urls.map((url, i) => (

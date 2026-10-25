@@ -1,4 +1,5 @@
 import ChildHeader from "../../components/Parent/ChildHeader";
+import QuizTag from "../../components/common/QuizTag";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -400,8 +401,8 @@ function ParentDashboardPage() {
                     {
                         label: "Updates today",
                         value: todaysPosts.length,
-                        fg: "#4F46E5",
-                        bg: "#E0E7FF",
+                        fg: "var(--sl-primary)",
+                        bg: "var(--sl-soft)",
                         icon: <MenuBookIcon />
                     }
                 ];
@@ -713,7 +714,7 @@ height: 40,
                                     "/parent/all-updates",
                                     { state: { studentId: selectedStudentId } }
                                 )}
-                                sx={{ color: "#4F46E5", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", mt: 0.5 }}
+                                sx={{ color: "var(--sl-primary)", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer", mt: 0.5 }}
                             >
                                 Looking for something older? View All Updates →
                             </Typography>
@@ -768,6 +769,7 @@ cursor: "pointer",
                                         ? `Announcement · ${post.target_audience}`
                                         : `${post.teacher_first_name} ${post.teacher_last_name} · ${post.subject_name}`}
                                 </Typography>
+                                {post.post_type !== "announcement" && <Box sx={{ mt: 0.5 }}><QuizTag post={post} variant="parent" /></Box>}
                             </Box>
                         </Box>
                         <Box sx={{ textAlign: "right" }}>

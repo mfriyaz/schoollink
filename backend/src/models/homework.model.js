@@ -62,10 +62,14 @@ async function createHomework(data) {
 async function getHomeworkByTeacherSubject(teacherSubjectId) {
 
     const query = `
-        SELECT *
-        FROM homework
-        WHERE teacher_subject_id = $1
-        ORDER BY homework_date DESC;
+        SELECT
+            hw.*,
+            (SELECT COUNT(*)::int FROM quiz_questions qq JOIN quizzes q ON q.id = qq.quiz_id WHERE q.homework_id = hw.id) AS quiz_questions,
+            (SELECT q.closed FROM quizzes q WHERE q.homework_id = hw.id) AS quiz_closed,
+            (SELECT COUNT(*)::int FROM quiz_attempts a JOIN quizzes q ON q.id = a.quiz_id WHERE q.homework_id = hw.id) AS quiz_attempts
+        FROM homework hw
+        WHERE hw.teacher_subject_id = $1
+        ORDER BY hw.homework_date DESC;
     `;
 
     const result = await db.query(query, [teacherSubjectId]);
@@ -92,6 +96,12 @@ async function getHomeworkForStudent(studentId) {
             COALESCE(a.is_acknowledged, false) AS is_acknowledged,
             a.acknowledged_at,
             a.remarks,
+            (SELECT COUNT(*)::int FROM quiz_questions qq JOIN quizzes q ON q.id = qq.quiz_id WHERE q.homework_id = hw.id) AS quiz_questions,
+            (SELECT q.closed FROM quizzes q WHERE q.homework_id = hw.id) AS quiz_closed,
+            (SELECT q.max_attempts FROM quizzes q WHERE q.homework_id = hw.id) AS quiz_max_attempts,
+            (SELECT COUNT(*)::int FROM quiz_attempts qa JOIN quizzes q ON q.id = qa.quiz_id WHERE q.homework_id = hw.id AND qa.student_id = st.id) AS quiz_tries,
+            (SELECT qa.score FROM quiz_attempts qa JOIN quizzes q ON q.id = qa.quiz_id WHERE q.homework_id = hw.id AND qa.student_id = st.id ORDER BY qa.score DESC, qa.id LIMIT 1) AS quiz_best_score,
+            (SELECT qa.total FROM quiz_attempts qa JOIN quizzes q ON q.id = qa.quiz_id WHERE q.homework_id = hw.id AND qa.student_id = st.id ORDER BY qa.score DESC, qa.id LIMIT 1) AS quiz_best_total,
             (NOT hw.submissions_closed AND (hw.submissions_close_date IS NULL OR hw.submissions_close_date >= (NOW() AT TIME ZONE COALESCE(sch.timezone, 'Asia/Singapore'))::date)) AS submissions_open,
             (hw.due_date IS NOT NULL AND hw.due_date < (NOW() AT TIME ZONE COALESCE(sch.timezone, 'Asia/Singapore'))::date) AS past_due
         FROM homework hw

@@ -20,7 +20,10 @@ async function getAllHomeworkPosts(schoolId, search) {
             t.first_name AS teacher_first_name,
             t.last_name AS teacher_last_name,
             COUNT(st.id) AS total_students,
-            COUNT(st.id) FILTER (WHERE a.is_acknowledged) AS acknowledged_count
+            COUNT(st.id) FILTER (WHERE a.is_acknowledged) AS acknowledged_count,
+            (SELECT COUNT(*)::int FROM quiz_questions qq JOIN quizzes q ON q.id = qq.quiz_id WHERE q.homework_id = hw.id) AS quiz_questions,
+            (SELECT q.closed FROM quizzes q WHERE q.homework_id = hw.id) AS quiz_closed,
+            (SELECT COUNT(*)::int FROM quiz_attempts qa JOIN quizzes q ON q.id = qa.quiz_id WHERE q.homework_id = hw.id) AS quiz_attempts
         FROM homework hw
         JOIN teacher_subjects ts
             ON hw.teacher_subject_id = ts.id

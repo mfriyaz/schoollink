@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import QuizTag from "../../components/common/QuizTag";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -35,7 +36,7 @@ const FILTERS = [
 ];
 
 const ANN = { color: "#DB2777", bg: "#FCE7F3" };
-const HW = { color: "#2563EB", bg: "#DBEAFE" };
+const HW = { color: "var(--sl-primary)", bg: "var(--sl-soft)" };
 
 function AllPostsPage() {
 
@@ -255,6 +256,7 @@ function AllPostsPage() {
                                             year: "numeric"
                                         })}
                                     </Typography>
+                                    {!isAnn && <Box sx={{ mt: 0.5 }}><QuizTag post={post} variant="staff" /></Box>}
                                 </Box>
 
                             </Box>
@@ -285,7 +287,7 @@ function AllPostsPage() {
                                         />
                                     </>
                                 ) : (
-                                    <Chip size="small" label={post.target_audience} sx={{ bgcolor: "var(--sl-soft, #EEF2FF)", fontWeight: 600 }} />
+                                    <Chip size="small" label={post.target_audience} sx={{ bgcolor: "var(--sl-soft, var(--sl-soft))", fontWeight: 600 }} />
                                 )}
                             </Box>
 

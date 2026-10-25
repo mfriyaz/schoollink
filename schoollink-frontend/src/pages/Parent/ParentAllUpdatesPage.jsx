@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import QuizTag from "../../components/common/QuizTag";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
     Box,
@@ -232,6 +233,7 @@ function ParentAllUpdatesPage() {
                                                 ? `Announcement · ${post.target_audience}`
                                                 : `${post.teacher_first_name} ${post.teacher_last_name} · ${post.subject_name}`}
                                         </Typography>
+                                        {!isAnnouncement && <Box sx={{ mt: 0.5 }}><QuizTag post={post} variant="parent" /></Box>}
                                     </Box>
                                     <Box sx={{ textAlign: "right", flexShrink: 0 }}>
                                         <Box component="span" sx={{ display: "inline-block", px: 1, py: 0.15, borderRadius: 99, fontSize: "0.72rem", fontWeight: 700, ...statusStyle }}>
