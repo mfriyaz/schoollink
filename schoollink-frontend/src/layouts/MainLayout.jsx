@@ -8,12 +8,16 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import BottomNav from "./BottomNav";
 import Notifier from "../components/common/Notifier";
+import SubscriptionBanner from "../components/common/SubscriptionBanner";
 import ForcePasswordChangeDialog from "../components/common/ForcePasswordChangeDialog";
 import { useAppTheme } from "../theme/ThemeProvider";
 
 function MainLayout() {
 
     const { refresh: refreshTheme } = useAppTheme();
+
+    let isSchoolAdmin = false;
+    try { isSchoolAdmin = JSON.parse(localStorage.getItem("user"))?.role === "School Admin"; } catch { isSchoolAdmin = false; }
 
     // Pick up the colour theme chosen by this school (after login / on reload)
     useEffect(() => { refreshTheme(); }, [refreshTheme]);
@@ -100,6 +104,8 @@ function MainLayout() {
                         pb: { xs: "calc(96px + env(safe-area-inset-bottom))", md: 4 }
                     }}
                 >
+
+                    {isSchoolAdmin && <SubscriptionBanner />}
 
                     <Outlet />
 

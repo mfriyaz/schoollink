@@ -42,4 +42,11 @@ router.put(
     schoolThemeController.updateSchoolTheme
 );
 
+router.get(
+    "/subscription-notice",
+    authenticate,
+    authorizeRoles("School Admin"),
+    schoolThemeController.getSubscriptionNotice
+);
+
 module.exports = router;

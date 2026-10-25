@@ -15,3 +15,11 @@ export async function saveSchoolTheme(theme) {
     return response.data;
 
 }
+
+export async function getSubscriptionNotice() {
+
+    const response = await api.get("/settings/subscription-notice");
+
+    return response.data;
+
+}

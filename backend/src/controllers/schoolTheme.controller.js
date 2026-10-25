@@ -34,6 +34,39 @@ async function getSchoolTheme(req, res) {
 }
 
 /**
+ * School Admin only: this school's own subscription dates (read only),
+ * so the app can show a renewal reminder. Always the caller's own school.
+ */
+async function getSubscriptionNotice(req, res) {
+
+    try {
+
+        const result = await pool.query(
+            `SELECT (subscription_expiry::date - CURRENT_DATE)::int AS days_left,
+                    to_char(subscription_expiry::date, 'YYYY-MM-DD') AS expiry, status
+               FROM schools WHERE id = $1`,
+            [req.user.school_id]
+        );
+
+        const row = result.rows[0] || {};
+
+        const daysLeft = row.days_left === null || row.days_left === undefined ? null : row.days_left;
+
+        return response.success(
+            res,
+            { days_left: daysLeft, expiry: row.expiry || null, status: row.status || null },
+            "Subscription notice"
+        );
+
+    } catch (err) {
+
+        return response.success(res, { days_left: null, expiry: null, status: null }, "No notice");
+
+    }
+
+}
+
+/**
  * School Admin only: choose the theme for the whole school
  */
 async function updateSchoolTheme(req, res) {
@@ -64,6 +97,7 @@ async function updateSchoolTheme(req, res) {
 }
 
 module.exports = {
+    getSubscriptionNotice,
 
     getSchoolTheme,
 
