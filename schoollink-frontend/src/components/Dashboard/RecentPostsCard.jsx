@@ -4,6 +4,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { toUtcDate, getSchoolTimezone } from "../../utils/dateUtils";
+import QuizTag from "../common/QuizTag";
 import PanelCard, { EmptyState } from "./PanelCard";
 
 function RecentPostsCard({ posts }) {
@@ -90,6 +91,7 @@ function RecentPostsCard({ posts }) {
                                     ? "Announcement · All Classes"
                                     : `${post.class_name} - ${post.section_name} · ${post.subject_name}`}
                             </Typography>
+                            {!isAnnouncement && <Box sx={{ mt: 0.25 }}><QuizTag post={post} variant="staff" /></Box>}
                         </Box>
 
                         <Box sx={{ textAlign: "right", flexShrink: 0 }}>
