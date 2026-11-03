@@ -400,9 +400,9 @@ function SchoolCalendarPage() {
                                         minWidth: 54,
                                         height: 38,
                                         border: "1px solid",
-                                        borderColor: off ? "var(--sl-ink, #111827)" : "var(--sl-border, #E2E8F0)",
+                                        borderColor: off ? "var(--sl-oc, #111827)" : "var(--sl-border, #E2E8F0)",
                                         bgcolor: off ? "var(--sl-accent, #FFC400)" : "#fff",
-                                        color: off ? "var(--sl-ink, #111827)" : "text.secondary",
+                                        color: off ? "var(--sl-on-accent, #111827)" : "text.secondary",
                                         "&:hover": { bgcolor: off ? "var(--sl-accent, #FFC400)" : "var(--sl-soft, #F1F5F9)" }
                                     }}
                                 />

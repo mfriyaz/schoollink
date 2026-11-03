@@ -450,8 +450,8 @@ function TeacherDashboardPage() {
                                                 sx={{
                                                     width: 46, height: 46, fontSize: "0.85rem", fontWeight: 800,
                                                     cursor: sent ? "pointer" : "default",
-                                                    bgcolor: sent ? "var(--sl-accent)" : "transparent",
-                                                    color: sent ? "var(--sl-ink)" : "text.disabled",
+                                                    bgcolor: sent ? "var(--sl-tile)" : "transparent",
+                                                    color: sent ? "var(--sl-tile-ink)" : "text.disabled",
                                                     border: isSelected
                                                         ? "3px solid var(--sl-oc)"
                                                         : sent

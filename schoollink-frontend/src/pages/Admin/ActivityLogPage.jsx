@@ -83,9 +83,9 @@ function pill(active) {
     return {
         fontWeight: 700,
         border: "1px solid",
-        borderColor: active ? "var(--sl-ink, #111827)" : "var(--sl-border, #E2E8F0)",
+        borderColor: active ? "var(--sl-oc, #111827)" : "var(--sl-border, #E2E8F0)",
         bgcolor: active ? "var(--sl-accent, #FFC400)" : "#fff",
-        color: active ? "var(--sl-ink, #111827)" : "text.secondary",
+        color: active ? "var(--sl-on-accent, #111827)" : "text.secondary",
         "&:hover": { bgcolor: active ? "var(--sl-accent, #FFC400)" : "var(--sl-soft, #F1F5F9)" }
     };
 }

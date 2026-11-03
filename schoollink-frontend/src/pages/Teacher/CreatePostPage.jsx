@@ -64,7 +64,7 @@ const pillSx = (active, color) => ({
     fontWeight: 700,
     border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? (color || "var(--sl-accent)") : "transparent",
-    color: active ? (color ? "#fff" : "var(--sl-ink)") : "var(--sl-ink)",
+    color: active ? (color ? "#fff" : "var(--sl-on-accent)") : "var(--sl-ink)",
     "&:hover": { bgcolor: active ? undefined : "var(--sl-soft)" }
 });
 
