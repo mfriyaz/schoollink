@@ -1,5 +1,6 @@
 const pool = require("../config/database");
 const response = require("../utils/response");
+const insights = require("../services/insights.service");
 
 // Must match the ids in schoollink-frontend/src/theme/themes.js
 const THEMES = ["sunshine", "sky", "maroon", "coral", "mint", "butter"];
@@ -45,10 +46,10 @@ async function getSubscriptionNotice(req, res) {
     try {
 
         const result = await pool.query(
-            `SELECT (subscription_expiry::date - CURRENT_DATE)::int AS days_left,
+            `SELECT (subscription_expiry::date - $2::date)::int AS days_left,
                     to_char(subscription_expiry::date, 'YYYY-MM-DD') AS expiry, status
                FROM schools WHERE id = $1`,
-            [req.user.school_id]
+            [req.user.school_id, await insights.schoolToday(req.user.school_id)]
         );
 
         const row = result.rows[0] || {};

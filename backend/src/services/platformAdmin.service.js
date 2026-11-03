@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 
 const pool = require("../config/database");
+const insights = require("./insights.service");
 const userModel = require("../models/user.model");
 const { clearSchoolAccessCache } = require("../utils/schoolAccess");
 
@@ -210,7 +211,8 @@ async function getOverview() {
 
         if (s.subscription_expiry) {
 
-            const days = daysBetween(today, s.subscription_expiry);
+            // the school's own "today", the same one the school admin banner and the auto-lock use
+            const days = daysBetween(await insights.schoolToday(s.id), s.subscription_expiry);
 
             if (days < 0 && !["SUSPENDED", "EXPIRED"].includes(s.status)) {
 
@@ -379,6 +381,10 @@ async function getSchoolDetail(id) {
     const school = result.rows[0];
 
     if (!school) return null;
+
+    school.days_left = school.subscription_expiry
+        ? daysBetween(await insights.schoolToday(id), school.subscription_expiry)
+        : null;
 
     const admins = await pool.query(
         `
