@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Box, Card, Chip, CircularProgress, LinearProgress, Typography } from "@mui/material";
-import AssessmentIcon from "@mui/icons-material/AssessmentOutlined";
+import { Box, Button, Card, CircularProgress, LinearProgress, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/FileDownloadOutlined";
+import ChildHeader from "../../components/Parent/ChildHeader";
 import { getMyChildren } from "../../services/postService";
 import { getMarksForStudent } from "../../services/examService";
 import { getStudentRemarks, downloadReportCardPdf } from "../../services/reportCardService";
@@ -12,22 +12,6 @@ const panelSx = {
     borderRadius: 3,
     border: "1px solid var(--sl-border)",
     boxShadow: "var(--sl-card-shadow)"
-};
-
-const pillSx = {
-    borderRadius: 99,
-    border: "1.5px solid var(--sl-oc)",
-    color: "var(--sl-ink)",
-    fontWeight: 700,
-    textTransform: "none",
-    px: 1.75,
-    py: 0.6,
-    fontSize: "0.85rem",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 0.75,
-    bgcolor: "#fff",
-    cursor: "pointer"
 };
 
 function barColor(pct) {
@@ -108,32 +92,7 @@ function ParentExamResultsPage() {
 
     return (
         <Box sx={{ maxWidth: 700 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <AssessmentIcon sx={{ color: "var(--sl-tile-ink)" }} />
-                </Box>
-                <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, color: "var(--sl-ink)" }}>
-                    Exam Results
-                </Typography>
-            </Box>
-
-            {children.length > 1 && (
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
-                    {children.map((c) => (
-                        <Chip
-                            key={c.student_id}
-                            label={c.first_name}
-                            onClick={() => pickChild(c.student_id)}
-                            sx={{
-                                fontWeight: 700,
-                                border: "1.5px solid var(--sl-oc)",
-                                bgcolor: c.student_id === studentId ? "var(--sl-accent)" : "#fff",
-                                color: c.student_id === studentId ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)"
-                            }}
-                        />
-                    ))}
-                </Box>
-            )}
+            <ChildHeader child={children.find((c) => c.student_id === studentId)} kids={children} selectedId={studentId} onSelect={pickChild} eyebrow="Exam results" />
 
             {loading && <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}><CircularProgress /></Box>}
 
@@ -180,7 +139,7 @@ function ParentExamResultsPage() {
                                             </Box>
                                             <Box component="span" sx={{
                                                 px: 1.25, py: 0.25, borderRadius: 99, fontSize: "0.8rem", fontWeight: 800,
-                                                border: "1.5px solid var(--sl-oc)",
+                                                border: pass ? "1px solid #86EFAC" : "1px solid #FCA5A5",
                                                 bgcolor: pass ? "#DCFCE7" : "#FEE2E2",
                                                 color: pass ? "#15803D" : "#B91C1C"
                                             }}>
@@ -209,16 +168,16 @@ function ParentExamResultsPage() {
 
                         {g.examId && (
                             <Box sx={{ mt: 1.75 }}>
-                                <Box
-                                    component="button"
-                                    type="button"
+                                <Button
+                                    variant="contained"
+                                    startIcon={<DownloadIcon />}
                                     disabled={busyExam === g.examId}
                                     onClick={() => downloadPdf(g.examId, g.name)}
-                                    sx={{ ...pillSx, bgcolor: "var(--sl-accent)", opacity: busyExam === g.examId ? 0.6 : 1 }}
+                                    fullWidth
+                                    sx={{ maxWidth: { sm: 260 } }}
                                 >
-                                    <DownloadIcon sx={{ fontSize: 18 }} />
                                     {busyExam === g.examId ? "Preparing…" : "Download report card"}
-                                </Box>
+                                </Button>
                             </Box>
                         )}
                     </Card>
