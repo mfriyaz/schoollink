@@ -37,10 +37,10 @@ export default function ChildHeader({ child, kids = [], selectedId, onSelect, ey
                                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(c.student_id); } }}
                                 sx={{
                                     px: 1.5, py: 0.5, borderRadius: 99, cursor: "pointer", userSelect: "none",
-                                    fontSize: "0.82rem", fontWeight: 800, color: "var(--sl-ink, #111827)",
-                                    border: "1.5px solid var(--sl-ink, #111827)",
+                                    fontSize: "0.82rem", fontWeight: 800, color: on ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)",
+                                    border: "1.5px solid var(--sl-oc, #111827)",
                                     bgcolor: on ? "var(--sl-accent, #FFC400)" : "transparent",
-                                    boxShadow: on ? "2px 2px 0 var(--sl-ink, #111827)" : "none",
+                                    boxShadow: on ? "2px 2px 0 var(--sl-hs, #111827)" : "none",
                                     "&:hover": { bgcolor: on ? "var(--sl-accent, #FFC400)" : "var(--sl-soft, #F8FAFC)" }
                                 }}
                             >

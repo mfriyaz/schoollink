@@ -35,7 +35,7 @@ export default function Notifier() {
                 sx={{
                     display: "flex", alignItems: "center", gap: 1.25, px: 1.75, py: 1.25, maxWidth: 520,
                     borderRadius: 3, bgcolor: ok ? "#DCFCE7" : "#FEE2E2", color: "var(--sl-ink, #111827)",
-                    border: "1.5px solid var(--sl-ink, #111827)", boxShadow: "3px 3px 0 var(--sl-ink, #111827)"
+                    border: "1.5px solid var(--sl-oc, #111827)", boxShadow: "3px 3px 0 var(--sl-hs, #111827)"
                 }}
             >
                 {ok ? <CheckCircleIcon sx={{ color: "#16A34A" }} /> : <ErrorIcon sx={{ color: "#DC2626" }} />}

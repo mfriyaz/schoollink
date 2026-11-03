@@ -29,7 +29,7 @@ function Stat({ value, label, tone }) {
                 px: 0.5,
                 borderRadius: 2.5,
                 bgcolor: "var(--sl-soft, #F1F5F9)",
-                border: "1.5px solid var(--sl-ink, var(--sl-ink))"
+                border: "1.5px solid var(--sl-oc, var(--sl-ink))"
             }}
         >
             <Typography sx={{ fontWeight: 800, fontSize: "1.45rem", lineHeight: 1.1, color: tone || "var(--sl-ink, var(--sl-ink))" }}>

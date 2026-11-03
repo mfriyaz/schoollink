@@ -53,7 +53,7 @@ export default function StudentTable({ students, onView, onEdit, onDelete }) {
                                         width: 44, height: 44, fontWeight: 800,
                                         bgcolor: girl ? "#FBCFE8" : "var(--sl-accent, #FFC400)",
                                         color: "var(--sl-ink, #111827)",
-                                        border: "1.5px solid var(--sl-ink, #111827)"
+                                        border: "1.5px solid var(--sl-oc, #111827)"
                                     }}
                                 >
                                     {(student.first_name || "?")[0]}{(student.last_name || "")[0] || ""}

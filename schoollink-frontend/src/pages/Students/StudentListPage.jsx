@@ -184,7 +184,7 @@ export default function StudentListPage() {
                             onClick={() => setFilter(id)}
                             sx={{
                                 px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none",
-                                fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)",
+                                fontSize: "0.82rem", fontWeight: 700, color: filter === id ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)",
                                 border: "1.5px solid var(--sl-oc)",
                                 bgcolor: filter === id ? "var(--sl-accent)" : "transparent",
                                 "&:hover": { bgcolor: filter === id ? undefined : "var(--sl-soft)" }

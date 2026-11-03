@@ -90,7 +90,7 @@ function ClassView({ subjects, assignments, ready, classKey, setClassKey, search
                         onClick={() => setClassKey(String(c.id))}
                         sx={{
                             flexShrink: 0, px: 1.75, py: 0.65, borderRadius: 99, cursor: "pointer", userSelect: "none",
-                            fontSize: "0.88rem", fontWeight: 800, color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)",
+                            fontSize: "0.88rem", fontWeight: 800, color: c.id === activeId ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)", border: "1.5px solid var(--sl-oc)",
                             bgcolor: c.id === activeId ? "var(--sl-accent)" : "transparent",
                             boxShadow: c.id === activeId ? "2px 2px 0 var(--sl-hs)" : "none",
                             "&:hover": { bgcolor: c.id === activeId ? undefined : "var(--sl-soft)" }
@@ -385,7 +385,7 @@ function SubjectsPage() {
                         onClick={() => setView(id)}
                         sx={{
                             display: "flex", alignItems: "center", gap: 0.75, px: 1.75, py: 0.6, borderRadius: 99,
-                            cursor: "pointer", userSelect: "none", fontSize: "0.85rem", fontWeight: 800, color: "var(--sl-ink)",
+                            cursor: "pointer", userSelect: "none", fontSize: "0.85rem", fontWeight: 800, color: view === id ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)",
                             bgcolor: view === id ? "var(--sl-accent)" : "transparent",
                             "&:hover": { bgcolor: view === id ? undefined : "var(--sl-soft)" }
                         }}
@@ -437,7 +437,7 @@ function SubjectsPage() {
                             onClick={() => setFilter(id)}
                             sx={{
                                 px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none",
-                                fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)",
+                                fontSize: "0.82rem", fontWeight: 700, color: filter === id ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)",
                                 border: "1.5px solid var(--sl-oc)",
                                 bgcolor: filter === id ? "var(--sl-accent)" : "transparent",
                                 "&:hover": { bgcolor: filter === id ? undefined : "var(--sl-soft)" }

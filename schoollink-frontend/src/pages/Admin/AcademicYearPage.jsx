@@ -61,7 +61,7 @@ function nextYearName(name) {
 
 const pillSx = (active) => ({
     px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", fontSize: "0.82rem", fontWeight: 700,
-    color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)",
+    color: active ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)", border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? "var(--sl-accent)" : "transparent"
 });
 

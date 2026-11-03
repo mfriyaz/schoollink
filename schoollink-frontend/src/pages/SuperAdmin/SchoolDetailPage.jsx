@@ -187,7 +187,7 @@ export default function SchoolDetailPage() {
                     Record a payment to renew, or suspend the school.
                 </Alert>
             )}
-            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, minHeight: 0, "& .MuiTabs-indicator": { display: "none" }, "& .MuiTabs-flexContainer": { gap: 1, flexWrap: "wrap" }, "& .MuiTab-root": { textTransform: "none", fontWeight: 700, minHeight: 36, py: 0.5, px: 1.75, borderRadius: 99, color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", "&.Mui-selected": { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)" } } }}>
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, minHeight: 0, "& .MuiTabs-indicator": { display: "none" }, "& .MuiTabs-flexContainer": { gap: 1, flexWrap: "wrap" }, "& .MuiTab-root": { textTransform: "none", fontWeight: 700, minHeight: 36, py: 0.5, px: 1.75, borderRadius: 99, color: "var(--sl-on-accent, #111827)", border: "1.5px solid var(--sl-oc)", "&.Mui-selected": { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)" } } }}>
                 <Tab value="overview" label="Overview" />
                 <Tab value="ai" label="AI" />
                 <Tab value="billing" label="Billing" />

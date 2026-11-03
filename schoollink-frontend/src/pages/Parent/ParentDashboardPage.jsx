@@ -61,7 +61,7 @@ const pillSx = (active) => ({
     gap: 0.75,
     border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? "var(--sl-accent)" : "transparent",
-    color: "var(--sl-ink)",
+    color: active ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)",
     "&:hover": { bgcolor: active ? undefined : "var(--sl-soft)" }
 });
 const reactionEmojis = {
@@ -439,7 +439,7 @@ function ParentDashboardPage() {
                                         minWidth: { xs: 32, md: 36 },
                                         borderRadius: "11px",
                                         bgcolor: "var(--sl-accent)",
-                                        color: "var(--sl-ink)",
+                                        color: "var(--sl-on-accent, #111827)",
                                         border: "1.5px solid var(--sl-oc)",
                                         display: "flex",
                                         alignItems: "center",
@@ -576,7 +576,7 @@ function ParentDashboardPage() {
                                                     fontWeight: 700,
                                                     cursor: "pointer",
                                                     bgcolor: "var(--sl-accent)",
-                                                    color: "var(--sl-ink)",
+                                                    color: "var(--sl-on-accent, #111827)",
                                                     border: isSelected ? "3px solid var(--sl-oc)" : "1.5px solid var(--sl-oc)"
                                                 }}
                                             >

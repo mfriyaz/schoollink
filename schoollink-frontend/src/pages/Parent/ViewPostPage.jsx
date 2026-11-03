@@ -42,7 +42,7 @@ const pillSx = (active) => ({
     fontSize: "0.82rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 0.75,
     border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? "var(--sl-accent)" : "transparent",
-    color: "var(--sl-ink)",
+    color: active ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)",
     "&:hover": { bgcolor: active ? undefined : "var(--sl-soft)" }
 });
 const dropSx = {
@@ -620,7 +620,7 @@ function ViewPostPage() {
                                     <Chip
                                         size="small"
                                         label={`Teacher reacted ${REACTION_EMOJI[existingSubmission.reaction] || ""}`}
-                                        sx={{ bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", fontWeight: 700, border: IMG_BORDER }}
+                                        sx={{ bgcolor: "var(--sl-accent)", color: "var(--sl-on-accent, #111827)", fontWeight: 700, border: IMG_BORDER }}
                                     />
                                 )}
                             </Box>

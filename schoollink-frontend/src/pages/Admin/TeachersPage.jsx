@@ -1435,7 +1435,7 @@ function TeachersPage() {
                                         label={g}
                                         onClick={() => setForm({ ...form, gender: form.gender === g ? "" : g })}
                                         sx={form.gender === g
-                                            ? { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", fontWeight: 700 }
+                                            ? { bgcolor: "var(--sl-accent)", color: "var(--sl-on-accent, #111827)", border: "1.5px solid var(--sl-oc)", fontWeight: 700 }
                                             : { bgcolor: "transparent", border: "1.5px solid var(--sl-oc)", fontWeight: 700 }}
                                     />
                                 ))}
@@ -1646,7 +1646,7 @@ function TeachersPage() {
                                             onClick={() => openTransfer(a)}
                                             icon={<SwapHorizIcon sx={{ fontSize: 16 }} />}
                                             label="Transfer"
-                                            sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }}
+                                            sx={{ border: "1.5px solid var(--sl-oc, #111827)", bgcolor: "transparent", fontWeight: 700 }}
                                         />
                                         <Chip
                                             size="small"
@@ -1661,7 +1661,7 @@ function TeachersPage() {
                                             })}
                                             icon={<EventBusyIcon sx={{ fontSize: 16 }} />}
                                             label="End"
-                                            sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }}
+                                            sx={{ border: "1.5px solid var(--sl-oc, #111827)", bgcolor: "transparent", fontWeight: 700 }}
                                         />
                                         <IconButton
                                             size="small"

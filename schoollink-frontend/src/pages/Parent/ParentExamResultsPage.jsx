@@ -128,7 +128,7 @@ function ParentExamResultsPage() {
                                 fontWeight: 700,
                                 border: "1.5px solid var(--sl-oc)",
                                 bgcolor: c.student_id === studentId ? "var(--sl-accent)" : "#fff",
-                                color: "var(--sl-ink)"
+                                color: c.student_id === studentId ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)"
                             }}
                         />
                     ))}

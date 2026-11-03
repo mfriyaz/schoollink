@@ -167,7 +167,7 @@ export const THEMES = {
         navActive: "#1F5FBF", onNavActive: "#FFFFFF",
         banner: "#12263F", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "none",
         loginBg: "#EEF1F5", loginPanel: "#E6EEF9",
-        outline: "#C3CCD8", hardShadow: "transparent", pillRadius: "6px", tile: "#E6EEF9", tileInk: "#1F5FBF"
+        outline: "#C3CCD8", hardShadow: "transparent", pillRadius: "6px", tile: "#E6EEF9", tileInk: "#1F5FBF", onAccent: "#FFFFFF", navTile: "#E6EEF9", navTileInk: "#1F5FBF"
     }
 
 };
@@ -199,10 +199,25 @@ export function applyThemeVars(t) {
         banner: t.banner, "on-banner": t.onBanner, "banner-border": t.bannerBorder, "banner-shadow": t.bannerShadow,
         "login-bg": t.loginBg, "login-panel": t.loginPanel,
         oc: t.outline || t.ink, hs: t.hardShadow || t.ink, pill: t.pillRadius || "99px",
-        tile: t.tile || t.accent, "tile-ink": t.tileInk || t.ink
+        tile: t.tile || t.accent, "tile-ink": t.tileInk || t.ink, "on-accent": t.onAccent || t.ink
     };
 
     Object.entries(vars).forEach(([k, v]) => root.setProperty(`--sl-${k}`, v));
+
+    // Sidebar icon boxes: light boxes in the Professional look, the original dark ones otherwise
+    if (t.navTile) {
+
+        root.setProperty("--sl-navtile", t.navTile);
+
+        root.setProperty("--sl-navtile-ink", t.navTileInk);
+
+    } else {
+
+        root.removeProperty("--sl-navtile");
+
+        root.removeProperty("--sl-navtile-ink");
+
+    }
 
     const meta = document.querySelector('meta[name="theme-color"]');
 

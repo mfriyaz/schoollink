@@ -22,8 +22,8 @@ export default function PageHeader({ eyebrow, title, subtitle, avatar, avatarSiz
                 <Box
                     sx={{
                         width: avatarSize, height: avatarSize, minWidth: avatarSize, borderRadius: "50%",
-                        bgcolor: "var(--sl-accent, #FFC400)", color: "var(--sl-ink, #111827)",
-                        border: "1.5px solid var(--sl-ink, #111827)", boxShadow: "2px 2px 0 var(--sl-ink, #111827)",
+                        bgcolor: "var(--sl-accent, #FFC400)", color: "var(--sl-on-accent, #111827)",
+                        border: "1.5px solid var(--sl-oc, #111827)", boxShadow: "2px 2px 0 var(--sl-hs, #111827)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontWeight: 800, fontSize: avatarSize > 56 ? "1.6rem" : "1.1rem"
                     }}
@@ -35,7 +35,7 @@ export default function PageHeader({ eyebrow, title, subtitle, avatar, avatarSiz
             <Box sx={{ minWidth: 0, flex: 1 }}>
                 {eyebrow && (
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.9 }}>
-                        <Box sx={{ width: 8, height: 8, minWidth: 8, borderRadius: "50%", bgcolor: "var(--sl-accent, #FFC400)", border: "1.5px solid var(--sl-ink, #111827)" }} />
+                        <Box sx={{ width: 8, height: 8, minWidth: 8, borderRadius: "50%", bgcolor: "var(--sl-accent, #FFC400)", border: "1.5px solid var(--sl-oc, #111827)" }} />
                         <Typography sx={{ fontSize: "0.8rem", fontWeight: 600, color: "text.secondary", letterSpacing: 0.2 }} noWrap>
                             {eyebrow}
                         </Typography>

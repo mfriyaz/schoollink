@@ -281,7 +281,7 @@ function TeacherDashboardPage() {
             >
                 <Box sx={{ minWidth: 0 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.9 }}>
-                        <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "var(--sl-accent, #FFC400)", border: "1.5px solid var(--sl-ink, #111827)" }} />
+                        <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "var(--sl-accent, #FFC400)", border: "1.5px solid var(--sl-oc, #111827)" }} />
                         <Typography sx={{ fontSize: "0.8rem", fontWeight: 600, color: "text.secondary", letterSpacing: 0.2 }} noWrap>
                             {getGreeting()} · {todayLabel}
                         </Typography>
@@ -322,10 +322,10 @@ function TeacherDashboardPage() {
                         flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 0.5, cursor: "pointer", userSelect: "none",
                         px: { xs: 1.5, sm: 2.25 }, py: { xs: 0.8, sm: 1 }, borderRadius: 99,
                         fontSize: { xs: "0.85rem", sm: "0.92rem" }, fontWeight: 800,
-                        color: "var(--sl-ink, #111827)", bgcolor: "var(--sl-accent, #FFC400)",
-                        border: "1.5px solid var(--sl-ink, #111827)", boxShadow: "2px 2px 0 var(--sl-ink, #111827)",
+                        color: "var(--sl-on-accent, #111827)", bgcolor: "var(--sl-accent, #FFC400)",
+                        border: "1.5px solid var(--sl-oc, #111827)", boxShadow: "2px 2px 0 var(--sl-hs, #111827)",
                         "&:hover": { filter: "brightness(0.97)" },
-                        "&:active": { transform: "translate(1px, 1px)", boxShadow: "1px 1px 0 var(--sl-ink, #111827)" }
+                        "&:active": { transform: "translate(1px, 1px)", boxShadow: "1px 1px 0 var(--sl-hs, #111827)" }
                     }}
                 >
                     <AddIcon sx={{ fontSize: 20 }} /> Create Post
@@ -382,7 +382,7 @@ function TeacherDashboardPage() {
                                         {bulkReacting ? "Reacting..." : `React to All (${unreactedIds.length})`}
                                     </Button>
                                 )}
-                                <Box sx={{ px: 1.25, py: 0.3, borderRadius: 99, bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", fontSize: "0.8rem", fontWeight: 800, color: "var(--sl-ink)" }}>
+                                <Box sx={{ px: 1.25, py: 0.3, borderRadius: 99, bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", fontSize: "0.8rem", fontWeight: 800, color: "var(--sl-on-accent, #111827)" }}>
                                     {sentCount}/{greetings.length} sent
                                 </Box>
                             </Box>

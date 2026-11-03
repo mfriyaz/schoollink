@@ -24,7 +24,7 @@ const pillSx = (active) => ({
     fontSize: "0.82rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.75,
     border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? "var(--sl-accent)" : "transparent",
-    color: "var(--sl-ink)",
+    color: active ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)",
     "&:hover": { bgcolor: active ? undefined : "var(--sl-soft)" }
 });
 

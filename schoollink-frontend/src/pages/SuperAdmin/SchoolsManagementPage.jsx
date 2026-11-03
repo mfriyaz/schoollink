@@ -405,7 +405,7 @@ function SchoolsManagementPage() {
                 />
                 {["ALL", "ACTIVE", "TRIAL", "SUSPENDED", "EXPIRED"].map((st) => (
                     <Box key={st} role="button" tabIndex={0} onClick={() => setStatusFilter(st)}
-                        sx={{ px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none", fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", bgcolor: statusFilter === st ? "var(--sl-accent)" : "transparent", "&:hover": { bgcolor: statusFilter === st ? undefined : "var(--sl-soft)" } }}>
+                        sx={{ px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none", fontSize: "0.8rem", fontWeight: 700, color: statusFilter === st ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)", border: "1.5px solid var(--sl-oc)", bgcolor: statusFilter === st ? "var(--sl-accent)" : "transparent", "&:hover": { bgcolor: statusFilter === st ? undefined : "var(--sl-soft)" } }}>
                         {st === "ALL" ? `All (${schools.length})` : `${st} (${schools.filter((x) => x.status === st).length})`}
                     </Box>
                 ))}

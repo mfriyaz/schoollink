@@ -355,7 +355,7 @@ function SchoolCalendarPage() {
                                     color: CELL[c.status].fg,
                                     border: "1px solid",
                                     borderColor: CELL[c.status].bd,
-                                    outline: c.date === todayIso ? "2px solid var(--sl-ink, #111827)" : "none",
+                                    outline: c.date === todayIso ? "2px solid var(--sl-oc, #111827)" : "none",
                                     outlineOffset: 1,
                                     "&:hover": { filter: "brightness(0.96)" }
                                 }}

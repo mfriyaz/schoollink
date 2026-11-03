@@ -192,7 +192,7 @@ function TeacherPostsPage() {
                                         px: 1.5, py: 0.5, borderRadius: 99, cursor: "pointer", userSelect: "none",
                                         fontSize: "0.82rem", fontWeight: 700, border: "1.5px solid var(--sl-oc)",
                                         bgcolor: classFilter === c ? "var(--sl-accent)" : "transparent",
-                                        color: "var(--sl-ink)"
+                                        color: classFilter === c ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)"
                                     }}
                                 >
                                     {c === "all" ? "All classes" : c}

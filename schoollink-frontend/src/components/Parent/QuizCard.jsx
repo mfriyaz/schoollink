@@ -9,7 +9,7 @@ const LETTERS = ["A", "B", "C", "D"];
 
 const pillSx = {
     px: 1.75, py: 0.6, borderRadius: 99, cursor: "pointer", userSelect: "none",
-    fontSize: "0.85rem", fontWeight: 800, color: "var(--sl-ink)",
+    fontSize: "0.85rem", fontWeight: 800, color: "var(--sl-on-accent, #111827)",
     border: "1.5px solid var(--sl-oc)", bgcolor: "var(--sl-accent)",
     boxShadow: "2px 2px 0 var(--sl-hs)", display: "inline-flex", alignItems: "center"
 };

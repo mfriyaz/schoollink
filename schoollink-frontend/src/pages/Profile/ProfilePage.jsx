@@ -213,7 +213,7 @@ function ProfilePage() {
                         sx={{
                             display: "inline-block", mt: 0.6, px: 1.25, py: 0.25, borderRadius: 99,
                             fontSize: "0.78rem", fontWeight: 800, color: "var(--sl-ink, #111827)",
-                            bgcolor: "var(--sl-soft, #F8FAFC)", border: "1.5px solid var(--sl-ink, #111827)"
+                            bgcolor: "var(--sl-soft, #F8FAFC)", border: "1.5px solid var(--sl-oc, #111827)"
                         }}
                     >
                         {profile ? profile.role : ""}
@@ -237,7 +237,7 @@ function ProfilePage() {
                             minWidth: 0
                         }}
                     >
-                        <Box sx={{ width: 34, height: 34, borderRadius: 2, bgcolor: "var(--sl-soft, #EEF2FF)", color: "var(--sl-ink, #4F46E5)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <Box sx={{ width: 34, height: 34, borderRadius: 2, bgcolor: "var(--sl-soft, var(--sl-soft))", color: "var(--sl-ink, var(--sl-primary))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                             {d.icon}
                         </Box>
                         <Box sx={{ minWidth: 0 }}>
@@ -253,8 +253,8 @@ function ProfilePage() {
                 {/* ---------- edit details ---------- */}
                 <Card sx={{ p: { xs: 2, sm: 2.5 }, borderRadius: 3 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, mb: 2 }}>
-                        <Box sx={{ width: 34, height: 34, borderRadius: 2, bgcolor: "var(--sl-soft, #EEF2FF)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <PersonIcon fontSize="small" sx={{ color: "var(--sl-ink, #4F46E5)" }} />
+                        <Box sx={{ width: 34, height: 34, borderRadius: 2, bgcolor: "var(--sl-soft, var(--sl-soft))", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <PersonIcon fontSize="small" sx={{ color: "var(--sl-ink, var(--sl-primary))" }} />
                         </Box>
                         <Typography sx={{ fontWeight: 800, fontSize: "1.05rem" }}>Your details</Typography>
                     </Box>

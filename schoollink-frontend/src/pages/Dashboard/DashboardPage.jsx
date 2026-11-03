@@ -56,7 +56,7 @@ function DashboardPage() {
                         onClick={() => setTab(idx)}
                         sx={{
                             px: 1.75, py: 0.65, borderRadius: "var(--sl-pill)", cursor: "pointer", userSelect: "none",
-                            fontSize: "0.88rem", fontWeight: 700, color: "var(--sl-ink)",
+                            fontSize: "0.88rem", fontWeight: 700, color: tab === idx ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)",
                             border: "1.5px solid var(--sl-oc)",
                             bgcolor: tab === idx ? "var(--sl-accent)" : "transparent",
                             "&:hover": { bgcolor: tab === idx ? undefined : "var(--sl-soft)" }

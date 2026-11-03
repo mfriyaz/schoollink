@@ -559,15 +559,15 @@ function ExamsPage() {
 
                                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1.5 }}>
                                     <Chip clickable aria-label="Edit exam" icon={<EditIcon sx={{ fontSize: 16 }} />} label="Edit" onClick={() => openEditExam(selected)}
-                                        sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }} />
+                                        sx={{ border: "1.5px solid var(--sl-oc, #111827)", bgcolor: "transparent", fontWeight: 700 }} />
                                     {selected.archived ? (
                                         <Chip clickable aria-label="Restore exam" icon={<UnarchiveIcon sx={{ fontSize: 16 }} />} label="Restore"
                                             onClick={() => setAsk({ title: "Restore this exam?", message: `${selected.exam_name} will show again for admins and teachers.`, confirmLabel: "Yes, restore", run: () => handleArchive(selected, false) })}
-                                            sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }} />
+                                            sx={{ border: "1.5px solid var(--sl-oc, #111827)", bgcolor: "transparent", fontWeight: 700 }} />
                                     ) : (
                                         <Chip clickable aria-label="Archive exam" icon={<ArchiveIcon sx={{ fontSize: 16 }} />} label="Archive"
                                             onClick={() => setAsk({ title: "Archive this exam?", message: `${selected.exam_name} will be hidden from the list and from teachers. Marks and report cards are kept, and you can restore it any time.`, confirmLabel: "Yes, archive", confirmColor: "warning", run: () => handleArchive(selected, true) })}
-                                            sx={{ border: "1.5px solid var(--sl-ink, #111827)", bgcolor: "transparent", fontWeight: 700 }} />
+                                            sx={{ border: "1.5px solid var(--sl-oc, #111827)", bgcolor: "transparent", fontWeight: 700 }} />
                                     )}
                                     <Chip clickable aria-label="Delete exam" icon={<DeleteOutlineIcon sx={{ fontSize: 16, color: "#DC2626 !important" }} />} label="Delete"
                                         onClick={() => setAsk({ title: "Delete this exam?", message: `${selected.exam_name} and its subject list will be removed. This only works if no marks are entered yet.`, confirmLabel: "Yes, delete", confirmColor: "error", run: () => handleDeleteExam(selected) })}

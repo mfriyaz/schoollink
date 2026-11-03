@@ -265,7 +265,7 @@ function ReportsPage() {
                             boxShadow: "var(--sl-card-shadow, none)"
                         }}
                     >
-                        <Box sx={{ width: 56, height: 56, borderRadius: "50%", bgcolor: "var(--sl-accent, #FFC400)", color: "var(--sl-ink, #111827)", border: "1.5px solid var(--sl-ink, #111827)", boxShadow: "2px 2px 0 var(--sl-ink, #111827)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1.2rem" }}>
+                        <Box sx={{ width: 56, height: 56, borderRadius: "50%", bgcolor: "var(--sl-accent, #FFC400)", color: "var(--sl-on-accent, #111827)", border: "1.5px solid var(--sl-oc, #111827)", boxShadow: "2px 2px 0 var(--sl-hs, #111827)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "1.2rem" }}>
                             {initials(report.student.name)}
                         </Box>
 
@@ -277,7 +277,7 @@ function ReportsPage() {
                             <Typography sx={{ fontSize: "0.86rem", color: "text.secondary" }}>{report.exam}</Typography>
                         </Box>
 
-                        <Box sx={{ textAlign: "center", px: 1.75, py: 0.75, borderRadius: 3, bgcolor: "var(--sl-soft, #F8FAFC)", border: "1.5px solid var(--sl-ink, #111827)" }}>
+                        <Box sx={{ textAlign: "center", px: 1.75, py: 0.75, borderRadius: 3, bgcolor: "var(--sl-soft, #F8FAFC)", border: "1.5px solid var(--sl-oc, #111827)" }}>
                             <Typography sx={{ fontWeight: 800, fontSize: "1.8rem", lineHeight: 1, color: "var(--sl-ink, #111827)" }}>{overall}%</Typography>
                             <Typography sx={{ fontSize: "0.7rem", fontWeight: 800, color: "text.secondary", letterSpacing: 0.4 }}>OVERALL</Typography>
                         </Box>

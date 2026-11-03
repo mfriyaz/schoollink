@@ -586,8 +586,8 @@ function NavItem({ menu, active, collapsed, theme, indent }) {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    bgcolor: active ? theme.tile : "rgba(255,255,255,0.08)",
-                    color: active ? theme.onActive : tint,
+                    bgcolor: active ? theme.tile : "var(--sl-navtile)",
+                    color: active ? theme.onActive : `var(--sl-navtile-ink, ${tint})`,
                     "& svg": { fontSize: 19 }
                 }}
             >

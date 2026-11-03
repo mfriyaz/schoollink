@@ -114,8 +114,8 @@ function LoginPage() {
                         height: 42,
                         borderRadius: "13px",
                         bgcolor: "var(--sl-accent, #FFC400)",
-                        border: "1.5px solid var(--sl-ink, #111827)",
-                        boxShadow: "2px 2px 0 var(--sl-ink, #111827)",
+                        border: "1.5px solid var(--sl-oc, #111827)",
+                        boxShadow: "2px 2px 0 var(--sl-hs, #111827)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"
@@ -144,8 +144,8 @@ function LoginPage() {
                         flex: 1,
                         maxWidth: 480,
                         background: "var(--sl-soft, #FFF4C2)",
-                        border: "1.5px solid var(--sl-ink, #111827)",
-                        boxShadow: "6px 6px 0 var(--sl-ink, #111827)",
+                        border: "1.5px solid var(--sl-oc, #111827)",
+                        boxShadow: "6px 6px 0 var(--sl-hs, #111827)",
                         borderRadius: 6,
                         p: 6,
                         flexDirection: "column",
@@ -166,7 +166,7 @@ function LoginPage() {
                 </Box>
                 <Box sx={{
                     width: "100%", maxWidth: 400, bgcolor: "#fff", p: { xs: 2.5, sm: 3.5 }, borderRadius: 4,
-                    border: "1.5px solid var(--sl-ink, #111827)", boxShadow: "5px 5px 0 var(--sl-ink, #111827)"
+                    border: "1.5px solid var(--sl-oc, #111827)", boxShadow: "5px 5px 0 var(--sl-hs, #111827)"
                 }}>
                     <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.6rem", md: "1.9rem" }, mb: 0.5, color: "var(--sl-ink, #111827)" }}>
                         Welcome Back!

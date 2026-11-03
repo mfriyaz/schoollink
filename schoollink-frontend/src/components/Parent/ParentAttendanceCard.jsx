@@ -180,7 +180,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                 fontSize: "0.8rem",
                                 fontWeight: 800,
                                 bgcolor: tab === t.value ? "var(--sl-accent)" : "transparent",
-                                color: "var(--sl-ink)",
+                                color: tab === t.value ? "var(--sl-on-accent, #111827)" : "var(--sl-ink, #111827)",
                                 opacity: tab === t.value ? 1 : 0.7
                             }}
                         >

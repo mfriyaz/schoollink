@@ -15,8 +15,8 @@ export default function DialogHeader({ icon, title, subtitle, onClose, tone }) {
                 sx={{
                     width: 42, height: 42, minWidth: 42, borderRadius: "13px",
                     bgcolor: tile, color: "var(--sl-ink, #111827)",
-                    border: "1.5px solid var(--sl-ink, #111827)",
-                    boxShadow: "2px 2px 0 var(--sl-ink, #111827)",
+                    border: "1.5px solid var(--sl-oc, #111827)",
+                    boxShadow: "2px 2px 0 var(--sl-hs, #111827)",
                     display: "flex", alignItems: "center", justifyContent: "center"
                 }}
             >
