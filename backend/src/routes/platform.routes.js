@@ -34,6 +34,7 @@ router.get("/schools/:id/records/:type", ...sa, admin.schoolRecords);
 router.get("/schools/:id/ai", ...sa, aiAdmin.getSchoolAi);
 router.put("/schools/:id/ai", ...sa, aiAdmin.updateSchoolAi);
 router.post("/schools/:id/status", ...sa, admin.setStatus);
+router.post("/schools/:id/look", ...sa, admin.setLook);
 router.post("/schools/:id/payments", ...sa, admin.addPayment);
 router.patch("/schools/:id/notes", ...sa, admin.updateNotes);
 router.delete("/payments/:paymentId", ...sa, admin.deletePayment);

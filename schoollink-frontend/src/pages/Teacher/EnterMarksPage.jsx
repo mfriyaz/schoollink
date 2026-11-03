@@ -28,7 +28,7 @@ const pillSx = (active) => ({
     userSelect: "none",
     fontSize: "0.84rem",
     fontWeight: 700,
-    border: "1.5px solid var(--sl-ink)",
+    border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? "var(--sl-accent)" : "transparent",
     color: "var(--sl-ink)",
     "&:hover": { bgcolor: active ? undefined : "var(--sl-soft)" }
@@ -226,8 +226,8 @@ function EnterMarksPage() {
                 <Box
                     sx={{
                         width: 46, height: 46, borderRadius: "14px",
-                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)",
-                        boxShadow: "2px 2px 0 var(--sl-ink)",
+                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                        boxShadow: "2px 2px 0 var(--sl-hs)",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}
                 >
@@ -409,7 +409,7 @@ function EnterMarksPage() {
                             mt: 2, zIndex: 5,
                             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1.5,
                             p: 1.25, pl: 2, borderRadius: 3, bgcolor: "#fff",
-                            border: "1.5px solid var(--sl-ink)", boxShadow: "3px 3px 0 var(--sl-ink)"
+                            border: "1.5px solid var(--sl-oc)", boxShadow: "3px 3px 0 var(--sl-hs)"
                         }}
                     >
                         <Typography sx={{ fontSize: "0.85rem", fontWeight: 700, color: invalidCount ? "#DC2626" : "inherit" }}>

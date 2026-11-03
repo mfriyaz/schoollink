@@ -61,7 +61,7 @@ function nextYearName(name) {
 
 const pillSx = (active) => ({
     px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", fontSize: "0.82rem", fontWeight: 700,
-    color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)",
+    color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? "var(--sl-accent)" : "transparent"
 });
 
@@ -229,7 +229,7 @@ function AcademicYearPage() {
         <Box sx={{ maxWidth: 900 }}>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <EventRepeatIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -288,7 +288,7 @@ function AcademicYearPage() {
             <Dialog open={open} onClose={() => !saving && setOpen(false)} fullWidth maxWidth="md" fullScreen={fullScreen}>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 2.5, pb: 1.5 }}>
-                    <Box sx={{ width: 42, height: 42, minWidth: 42, borderRadius: "13px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Box sx={{ width: 42, height: 42, minWidth: 42, borderRadius: "13px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <EventRepeatIcon sx={{ color: "var(--sl-ink)" }} />
                     </Box>
                     <Box sx={{ flex: 1, minWidth: 0 }}>

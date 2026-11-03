@@ -120,8 +120,8 @@ function TeacherPostsPage() {
                 <Box
                     sx={{
                         width: 46, height: 46, borderRadius: "14px",
-                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)",
-                        boxShadow: "2px 2px 0 var(--sl-ink)",
+                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                        boxShadow: "2px 2px 0 var(--sl-hs)",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}
                 >
@@ -190,7 +190,7 @@ function TeacherPostsPage() {
                                     onKeyDown={(e) => e.key === "Enter" && setClassFilter(c)}
                                     sx={{
                                         px: 1.5, py: 0.5, borderRadius: 99, cursor: "pointer", userSelect: "none",
-                                        fontSize: "0.82rem", fontWeight: 700, border: "1.5px solid var(--sl-ink)",
+                                        fontSize: "0.82rem", fontWeight: 700, border: "1.5px solid var(--sl-oc)",
                                         bgcolor: classFilter === c ? "var(--sl-accent)" : "transparent",
                                         color: "var(--sl-ink)"
                                     }}
@@ -225,7 +225,7 @@ function TeacherPostsPage() {
                                         <Box
                                             sx={{
                                                 width: 40, height: 40, minWidth: 40, borderRadius: "12px",
-                                                bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)",
+                                                bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
                                                 display: "flex", alignItems: "center", justifyContent: "center"
                                             }}
                                         >
@@ -277,7 +277,7 @@ function TeacherPostsPage() {
                                                 </Box>
                                                 <Box
                                                     onClick={() => setSubmissionsDialogPost(post)}
-                                                    sx={{ display: "flex", alignItems: "center", gap: 0.75, px: 1.25, py: 0.35, borderRadius: 99, fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", border: "1.5px solid var(--sl-ink)", color: "var(--sl-ink)" }}
+                                                    sx={{ display: "flex", alignItems: "center", gap: 0.75, px: 1.25, py: 0.35, borderRadius: 99, fontSize: "0.78rem", fontWeight: 700, cursor: "pointer", border: "1.5px solid var(--sl-oc)", color: "var(--sl-ink)" }}
                                                 >
                                                     <PhotoCameraIcon sx={{ fontSize: 16 }} />
                                                     Submissions

@@ -20,6 +20,10 @@ export async function setSchoolStatus(id, status, reason) {
     return (await api.post(`/platform/schools/${id}/status`, { status, reason })).data;
 }
 
+export async function setSchoolLook(id, look) {
+    return (await api.post(`/platform/schools/${id}/look`, { look })).data;
+}
+
 export async function addSchoolPayment(id, payload) {
     return (await api.post(`/platform/schools/${id}/payments`, payload)).data;
 }

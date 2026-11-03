@@ -40,7 +40,7 @@ const CARD = { p: { xs: 2, md: 3 }, borderRadius: 3, border: "1px solid var(--sl
 const pillSx = (active) => ({
     px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none",
     fontSize: "0.82rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 0.75,
-    border: "1.5px solid var(--sl-ink)",
+    border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? "var(--sl-accent)" : "transparent",
     color: "var(--sl-ink)",
     "&:hover": { bgcolor: active ? undefined : "var(--sl-soft)" }
@@ -50,7 +50,7 @@ const dropSx = {
     border: "1.5px dashed var(--sl-ink)", bgcolor: "var(--sl-soft)", fontWeight: 700,
     "&:hover": { bgcolor: "var(--sl-soft2)", border: "1.5px dashed var(--sl-ink)" }
 };
-const IMG_BORDER = "1.5px solid var(--sl-ink)";
+const IMG_BORDER = "1.5px solid var(--sl-oc)";
 
 const REACTION_EMOJI = {
     thumbs_up: "👍",
@@ -400,8 +400,8 @@ function ViewPostPage() {
                                 height: 46,
                                 borderRadius: "14px",
                                 bgcolor: isAnnouncement ? "var(--sl-soft2)" : "var(--sl-accent)",
-                                border: "1.5px solid var(--sl-ink)",
-                                boxShadow: "2px 2px 0 var(--sl-ink)",
+                                border: "1.5px solid var(--sl-oc)",
+                                boxShadow: "2px 2px 0 var(--sl-hs)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -426,7 +426,7 @@ function ViewPostPage() {
                         </Box>
                     </Box>
                     <Box component="span" sx={{
-                        px: 1.25, py: 0.3, borderRadius: 99, fontSize: "0.78rem", fontWeight: 700, border: "1.5px solid var(--sl-ink)",
+                        px: 1.25, py: 0.3, borderRadius: 99, fontSize: "0.78rem", fontWeight: 700, border: "1.5px solid var(--sl-oc)",
                         ...(isAcknowledged ? { bgcolor: "#DCFCE7", color: "#15803D" }
                             : post.require_acknowledgement === false ? { bgcolor: "var(--sl-soft)", color: "var(--sl-ink)" }
                             : { bgcolor: "#FFEDD5", color: "#C2410C" })
@@ -550,7 +550,7 @@ function ViewPostPage() {
                         This post doesn't require acknowledgement.
                     </Alert>
                 ) : (
-                    <Box sx={{ bgcolor: "var(--sl-soft)", p: { xs: 2, md: 2.5 }, borderRadius: 3, border: "1.5px solid var(--sl-ink)", boxShadow: "3px 3px 0 var(--sl-ink)" }}>
+                    <Box sx={{ bgcolor: "var(--sl-soft)", p: { xs: 2, md: 2.5 }, borderRadius: 3, border: "1.5px solid var(--sl-oc)", boxShadow: "3px 3px 0 var(--sl-hs)" }}>
                         <Typography sx={{ mb: 1, fontWeight: 800, color: "var(--sl-ink)" }}>
                             Please acknowledge this post after reading
                         </Typography>

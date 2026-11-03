@@ -1132,10 +1132,10 @@ function TeachersPage() {
                             borderRadius: 2,
                             bgcolor: "#fff",
                             border: "1px solid var(--sl-border, #EEF2F7)",
-                            outline: filter === s.filter ? "2px solid var(--sl-accent, #4F46E5)" : "none"
+                            outline: filter === s.filter ? "2px solid var(--sl-accent, var(--sl-primary))" : "none"
                         }}
                     >
-                        <Typography sx={{ fontWeight: 800, fontSize: "1.05rem", lineHeight: 1.2, color: s.tone || "var(--sl-ink, #0F172A)" }}>
+                        <Typography sx={{ fontWeight: 800, fontSize: "1.05rem", lineHeight: 1.2, color: s.tone || "var(--sl-ink, var(--sl-ink))" }}>
                             {s.value}
                         </Typography>
                         <Typography sx={{ fontSize: "0.76rem", color: "text.secondary" }} noWrap>{s.label}</Typography>
@@ -1169,9 +1169,9 @@ function TeachersPage() {
                             onClick={() => setFilter(id)}
                             sx={{
                                 fontWeight: 600,
-                                bgcolor: filter === id ? "var(--sl-ink, #0F172A)" : "var(--sl-soft, #F1F5F9)",
-                                color: filter === id ? "#fff" : "var(--sl-ink, #0F172A)",
-                                "&:hover": { bgcolor: filter === id ? "var(--sl-ink, #0F172A)" : "var(--sl-soft2, #E2E8F0)" }
+                                bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft, #F1F5F9)",
+                                color: filter === id ? "#fff" : "var(--sl-ink, var(--sl-ink))",
+                                "&:hover": { bgcolor: filter === id ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft2, #E2E8F0)" }
                             }}
                         />
                     ))}
@@ -1217,8 +1217,8 @@ function TeachersPage() {
                                 <Avatar
                                     sx={{
                                         width: 44, height: 44, fontWeight: 800,
-                                        bgcolor: teacher.is_active ? "var(--sl-soft, #E0E7FF)" : "#F1F5F9",
-                                        color: teacher.is_active ? "var(--sl-ink, #4F46E5)" : "#94A3B8"
+                                        bgcolor: teacher.is_active ? "var(--sl-soft, var(--sl-soft))" : "#F1F5F9",
+                                        color: teacher.is_active ? "var(--sl-ink, var(--sl-primary))" : "#94A3B8"
                                     }}
                                 >
                                     {initials(teacher)}
@@ -1435,8 +1435,8 @@ function TeachersPage() {
                                         label={g}
                                         onClick={() => setForm({ ...form, gender: form.gender === g ? "" : g })}
                                         sx={form.gender === g
-                                            ? { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", fontWeight: 700 }
-                                            : { bgcolor: "transparent", border: "1.5px solid var(--sl-ink)", fontWeight: 700 }}
+                                            ? { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", fontWeight: 700 }
+                                            : { bgcolor: "transparent", border: "1.5px solid var(--sl-oc)", fontWeight: 700 }}
                                     />
                                 ))}
                             </Box>
@@ -1746,9 +1746,9 @@ function TeachersPage() {
                                             onClick={() => setAssignSectionId(s.id)}
                                             sx={{
                                                 fontWeight: 700,
-                                                bgcolor: on ? "var(--sl-ink, #0F172A)" : "var(--sl-soft, #F1F5F9)",
-                                                color: on ? "#fff" : "var(--sl-ink, #0F172A)",
-                                                "&:hover": { bgcolor: on ? "var(--sl-ink, #0F172A)" : "var(--sl-soft2, #E2E8F0)" }
+                                                bgcolor: on ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft, #F1F5F9)",
+                                                color: on ? "#fff" : "var(--sl-ink, var(--sl-ink))",
+                                                "&:hover": { bgcolor: on ? "var(--sl-ink, var(--sl-ink))" : "var(--sl-soft2, #E2E8F0)" }
                                             }}
                                         />
                                     );

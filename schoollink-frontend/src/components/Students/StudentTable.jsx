@@ -77,7 +77,7 @@ export default function StudentTable({ students, onView, onEdit, onDelete }) {
                                     <Chip
                                         size="small"
                                         label={`${student.class_name}${student.section_name ? ` - ${student.section_name}` : ""}`}
-                                        sx={{ fontWeight: 700, bgcolor: "var(--sl-soft, #E0E7FF)", color: "var(--sl-ink, #3730A3)", border: "1.5px solid var(--sl-ink)" }}
+                                        sx={{ fontWeight: 700, bgcolor: "var(--sl-soft, var(--sl-soft))", color: "var(--sl-ink, var(--sl-primary-dark))", border: "1.5px solid var(--sl-oc)" }}
                                     />
                                 )}
                                 {student.blood_group && (

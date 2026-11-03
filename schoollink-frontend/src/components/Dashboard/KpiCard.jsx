@@ -32,7 +32,7 @@ function KpiCard({
                     minWidth: 40,
                     borderRadius: "12px",
                     bgcolor: iconBg || "var(--sl-accent)",
-                    border: "1.5px solid var(--sl-ink)",
+                    border: "1.5px solid var(--sl-oc)",
                                         display: "flex",
                     alignItems: "center",
                     justifyContent: "center",

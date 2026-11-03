@@ -21,7 +21,7 @@ import EditNoteIcon from "@mui/icons-material/EditOutlined";
 
 function Section({ title }) {
     return (
-        <Typography sx={{ fontWeight: 800, fontSize: "0.8rem", letterSpacing: 0.6, textTransform: "uppercase", color: "var(--sl-ink)", pb: 0.5, borderBottom: "1.5px solid var(--sl-ink)" }}>
+        <Typography sx={{ fontWeight: 800, fontSize: "0.8rem", letterSpacing: 0.6, textTransform: "uppercase", color: "var(--sl-ink)", pb: 0.5, borderBottom: "1.5px solid var(--sl-oc)" }}>
             {title}
         </Typography>
     );

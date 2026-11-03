@@ -9,10 +9,14 @@ import { createTheme } from "@mui/material/styles";
  */
 
 const HEAD_FONT = "Poppins, Nunito, Inter, Segoe UI, Roboto, Arial, sans-serif";
+const PRO_FONT = "\"IBM Plex Sans\", Inter, Segoe UI, Roboto, Arial, sans-serif";
 
 
 export function buildTheme(t) {
 
+const PRO = t.look === "pro";
+const R = PRO ? 6 : 12;        // main corner radius
+const R_IN = PRO ? 6 : 10;     // inputs
 const BORDER = t.border;
 const CARD_SHADOW = t.cardShadow || `0 2px 8px ${t.btnShadow.replace(/[\d.]+\)$/, "0.08)")}`;
 const CARD_SHADOW_HOVER = t.cardShadowHover || `0 10px 24px ${t.btnShadow.replace(/[\d.]+\)$/, "0.16)")}`;
@@ -41,12 +45,12 @@ return createTheme({
         divider: BORDER
     },
 
-    shape: { borderRadius: 12 },
+    shape: { borderRadius: PRO ? 3 : 12 },
 
     shadows,
 
     typography: {
-        fontFamily: [
+        fontFamily: PRO ? PRO_FONT : [
             "Nunito",
             "Inter",
             "Segoe UI",
@@ -56,9 +60,9 @@ return createTheme({
             "sans-serif"
         ].join(","),
 
-        h4: { fontFamily: HEAD_FONT, fontWeight: 700, fontSize: "1.6rem", letterSpacing: "-0.01em" },
-        h5: { fontFamily: HEAD_FONT, fontWeight: 700, fontSize: "1.4rem", letterSpacing: "-0.01em" },
-        h6: { fontFamily: HEAD_FONT, fontWeight: 700, fontSize: "1.05rem" },
+        h4: { fontFamily: PRO ? PRO_FONT : HEAD_FONT, fontWeight: PRO ? 600 : 700, fontSize: "1.6rem", letterSpacing: "-0.01em" },
+        h5: { fontFamily: PRO ? PRO_FONT : HEAD_FONT, fontWeight: PRO ? 600 : 700, fontSize: "1.4rem", letterSpacing: "-0.01em" },
+        h6: { fontFamily: PRO ? PRO_FONT : HEAD_FONT, fontWeight: PRO ? 600 : 700, fontSize: "1.05rem" },
         subtitle1: { fontWeight: 600 },
         body2: { fontSize: "0.875rem" },
         button: { textTransform: "none", fontWeight: 600 }
@@ -87,7 +91,7 @@ return createTheme({
         MuiPaper: {
             styleOverrides: {
                 root: { backgroundImage: "none" },
-                rounded: { borderRadius: 12 }
+                rounded: { borderRadius: R }
             }
         },
 
@@ -95,7 +99,7 @@ return createTheme({
             defaultProps: { elevation: 1 },
             styleOverrides: {
                 root: {
-                    borderRadius: 12,
+                    borderRadius: R,
                     border: `1px solid ${BORDER}`
                 }
             }
@@ -103,14 +107,14 @@ return createTheme({
 
         MuiCardActionArea: {
             styleOverrides: {
-                root: { borderRadius: 12 }
+                root: { borderRadius: R }
             }
         },
 
         MuiDialog: {
             styleOverrides: {
                 paper: {
-                    borderRadius: 16,
+                    borderRadius: PRO ? 8 : 16,
                     "@media (max-width:600px)": {
                         margin: 12,
                         width: "calc(100% - 24px)",
@@ -164,8 +168,8 @@ return createTheme({
             defaultProps: { disableElevation: true },
             styleOverrides: {
                 root: {
-                    borderRadius: 12,
-                    fontWeight: 700,
+                    borderRadius: R,
+                    fontWeight: PRO ? 600 : 700,
                     paddingLeft: 18,
                     paddingRight: 18,
                     paddingTop: 8,
@@ -226,7 +230,7 @@ return createTheme({
         MuiOutlinedInput: {
             styleOverrides: {
                 root: {
-                    borderRadius: 10,
+                    borderRadius: R_IN,
                     backgroundColor: "#FFFFFF",
                     "& .MuiOutlinedInput-notchedOutline": {
                         borderColor: t.soft2
@@ -269,7 +273,7 @@ return createTheme({
                 track: {
                     borderRadius: 15,
                     backgroundColor: "#FFFFFF",
-                    border: "1.5px solid var(--sl-ink)",
+                    border: "1.5px solid var(--sl-oc)",
                     opacity: 1,
                     boxSizing: "border-box"
                 }
@@ -277,7 +281,7 @@ return createTheme({
         },
         MuiChip: {
             styleOverrides: {
-                root: { fontWeight: 600, borderRadius: 8 },
+                root: { fontWeight: 600, borderRadius: PRO ? 6 : 8 },
                 sizeSmall: { height: 24, fontSize: "0.75rem" }
             }
         },
@@ -322,7 +326,7 @@ return createTheme({
         MuiTableContainer: {
             styleOverrides: {
                 root: {
-                    borderRadius: 12,
+                    borderRadius: R,
                     border: `1px solid ${BORDER}`
                 }
             }
@@ -336,11 +340,13 @@ return createTheme({
 
         MuiTableCell: {
             styleOverrides: {
-                root: { borderBottom: `1px solid ${BORDER}` },
+                root: PRO
+                    ? { borderBottom: `1px solid ${BORDER}`, paddingTop: 9, paddingBottom: 9 }
+                    : { borderBottom: `1px solid ${BORDER}` },
                 head: {
-                    fontWeight: 700,
-                    fontSize: "0.78rem",
-                    color: t.primaryDark,
+                    fontWeight: PRO ? 600 : 700,
+                    fontSize: PRO ? "0.74rem" : "0.78rem",
+                    color: PRO ? "#5B6878" : t.primaryDark,
                     textTransform: "uppercase",
                     letterSpacing: "0.04em"
                 }

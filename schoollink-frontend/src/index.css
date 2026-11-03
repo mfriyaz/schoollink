@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
 
 /* Colours come from the chosen theme (see src/theme/themes.js). These are the
    "Sunshine" defaults used for the very first paint before the theme loads. */
@@ -44,6 +44,11 @@ body,
     max-width: 100%;
     overflow-x: hidden;
 }
+
+/* outline / hard-shadow colours: dark in Classic, soft in Professional (set from the theme) */
+:root { --sl-oc: #111827; --sl-hs: #111827; --sl-pill: 99px; }
+
+[data-look="pro"] body { font-family: "IBM Plex Sans", Inter, "Segoe UI", Roboto, Arial, sans-serif; }
 
 body {
     background: var(--sl-page, #FFFCEB);

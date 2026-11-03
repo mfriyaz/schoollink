@@ -185,7 +185,7 @@ export default function StudentListPage() {
                             sx={{
                                 px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none",
                                 fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)",
-                                border: "1.5px solid var(--sl-ink)",
+                                border: "1.5px solid var(--sl-oc)",
                                 bgcolor: filter === id ? "var(--sl-accent)" : "transparent",
                                 "&:hover": { bgcolor: filter === id ? undefined : "var(--sl-soft)" }
                             }}

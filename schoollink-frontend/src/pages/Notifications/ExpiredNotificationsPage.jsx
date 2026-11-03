@@ -48,7 +48,7 @@ function ExpiredNotificationsPage() {
                 sx={{
                     display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.5, py: 0.55, mb: 1.5,
                     borderRadius: 99, cursor: "pointer", fontSize: "0.82rem", fontWeight: 700,
-                    color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)",
+                    color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)",
                     "&:hover": { bgcolor: "var(--sl-soft)" }
                 }}
             >
@@ -56,7 +56,7 @@ function ExpiredNotificationsPage() {
                 Back
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
-                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <NotificationsOffOutlinedIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box>

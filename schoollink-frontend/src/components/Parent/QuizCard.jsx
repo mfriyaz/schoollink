@@ -10,8 +10,8 @@ const LETTERS = ["A", "B", "C", "D"];
 const pillSx = {
     px: 1.75, py: 0.6, borderRadius: 99, cursor: "pointer", userSelect: "none",
     fontSize: "0.85rem", fontWeight: 800, color: "var(--sl-ink)",
-    border: "1.5px solid var(--sl-ink)", bgcolor: "var(--sl-accent)",
-    boxShadow: "2px 2px 0 var(--sl-ink)", display: "inline-flex", alignItems: "center"
+    border: "1.5px solid var(--sl-oc)", bgcolor: "var(--sl-accent)",
+    boxShadow: "2px 2px 0 var(--sl-hs)", display: "inline-flex", alignItems: "center"
 };
 
 /**
@@ -68,7 +68,7 @@ export default function QuizCard({ homeworkId, studentId }) {
     return (
         <Card sx={{ p: { xs: 2, md: 2.5 }, mt: 2.5, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, mb: 1.5 }}>
-                <Box sx={{ width: 38, height: 38, minWidth: 38, borderRadius: "12px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 38, height: 38, minWidth: 38, borderRadius: "12px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <QuizIcon sx={{ color: "var(--sl-ink)", fontSize: 22 }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -84,7 +84,7 @@ export default function QuizCard({ homeworkId, studentId }) {
 
             {!taking && review && (
                 <Box sx={{ mb: 1.5 }}>
-                    <Box sx={{ p: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-ink)", bgcolor: "#DCFCE7", mb: 1.5 }}>
+                    <Box sx={{ p: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-oc)", bgcolor: "#DCFCE7", mb: 1.5 }}>
                         <Typography sx={{ fontWeight: 800, fontSize: "1.2rem", color: "#14532D" }}>
                             Last try: {review.score} out of {review.total}
                         </Typography>

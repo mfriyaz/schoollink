@@ -17,6 +17,7 @@ const SCHOOL_USAGE_SQL = `
         s.phone,
         s.timezone,
         COALESCE(s.status, 'ACTIVE') AS status,
+        COALESCE(s.ui_look, 'classic') AS ui_look,
         COALESCE(s.subscription_plan, 'STANDARD') AS subscription_plan,
         to_char(s.subscription_expiry, 'YYYY-MM-DD') AS subscription_expiry,
         s.max_students,
@@ -587,6 +588,29 @@ async function setStatus(req, id, status, reason) {
 
 }
 
+async function setLook(req, id, look) {
+
+    if (!["classic", "pro"].includes(look)) {
+
+        throw new Error("Invalid look");
+
+    }
+
+    const school = await getSchoolBrief(id);
+
+    if (!school) return null;
+
+    await pool.query(`UPDATE schools SET ui_look = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`, [look, id]);
+
+    await logActivity(
+        req, school, "look_change",
+        `Set ${school.school_name} look to ${look === "pro" ? "Professional" : "Classic"}`
+    );
+
+    return true;
+
+}
+
 async function addPayment(req, schoolId, p) {
 
     const school = await getSchoolBrief(schoolId);
@@ -800,6 +824,7 @@ module.exports = {
     listSchools,
     getSchoolDetail,
     setStatus,
+    setLook,
     addPayment,
     deletePayment,
     listPayments,

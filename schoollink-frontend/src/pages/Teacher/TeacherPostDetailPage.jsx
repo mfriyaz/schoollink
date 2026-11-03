@@ -274,7 +274,7 @@ function TeacherPostDetailPage() {
                                         onClick={() => setPriority(p)}
                                         sx={{
                                             px: 1.5, py: 0.6, borderRadius: 99, cursor: "pointer", userSelect: "none",
-                                            fontSize: "0.84rem", fontWeight: 700, border: "1.5px solid var(--sl-ink)",
+                                            fontSize: "0.84rem", fontWeight: 700, border: "1.5px solid var(--sl-oc)",
                                             bgcolor: priority === p ? priorityColors[p] : "transparent",
                                             color: priority === p ? "#fff" : "var(--sl-ink)"
                                         }}
@@ -349,7 +349,7 @@ function TeacherPostDetailPage() {
                             const closeKey = post.submissions_close_date ? post.submissions_close_date.slice(0, 10) : null;
                             const closed = post.submissions_closed || (closeKey && closeKey < todayKey);
                             return (
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, flexWrap: "wrap", p: 1.25, mb: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-ink)", bgcolor: closed ? "#FEE2E2" : "#DCFCE7" }}>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, flexWrap: "wrap", p: 1.25, mb: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-oc)", bgcolor: closed ? "#FEE2E2" : "#DCFCE7" }}>
                                     <Box sx={{ flex: 1, minWidth: 150 }}>
                                         <Typography sx={{ fontWeight: 800, fontSize: "0.9rem", color: closed ? "#991B1B" : "#14532D" }}>
                                             {closed ? "Submissions are closed" : "Submissions are open"}
@@ -365,7 +365,7 @@ function TeacherPostDetailPage() {
                                         variant="outlined"
                                         disabled={togglingSubs}
                                         onClick={() => toggleSubmissions(!closed)}
-                                        sx={{ borderRadius: 99, textTransform: "none", fontWeight: 800, border: "1.5px solid var(--sl-ink)", color: "var(--sl-ink)", bgcolor: "#fff" }}
+                                        sx={{ borderRadius: 99, textTransform: "none", fontWeight: 800, border: "1.5px solid var(--sl-oc)", color: "var(--sl-ink)", bgcolor: "#fff" }}
                                     >
                                         {closed ? "Reopen for 3 days" : "Close now"}
                                     </Button>
@@ -375,9 +375,9 @@ function TeacherPostDetailPage() {
 
                         {(post.allow_photo_submission || post.allow_voice_submission || post.allow_view_all_submissions) && (
                             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
-                                {post.allow_photo_submission && <Chip size="small" variant="outlined" label="Photo submission on" sx={{ fontWeight: 700, border: "1.5px solid var(--sl-ink)" }} />}
-                                {post.allow_voice_submission && <Chip size="small" variant="outlined" label="Voice submission on" sx={{ fontWeight: 700, border: "1.5px solid var(--sl-ink)" }} />}
-                                {post.allow_view_all_submissions && <Chip size="small" variant="outlined" label="Shared view on" sx={{ fontWeight: 700, border: "1.5px solid var(--sl-ink)" }} />}
+                                {post.allow_photo_submission && <Chip size="small" variant="outlined" label="Photo submission on" sx={{ fontWeight: 700, border: "1.5px solid var(--sl-oc)" }} />}
+                                {post.allow_voice_submission && <Chip size="small" variant="outlined" label="Voice submission on" sx={{ fontWeight: 700, border: "1.5px solid var(--sl-oc)" }} />}
+                                {post.allow_view_all_submissions && <Chip size="small" variant="outlined" label="Shared view on" sx={{ fontWeight: 700, border: "1.5px solid var(--sl-oc)" }} />}
                             </Box>
                         )}
 
@@ -401,7 +401,7 @@ function TeacherPostDetailPage() {
                                     <Box
                                         component="img"
                                         src={resolveFileUrl(img.url)}
-                                        sx={{ width: 104, height: 104, objectFit: "cover", borderRadius: 2, border: "1.5px solid var(--sl-ink)", display: "block" }}
+                                        sx={{ width: 104, height: 104, objectFit: "cover", borderRadius: 2, border: "1.5px solid var(--sl-oc)", display: "block" }}
                                     />
                                 </Box>
                                 {editing && (

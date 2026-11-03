@@ -73,7 +73,7 @@ function KpiCard({ icon, label, value, linkLabel, onLinkClick }) {
                 sx={{
                     width: 42, height: 42, minWidth: 42, borderRadius: "13px",
                     bgcolor: "var(--sl-accent)", color: "var(--sl-ink)",
-                    border: "1.5px solid var(--sl-ink)",
+                    border: "1.5px solid var(--sl-oc)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     "& svg": { fontSize: 21 }
                 }}
@@ -382,7 +382,7 @@ function TeacherDashboardPage() {
                                         {bulkReacting ? "Reacting..." : `React to All (${unreactedIds.length})`}
                                     </Button>
                                 )}
-                                <Box sx={{ px: 1.25, py: 0.3, borderRadius: 99, bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", fontSize: "0.8rem", fontWeight: 800, color: "var(--sl-ink)" }}>
+                                <Box sx={{ px: 1.25, py: 0.3, borderRadius: 99, bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", fontSize: "0.8rem", fontWeight: 800, color: "var(--sl-ink)" }}>
                                     {sentCount}/{greetings.length} sent
                                 </Box>
                             </Box>
@@ -421,7 +421,7 @@ function TeacherDashboardPage() {
                             value={progressPct}
                             sx={{
                                 height: 8, borderRadius: 4, mb: 2.5,
-                                bgcolor: "var(--sl-soft2)", border: "1px solid var(--sl-ink)",
+                                bgcolor: "var(--sl-soft2)", border: "1px solid var(--sl-oc)",
                                 "& .MuiLinearProgress-bar": { bgcolor: "var(--sl-accent)" }
                             }}
                         />
@@ -453,9 +453,9 @@ function TeacherDashboardPage() {
                                                     bgcolor: sent ? "var(--sl-accent)" : "transparent",
                                                     color: sent ? "var(--sl-ink)" : "text.disabled",
                                                     border: isSelected
-                                                        ? "3px solid var(--sl-ink)"
+                                                        ? "3px solid var(--sl-oc)"
                                                         : sent
-                                                            ? "1.5px solid var(--sl-ink)"
+                                                            ? "1.5px solid var(--sl-oc)"
                                                             : "2px dashed var(--sl-border)"
                                                 }}
                                             >
@@ -538,7 +538,7 @@ function TeacherDashboardPage() {
                                 <Box
                                     sx={{
                                         width: 40, height: 40, minWidth: 40, borderRadius: "12px",
-                                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)",
+                                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
                                         display: "flex", alignItems: "center", justifyContent: "center"
                                     }}
                                 >
@@ -603,7 +603,7 @@ function TeacherDashboardPage() {
                                             sx={{
                                                 display: "flex", alignItems: "center", gap: 0.75, px: 1.25, py: 0.35,
                                                 borderRadius: 99, fontSize: "0.78rem", fontWeight: 700, cursor: "pointer",
-                                                border: "1.5px solid var(--sl-ink)", color: "var(--sl-ink)"
+                                                border: "1.5px solid var(--sl-oc)", color: "var(--sl-ink)"
                                             }}
                                         >
                                             <PhotoCameraIcon sx={{ fontSize: 16 }} />

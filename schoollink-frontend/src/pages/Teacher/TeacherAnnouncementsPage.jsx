@@ -37,8 +37,8 @@ function TeacherAnnouncementsPage() {
                 <Box
                     sx={{
                         width: 46, height: 46, borderRadius: "14px",
-                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)",
-                        boxShadow: "2px 2px 0 var(--sl-ink)",
+                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                        boxShadow: "2px 2px 0 var(--sl-hs)",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}
                 >
@@ -89,7 +89,7 @@ function TeacherAnnouncementsPage() {
                                 <Box
                                     sx={{
                                         width: 38, height: 38, minWidth: 38, borderRadius: "12px",
-                                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)",
+                                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
                                         display: "flex", alignItems: "center", justifyContent: "center"
                                     }}
                                 >

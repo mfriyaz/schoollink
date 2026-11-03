@@ -27,7 +27,7 @@ const TYPES = [
 const pillSx = (on) => ({
     px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none",
     fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)",
-    border: "1.5px solid var(--sl-ink)",
+    border: "1.5px solid var(--sl-oc)",
     bgcolor: on ? "var(--sl-accent)" : "transparent",
     "&:hover": { bgcolor: on ? "var(--sl-accent)" : "var(--sl-soft)" }
 });
@@ -209,7 +209,7 @@ export default function HomeworkAiButton({ assignment, onUse }) {
                     aria-disabled={noneLeft}
                     title={noneLeft ? "This month's AI limit is used up" : "Let AI draft the homework for you"}
                     onClick={() => { if (!noneLeft) { setOpen(true); setError(""); } }}
-                    sx={{ ...pillSx(true), display: "inline-flex", alignItems: "center", gap: 0.75, boxShadow: "2px 2px 0 var(--sl-ink)", opacity: noneLeft ? 0.4 : 1 }}
+                    sx={{ ...pillSx(true), display: "inline-flex", alignItems: "center", gap: 0.75, boxShadow: "2px 2px 0 var(--sl-hs)", opacity: noneLeft ? 0.4 : 1 }}
                 >
                     <AutoAwesomeIcon sx={{ fontSize: 17 }} />
                     Create homework with AI
@@ -297,7 +297,7 @@ export default function HomeworkAiButton({ assignment, onUse }) {
                                         Check each question. Tap the round button to choose the correct answer, or type the accepted answers for a fill-in-the-blank. Children only see the right answers after they have tried.
                                     </Typography>
                                     {draft.quiz.map((q, i) => (
-                                        <Box key={i} sx={{ p: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-ink)" }}>
+                                        <Box key={i} sx={{ p: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-oc)" }}>
                                             <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}>
                                                 <TextField label={`Question ${i + 1}`} value={q.question_text} onChange={(e) => setQ(i, { question_text: e.target.value })} multiline fullWidth size="small" />
                                                 <Box role="button" tabIndex={0} aria-label="Remove question" onClick={() => setDraft((d) => ({ ...d, quiz: d.quiz.filter((_, k) => k !== i) }))} sx={{ ...pillSx(false), mt: 0.5, whiteSpace: "nowrap" }}>Remove</Box>

@@ -46,7 +46,7 @@ export default function PushAlertsToggle() {
             <Divider />
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", py: 1.5, gap: 1 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: "#DCFCE7", border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}><PhoneAndroidIcon sx={{ color: "#16A34A", fontSize: 21 }} /></Box>
+                    <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: "#DCFCE7", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}><PhoneAndroidIcon sx={{ color: "#16A34A", fontSize: 21 }} /></Box>
                     <Box>
                         <Typography sx={{ fontWeight: 600 }}>Phone Alerts</Typography>
                         <Typography sx={{ color: "text.secondary", fontSize: "0.82rem" }}>

@@ -18,7 +18,7 @@ import SchoolRecords from "../../components/SuperAdmin/SchoolRecords";
 import ResetPasswordDialog from "../../components/common/ResetPasswordDialog";
 import {
     deleteSchoolPayment, getPlatformSchool, resetSchoolAdminPassword,
-    saveSchoolNotes, setSchoolStatus
+    saveSchoolNotes, setSchoolStatus, setSchoolLook
 } from "../../services/platformAdminService";
 import { bytesLabel, fmtDate, money, statusColor, timeAgo, usd } from "../../utils/platformUi";
 function Section({ title, action, children }) {
@@ -106,6 +106,15 @@ export default function SchoolDetailPage() {
             setStatusBusy(false);
         }
     }
+    async function changeLook(look) {
+        try {
+            await setSchoolLook(school.id, look);
+            notify(look === "pro" ? "Professional look turned on for this school." : "Classic look turned on for this school.");
+            load();
+        } catch (err) {
+            setError(err.response?.data?.message || "Unable to change the look.");
+        }
+    }
     async function removePayment(paymentId) {
         try {
             await deleteSchoolPayment(paymentId);
@@ -128,7 +137,7 @@ export default function SchoolDetailPage() {
     }
     return (
         <Box sx={{ maxWidth: 1000 }}>
-            <Box role="button" tabIndex={0} onClick={() => navigate("/super-admin/schools")} sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.5, py: 0.55, mb: 1.5, borderRadius: 99, cursor: "pointer", fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", "&:hover": { bgcolor: "var(--sl-soft)" } }}>
+            <Box role="button" tabIndex={0} onClick={() => navigate("/super-admin/schools")} sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.5, py: 0.55, mb: 1.5, borderRadius: 99, cursor: "pointer", fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", "&:hover": { bgcolor: "var(--sl-soft)" } }}>
                 <ArrowBackIcon sx={{ fontSize: 18 }} />
                 All schools
             </Box>
@@ -178,7 +187,7 @@ export default function SchoolDetailPage() {
                     Record a payment to renew, or suspend the school.
                 </Alert>
             )}
-            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, minHeight: 0, "& .MuiTabs-indicator": { display: "none" }, "& .MuiTabs-flexContainer": { gap: 1, flexWrap: "wrap" }, "& .MuiTab-root": { textTransform: "none", fontWeight: 700, minHeight: 36, py: 0.5, px: 1.75, borderRadius: 99, color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", "&.Mui-selected": { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)" } } }}>
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, minHeight: 0, "& .MuiTabs-indicator": { display: "none" }, "& .MuiTabs-flexContainer": { gap: 1, flexWrap: "wrap" }, "& .MuiTab-root": { textTransform: "none", fontWeight: 700, minHeight: 36, py: 0.5, px: 1.75, borderRadius: 99, color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", "&.Mui-selected": { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)" } } }}>
                 <Tab value="overview" label="Overview" />
                 <Tab value="ai" label="AI" />
                 <Tab value="billing" label="Billing" />
@@ -199,6 +208,26 @@ export default function SchoolDetailPage() {
                             : "No expiry set"} />
                         <Field label="Onboarded" value={fmtDate(school.created_at)} />
                         <Field label="Last login at this school" value={timeAgo(school.last_login)} />
+                    </Section>
+                    <Section title="Interface look">
+                        <Typography sx={{ fontSize: "0.85rem", color: "#64748B", mb: 1.5 }}>
+                            Classic is the current coloured design. Professional is the flat navy and blue design.
+                            Everyone at this school (admin, teachers, parents) sees the chosen look the next time they open the app.
+                        </Typography>
+                        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                            <Button
+                                variant={school.ui_look === "pro" ? "outlined" : "contained"}
+                                onClick={() => school.ui_look === "pro" && changeLook("classic")}
+                            >
+                                Classic{school.ui_look !== "pro" ? " (on)" : ""}
+                            </Button>
+                            <Button
+                                variant={school.ui_look === "pro" ? "contained" : "outlined"}
+                                onClick={() => school.ui_look !== "pro" && changeLook("pro")}
+                            >
+                                Professional{school.ui_look === "pro" ? " (on)" : ""}
+                            </Button>
+                        </Box>
                     </Section>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>

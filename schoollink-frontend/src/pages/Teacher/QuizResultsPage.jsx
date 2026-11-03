@@ -10,7 +10,7 @@ import { getHomeworkById } from "../../services/postService";
 const pillSx = (on) => ({
     px: 1.5, py: 0.5, borderRadius: 99, cursor: "pointer", userSelect: "none",
     fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)",
-    border: "1.5px solid var(--sl-ink)",
+    border: "1.5px solid var(--sl-oc)",
     bgcolor: on ? "var(--sl-accent)" : "transparent",
     "&:hover": { bgcolor: on ? "var(--sl-accent)" : "var(--sl-soft)" }
 });
@@ -19,7 +19,7 @@ const pct = (b) => (b && b.total ? Math.round((b.score / b.total) * 100) : null)
 
 function Tile({ label, value, color }) {
     return (
-        <Box sx={{ p: 1.25, borderRadius: 2.5, border: "1.5px solid var(--sl-ink)", bgcolor: "var(--sl-soft)" }}>
+        <Box sx={{ p: 1.25, borderRadius: 2.5, border: "1.5px solid var(--sl-oc)", bgcolor: "var(--sl-soft)" }}>
             <Typography sx={{ fontSize: "0.72rem", fontWeight: 700, color: "text.secondary", textTransform: "uppercase" }}>{label}</Typography>
             <Typography sx={{ fontSize: "1.5rem", fontWeight: 800, lineHeight: 1.2, color: color || "var(--sl-ink)" }}>{value}</Typography>
         </Box>

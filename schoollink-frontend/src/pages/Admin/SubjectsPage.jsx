@@ -90,9 +90,9 @@ function ClassView({ subjects, assignments, ready, classKey, setClassKey, search
                         onClick={() => setClassKey(String(c.id))}
                         sx={{
                             flexShrink: 0, px: 1.75, py: 0.65, borderRadius: 99, cursor: "pointer", userSelect: "none",
-                            fontSize: "0.88rem", fontWeight: 800, color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)",
+                            fontSize: "0.88rem", fontWeight: 800, color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)",
                             bgcolor: c.id === activeId ? "var(--sl-accent)" : "transparent",
-                            boxShadow: c.id === activeId ? "2px 2px 0 var(--sl-ink)" : "none",
+                            boxShadow: c.id === activeId ? "2px 2px 0 var(--sl-hs)" : "none",
                             "&:hover": { bgcolor: c.id === activeId ? undefined : "var(--sl-soft)" }
                         }}
                     >
@@ -127,7 +127,7 @@ function ClassView({ subjects, assignments, ready, classKey, setClassKey, search
                             sx={{ p: { xs: 1.75, md: 2.25 }, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}
                         >
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
-                                <Box sx={{ width: 44, height: 44, borderRadius: "13px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--sl-ink)" }}>
+                                <Box sx={{ width: 44, height: 44, borderRadius: "13px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "var(--sl-ink)" }}>
                                     {sec.name}
                                 </Box>
                                 <Box sx={{ minWidth: 0, flex: 1 }}>
@@ -141,7 +141,7 @@ function ClassView({ subjects, assignments, ready, classKey, setClassKey, search
                                 </Box>
                             </Box>
                             {classTeacher && (
-                                <Box sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.25, py: 0.35, mb: 1.5, borderRadius: 99, bgcolor: "#FEF3C7", border: "1.5px solid var(--sl-ink)", fontSize: "0.78rem", fontWeight: 800, color: "var(--sl-ink)" }}>
+                                <Box sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.25, py: 0.35, mb: 1.5, borderRadius: 99, bgcolor: "#FEF3C7", border: "1.5px solid var(--sl-oc)", fontSize: "0.78rem", fontWeight: 800, color: "var(--sl-ink)" }}>
                                     <StarIcon sx={{ fontSize: 15, color: "#D97706" }} />
                                     Class teacher: {classTeacher.first_name} {classTeacher.last_name || ""}
                                 </Box>
@@ -158,7 +158,7 @@ function ClassView({ subjects, assignments, ready, classKey, setClassKey, search
                                             data-testid="class-subject-row"
                                             sx={{ display: "flex", alignItems: "center", gap: 1.25, p: 1, borderRadius: 2.5, border: "1px solid var(--sl-border)", bgcolor: "#fff" }}
                                         >
-                                            <Box sx={{ width: 34, height: 34, minWidth: 34, borderRadius: "10px", bgcolor: bg, border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                            <Box sx={{ width: 34, height: 34, minWidth: 34, borderRadius: "10px", bgcolor: bg, border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                                 <MenuBookIcon sx={{ color: fg, fontSize: 18 }} />
                                             </Box>
                                             <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -360,7 +360,7 @@ function SubjectsPage() {
         <Box sx={{ maxWidth: 1100 }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, gap: 1.5, flexWrap: "wrap" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <MenuBookIcon sx={{ color: "var(--sl-ink)" }} />
                     </Box>
                     <Box>
@@ -375,7 +375,7 @@ function SubjectsPage() {
                 </Button>
             </Box>
             {pageError && <Alert severity="error" sx={{ mb: 2 }}>{pageError}</Alert>}
-            <Box sx={{ display: "inline-flex", p: 0.5, mb: 2, borderRadius: 99, border: "1.5px solid var(--sl-ink)", bgcolor: "#fff", gap: 0.5 }}>
+            <Box sx={{ display: "inline-flex", p: 0.5, mb: 2, borderRadius: 99, border: "1.5px solid var(--sl-oc)", bgcolor: "#fff", gap: 0.5 }}>
                 {[["subject", "By subject", <MenuBookIcon key="s" sx={{ fontSize: 17 }} />], ["class", "By class", <SchoolIcon key="c" sx={{ fontSize: 17 }} />]].map(([id, label, icon]) => (
                     <Box
                         key={id}
@@ -438,7 +438,7 @@ function SubjectsPage() {
                             sx={{
                                 px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none",
                                 fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)",
-                                border: "1.5px solid var(--sl-ink)",
+                                border: "1.5px solid var(--sl-oc)",
                                 bgcolor: filter === id ? "var(--sl-accent)" : "transparent",
                                 "&:hover": { bgcolor: filter === id ? undefined : "var(--sl-soft)" }
                             }}
@@ -475,8 +475,8 @@ function SubjectsPage() {
                                 <Box
                                     sx={{
                                         width: 44, height: 44, borderRadius: 2.5, display: "flex", alignItems: "center", justifyContent: "center",
-                                        bgcolor: subject.is_active ? "var(--sl-soft, #E0E7FF)" : "#F1F5F9",
-                                        color: subject.is_active ? "var(--sl-ink, #4F46E5)" : "#94A3B8"
+                                        bgcolor: subject.is_active ? "var(--sl-soft, var(--sl-soft))" : "#F1F5F9",
+                                        color: subject.is_active ? "var(--sl-ink, var(--sl-primary))" : "#94A3B8"
                                     }}
                                 >
                                     <MenuBookIcon />

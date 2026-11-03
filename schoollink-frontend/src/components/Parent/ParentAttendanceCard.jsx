@@ -164,7 +164,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                     </Typography>
                 </Box>
 
-                <Box sx={{ display: "flex", p: 0.4, bgcolor: "var(--sl-soft, #F1F5F9)", borderRadius: 5, border: "1.5px solid var(--sl-ink)" }}>
+                <Box sx={{ display: "flex", p: 0.4, bgcolor: "var(--sl-soft, #F1F5F9)", borderRadius: 5, border: "1.5px solid var(--sl-oc)" }}>
                     {[
                         { value: "today", label: "Today" },
                         { value: "month", label: "This Month" }
@@ -265,7 +265,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                             py: 0.6,
                                             borderRadius: 2,
                                             bgcolor: STATUS[s].bg,
-                                            border: "1.5px solid var(--sl-ink)",
+                                            border: "1.5px solid var(--sl-oc)",
                                             minWidth: 64,
                                             textAlign: "center"
                                         }}
@@ -326,7 +326,7 @@ function ParentAttendanceCard({ attendance, calendar }) {
                                             fontWeight: rec || isToday ? 700 : 500,
                                             bgcolor: st ? st.bg : offStyle ? offStyle.bg : "#F8FAFC",
                                             color: st ? st.fg : offStyle ? offStyle.fg : "#94A3B8",
-                                            border: isToday ? "2px solid var(--sl-ink)" : "2px solid transparent"
+                                            border: isToday ? "2px solid var(--sl-oc)" : "2px solid transparent"
                                         }}
                                     >
                                         {d}

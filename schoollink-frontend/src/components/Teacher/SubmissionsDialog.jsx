@@ -324,7 +324,7 @@ function SubmissionsDialog({ open, post, onClose }) {
                                     disabled={reactingId === submission.id}
                                     onClick={() => handleUnlock(submission.id)}
                                     sx={{
-                                        border: "1.5px solid var(--sl-ink)", borderRadius: 99, bgcolor: "#fff",
+                                        border: "1.5px solid var(--sl-oc)", borderRadius: 99, bgcolor: "#fff",
                                         px: 1.25, py: 0.2, fontSize: "0.76rem", fontWeight: 800, cursor: "pointer", color: "var(--sl-ink)"
                                     }}
                                 >

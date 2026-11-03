@@ -145,6 +145,29 @@ export const THEMES = {
         navActive: "#3B5BDB", onNavActive: "#FFFFFF",
         banner: "#3B5BDB", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "0 6px 16px rgba(30,58,138,0.22)",
         loginBg: "#F8FAFC", loginPanel: "#E0E7FF"
+    },
+
+    // The "Professional" look (chosen per school by the Super Admin). Flat, navy and blue,
+    // independent of the school colour theme. Styled further in theme.js (t.look === "pro").
+    pro: {
+        id: "pro",
+        hidden: true,
+        look: "pro",
+        name: "Professional",
+        tagline: "Navy & Blue",
+        primary: "#1F5FBF", primaryDark: "#12263F", primaryLight: "#4A82D6",
+        soft: "#E6EEF9", soft2: "#C7D6EC", ink: "#16202E",
+        accent: "#1F5FBF", accentDark: "#194E9C",
+        pageBg: "#EEF1F5", border: "#D9DFE7", page2: "#F5F7FA",
+        btnBg: "#1F5FBF", btnHover: "#194E9C", btnText: "#FFFFFF", btnBorder: "none",
+        btnShadowCss: "none", btnShadowHoverCss: "none", btnShadow: "rgba(18,38,63,0.20)",
+        cardShadow: "none", cardShadowHover: "0 2px 8px rgba(18,38,63,0.10)",
+        tabIndicator: "#1F5FBF", metaColor: "#12263F",
+        sideBg: "#12263F", sideActive: "rgba(255,255,255,0.14)", onActive: "#FFFFFF", sideText: "#DCE5F2", sideMuted: "rgba(220,229,242,0.60)", glow: "rgba(0,0,0,0)",
+        navActive: "#1F5FBF", onNavActive: "#FFFFFF",
+        banner: "#12263F", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "none",
+        loginBg: "#EEF1F5", loginPanel: "#E6EEF9",
+        outline: "#C3CCD8", hardShadow: "transparent", pillRadius: "6px"
     }
 
 };
@@ -174,7 +197,8 @@ export function applyThemeVars(t) {
         "side-text": t.sideText, "side-muted": t.sideMuted, glow: t.glow,
         "nav-active": t.navActive, "on-nav-active": t.onNavActive,
         banner: t.banner, "on-banner": t.onBanner, "banner-border": t.bannerBorder, "banner-shadow": t.bannerShadow,
-        "login-bg": t.loginBg, "login-panel": t.loginPanel
+        "login-bg": t.loginBg, "login-panel": t.loginPanel,
+        oc: t.outline || t.ink, hs: t.hardShadow || t.ink, pill: t.pillRadius || "99px"
     };
 
     Object.entries(vars).forEach(([k, v]) => root.setProperty(`--sl-${k}`, v));

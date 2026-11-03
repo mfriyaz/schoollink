@@ -8,6 +8,7 @@ import { DEFAULT_THEME, THEMES, THEME_LIST, applyThemeVars, getTheme } from "./t
 import { getSchoolTheme, saveSchoolTheme } from "../services/themeService";
 
 const STORAGE_KEY = "sl_theme";
+const LOOK_KEY = "sl_look";
 
 const AppThemeContext = createContext(null);
 
@@ -22,6 +23,20 @@ function readCached() {
     } catch {
 
         return DEFAULT_THEME;
+
+    }
+
+}
+
+function readCachedLook() {
+
+    try {
+
+        return localStorage.getItem(LOOK_KEY) === "pro" ? "pro" : "classic";
+
+    } catch {
+
+        return "classic";
 
     }
 
@@ -52,12 +67,17 @@ function ThemeProvider({ children }) {
 
     const [savedId, setSavedId] = useState(readCached);
 
+    const [look, setLook] = useState(readCachedLook);
+
     const [previewId, setPreviewId] = useState(null);
 
     // The Super Admin console keeps its own violet look
     const role = currentRole();
 
-    const effectiveId = previewId || (role === "Super Admin" ? "platform" : savedId);
+    // The "Professional" look has its own fixed navy/blue colours; the Super Admin console keeps its own look
+    const effectiveId = role === "Super Admin"
+        ? "platform"
+        : look === "pro" ? "pro" : (previewId || savedId);
 
     const t = getTheme(effectiveId);
 
@@ -67,6 +87,13 @@ function ThemeProvider({ children }) {
     useMemo(() => { applyThemeVars(t); }, [t]);
 
     useEffect(() => { applyThemeVars(t); }, [t]);
+
+    // Lets any CSS rule target the look: [data-look="pro"] ...
+    useEffect(() => {
+
+        document.documentElement.setAttribute("data-look", role === "Super Admin" ? "classic" : look);
+
+    }, [look, role]);
 
     // Ask the server which theme the school chose (needs a login)
     const refresh = useCallback(async () => {
@@ -78,6 +105,12 @@ function ThemeProvider({ children }) {
             const res = await getSchoolTheme();
 
             const id = res?.data?.theme;
+
+            const serverLook = res?.data?.look === "pro" ? "pro" : "classic";
+
+            setLook(serverLook);
+
+            try { localStorage.setItem(LOOK_KEY, serverLook); } catch { /* private mode */ }
 
             if (THEMES[id]) {
 
@@ -118,6 +151,7 @@ function ThemeProvider({ children }) {
 
     const value = useMemo(() => ({
 
+        look,
         themeId: effectiveId,
         savedId,
         themes: THEME_LIST,
@@ -126,7 +160,7 @@ function ThemeProvider({ children }) {
         save,
         refresh
 
-    }), [effectiveId, savedId, save, refresh]);
+    }), [look, effectiveId, savedId, save, refresh]);
 
     return (
 

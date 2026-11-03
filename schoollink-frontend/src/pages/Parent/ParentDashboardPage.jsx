@@ -59,7 +59,7 @@ const pillSx = (active) => ({
     display: "flex",
     alignItems: "center",
     gap: 0.75,
-    border: "1.5px solid var(--sl-ink)",
+    border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? "var(--sl-accent)" : "transparent",
     color: "var(--sl-ink)",
     "&:hover": { bgcolor: active ? undefined : "var(--sl-soft)" }
@@ -440,7 +440,7 @@ function ParentDashboardPage() {
                                         borderRadius: "11px",
                                         bgcolor: "var(--sl-accent)",
                                         color: "var(--sl-ink)",
-                                        border: "1.5px solid var(--sl-ink)",
+                                        border: "1.5px solid var(--sl-oc)",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
@@ -470,7 +470,7 @@ function ParentDashboardPage() {
                     </Box>
                 );
             })()}
-            <Card sx={{ ...panelSx, mb: 2.5, bgcolor: todaysGreeting ? "#F0FDF4" : "var(--sl-soft)", border: todaysGreeting ? "1.5px solid #16A34A" : "1.5px solid var(--sl-ink)" }}>
+            <Card sx={{ ...panelSx, mb: 2.5, bgcolor: todaysGreeting ? "#F0FDF4" : "var(--sl-soft)", border: todaysGreeting ? "1.5px solid #16A34A" : "1.5px solid var(--sl-oc)" }}>
                 {greetingError && <Alert severity="error" sx={{ mb: 2 }}>{greetingError}</Alert>}
                 {todaysGreeting ? (
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 2 }}>
@@ -577,7 +577,7 @@ function ParentDashboardPage() {
                                                     cursor: "pointer",
                                                     bgcolor: "var(--sl-accent)",
                                                     color: "var(--sl-ink)",
-                                                    border: isSelected ? "3px solid var(--sl-ink)" : "1.5px solid var(--sl-ink)"
+                                                    border: isSelected ? "3px solid var(--sl-oc)" : "1.5px solid var(--sl-oc)"
                                                 }}
                                             >
                                                 {g.first_name[0]}{g.last_name ? g.last_name[0] : ""}
@@ -746,7 +746,7 @@ cursor: "pointer",
                                     width: 40,
                                     height: 40,
                                     borderRadius: "12px",
-                                    border: "1.5px solid var(--sl-ink)",
+                                    border: "1.5px solid var(--sl-oc)",
                                     bgcolor: "var(--sl-accent)",
                                     display: "flex",
                                     alignItems: "center",

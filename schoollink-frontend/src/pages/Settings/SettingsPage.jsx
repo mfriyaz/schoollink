@@ -84,8 +84,8 @@ function SettingsPage() {
                         height: 46,
                         borderRadius: "14px",
                         bgcolor: "var(--sl-accent)",
-                        border: "1.5px solid var(--sl-ink)",
-                        boxShadow: "2px 2px 0 var(--sl-ink)",
+                        border: "1.5px solid var(--sl-oc)",
+                        boxShadow: "2px 2px 0 var(--sl-hs)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center"
@@ -105,7 +105,7 @@ function SettingsPage() {
                 {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", py: 1.5 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                        <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: "#E0F2FE", border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}><EmailIcon sx={{ color: "#0284C7", fontSize: 21 }} /></Box>
+                        <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: "#E0F2FE", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}><EmailIcon sx={{ color: "#0284C7", fontSize: 21 }} /></Box>
                         <Box>
                             <Typography sx={{ fontWeight: 600 }}>
                                 Email Notifications
@@ -123,7 +123,7 @@ function SettingsPage() {
                 <Divider />
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", py: 1.5 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                        <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: "#FEF3C7", border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}><NotificationsIcon sx={{ color: "#D97706", fontSize: 21 }} /></Box>
+                        <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: "#FEF3C7", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}><NotificationsIcon sx={{ color: "#D97706", fontSize: 21 }} /></Box>
                         <Box>
                             <Typography sx={{ fontWeight: 600 }}>
                                 In-App Notifications

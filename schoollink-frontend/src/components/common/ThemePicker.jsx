@@ -5,7 +5,7 @@ import PaletteIcon from "@mui/icons-material/PaletteOutlined";
 import { useAppTheme } from "../../theme/ThemeProvider";
 /** School Admin: pick the colour theme for the whole school (preview before saving) */
 export default function ThemePicker() {
-    const { themes, themeId, savedId, preview, cancelPreview, save } = useAppTheme();
+    const { themes, themeId, savedId, preview, cancelPreview, save, look } = useAppTheme();
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState(null);
     const dirty = themeId !== savedId;
@@ -23,10 +23,21 @@ export default function ThemePicker() {
             setSaving(false);
         }
     }
+    if (look === "pro") {
+        return (
+            <Card sx={{ p: { xs: 2, md: 3 }, mt: 2.5, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
+                <Typography sx={{ fontWeight: 800, fontSize: "1.05rem", color: "var(--sl-ink)", mb: 0.5 }}>Appearance</Typography>
+                <Typography sx={{ color: "text.secondary", fontSize: "0.85rem" }}>
+                    Your school uses the Professional look, which has its own fixed colours. Contact support to change the look.
+                </Typography>
+            </Card>
+        );
+    }
+
     return (
         <Card sx={{ p: { xs: 2, md: 3 }, mt: 2.5, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 0.75 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "#EDE9FE", border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "#EDE9FE", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <PaletteIcon sx={{ color: "#7C3AED", fontSize: 21 }} />
                 </Box>
                 <Typography sx={{ fontWeight: 800, fontSize: "1.05rem", color: "var(--sl-ink)" }}>Appearance</Typography>
@@ -53,7 +64,7 @@ export default function ThemePicker() {
                                 p: 1.25,
                                 border: "2px solid",
                                 borderColor: selected ? "var(--sl-ink)" : "var(--sl-border)",
-                                boxShadow: selected ? "3px 3px 0 var(--sl-ink)" : "none",
+                                boxShadow: selected ? "3px 3px 0 var(--sl-hs)" : "none",
                                 bgcolor: "#fff",
                                 transition: "all .15s ease",
                                 "&:hover": { transform: "translateY(-2px)" },

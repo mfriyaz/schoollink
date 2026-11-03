@@ -62,7 +62,7 @@ const pillSx = (active, color) => ({
     userSelect: "none",
     fontSize: "0.84rem",
     fontWeight: 700,
-    border: "1.5px solid var(--sl-ink)",
+    border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? (color || "var(--sl-accent)") : "transparent",
     color: active ? (color ? "#fff" : "var(--sl-ink)") : "var(--sl-ink)",
     "&:hover": { bgcolor: active ? undefined : "var(--sl-soft)" }
@@ -694,8 +694,8 @@ function CreatePostPage() {
                 <Box
                     sx={{
                         width: 46, height: 46, borderRadius: "14px",
-                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)",
-                        boxShadow: "2px 2px 0 var(--sl-ink)",
+                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                        boxShadow: "2px 2px 0 var(--sl-hs)",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}
                 >
@@ -843,7 +843,7 @@ function CreatePostPage() {
                                                 <Box
                                                     component="img"
                                                     src={resolveFileUrl(img.url)}
-                                                    sx={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 2, border: "1.5px solid var(--sl-ink)" }}
+                                                    sx={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 2, border: "1.5px solid var(--sl-oc)" }}
                                                 />
                                                 <Button
                                                     aria-label="Remove photo"
@@ -1023,7 +1023,7 @@ function PostSection({ n, title, subtitle, children }) {
                 <Box
                     sx={{
                         width: 26, height: 26, minWidth: 26, borderRadius: "50%",
-                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)",
+                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
                         color: "var(--sl-ink)", fontWeight: 800, fontSize: "0.78rem",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}

@@ -42,7 +42,7 @@ function QuickActionCard({
                         minWidth: 36,
                         borderRadius: "12px",
                         bgcolor: `color-mix(in srgb, ${color} 18%, white)`,
-                        border: "1.5px solid var(--sl-ink)",
+                        border: "1.5px solid var(--sl-oc)",
                         color,
                         display: "flex",
                         alignItems: "center",

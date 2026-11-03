@@ -10,7 +10,7 @@ import { notify } from "../../utils/notify";
 const pillSx = {
     px: 1.5, py: 0.4, borderRadius: 99, cursor: "pointer", userSelect: "none",
     fontSize: "0.78rem", fontWeight: 800, color: "var(--sl-ink)",
-    border: "1.5px solid var(--sl-ink)", bgcolor: "#fff",
+    border: "1.5px solid var(--sl-oc)", bgcolor: "#fff",
     "&:hover": { bgcolor: "var(--sl-soft)" }
 };
 
@@ -84,7 +84,7 @@ export default function QuizPanel({ homeworkId, onChange }) {
     const tries = quiz.attempt_count || 0;
 
     return (
-        <Box sx={{ mt: 2, p: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-ink)", bgcolor: "var(--sl-soft)" }}>
+        <Box sx={{ mt: 2, p: 1.5, borderRadius: 2.5, border: "1.5px solid var(--sl-oc)", bgcolor: "var(--sl-soft)" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
                 <QuizIcon sx={{ fontSize: 22, color: "var(--sl-ink)" }} />
                 <Box sx={{ flex: 1, minWidth: 140 }}>

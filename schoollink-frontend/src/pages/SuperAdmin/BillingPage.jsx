@@ -66,7 +66,7 @@ export default function BillingPage() {
                     <Grid size={{ xs: 6, md: 3 }}><KpiCard title="Payments recorded" value={revenue.payments} icon={<PaymentsIcon sx={{ color: "#F59E0B" }} />} iconBg="#FEF3C7" /></Grid>
                 </Grid>
             )}
-            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, minHeight: 0, "& .MuiTabs-indicator": { display: "none" }, "& .MuiTabs-flexContainer": { gap: 1, flexWrap: "wrap" }, "& .MuiTab-root": { textTransform: "none", fontWeight: 700, minHeight: 36, py: 0.5, px: 1.75, borderRadius: 99, color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", "&.Mui-selected": { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)" } } }}>
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2, minHeight: 0, "& .MuiTabs-indicator": { display: "none" }, "& .MuiTabs-flexContainer": { gap: 1, flexWrap: "wrap" }, "& .MuiTab-root": { textTransform: "none", fontWeight: 700, minHeight: 36, py: 0.5, px: 1.75, borderRadius: 99, color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", "&.Mui-selected": { bgcolor: "var(--sl-accent)", color: "var(--sl-ink)" } } }}>
                 <Tab value="payments" label="Payments" />
                 <Tab value="history" label="Subscription changes" />
             </Tabs>

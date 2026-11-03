@@ -466,7 +466,7 @@ function ExamsPage() {
         <Box sx={{ maxWidth: 1100 }}>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <AssessmentIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -517,7 +517,7 @@ function ExamsPage() {
                                     bgcolor: "#fff",
                                     border: "1px solid var(--sl-border, #E2E8F0)",
                                     boxShadow: "var(--sl-card-shadow, none)",
-                                    outline: e.id === selectedExamId ? "2px solid var(--sl-accent, #4F46E5)" : "none"
+                                    outline: e.id === selectedExamId ? "2px solid var(--sl-accent, var(--sl-primary))" : "none"
                                 }}
                             >
                                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>

@@ -165,7 +165,7 @@ function SchoolCard({ school, onSaved }) {
                     "&:hover": { bgcolor: "var(--sl-soft)" }
                 }}
             >
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
                     {(school.school_name || "S").charAt(0).toUpperCase()}
                 </Box>
                 <Box sx={{ minWidth: 0 }}>
@@ -405,7 +405,7 @@ function SchoolsManagementPage() {
                 />
                 {["ALL", "ACTIVE", "TRIAL", "SUSPENDED", "EXPIRED"].map((st) => (
                     <Box key={st} role="button" tabIndex={0} onClick={() => setStatusFilter(st)}
-                        sx={{ px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none", fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", bgcolor: statusFilter === st ? "var(--sl-accent)" : "transparent", "&:hover": { bgcolor: statusFilter === st ? undefined : "var(--sl-soft)" } }}>
+                        sx={{ px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none", fontSize: "0.8rem", fontWeight: 700, color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", bgcolor: statusFilter === st ? "var(--sl-accent)" : "transparent", "&:hover": { bgcolor: statusFilter === st ? undefined : "var(--sl-soft)" } }}>
                         {st === "ALL" ? `All (${schools.length})` : `${st} (${schools.filter((x) => x.status === st).length})`}
                     </Box>
                 ))}

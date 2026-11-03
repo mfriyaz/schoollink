@@ -22,7 +22,7 @@ import { toUtcDate, formatPostTime, getSchoolTimezone } from "../../utils/dateUt
 const pillSx = (active) => ({
     px: 1.5, py: 0.55, borderRadius: 99, cursor: "pointer", userSelect: "none",
     fontSize: "0.82rem", fontWeight: 700, display: "flex", alignItems: "center", gap: 0.75,
-    border: "1.5px solid var(--sl-ink)",
+    border: "1.5px solid var(--sl-oc)",
     bgcolor: active ? "var(--sl-accent)" : "transparent",
     color: "var(--sl-ink)",
     "&:hover": { bgcolor: active ? undefined : "var(--sl-soft)" }
@@ -126,7 +126,7 @@ function ParentAllUpdatesPage() {
                 Dashboard
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <CampaignIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box sx={{ minWidth: 0 }}>
@@ -219,7 +219,7 @@ function ParentAllUpdatesPage() {
                                         "&:hover": { transform: "translateY(-1px)" }
                                     }}
                                 >
-                                    <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: isAnnouncement ? "var(--sl-soft2)" : "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: isAnnouncement ? "var(--sl-soft2)" : "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                         {isAnnouncement
                                             ? <CampaignIcon sx={{ color: "var(--sl-ink)", fontSize: 21 }} />
                                             : <MenuBookIcon sx={{ color: "var(--sl-ink)", fontSize: 21 }} />}

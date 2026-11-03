@@ -7,7 +7,7 @@ import { notify } from "../../utils/notify";
 const pillSx = {
     px: 1.5, py: 0.4, borderRadius: 99, cursor: "pointer", userSelect: "none",
     fontSize: "0.78rem", fontWeight: 800, color: "var(--sl-ink)",
-    border: "1.5px solid var(--sl-ink)", bgcolor: "#fff",
+    border: "1.5px solid var(--sl-oc)", bgcolor: "#fff",
     "&:hover": { bgcolor: "var(--sl-soft)" }
 };
 

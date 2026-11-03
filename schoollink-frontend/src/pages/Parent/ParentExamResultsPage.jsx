@@ -16,7 +16,7 @@ const panelSx = {
 
 const pillSx = {
     borderRadius: 99,
-    border: "1.5px solid var(--sl-ink)",
+    border: "1.5px solid var(--sl-oc)",
     color: "var(--sl-ink)",
     fontWeight: 700,
     textTransform: "none",
@@ -109,7 +109,7 @@ function ParentExamResultsPage() {
     return (
         <Box sx={{ maxWidth: 700 }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <AssessmentIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, color: "var(--sl-ink)" }}>
@@ -126,7 +126,7 @@ function ParentExamResultsPage() {
                             onClick={() => pickChild(c.student_id)}
                             sx={{
                                 fontWeight: 700,
-                                border: "1.5px solid var(--sl-ink)",
+                                border: "1.5px solid var(--sl-oc)",
                                 bgcolor: c.student_id === studentId ? "var(--sl-accent)" : "#fff",
                                 color: "var(--sl-ink)"
                             }}
@@ -180,7 +180,7 @@ function ParentExamResultsPage() {
                                             </Box>
                                             <Box component="span" sx={{
                                                 px: 1.25, py: 0.25, borderRadius: 99, fontSize: "0.8rem", fontWeight: 800,
-                                                border: "1.5px solid var(--sl-ink)",
+                                                border: "1.5px solid var(--sl-oc)",
                                                 bgcolor: pass ? "#DCFCE7" : "#FEE2E2",
                                                 color: pass ? "#15803D" : "#B91C1C"
                                             }}>

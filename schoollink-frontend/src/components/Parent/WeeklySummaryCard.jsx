@@ -29,10 +29,10 @@ function Stat({ value, label, tone }) {
                 px: 0.5,
                 borderRadius: 2.5,
                 bgcolor: "var(--sl-soft, #F1F5F9)",
-                border: "1.5px solid var(--sl-ink, #0F172A)"
+                border: "1.5px solid var(--sl-ink, var(--sl-ink))"
             }}
         >
-            <Typography sx={{ fontWeight: 800, fontSize: "1.45rem", lineHeight: 1.1, color: tone || "var(--sl-ink, #0F172A)" }}>
+            <Typography sx={{ fontWeight: 800, fontSize: "1.45rem", lineHeight: 1.1, color: tone || "var(--sl-ink, var(--sl-ink))" }}>
                 {value}
             </Typography>
             <Typography sx={{ fontSize: "0.7rem", color: "text.secondary", mt: 0.3 }}>{label}</Typography>
@@ -109,7 +109,7 @@ export default function WeeklySummaryCard({ studentId, showEmpty }) {
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5, flexWrap: "wrap" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1, minWidth: 0 }}>
-                    <Box sx={{ width: 38, height: 38, minWidth: 38, borderRadius: "12px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Box sx={{ width: 38, height: 38, minWidth: 38, borderRadius: "12px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <EventNoteIcon sx={{ color: "var(--sl-ink)", fontSize: 22 }} />
                     </Box>
                     <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--sl-ink)", lineHeight: 1.2 }}>

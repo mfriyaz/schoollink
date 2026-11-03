@@ -111,13 +111,13 @@ function ExpiredAnnouncementsPage() {
                 role="button"
                 tabIndex={0}
                 onClick={() => navigate("/posts")}
-                sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.5, py: 0.55, mb: 1.5, borderRadius: 99, cursor: "pointer", fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", "&:hover": { bgcolor: "var(--sl-soft)" } }}
+                sx={{ display: "inline-flex", alignItems: "center", gap: 0.5, px: 1.5, py: 0.55, mb: 1.5, borderRadius: 99, cursor: "pointer", fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", "&:hover": { bgcolor: "var(--sl-soft)" } }}
             >
                 <ArrowBackIcon sx={{ fontSize: 18 }} />
                 Back to All Posts
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-ink)", boxShadow: "2px 2px 0 var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <EventBusyIcon sx={{ color: "var(--sl-ink)" }} />
                 </Box>
                 <Box sx={{ minWidth: 0 }}>
@@ -197,7 +197,7 @@ function ExpiredAnnouncementsPage() {
                                             boxShadow: "var(--sl-card-shadow, none)"
                                         }}
                                     >
-                                        <Box sx={{ width: 40, height: 40, borderRadius: 2.5, bgcolor: "var(--sl-soft)", border: "1.5px solid var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                        <Box sx={{ width: 40, height: 40, borderRadius: 2.5, bgcolor: "var(--sl-soft)", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                                             <CampaignIcon sx={{ color: "var(--sl-ink)" }} fontSize="small" />
                                         </Box>
                                         <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -207,7 +207,7 @@ function ExpiredAnnouncementsPage() {
                                             </Typography>
                                         </Box>
                                         {a.target_audience && (
-                                            <Chip size="small" label={a.target_audience} sx={{ bgcolor: "var(--sl-soft, #EEF2FF)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-ink)", fontWeight: 700 }} />
+                                            <Chip size="small" label={a.target_audience} sx={{ bgcolor: "var(--sl-soft, var(--sl-soft))", color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", fontWeight: 700 }} />
                                         )}
                                     </Box>
                                 ))}

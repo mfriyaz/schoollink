@@ -34,7 +34,7 @@ export function pickLanguages(list) {
 const pillSx = (disabled) => ({
     px: 1.5, py: 0.6, borderRadius: 99, cursor: disabled ? "default" : "pointer", userSelect: "none",
     fontSize: "0.82rem", fontWeight: 700, color: "var(--sl-ink)",
-    border: "1.5px solid var(--sl-ink)", bgcolor: "transparent",
+    border: "1.5px solid var(--sl-oc)", bgcolor: "transparent",
     opacity: disabled ? 0.4 : 1,
     "&:hover": { bgcolor: disabled ? undefined : "var(--sl-soft)" }
 });
@@ -100,7 +100,7 @@ export default function AiAssistButton({ value, onApply }) {
                             tabIndex={0}
                             aria-disabled={noneLeft}
                             onClick={(e) => { if (!noneLeft) setAnchor(e.currentTarget); }}
-                            sx={{ ...pillSx(noneLeft), display: "inline-flex", alignItems: "center", gap: 0.75, bgcolor: "var(--sl-accent)", boxShadow: "2px 2px 0 var(--sl-ink)" }}
+                            sx={{ ...pillSx(noneLeft), display: "inline-flex", alignItems: "center", gap: 0.75, bgcolor: "var(--sl-accent)", boxShadow: "2px 2px 0 var(--sl-hs)" }}
                         >
                             <AutoAwesomeIcon sx={{ fontSize: 17 }} />
                             AI assist
@@ -114,7 +114,7 @@ export default function AiAssistButton({ value, onApply }) {
                 onClose={() => setAnchor(null)}
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
-                slotProps={{ paper: { sx: { p: 2, mt: 1, width: { xs: "calc(100vw - 32px)", sm: 400 }, maxWidth: 420, borderRadius: 3, border: "1.5px solid var(--sl-ink)", boxShadow: "4px 4px 0 var(--sl-ink)" } } }}
+                slotProps={{ paper: { sx: { p: 2, mt: 1, width: { xs: "calc(100vw - 32px)", sm: 400 }, maxWidth: 420, borderRadius: 3, border: "1.5px solid var(--sl-oc)", boxShadow: "4px 4px 0 var(--sl-hs)" } } }}
             >
                 {empty && (
                     <Alert severity="info" sx={{ mb: 1.5, py: 0 }}>

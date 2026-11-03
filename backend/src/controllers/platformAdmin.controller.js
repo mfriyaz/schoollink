@@ -52,6 +52,16 @@ const setStatus = wrap(async (req, res) => {
 
 });
 
+const setLook = wrap(async (req, res) => {
+
+    const ok = await service.setLook(req, req.params.id, req.body.look);
+
+    if (!ok) return response.error(res, "School not found", 404);
+
+    return response.success(res, null, "Look updated");
+
+});
+
 const addPayment = wrap(async (req, res) => {
 
     const row = await service.addPayment(req, req.params.id, req.body);
@@ -129,6 +139,6 @@ const subscriptionHistory = wrap(async (req, res) => {
 module.exports = {
     subscriptionHistory,
     schoolRecords,
-    overview, listSchools, schoolDetail, setStatus, addPayment,
+    overview, listSchools, schoolDetail, setStatus, setLook, addPayment,
     deletePayment, listPayments, updateNotes, resetAdminPassword
 };

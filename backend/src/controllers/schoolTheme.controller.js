@@ -12,7 +12,7 @@ async function getSchoolTheme(req, res) {
     try {
 
         const result = await pool.query(
-            "SELECT theme FROM schools WHERE id = $1",
+            "SELECT theme, ui_look FROM schools WHERE id = $1",
             [req.user.school_id]
         );
 
@@ -20,14 +20,17 @@ async function getSchoolTheme(req, res) {
 
         return response.success(
             res,
-            { theme: THEMES.includes(theme) ? theme : "sunshine" },
+            {
+                theme: THEMES.includes(theme) ? theme : "sunshine",
+                look: result.rows[0]?.ui_look === "pro" ? "pro" : "classic"
+            },
             "Theme retrieved successfully"
         );
 
     } catch (err) {
 
         // A missing column (migration not run yet) must never break the app
-        return response.success(res, { theme: "sunshine" }, "Default theme");
+        return response.success(res, { theme: "sunshine", look: "classic" }, "Default theme");
 
     }
 
