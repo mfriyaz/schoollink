@@ -1,3 +1,4 @@
+const notifierService = require("../services/notifier.service");
 const calendarService = require("../services/calendar.service");
 const attendanceService = require("../services/attendance.service");
 const response = require("../utils/response");
@@ -185,6 +186,9 @@ async function bulkMarkAttendance(req, res) {
 
         }
 
+        // Tell the parents of children marked Absent / Late (never blocks or breaks the save)
+        sendAttendanceAlerts(req, teacher_subject_id, dateOnly, session, diff.alerts);
+
         return response.success(
             res,
             result,
@@ -201,6 +205,58 @@ async function bulkMarkAttendance(req, res) {
         );
 
     }
+
+}
+
+/**
+ * Parent alerts for Absent / Late students. Runs in the background after the save.
+ * Only for today and yesterday, so late corrections of old days do not alarm parents.
+ */
+function sendAttendanceAlerts(req, teacherSubjectId, dateOnly, session, alerts) {
+
+    if (!alerts || alerts.length === 0) return;
+
+    (async () => {
+
+        try {
+
+            const today = await insights.schoolToday(req.user.school_id);
+
+            const days = Math.round((new Date(`${today}T00:00:00Z`) - new Date(`${dateOnly}T00:00:00Z`)) / 86400000);
+
+            if (days < 0 || days > 1) return;
+
+            const mode = await attendanceService.getAttendanceMode(req.user.school_id);
+
+            const label = await attendanceService.getAssignmentLabel(teacherSubjectId);
+
+            const where = mode === "subject" && label.subject_name
+                ? ` in ${label.subject_name}`
+                : mode === "half_day" && session !== "Day" ? ` (${session})` : "";
+
+            const when = days === 0
+                ? "today"
+                : "yesterday";
+
+            for (const a of alerts) {
+
+                await notifierService.notifyParentsOfAttendance({
+                    studentId: a.student_id,
+                    status: a.status,
+                    dateIso: dateOnly,
+                    when,
+                    where
+                });
+
+            }
+
+        } catch (e) {
+
+            console.error("Attendance alert failed:", e.message);
+
+        }
+
+    })();
 
 }
 

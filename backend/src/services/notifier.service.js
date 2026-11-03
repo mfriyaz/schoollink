@@ -15,7 +15,7 @@ const pushService = require("./push.service");
  * so it must stay plain text; the email one is inserted as
  * HTML, so it can use <strong>/<br> for a richer layout.
  */
-async function notifyIfEnabled(userId, title, inAppMessage, emailBody, link) {
+async function notifyIfEnabled(userId, title, inAppMessage, emailBody, link, opts = {}) {
 
     const prefResult = await db.query(
         `
@@ -38,7 +38,7 @@ async function notifyIfEnabled(userId, title, inAppMessage, emailBody, link) {
 
     }
 
-    if (prefs.email_enabled) {
+    if (prefs.email_enabled && opts.email !== false) {
 
         await emailService.sendEmail(prefs.email, title, emailBody);
 
@@ -504,7 +504,50 @@ async function notifyParentOfGreetingReaction(greeting) {
 
 }
 
+/**
+ * Tell the parents of a student that the student was marked Absent or Late.
+ * In-app bell + phone alert only (no email). One alert per parent, student, day and kind.
+ *   when: "today" or a short date such as "Mon, 2 Nov"
+ *   where: "" or " in Maths" / " (Morning)"
+ */
+async function notifyParentsOfAttendance({ studentId, status, dateIso, when, where }) {
+
+    const result = await db.query(
+        `
+        SELECT ps.parent_user_id, st.first_name
+          FROM parent_students ps
+          JOIN students st ON st.id = ps.student_id
+         WHERE ps.student_id = $1 AND st.is_active = true
+        `,
+        [studentId]
+    );
+
+    const absent = status === "Absent";
+
+    const title = absent ? "Marked absent" : "Marked late";
+
+    const link = `/parent/attendance?student=${studentId}&date=${dateIso}`;
+
+    for (const row of result.rows) {
+
+        const already = await db.query(
+            "SELECT 1 FROM notifications WHERE user_id = $1 AND link = $2 AND title = $3 LIMIT 1",
+            [row.parent_user_id, link, title]
+        );
+
+        if (already.rows.length > 0) continue;
+
+        const message = `${row.first_name} was marked ${absent ? "absent" : "late"} ${when}${where || ""}.`;
+
+        await notifyIfEnabled(row.parent_user_id, title, message, message, link, { email: false });
+
+    }
+
+}
+
 module.exports = {
+
+    notifyParentsOfAttendance,
 
     notifyParentsOfHomework,
 

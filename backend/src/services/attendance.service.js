@@ -173,9 +173,18 @@ async function describeSave(teacherSubjectId, attendanceDate, session, records) 
 
     const changes = [];
 
+    // Students whose parents should be told: newly (or newly changed to) Absent / Late
+    const alerts = [];
+
     (records || []).forEach((rec) => {
 
         const old = before.get(Number(rec.student_id));
+
+        if ((rec.status === "Absent" || rec.status === "Late") && (!old || old.status !== rec.status)) {
+
+            alerts.push({ student_id: Number(rec.student_id), status: rec.status });
+
+        }
 
         if (old && old.status !== rec.status) {
 
@@ -189,7 +198,7 @@ async function describeSave(teacherSubjectId, attendanceDate, session, records) 
 
     });
 
-    return { hadRecords: existing.length > 0, changes };
+    return { hadRecords: existing.length > 0, changes, alerts };
 
 }
 
