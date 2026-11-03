@@ -249,7 +249,24 @@ return createTheme({
             }
         },
 
-        MuiSwitch: {
+        MuiSwitch: PRO ? {
+            // Professional look: flat grey track, white thumb, blue track when on
+            styleOverrides: {
+                root: { width: 44, height: 24, padding: 0, overflow: "visible" },
+                switchBase: {
+                    padding: 2,
+                    color: "#FFFFFF",
+                    "&.Mui-checked": {
+                        transform: "translateX(20px)",
+                        color: "#FFFFFF",
+                        "& + .MuiSwitch-track": { backgroundColor: "var(--sl-accent)", opacity: 1 }
+                    },
+                    "&.Mui-disabled + .MuiSwitch-track": { opacity: 0.5 }
+                },
+                thumb: { width: 20, height: 20, boxShadow: "0 1px 2px rgba(15,23,42,.35)", backgroundColor: "#FFFFFF" },
+                track: { borderRadius: 12, backgroundColor: "#B6C0CE", border: "none", opacity: 1, boxSizing: "border-box" }
+            }
+        } : {
             styleOverrides: {
                 root: { width: 52, height: 30, padding: 0, overflow: "visible" },
                 switchBase: {
