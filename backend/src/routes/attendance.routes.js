@@ -26,6 +26,16 @@ router.get(
 );
 
 /**
+ * School Admin: attendance report for a date range (JSON, or Excel with ?format=xlsx)
+ */
+router.get(
+    "/report",
+    authenticate,
+    authorizeRoles("School Admin"),
+    require("../controllers/attendanceReport.controller").getReport
+);
+
+/**
  * Mark Attendance (single record)
  */
 router.post(

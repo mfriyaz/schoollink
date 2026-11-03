@@ -42,6 +42,7 @@ import ClassesPage from "../pages/Admin/ClassesPage";
 import SubjectsPage from "../pages/Admin/SubjectsPage";
 import ReportsPage from "../pages/Admin/ReportsPage";
 import EarlyWarningPage from "../pages/Admin/EarlyWarningPage";
+import AttendanceReportPage from "../pages/Admin/AttendanceReportPage";
 import StudentProfilePage from "../pages/Students/StudentProfilePage";
 import AttendanceBoardPage from "../pages/Admin/AttendanceBoardPage";
 import GradesPage from "../pages/Admin/GradesPage";
@@ -201,6 +202,19 @@ export default function AppRoutes() {
                 <Route
                     path="/notifications/expired"
                     element={<ExpiredNotificationsPage />}
+                />
+
+                <Route
+                    path="/attendance-report"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["School Admin"]}>
+
+                            <AttendanceReportPage />
+
+                        </ProtectedRoute>
+
+                    }
                 />
 
                 <Route
