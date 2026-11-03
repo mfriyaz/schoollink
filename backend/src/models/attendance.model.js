@@ -329,6 +329,39 @@ async function getAttendanceMode(schoolId) {
 
 }
 
+/** Days back a teacher may edit attendance; null = no limit */
+async function getAttendanceEditDays(schoolId) {
+
+    try {
+
+        const r = await db.query("SELECT attendance_edit_days FROM schools WHERE id = $1", [schoolId]);
+
+        const n = r.rows[0] && r.rows[0].attendance_edit_days;
+
+        return Number.isInteger(n) ? n : null;
+
+    } catch (e) {
+
+        return null; // column not added yet
+
+    }
+
+}
+
+async function setAttendanceEditDays(schoolId, days) {
+
+    await db.query("UPDATE schools SET attendance_edit_days = $1 WHERE id = $2", [days, schoolId]);
+
+}
+
+async function getAttendanceDate(id) {
+
+    const r = await db.query("SELECT attendance_date::text AS d FROM attendance WHERE id = $1", [id]);
+
+    return r.rows[0] ? r.rows[0].d : null;
+
+}
+
 async function setAttendanceMode(schoolId, mode) {
 
     await db.query("UPDATE schools SET attendance_mode = $1 WHERE id = $2", [mode, schoolId]);
@@ -358,6 +391,12 @@ module.exports = {
     getAssignmentLabel,
 
     getAttendanceMode,
+
+    getAttendanceEditDays,
+
+    setAttendanceEditDays,
+
+    getAttendanceDate,
 
     setAttendanceMode,
 

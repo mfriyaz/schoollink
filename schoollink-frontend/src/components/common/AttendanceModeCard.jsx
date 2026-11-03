@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
 
-import { Alert, Box, Button, Card, Skeleton, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, MenuItem, Skeleton, TextField, Typography } from "@mui/material";
 import FactCheckIcon from "@mui/icons-material/FactCheckOutlined";
 
 import { getAttendanceMode, saveAttendanceMode } from "../../services/settingsService";
 import { notify } from "../../utils/notify";
+
+const EDIT_LIMITS = [
+    { value: "", label: "No limit" },
+    { value: "0", label: "Same day only" },
+    { value: "1", label: "1 day back" },
+    { value: "2", label: "2 days back" },
+    { value: "3", label: "3 days back" },
+    { value: "7", label: "7 days back" }
+];
 
 const OPTIONS = [
     { value: "subject", title: "By subject", text: "Each subject teacher takes attendance in their own period." },
@@ -19,12 +28,18 @@ export default function AttendanceModeCard() {
 
     const [saved, setSaved] = useState(null);
     const [mode, setMode] = useState("subject");
+    const [limit, setLimit] = useState("");
+    const [savedLimit, setSavedLimit] = useState("");
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
         getAttendanceMode()
-            .then((r) => { if (r.success) { setSaved(r.data.mode); setMode(r.data.mode); } })
+            .then((r) => { if (r.success) {
+                setSaved(r.data.mode); setMode(r.data.mode);
+                const l = Number.isInteger(r.data.edit_days) ? String(r.data.edit_days) : "";
+                setLimit(l); setSavedLimit(l);
+            } })
             .catch(() => setError("Unable to load this setting."));
     }, []);
 
@@ -32,9 +47,10 @@ export default function AttendanceModeCard() {
         setBusy(true);
         setError("");
         try {
-            const r = await saveAttendanceMode(mode);
+            const r = await saveAttendanceMode(mode, limit === "" ? null : Number(limit));
             if (r.success) {
                 setSaved(r.data.mode);
+                setSavedLimit(Number.isInteger(r.data.edit_days) ? String(r.data.edit_days) : "");
                 notify("Attendance setting saved.");
             } else {
                 setError(r.message || "Unable to save.");
@@ -91,8 +107,16 @@ export default function AttendanceModeCard() {
                         </Alert>
                     )}
 
+                    <Box sx={{ mt: 2 }}>
+                        <TextField select size="small" fullWidth label="How far back can teachers change attendance?" value={limit}
+                            onChange={(e) => setLimit(e.target.value)}
+                            helperText="Stops old records being changed quietly. The School Admin can always change any day.">
+                            {EDIT_LIMITS.map((o) => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
+                        </TextField>
+                    </Box>
+
                     <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1.5 }}>
-                        <Button variant="contained" onClick={save} disabled={busy || mode === saved} loading={busy} loadingPosition="start">
+                        <Button variant="contained" onClick={save} disabled={busy || (mode === saved && limit === savedLimit)} loading={busy} loadingPosition="start">
                             Save
                         </Button>
                     </Box>

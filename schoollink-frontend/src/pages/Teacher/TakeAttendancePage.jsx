@@ -54,6 +54,7 @@ function initialsOf(s) {
 function TakeAttendancePage() {
     const [assignments, setAssignments] = useState([]);
     const [mode, setMode] = useState("subject");
+    const [editDays, setEditDays] = useState(null);
     const [session, setSession] = useState("Morning");
     const [teacherSubjectId, setTeacherSubjectId] = useState("");
     const [date, setDate] = useState(
@@ -97,7 +98,10 @@ function TakeAttendancePage() {
             let schoolMode = "subject";
             try {
                 const modeResponse = await getAttendanceMode();
-                if (modeResponse.success) schoolMode = modeResponse.data.mode || "subject";
+                if (modeResponse.success) {
+                    schoolMode = modeResponse.data.mode || "subject";
+                    setEditDays(Number.isInteger(modeResponse.data.edit_days) ? modeResponse.data.edit_days : null);
+                }
             } catch { /* older server: keep subject-wise */ }
             setMode(schoolMode);
             const assignmentsResponse = await getMyAssignments(
@@ -315,14 +319,20 @@ function TakeAttendancePage() {
                                 value={date}
                                 onChange={setDate}
                                 maxDate={new Date()}
+                                minDate={editDays === null ? undefined : new Date(Date.now() - editDays * 86400000)}
                                 fullWidth
                             />
                         </Box>
                         <Box sx={{ display: "flex", gap: 0.75, pt: 1 }}>
                             <Box role="button" tabIndex={0} onClick={() => pickDate(todayIso)} sx={pillSx(date === todayIso)}>Today</Box>
-                            <Box role="button" tabIndex={0} onClick={() => pickDate(yesterdayIso)} sx={pillSx(date === yesterdayIso)}>Yesterday</Box>
+                            {editDays !== 0 && <Box role="button" tabIndex={0} onClick={() => pickDate(yesterdayIso)} sx={pillSx(date === yesterdayIso)}>Yesterday</Box>}
                         </Box>
                     </Box>
+                    {editDays !== null && (
+                        <Typography sx={{ color: "text.secondary", fontSize: "0.8rem", mt: 1 }}>
+                            {editDays === 0 ? "You can only take attendance for today." : `You can change attendance up to ${editDays} ${editDays === 1 ? "day" : "days"} back. For older days, ask the School Admin.`}
+                        </Typography>
+                    )}
                 </Card>
             )}
 

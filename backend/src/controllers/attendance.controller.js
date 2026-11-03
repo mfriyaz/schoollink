@@ -33,6 +33,11 @@ async function createAttendance(req, res) {
 
         }
 
+        {
+            const tooOld = await attendanceService.editWindowProblem(req.user, req.body.attendance_date);
+            if (tooOld) return response.error(res, tooOld, 403);
+        }
+
         const dayStatus = await calendarService.getDayStatus(
             req.user.school_id,
             String(req.body.attendance_date).slice(0, 10)
@@ -87,6 +92,11 @@ async function bulkMarkAttendance(req, res) {
                 400
             );
 
+        }
+
+        {
+            const tooOld = await attendanceService.editWindowProblem(req.user, attendance_date);
+            if (tooOld) return response.error(res, tooOld, 403);
         }
 
         const dayStatus = await calendarService.getDayStatus(
@@ -404,6 +414,11 @@ async function getAttendanceByStudent(req, res) {
 async function updateAttendance(req, res) {
 
     try {
+
+        {
+            const tooOld = await attendanceService.editWindowProblem(req.user, await attendanceService.getAttendanceDate(req.params.id));
+            if (tooOld) return response.error(res, tooOld, 403);
+        }
 
         const attendance =
             await attendanceService.updateAttendance(

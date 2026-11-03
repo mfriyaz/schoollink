@@ -13,11 +13,13 @@ async function getAttendanceMode(req, res) {
 
         const mode = await attendanceService.getAttendanceMode(req.user.school_id);
 
-        return response.success(res, { mode }, "Attendance mode");
+        const edit_days = await attendanceService.getAttendanceEditDays(req.user.school_id);
+
+        return response.success(res, { mode, edit_days }, "Attendance mode");
 
     } catch (err) {
 
-        return response.success(res, { mode: "subject" }, "Attendance mode");
+        return response.success(res, { mode: "subject", edit_days: null }, "Attendance mode");
 
     }
 
@@ -30,10 +32,36 @@ async function updateAttendanceMode(req, res) {
 
     try {
 
+        const body = req.body || {};
+
         const r = await attendanceService.setAttendanceMode(
             req.user.school_id,
-            (req.body || {}).mode
+            body.mode
         );
+
+        let editDays = await attendanceService.getAttendanceEditDays(req.user.school_id);
+
+        if ("edit_days" in body) {
+
+            const e = await attendanceService.setAttendanceEditDays(req.user.school_id, body.edit_days);
+
+            editDays = e.after;
+
+            if (e.before !== e.after) {
+
+                const text = (d) => (d === null ? "no limit" : d === 0 ? "same day only" : `${d} ${d === 1 ? "day" : "days"} back`);
+
+                await auditService.logAudit(req, {
+                    action: "Edited",
+                    entityType: "Attendance edit limit",
+                    entityId: req.user.school_id,
+                    entityTitle: "How far back teachers can edit attendance",
+                    summary: `Teacher attendance edit limit changed from ${text(e.before)} to ${text(e.after)}`
+                });
+
+            }
+
+        }
 
         if (r.before !== r.after) {
 
@@ -47,7 +75,7 @@ async function updateAttendanceMode(req, res) {
 
         }
 
-        return response.success(res, { mode: r.after }, "Attendance mode saved");
+        return response.success(res, { mode: r.after, edit_days: editDays }, "Attendance mode saved");
 
     } catch (err) {
 

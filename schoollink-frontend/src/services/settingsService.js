@@ -24,9 +24,9 @@ export async function getAttendanceMode() {
 
 }
 
-export async function saveAttendanceMode(mode) {
+export async function saveAttendanceMode(mode, editDays) {
 
-    const response = await api.put("/settings/attendance-mode", { mode });
+    const response = await api.put("/settings/attendance-mode", { mode, edit_days: editDays });
 
     return response.data;
 

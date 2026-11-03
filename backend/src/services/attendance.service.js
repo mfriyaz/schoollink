@@ -147,6 +147,66 @@ async function getAttendanceMode(schoolId) {
     return await attendanceModel.getAttendanceMode(schoolId);
 }
 
+async function getAttendanceEditDays(schoolId) {
+    return await attendanceModel.getAttendanceEditDays(schoolId);
+}
+
+async function setAttendanceEditDays(schoolId, value) {
+
+    let days = null;
+
+    if (value !== null && value !== "" && value !== undefined) {
+
+        days = Number(value);
+
+        if (!Number.isInteger(days) || days < 0 || days > 60) {
+            throw httpError("Choose a number of days between 0 and 60, or no limit.", 400);
+        }
+
+    }
+
+    const before = await attendanceModel.getAttendanceEditDays(schoolId);
+
+    await attendanceModel.setAttendanceEditDays(schoolId, days);
+
+    return { before, after: days };
+
+}
+
+/**
+ * A teacher may only mark or change attendance within the school's limit.
+ * School Admin is never limited. Returns an error message, or null when allowed.
+ */
+async function editWindowProblem(user, dateInput) {
+
+    if (!user || user.role !== "Teacher") return null;
+
+    const limit = await attendanceModel.getAttendanceEditDays(user.school_id);
+
+    if (limit === null) return null;
+
+    const date = String(dateInput || "").slice(0, 10);
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+
+    const insights = require("./insights.service");
+
+    const today = await insights.schoolToday(user.school_id);
+
+    const back = Math.round((new Date(`${today}T00:00:00Z`) - new Date(`${date}T00:00:00Z`)) / 86400000);
+
+    if (back <= limit) return null;
+
+    return limit === 0
+        ? "Teachers can only take attendance for today. Please ask the School Admin to change an earlier day."
+        : `Teachers can only change attendance up to ${limit} ${limit === 1 ? "day" : "days"} back. Please ask the School Admin.`;
+
+}
+
+async function getAttendanceDate(id) {
+    return await attendanceModel.getAttendanceDate(id);
+}
+
 async function setAttendanceMode(schoolId, mode) {
 
     if (!attendanceModel.ATTENDANCE_MODES.includes(mode)) {
@@ -207,6 +267,14 @@ async function getAssignmentLabel(teacherSubjectId) {
 }
 
 module.exports = {
+
+    getAttendanceEditDays,
+
+    setAttendanceEditDays,
+
+    editWindowProblem,
+
+    getAttendanceDate,
 
     describeSave,
 
