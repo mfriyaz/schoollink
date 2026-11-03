@@ -174,7 +174,7 @@ function ParentAllUpdatesPage() {
                     return (
                         <Box key={f.value} role="button" tabIndex={0} onClick={() => setPostFilter(f.value)} sx={pillSx(active)}>
                             {f.label}
-                            <Box component="span" sx={{ px: 0.7, borderRadius: 99, fontSize: "0.72rem", bgcolor: active ? "var(--sl-ink)" : "var(--sl-soft2)", color: active ? "#fff" : "var(--sl-ink)" }}>
+                            <Box component="span" sx={{ px: 0.7, borderRadius: 99, fontSize: "0.72rem", bgcolor: active ? "var(--sl-badge)" : "var(--sl-soft2)", color: active ? "#fff" : "var(--sl-ink)" }}>
                                 {f.count}
                             </Box>
                         </Box>

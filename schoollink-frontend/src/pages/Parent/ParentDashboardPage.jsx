@@ -438,8 +438,8 @@ function ParentDashboardPage() {
                                         height: { xs: 32, md: 36 },
                                         minWidth: { xs: 32, md: 36 },
                                         borderRadius: "11px",
-                                        bgcolor: "var(--sl-accent)",
-                                        color: "var(--sl-on-accent, #111827)",
+                                        bgcolor: "var(--sl-tile)",
+                                        color: "var(--sl-tile-ink)",
                                         border: "1.5px solid var(--sl-oc)",
                                         display: "flex",
                                         alignItems: "center",
@@ -575,8 +575,8 @@ function ParentDashboardPage() {
                                                     fontSize: "0.85rem",
                                                     fontWeight: 700,
                                                     cursor: "pointer",
-                                                    bgcolor: "var(--sl-accent)",
-                                                    color: "var(--sl-on-accent, #111827)",
+                                                    bgcolor: "var(--sl-tile)",
+                                                    color: "var(--sl-tile-ink)",
                                                     border: isSelected ? "3px solid var(--sl-oc)" : "1.5px solid var(--sl-oc)"
                                                 }}
                                             >
@@ -685,7 +685,7 @@ height: 40,
                         ].map(([key, label, n]) => (
                             <Box key={key} role="button" tabIndex={0} onClick={() => setPostFilter(key)} sx={pillSx(postFilter === key)}>
                                 {label}
-                                <Box component="span" sx={{ px: 0.7, borderRadius: 99, fontSize: "0.72rem", bgcolor: postFilter === key ? "var(--sl-ink)" : "var(--sl-soft2)", color: postFilter === key ? "#fff" : "var(--sl-ink)" }}>
+                                <Box component="span" sx={{ px: 0.7, borderRadius: 99, fontSize: "0.72rem", bgcolor: postFilter === key ? "var(--sl-badge)" : "var(--sl-soft2)", color: postFilter === key ? "#fff" : "var(--sl-ink)" }}>
                                     {n}
                                 </Box>
                             </Box>

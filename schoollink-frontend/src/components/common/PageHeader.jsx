@@ -22,7 +22,7 @@ export default function PageHeader({ eyebrow, title, subtitle, avatar, avatarSiz
                 <Box
                     sx={{
                         width: avatarSize, height: avatarSize, minWidth: avatarSize, borderRadius: "50%",
-                        bgcolor: "var(--sl-accent, #FFC400)", color: "var(--sl-on-accent, #111827)",
+                        bgcolor: "var(--sl-tile, #FFC400)", color: "var(--sl-tile-ink, #111827)",
                         border: "1.5px solid var(--sl-oc, #111827)", boxShadow: "2px 2px 0 var(--sl-hs, #111827)",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontWeight: 800, fontSize: avatarSize > 56 ? "1.6rem" : "1.1rem"
