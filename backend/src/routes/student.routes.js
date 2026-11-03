@@ -89,6 +89,17 @@ router.get(
 );
 
 /**
+ * Student profile page (School Admin, or a Teacher of the student's class)
+ */
+router.get(
+    "/:id/profile",
+    authenticate,
+    authorizeRoles("School Admin", "Teacher"),
+    tenant.param("student", "id"),
+    require("../controllers/studentProfile.controller").getProfile
+);
+
+/**
  * Get Student By ID
  */
 router.get(

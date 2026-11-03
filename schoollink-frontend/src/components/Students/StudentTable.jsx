@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, Box, Button, Card, Chip, IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import VisibilityIcon from "@mui/icons-material/VisibilityOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVertRounded";
 import PhoneIcon from "@mui/icons-material/PhoneOutlined";
 import PersonIcon from "@mui/icons-material/PersonOutlineRounded";
+import InsightsIcon from "@mui/icons-material/InsightsRounded";
 const PAGE = 24;
 function ageOf(dob) {
     if (!dob) return null;
@@ -21,6 +23,7 @@ function ageOf(dob) {
  * phone at a glance; the first 24 are drawn, "Show more" adds the rest.
  */
 export default function StudentTable({ students, onView, onEdit, onDelete }) {
+    const navigate = useNavigate();
     const [shown, setShown] = useState(PAGE);
     const [menu, setMenu] = useState(null);
     const list = students.slice(0, shown);
@@ -108,6 +111,7 @@ export default function StudentTable({ students, onView, onEdit, onDelete }) {
                                 )}
                             </Box>
                             <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 0.5, mt: "auto" }}>
+                                <Button size="small" startIcon={<InsightsIcon fontSize="small" />} onClick={() => navigate(`/students/${student.id}`)}>Profile</Button>
                                 <Button size="small" startIcon={<VisibilityIcon fontSize="small" />} onClick={() => onView(student)}>View</Button>
                                 <Button size="small" startIcon={<EditIcon fontSize="small" />} onClick={() => onEdit(student)}>Edit</Button>
                                 <IconButton size="small" aria-label="More actions" onClick={(e) => setMenu({ anchor: e.currentTarget, student })}>

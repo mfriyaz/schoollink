@@ -42,6 +42,7 @@ import ClassesPage from "../pages/Admin/ClassesPage";
 import SubjectsPage from "../pages/Admin/SubjectsPage";
 import ReportsPage from "../pages/Admin/ReportsPage";
 import EarlyWarningPage from "../pages/Admin/EarlyWarningPage";
+import StudentProfilePage from "../pages/Students/StudentProfilePage";
 import AttendanceBoardPage from "../pages/Admin/AttendanceBoardPage";
 import GradesPage from "../pages/Admin/GradesPage";
 import ExpiredAnnouncementsPage from "../pages/Admin/ExpiredAnnouncementsPage";
@@ -105,6 +106,19 @@ export default function AppRoutes() {
                 <Route path="/dashboard" element={<DashboardPage />} />
 
                 <Route path="/students" element={<StudentListPage />} />
+
+                <Route
+                    path="/students/:id"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["School Admin", "Teacher"]}>
+
+                            <StudentProfilePage />
+
+                        </ProtectedRoute>
+
+                    }
+                />
 
                 <Route
                     path="/teachers"

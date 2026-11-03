@@ -7,6 +7,7 @@ import RefreshIcon from "@mui/icons-material/RefreshRounded";
 import FactCheckIcon from "@mui/icons-material/FactCheckOutlined";
 
 import PageHeader from "../../components/common/PageHeader";
+import { Link as RouterLink } from "react-router-dom";
 import { getAttendanceBoard } from "../../services/attendanceBoardService";
 
 const STATUS = {
@@ -178,7 +179,9 @@ function AttendanceBoardPage() {
                             <TableBody>
                                 {data.absentees.map((a) => (
                                     <TableRow key={a.student_id} data-testid="absent-row">
-                                        <TableCell sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>{a.first_name} {a.last_name || ""}</TableCell>
+                                        <TableCell sx={{ fontWeight: 700, whiteSpace: "nowrap" }}>
+                                            <RouterLink to={`/students/${a.student_id}`} style={{ color: "inherit" }}>{a.first_name} {a.last_name || ""}</RouterLink>
+                                        </TableCell>
                                         <TableCell sx={{ whiteSpace: "nowrap" }}>{a.class_name} - {a.section_name}</TableCell>
                                         <TableCell sx={{ whiteSpace: "nowrap" }}>{a.father_name || "-"}</TableCell>
                                         <TableCell sx={{ whiteSpace: "nowrap" }}>

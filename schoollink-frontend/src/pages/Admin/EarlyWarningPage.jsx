@@ -1,3 +1,4 @@
+import { Link as RouterLink } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 
 import NotificationImportantIcon from "@mui/icons-material/NotificationImportantOutlined";
@@ -61,7 +62,7 @@ function StudentRow({ item, aiAvailable }) {
             }}
         >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap", mb: 0.75 }}>
-                <Typography sx={{ fontWeight: 800, fontSize: "1rem" }}>{item.name}</Typography>
+                <Typography component={RouterLink} to={`/students/${item.student_id}`} sx={{ fontWeight: 800, fontSize: "1rem", color: "inherit", textDecoration: "none", "&:hover": { textDecoration: "underline" } }}>{item.name}</Typography>
                 <Typography sx={{ fontSize: "0.82rem", color: "text.secondary", flex: 1 }}>
                     {item.class_name} - {item.section_name}
                 </Typography>
