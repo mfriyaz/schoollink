@@ -17,6 +17,8 @@ async function startServer() {
 
             console.log(`🚀 SchoolLink Server is running on port ${PORT}`);
 
+            require("./src/services/subscriptionLock.service").start();
+
         });
 
     } catch (err) {
