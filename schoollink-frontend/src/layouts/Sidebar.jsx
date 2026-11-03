@@ -51,6 +51,12 @@ const adminMenus = [
     },
 
     {
+        title: "Attendance Board",
+        path: "/attendance-board",
+        icon: <FactCheckIcon />
+    },
+
+    {
         title: "Teachers",
         path: "/teachers",
         icon: <SchoolIcon />
@@ -298,6 +304,7 @@ const iconColors = {
     "Create Post": "#4ADE80",
     "Announcements": "#F472B6",
     "Attendance": "#34D399",
+    "Attendance Board": "#34D399",
     "Enter Marks": "#FACC15",
     "Home": "#818CF8",
     "Exam Results": "#FB7185",
@@ -307,7 +314,7 @@ const iconColors = {
 
 // Groups the long admin menu under small headings (other roles are short, so no headings)
 const adminGroups = {
-    "Dashboard": "Overview",
+    "Dashboard": "Overview", "Attendance Board": "Overview",
     "Teachers": "People", "Students": "People", "Classes": "People", "Subjects": "People",
     "Posts": "Communication", "Create Announcement": "Communication", "Expired Announcements": "Communication", "School Calendar": "Communication",
     "Exams": "Academics", "Academic Year": "Academics", "Grading Scale": "Academics", "Reports": "Academics", "Early Warning": "Academics",

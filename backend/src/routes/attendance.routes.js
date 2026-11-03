@@ -16,6 +16,16 @@ const {
 } = require("../middleware/role.middleware");
 
 /**
+ * School Admin: live attendance board (all classes, one day)
+ */
+router.get(
+    "/board",
+    authenticate,
+    authorizeRoles("School Admin"),
+    require("../controllers/attendanceBoard.controller").getBoard
+);
+
+/**
  * Mark Attendance (single record)
  */
 router.post(
