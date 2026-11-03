@@ -245,12 +245,12 @@ function TakeAttendancePage() {
                 <Box
                     sx={{
                         width: 46, height: 46, borderRadius: "14px",
-                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                        bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)",
                         boxShadow: "2px 2px 0 var(--sl-hs)",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}
                 >
-                    <FactCheckIcon sx={{ color: "var(--sl-ink)" }} />
+                    <FactCheckIcon sx={{ color: "var(--sl-tile-ink)" }} />
                 </Box>
                 <Box>
                     <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>
@@ -404,7 +404,7 @@ function TakeAttendancePage() {
                                     <Box
                                         sx={{
                                             width: 38, height: 38, minWidth: 38, borderRadius: "50%",
-                                            bgcolor: "var(--sl-accent)", color: "var(--sl-ink)",
+                                            bgcolor: "var(--sl-tile)", color: "var(--sl-ink)",
                                             fontWeight: 800, fontSize: "0.85rem",
                                             display: "flex", alignItems: "center", justifyContent: "center"
                                         }}

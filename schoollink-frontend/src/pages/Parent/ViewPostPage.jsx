@@ -399,7 +399,7 @@ function ViewPostPage() {
                                 width: 46,
                                 height: 46,
                                 borderRadius: "14px",
-                                bgcolor: isAnnouncement ? "var(--sl-soft2)" : "var(--sl-accent)",
+                                bgcolor: isAnnouncement ? "var(--sl-soft2)" : "var(--sl-tile)",
                                 border: "1.5px solid var(--sl-oc)",
                                 boxShadow: "2px 2px 0 var(--sl-hs)",
                                 display: "flex",
@@ -409,9 +409,9 @@ function ViewPostPage() {
                             }}
                         >
                             {isAnnouncement ? (
-                                <CampaignIcon sx={{ color: "var(--sl-ink)" }} />
+                                <CampaignIcon sx={{ color: "var(--sl-tile-ink)" }} />
                             ) : (
-                                <MenuBookIcon sx={{ color: "var(--sl-ink)" }} />
+                                <MenuBookIcon sx={{ color: "var(--sl-tile-ink)" }} />
                             )}
                         </Box>
                         <Box>
@@ -505,12 +505,12 @@ function ViewPostPage() {
                         }}
                     >
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <InsertDriveFileIcon sx={{ color: "var(--sl-ink)" }} />
+                            <InsertDriveFileIcon sx={{ color: "var(--sl-tile-ink)" }} />
                             <Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>
                                 {attachmentName(post.attachment_url)}
                             </Typography>
                         </Box>
-                        <DownloadIcon sx={{ color: "var(--sl-ink)" }} />
+                        <DownloadIcon sx={{ color: "var(--sl-tile-ink)" }} />
                     </Box>
                 )}
                 {post.voice_note_url && (

@@ -694,12 +694,12 @@ function CreatePostPage() {
                 <Box
                     sx={{
                         width: 46, height: 46, borderRadius: "14px",
-                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                        bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)",
                         boxShadow: "2px 2px 0 var(--sl-hs)",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}
                 >
-                    <EditNoteIcon sx={{ color: "var(--sl-ink)" }} />
+                    <EditNoteIcon sx={{ color: "var(--sl-tile-ink)" }} />
                 </Box>
                 <Box>
                     <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>
@@ -812,7 +812,7 @@ function CreatePostPage() {
                                     {attachment ? (
                                         <Box sx={filledSx}>
                                             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0 }}>
-                                                <Box sx={{ width: 36, height: 36, minWidth: 36, borderRadius: "10px", bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                <Box sx={{ width: 36, height: 36, minWidth: 36, borderRadius: "10px", bgcolor: "var(--sl-tile)", color: "var(--sl-ink)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                                     <InsertDriveFileIcon fontSize="small" />
                                                 </Box>
                                                 <Box sx={{ minWidth: 0 }}>
@@ -1023,7 +1023,7 @@ function PostSection({ n, title, subtitle, children }) {
                 <Box
                     sx={{
                         width: 26, height: 26, minWidth: 26, borderRadius: "50%",
-                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                        bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)",
                         color: "var(--sl-ink)", fontWeight: 800, fontSize: "0.78rem",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}

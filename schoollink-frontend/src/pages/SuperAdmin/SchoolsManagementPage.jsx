@@ -165,7 +165,7 @@ function SchoolCard({ school, onSaved }) {
                     "&:hover": { bgcolor: "var(--sl-soft)" }
                 }}
             >
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-tile)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>
                     {(school.school_name || "S").charAt(0).toUpperCase()}
                 </Box>
                 <Box sx={{ minWidth: 0 }}>

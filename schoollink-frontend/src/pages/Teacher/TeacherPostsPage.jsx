@@ -120,12 +120,12 @@ function TeacherPostsPage() {
                 <Box
                     sx={{
                         width: 46, height: 46, borderRadius: "14px",
-                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                        bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)",
                         boxShadow: "2px 2px 0 var(--sl-hs)",
                         display: "flex", alignItems: "center", justifyContent: "center"
                     }}
                 >
-                    <MenuBookIcon sx={{ color: "var(--sl-ink)" }} />
+                    <MenuBookIcon sx={{ color: "var(--sl-tile-ink)" }} />
                 </Box>
                 <Box>
                     <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>
@@ -225,11 +225,11 @@ function TeacherPostsPage() {
                                         <Box
                                             sx={{
                                                 width: 40, height: 40, minWidth: 40, borderRadius: "12px",
-                                                bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                                                bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)",
                                                 display: "flex", alignItems: "center", justifyContent: "center"
                                             }}
                                         >
-                                            <MenuBookIcon sx={{ color: "var(--sl-ink)", fontSize: 20 }} />
+                                            <MenuBookIcon sx={{ color: "var(--sl-tile-ink)", fontSize: 20 }} />
                                         </Box>
                                         <Box sx={{ minWidth: 0, flex: 1 }}>
                                             <Typography sx={{ fontWeight: 700, wordBreak: "break-word" }}>{post.title}</Typography>

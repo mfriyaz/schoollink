@@ -167,7 +167,7 @@ export const THEMES = {
         navActive: "#1F5FBF", onNavActive: "#FFFFFF",
         banner: "#12263F", onBanner: "#FFFFFF", bannerBorder: "none", bannerShadow: "none",
         loginBg: "#EEF1F5", loginPanel: "#E6EEF9",
-        outline: "#C3CCD8", hardShadow: "transparent", pillRadius: "6px"
+        outline: "#C3CCD8", hardShadow: "transparent", pillRadius: "6px", tile: "#E6EEF9", tileInk: "#1F5FBF"
     }
 
 };
@@ -198,7 +198,8 @@ export function applyThemeVars(t) {
         "nav-active": t.navActive, "on-nav-active": t.onNavActive,
         banner: t.banner, "on-banner": t.onBanner, "banner-border": t.bannerBorder, "banner-shadow": t.bannerShadow,
         "login-bg": t.loginBg, "login-panel": t.loginPanel,
-        oc: t.outline || t.ink, hs: t.hardShadow || t.ink, pill: t.pillRadius || "99px"
+        oc: t.outline || t.ink, hs: t.hardShadow || t.ink, pill: t.pillRadius || "99px",
+        tile: t.tile || t.accent, "tile-ink": t.tileInk || t.ink
     };
 
     Object.entries(vars).forEach(([k, v]) => root.setProperty(`--sl-${k}`, v));

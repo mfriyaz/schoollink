@@ -46,7 +46,7 @@ body,
 }
 
 /* outline / hard-shadow colours: dark in Classic, soft in Professional (set from the theme) */
-:root { --sl-oc: #111827; --sl-hs: #111827; --sl-pill: 99px; }
+:root { --sl-oc: #111827; --sl-hs: #111827; --sl-pill: 99px; --sl-tile: #FFC400; --sl-tile-ink: #111827; }
 
 [data-look="pro"] body { font-family: "IBM Plex Sans", Inter, "Segoe UI", Roboto, Arial, sans-serif; }
 

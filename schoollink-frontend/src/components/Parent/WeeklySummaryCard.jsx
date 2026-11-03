@@ -109,8 +109,8 @@ export default function WeeklySummaryCard({ studentId, showEmpty }) {
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5, flexWrap: "wrap" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1, minWidth: 0 }}>
-                    <Box sx={{ width: 38, height: 38, minWidth: 38, borderRadius: "12px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <EventNoteIcon sx={{ color: "var(--sl-ink)", fontSize: 22 }} />
+                    <Box sx={{ width: 38, height: 38, minWidth: 38, borderRadius: "12px", bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <EventNoteIcon sx={{ color: "var(--sl-tile-ink)", fontSize: 22 }} />
                     </Box>
                     <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--sl-ink)", lineHeight: 1.2 }}>
                         This week{f ? ` for ${f.first_name}` : ""}

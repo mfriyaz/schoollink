@@ -747,7 +747,7 @@ cursor: "pointer",
                                     height: 40,
                                     borderRadius: "12px",
                                     border: "1.5px solid var(--sl-oc)",
-                                    bgcolor: "var(--sl-accent)",
+                                    bgcolor: "var(--sl-tile)",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
@@ -755,9 +755,9 @@ cursor: "pointer",
                                 }}
                             >
                                 {post.post_type === "announcement" ? (
-                                    <CampaignIcon sx={{ color: "var(--sl-ink)", fontSize: 20 }} />
+                                    <CampaignIcon sx={{ color: "var(--sl-tile-ink)", fontSize: 20 }} />
                                 ) : (
-                                    <MenuBookIcon sx={{ color: "var(--sl-ink)", fontSize: 20 }} />
+                                    <MenuBookIcon sx={{ color: "var(--sl-tile-ink)", fontSize: 20 }} />
                                 )}
                             </Box>
                             <Box>

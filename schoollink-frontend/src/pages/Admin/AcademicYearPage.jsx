@@ -229,8 +229,8 @@ function AcademicYearPage() {
         <Box sx={{ maxWidth: 900 }}>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <EventRepeatIcon sx={{ color: "var(--sl-ink)" }} />
+                <Box sx={{ width: 46, height: 46, minWidth: 46, borderRadius: "14px", bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <EventRepeatIcon sx={{ color: "var(--sl-tile-ink)" }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>Academic Year</Typography>
@@ -288,8 +288,8 @@ function AcademicYearPage() {
             <Dialog open={open} onClose={() => !saving && setOpen(false)} fullWidth maxWidth="md" fullScreen={fullScreen}>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 2.5, pb: 1.5 }}>
-                    <Box sx={{ width: 42, height: 42, minWidth: 42, borderRadius: "13px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <EventRepeatIcon sx={{ color: "var(--sl-ink)" }} />
+                    <Box sx={{ width: 42, height: 42, minWidth: 42, borderRadius: "13px", bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <EventRepeatIcon sx={{ color: "var(--sl-tile-ink)" }} />
                     </Box>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--sl-ink)" }}>Start new year</Typography>

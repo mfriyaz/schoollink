@@ -72,7 +72,7 @@ function KpiCard({ icon, label, value, linkLabel, onLinkClick }) {
             <Box
                 sx={{
                     width: 42, height: 42, minWidth: 42, borderRadius: "13px",
-                    bgcolor: "var(--sl-accent)", color: "var(--sl-ink)",
+                    bgcolor: "var(--sl-tile)", color: "var(--sl-ink)",
                     border: "1.5px solid var(--sl-oc)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     "& svg": { fontSize: 21 }
@@ -538,11 +538,11 @@ function TeacherDashboardPage() {
                                 <Box
                                     sx={{
                                         width: 40, height: 40, minWidth: 40, borderRadius: "12px",
-                                        bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)",
+                                        bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)",
                                         display: "flex", alignItems: "center", justifyContent: "center"
                                     }}
                                 >
-                                    <MenuBookIcon sx={{ color: "var(--sl-ink)", fontSize: 20 }} />
+                                    <MenuBookIcon sx={{ color: "var(--sl-tile-ink)", fontSize: 20 }} />
                                 </Box>
                                 <Box sx={{ minWidth: 0, flex: 1 }}>
                                     <Typography sx={{ fontWeight: 700, wordBreak: "break-word" }}>{post.title}</Typography>

@@ -49,8 +49,8 @@ export default function AttendanceModeCard() {
     return (
         <Card sx={{ p: { xs: 2, sm: 3 }, mb: 3, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <FactCheckIcon sx={{ color: "var(--sl-ink)" }} />
+                <Box sx={{ width: 40, height: 40, borderRadius: "12px", bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <FactCheckIcon sx={{ color: "var(--sl-tile-ink)" }} />
                 </Box>
                 <Box>
                     <Typography sx={{ fontWeight: 800, color: "var(--sl-ink)" }}>How attendance is taken</Typography>

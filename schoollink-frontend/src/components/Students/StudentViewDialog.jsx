@@ -201,7 +201,7 @@ function StudentViewDialog({ open, student, onClose }) {
         <>
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth fullScreen={isPhoneV}>
             <DialogTitle component="div" sx={{ display: "flex", alignItems: "center", gap: 1.5, pb: 1.5 }}>
-                <Avatar sx={{ width: 52, height: 52, bgcolor: "var(--sl-accent)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", fontWeight: 800, fontSize: "1.1rem" }}>
+                <Avatar sx={{ width: 52, height: 52, bgcolor: "var(--sl-tile)", color: "var(--sl-ink)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", fontWeight: 800, fontSize: "1.1rem" }}>
                     {initialsOfStudent(student)}
                 </Avatar>
                 <Box sx={{ minWidth: 0, flex: 1 }}>

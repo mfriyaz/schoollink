@@ -126,8 +126,8 @@ function ParentAllUpdatesPage() {
                 Dashboard
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <CampaignIcon sx={{ color: "var(--sl-ink)" }} />
+                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <CampaignIcon sx={{ color: "var(--sl-tile-ink)" }} />
                 </Box>
                 <Box sx={{ minWidth: 0 }}>
                     <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, lineHeight: 1.2, color: "var(--sl-ink)" }}>
@@ -219,10 +219,10 @@ function ParentAllUpdatesPage() {
                                         "&:hover": { transform: "translateY(-1px)" }
                                     }}
                                 >
-                                    <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: isAnnouncement ? "var(--sl-soft2)" : "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <Box sx={{ width: 40, height: 40, minWidth: 40, borderRadius: "12px", bgcolor: isAnnouncement ? "var(--sl-soft2)" : "var(--sl-tile)", border: "1.5px solid var(--sl-oc)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                         {isAnnouncement
-                                            ? <CampaignIcon sx={{ color: "var(--sl-ink)", fontSize: 21 }} />
-                                            : <MenuBookIcon sx={{ color: "var(--sl-ink)", fontSize: 21 }} />}
+                                            ? <CampaignIcon sx={{ color: "var(--sl-tile-ink)", fontSize: 21 }} />
+                                            : <MenuBookIcon sx={{ color: "var(--sl-tile-ink)", fontSize: 21 }} />}
                                     </Box>
                                     <Box sx={{ minWidth: 0, flex: 1 }}>
                                         <Typography sx={{ fontWeight: 700, fontSize: "0.92rem", lineHeight: 1.3, color: "var(--sl-ink)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
@@ -243,7 +243,7 @@ function ParentAllUpdatesPage() {
                                             {formatPostTime(post.created_at)}
                                         </Typography>
                                     </Box>
-                                    <ChevronRightIcon sx={{ color: "var(--sl-ink)", fontSize: 20, display: { xs: "none", sm: "block" } }} />
+                                    <ChevronRightIcon sx={{ color: "var(--sl-tile-ink)", fontSize: 20, display: { xs: "none", sm: "block" } }} />
                                 </Box>
                             );
                         })}

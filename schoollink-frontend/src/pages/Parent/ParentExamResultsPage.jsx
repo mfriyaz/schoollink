@@ -109,8 +109,8 @@ function ParentExamResultsPage() {
     return (
         <Box sx={{ maxWidth: 700 }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <AssessmentIcon sx={{ color: "var(--sl-ink)" }} />
+                <Box sx={{ width: 46, height: 46, borderRadius: "14px", bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <AssessmentIcon sx={{ color: "var(--sl-tile-ink)" }} />
                 </Box>
                 <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, color: "var(--sl-ink)" }}>
                     Exam Results

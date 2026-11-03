@@ -68,8 +68,8 @@ export default function QuizCard({ homeworkId, studentId }) {
     return (
         <Card sx={{ p: { xs: 2, md: 2.5 }, mt: 2.5, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, mb: 1.5 }}>
-                <Box sx={{ width: 38, height: 38, minWidth: 38, borderRadius: "12px", bgcolor: "var(--sl-accent)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <QuizIcon sx={{ color: "var(--sl-ink)", fontSize: 22 }} />
+                <Box sx={{ width: 38, height: 38, minWidth: 38, borderRadius: "12px", bgcolor: "var(--sl-tile)", border: "1.5px solid var(--sl-oc)", boxShadow: "2px 2px 0 var(--sl-hs)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <QuizIcon sx={{ color: "var(--sl-tile-ink)", fontSize: 22 }} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography sx={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--sl-ink)" }}>Practice quiz</Typography>

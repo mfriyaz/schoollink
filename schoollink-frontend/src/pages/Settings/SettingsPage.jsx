@@ -83,7 +83,7 @@ function SettingsPage() {
                         width: 46,
                         height: 46,
                         borderRadius: "14px",
-                        bgcolor: "var(--sl-accent)",
+                        bgcolor: "var(--sl-tile)",
                         border: "1.5px solid var(--sl-oc)",
                         boxShadow: "2px 2px 0 var(--sl-hs)",
                         display: "flex",
@@ -91,7 +91,7 @@ function SettingsPage() {
                         justifyContent: "center"
                     }}
                 >
-                    <SettingsIcon sx={{ color: "var(--sl-ink)" }} />
+                    <SettingsIcon sx={{ color: "var(--sl-tile-ink)" }} />
                 </Box>
                 <Typography sx={{ fontWeight: 800, fontSize: { xs: "1.3rem", md: "1.55rem" }, color: "var(--sl-ink)" }}>
                     Settings
