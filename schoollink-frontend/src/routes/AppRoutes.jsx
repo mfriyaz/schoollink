@@ -43,6 +43,8 @@ import SubjectsPage from "../pages/Admin/SubjectsPage";
 import ReportsPage from "../pages/Admin/ReportsPage";
 import EarlyWarningPage from "../pages/Admin/EarlyWarningPage";
 import AttendanceReportPage from "../pages/Admin/AttendanceReportPage";
+import ParentLeavePage from "../pages/Parent/ParentLeavePage";
+import LeaveRequestsPage from "../pages/Admin/LeaveRequestsPage";
 import StudentProfilePage from "../pages/Students/StudentProfilePage";
 import AttendanceBoardPage from "../pages/Admin/AttendanceBoardPage";
 import GradesPage from "../pages/Admin/GradesPage";
@@ -508,6 +510,32 @@ export default function AppRoutes() {
                         <ProtectedRoute allowedRoles={["Parent"]}>
 
                             <ParentExamResultsPage />
+
+                        </ProtectedRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/parent/leave"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["Parent"]}>
+
+                            <ParentLeavePage />
+
+                        </ProtectedRoute>
+
+                    }
+                />
+
+                <Route
+                    path="/leave-requests"
+                    element={
+
+                        <ProtectedRoute allowedRoles={["School Admin", "Teacher"]}>
+
+                            <LeaveRequestsPage />
 
                         </ProtectedRoute>
 

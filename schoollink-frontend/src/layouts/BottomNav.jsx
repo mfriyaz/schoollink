@@ -11,7 +11,7 @@ import AddIcon from "@mui/icons-material/AddCircleRounded";
 import FactCheckIcon from "@mui/icons-material/FactCheckRounded";
 import AssessmentIcon from "@mui/icons-material/AssessmentRounded";
 import WeeklyIcon from "@mui/icons-material/EventNoteRounded";
-import SettingsIcon from "@mui/icons-material/SettingsRounded";
+import LeaveIcon from "@mui/icons-material/EventBusyRounded";
 import SchoolIcon from "@mui/icons-material/SchoolRounded";
 import PaymentsIcon from "@mui/icons-material/PaymentsRounded";
 import AddBusinessIcon from "@mui/icons-material/AddBusinessRounded";
@@ -38,9 +38,9 @@ const tabs = {
     Parent: [
         { title: "Home", path: "/parent/dashboard", icon: <HomeIcon /> },
         { title: "Attendance", path: "/parent/attendance", icon: <FactCheckIcon /> },
+        { title: "Leave", path: "/parent/leave", icon: <LeaveIcon /> },
         { title: "Results", path: "/parent/exam-results", icon: <AssessmentIcon /> },
-        { title: "This Week", path: "/parent/this-week", icon: <WeeklyIcon /> },
-        { title: "Settings", path: "/settings", icon: <SettingsIcon /> }
+        { title: "This Week", path: "/parent/this-week", icon: <WeeklyIcon /> }
     ],
 
     "Super Admin": [
@@ -63,8 +63,7 @@ export default function BottomNav({ onMore }) {
 
     const items = tabs[role] || tabs.Admin;
 
-    // Parents already see all of their screens, so no "More" button
-    const showMore = role !== "Parent";
+    const showMore = true;
 
     const cells = [...items, ...(showMore ? [{ title: "More", icon: <MoreIcon />, more: true }] : [])];
 

@@ -547,6 +547,8 @@ async function notifyParentsOfAttendance({ studentId, status, dateIso, when, whe
 
 module.exports = {
 
+    notifyIfEnabled,
+
     notifyParentsOfAttendance,
 
     notifyParentsOfHomework,

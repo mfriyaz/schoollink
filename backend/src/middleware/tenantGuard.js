@@ -32,6 +32,7 @@ const OWNER = {
         "SELECT e.school_id FROM student_marks m JOIN exam_subjects es ON es.id = m.exam_subject_id JOIN exams e ON e.id = es.exam_id WHERE m.id = $1",
     submission:
         "SELECT ts.school_id FROM homework_submissions hs JOIN homework h ON h.id = hs.homework_id JOIN teacher_subjects ts ON ts.id = h.teacher_subject_id WHERE hs.id = $1",
+    leave_request: "SELECT school_id FROM leave_requests WHERE id = $1",
     greeting:
         "SELECT s.school_id FROM morning_greetings g JOIN students s ON s.id = g.student_id WHERE g.id = $1",
 };

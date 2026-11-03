@@ -28,6 +28,7 @@ import HomeIcon from "@mui/icons-material/HomeOutlined";
 import PersonIcon from "@mui/icons-material/PersonOutlined";
 import SettingsIcon from "@mui/icons-material/SettingsOutlined";
 import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
+import EventBusyOutlinedIcon from "@mui/icons-material/EventBusyOutlined";
 import FactCheckIcon from "@mui/icons-material/FactCheckOutlined";
 import AssessmentIcon from "@mui/icons-material/AssessmentOutlined";
 import GradeIcon from "@mui/icons-material/GradeOutlined";
@@ -61,6 +62,12 @@ const adminMenus = [
         title: "Attendance Report",
         path: "/attendance-report",
         icon: <AssessmentOutlinedIcon />
+    },
+
+    {
+        title: "Leave Requests",
+        path: "/leave-requests",
+        icon: <EventBusyOutlinedIcon />
     },
 
     {
@@ -188,6 +195,12 @@ const teacherMenus = [
     },
 
     {
+        title: "Leave Requests",
+        path: "/leave-requests",
+        icon: <EventBusyOutlinedIcon />
+    },
+
+    {
         title: "Enter Marks",
         path: "/teacher/enter-marks",
         icon: <GradeIcon />
@@ -219,6 +232,12 @@ const parentMenus = [
         title: "Attendance",
         path: "/parent/attendance",
         icon: <FactCheckIcon />
+    },
+
+    {
+        title: "Leave",
+        path: "/parent/leave",
+        icon: <EventBusyOutlinedIcon />
     },
 
     {
@@ -313,6 +332,8 @@ const iconColors = {
     "Attendance": "#34D399",
     "Attendance Board": "#34D399",
     "Attendance Report": "#34D399",
+    "Leave Requests": "#34D399",
+    "Leave": "#34D399",
     "Enter Marks": "#FACC15",
     "Home": "#818CF8",
     "Exam Results": "#FB7185",
@@ -322,7 +343,7 @@ const iconColors = {
 
 // Groups the long admin menu under small headings (other roles are short, so no headings)
 const adminGroups = {
-    "Dashboard": "Overview", "Attendance Board": "Overview", "Attendance Report": "Overview",
+    "Dashboard": "Overview", "Attendance Board": "Overview", "Attendance Report": "Overview", "Leave Requests": "Overview",
     "Teachers": "People", "Students": "People", "Classes": "People", "Subjects": "People",
     "Posts": "Communication", "Create Announcement": "Communication", "Expired Announcements": "Communication", "School Calendar": "Communication",
     "Exams": "Academics", "Academic Year": "Academics", "Grading Scale": "Academics", "Reports": "Academics", "Early Warning": "Academics",
