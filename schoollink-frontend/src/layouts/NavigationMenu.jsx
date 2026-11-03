@@ -61,7 +61,7 @@ const NavigationMenu = [
     },
 
     {
-        title: "Early Warning",
+        title: "Needs Attention",
         icon: <WarningAmberIcon />,
         path: "/early-warning"
     },

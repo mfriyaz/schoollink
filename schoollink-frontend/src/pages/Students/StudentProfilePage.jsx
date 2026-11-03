@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-    Alert, Box, Button, Card, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Typography
+    Alert, Box, Button, Card, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBackRounded";
 
 import PageHeader from "../../components/common/PageHeader";
 import { getStudentProfile } from "../../services/studentProfileService";
+import { addFollowup } from "../../services/attentionService";
 
 const STATE_COLORS = {
     present: { bg: "#BBF7D0", label: "Present" },
@@ -165,14 +166,34 @@ function StudentProfilePage() {
     const navigate = useNavigate();
     const [data, setData] = useState(null);
     const [error, setError] = useState("");
+    const [note, setNote] = useState("");
+    const [noteBusy, setNoteBusy] = useState(false);
+    const [noteError, setNoteError] = useState("");
+
+    const reload = () => getStudentProfile(id)
+        .then((res) => setData(res.data))
+        .catch((err) => setError(err.response?.data?.message || "Unable to load this student."));
 
     useEffect(() => {
         setData(null);
         setError("");
-        getStudentProfile(id)
-            .then((res) => setData(res.data))
-            .catch((err) => setError(err.response?.data?.message || "Unable to load this student."));
+        reload();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
+
+    async function saveNote() {
+        setNoteBusy(true);
+        setNoteError("");
+        try {
+            await addFollowup(id, note);
+            setNote("");
+            await reload();
+        } catch (err) {
+            setNoteError(err.response?.data?.message || "Unable to save the note.");
+        } finally {
+            setNoteBusy(false);
+        }
+    }
 
     if (error) {
         return (
@@ -299,6 +320,24 @@ function StudentProfilePage() {
 
                     <Section title="Homework" note="Last 30 days, posts that need an acknowledgement">
                         <Row label="Acknowledged">{homework.given ? `${homework.acknowledged} of ${homework.given}` : "No posts yet"}</Row>
+                    </Section>
+
+                    <Section title="Follow-up notes" note="What was done for this student">
+                        {(data.followups || []).length === 0 && <Typography sx={{ color: "text.secondary", fontSize: "0.88rem", mb: 1 }}>No notes yet.</Typography>}
+                        {(data.followups || []).map((f) => (
+                            <Box key={f.id} data-testid="profile-followup" sx={{ py: 0.9, borderBottom: "1px solid var(--sl-border)" }}>
+                                <Typography sx={{ fontSize: "0.9rem", overflowWrap: "anywhere" }}>{f.note}</Typography>
+                                <Typography sx={{ fontSize: "0.74rem", color: "text.secondary" }}>
+                                    {new Date(f.created_at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}{f.by_name ? ` · ${f.by_name}` : ""}
+                                </Typography>
+                            </Box>
+                        ))}
+                        <TextField fullWidth multiline minRows={2} size="small" label="Add a note" value={note}
+                            onChange={(e) => setNote(e.target.value)} inputProps={{ maxLength: 500 }} sx={{ mt: 1.5 }} />
+                        {noteError && <Typography sx={{ color: "error.main", fontSize: "0.78rem", mt: 0.5 }}>{noteError}</Typography>}
+                        <Button variant="contained" size="small" onClick={saveNote} disabled={noteBusy || note.trim().length < 3} sx={{ mt: 1 }}>
+                            {noteBusy ? "Saving..." : "Save note"}
+                        </Button>
                     </Section>
 
                     <Section title="Parent and contact">

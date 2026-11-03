@@ -19,6 +19,8 @@ async function startServer() {
 
             require("./src/services/subscriptionLock.service").start();
 
+            require("./src/services/attentionDigest.service").start();
+
         });
 
     } catch (err) {

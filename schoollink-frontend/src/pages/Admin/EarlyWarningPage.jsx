@@ -3,14 +3,16 @@ import { useCallback, useEffect, useState } from "react";
 
 import NotificationImportantIcon from "@mui/icons-material/NotificationImportantOutlined";
 import {
-    Alert, Box, Button, Card, Chip, CircularProgress, InputAdornment, MenuItem, Skeleton, TextField, Typography
+    Alert, Box, Button, Card, Chip, CircularProgress, InputAdornment, MenuItem, Skeleton, Tab, Tabs, TextField, Typography
 } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesomeOutlined";
 
 import { getAllClassesForManagement } from "../../services/classManagementService";
+import { getAttention, addFollowup } from "../../services/attentionService";
+import { getStoredUser } from "../../layouts/Sidebar";
 import PageHeader from "../../components/common/PageHeader";
 import { notify } from "../../utils/notify";
-import { getAiStatus, getEarlyWarning, aiEarlyWarningNote, saveWarningSettings } from "../../services/aiService";
+import { getAiStatus, aiEarlyWarningNote, saveWarningSettings } from "../../services/aiService";
 
 const SEVERITY = {
     high: { label: "Needs attention", fg: "#B91C1C", bg: "#FEE2E2" },
@@ -26,11 +28,31 @@ function Metric({ label, value }) {
     );
 }
 
-function StudentRow({ item, aiAvailable }) {
+function StudentRow({ item, aiAvailable, onSaved }) {
 
     const [note, setNote] = useState("");
     const [busy, setBusy] = useState(false);
     const [err, setErr] = useState("");
+    const [open, setOpen] = useState(false);
+    const [text, setText] = useState("");
+    const [saving, setSaving] = useState(false);
+    const [fuErr, setFuErr] = useState("");
+
+    async function saveFollowup() {
+        setSaving(true);
+        setFuErr("");
+        try {
+            await addFollowup(item.student_id, text);
+            setOpen(false);
+            setText("");
+            notify("Follow-up saved.");
+            onSaved();
+        } catch (e) {
+            setFuErr(e.response?.data?.message || "Unable to save the follow-up.");
+        } finally {
+            setSaving(false);
+        }
+    }
 
     const sev = SEVERITY[item.severity] || SEVERITY.medium;
     const m = item.metrics || {};
@@ -82,6 +104,33 @@ function StudentRow({ item, aiAvailable }) {
                 {m.previous_percentage !== undefined && <Metric label={m.previous_exam || "Previous exam"} value={`${m.previous_percentage}%`} />}
             </Box>
 
+            {item.followup && (
+                <Typography data-testid="followup-note" sx={{ fontSize: "0.84rem", color: "text.secondary", mb: 1 }}>
+                    <b>Last follow-up</b> ({new Date(item.followup.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}{item.followup.by ? `, ${item.followup.by}` : ""}): {item.followup.note}
+                </Typography>
+            )}
+
+            {!open && (
+                <Button size="small" variant="contained" onClick={() => setOpen(true)} sx={{ mr: 1 }}>
+                    {item.handled ? "Add another note" : "Record follow-up"}
+                </Button>
+            )}
+
+            {open && (
+                <Box sx={{ mb: 1.25 }}>
+                    <TextField
+                        fullWidth multiline minRows={2} size="small" autoFocus
+                        label="What was done? (for example: called father, child was ill)"
+                        value={text} onChange={(e) => setText(e.target.value)} inputProps={{ maxLength: 500 }}
+                    />
+                    {fuErr && <Typography sx={{ color: "error.main", fontSize: "0.78rem", mt: 0.5 }}>{fuErr}</Typography>}
+                    <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                        <Button size="small" variant="contained" onClick={saveFollowup} disabled={saving || text.trim().length < 3}>{saving ? "Saving..." : "Save"}</Button>
+                        <Button size="small" color="inherit" onClick={() => { setOpen(false); setFuErr(""); }}>Cancel</Button>
+                    </Box>
+                </Box>
+            )}
+
             {aiAvailable && !note && (
                 <Button
                     size="small"
@@ -128,8 +177,11 @@ export default function EarlyWarningPage() {
     const [limitInput, setLimitInput] = useState("");
     const [limitBusy, setLimitBusy] = useState(false);
     const [limitError, setLimitError] = useState("");
+    const [tab, setTab] = useState("open");
+    const isAdmin = (getStoredUser() || {}).role === "School Admin";
 
     useEffect(() => {
+        if (!isAdmin) return;
         getAllClassesForManagement()
             .then((r) => { if (r.success) setClasses(r.data.filter((c) => c.is_active !== false)); })
             .catch(() => { /* filter is optional */ });
@@ -142,7 +194,7 @@ export default function EarlyWarningPage() {
         setLoading(true);
         setError("");
         try {
-            const res = await getEarlyWarning(classId);
+            const res = await getAttention({ ...(classId ? { class_id: classId } : {}), show: "all" });
             if (res.success) { setData(res.data); setLimitInput(String(res.data.attendance_limit ?? 85)); }
             else setError(res.message || "Unable to load early warnings.");
         } catch (err) {
@@ -174,7 +226,8 @@ export default function EarlyWarningPage() {
     }
 
     const limit = data ? (data.attendance_limit ?? 85) : 85;
-    const items = data ? data.items : [];
+    const all = data ? data.items : [];
+    const items = tab === "open" ? all.filter((i) => !i.handled) : all.filter((i) => i.handled);
     const high = items.filter((i) => i.severity === "high").length;
 
     return (
@@ -182,10 +235,10 @@ export default function EarlyWarningPage() {
 
             <PageHeader
                 eyebrow="Students who may need support"
-                title="Early Warning"
-                subtitle="Found from attendance and marks of the last 30 days."
+                title="Students needing attention"
+                subtitle={isAdmin ? "Found from attendance and marks of the last 30 days. Record what was done, and the student moves to Followed up." : "Students of your class, found from attendance and marks of the last 30 days."}
                 avatar={<NotificationImportantIcon />}
-                action={
+                action={isAdmin && (
                     <TextField
                         select
                         size="small"
@@ -197,10 +250,10 @@ export default function EarlyWarningPage() {
                         <MenuItem value="">All classes</MenuItem>
                         {classes.map((c) => <MenuItem key={c.id} value={c.id}>{c.class_name}</MenuItem>)}
                     </TextField>
-                }
+                )}
             />
 
-            <Card sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
+            {isAdmin && <Card sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, borderRadius: 3, border: "1px solid var(--sl-border)", boxShadow: "var(--sl-card-shadow)" }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
                     <Box sx={{ flex: "1 1 220px", minWidth: 0 }}>
                         <Typography sx={{ fontWeight: 700, fontSize: "0.9rem" }}>Attendance warning level</Typography>
@@ -222,7 +275,7 @@ export default function EarlyWarningPage() {
                     </Button>
                 </Box>
                 {limitError && <Typography sx={{ color: "error.main", fontSize: "0.78rem", mt: 0.75 }}>{limitError}</Typography>}
-            </Card>
+            </Card>}
 
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
@@ -233,15 +286,26 @@ export default function EarlyWarningPage() {
                 </>
             )}
 
+            {data && data.class_teacher === false && (
+                <Alert severity="info" sx={{ mb: 2 }}>You are not a class teacher yet, so no class is listed here. Please ask your School Admin.</Alert>
+            )}
+
+            {data && (
+                <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 1.5 }}>
+                    <Tab value="open" label={`To follow up (${data.open_count})`} />
+                    <Tab value="done" label={`Followed up (${data.handled_count})`} />
+                </Tabs>
+            )}
+
             {data && (
                 <Typography data-testid="warning-summary" sx={{ fontWeight: 700, mb: 1.5 }}>
                     {items.length === 0
-                        ? "No students need attention right now."
-                        : `${items.length} of ${data.total_students} students flagged` + (high ? ` - ${high} need attention` : "")}
+                        ? (tab === "open" ? "No students need a follow-up right now." : "No students have been followed up recently.")
+                        : (tab === "open" ? `${items.length} of ${data.total_students} students to follow up` + (high ? ` - ${high} need attention` : "") : `${items.length} followed up in the last 14 days`)}
                 </Typography>
             )}
 
-            {items.map((it) => <StudentRow key={it.student_id} item={it} aiAvailable={aiAvailable} />)}
+            {items.map((it) => <StudentRow key={it.student_id} item={it} aiAvailable={aiAvailable && isAdmin} onSaved={load} />)}
 
             <Typography sx={{ color: "text.secondary", fontSize: "0.76rem", mt: 2 }}>
                 A student is flagged for attendance below {limit}% (at least 5 days recorded), 3 or more absent days in a row,

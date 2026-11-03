@@ -236,7 +236,7 @@ export default function AppRoutes() {
                     path="/early-warning"
                     element={
 
-                        <ProtectedRoute allowedRoles={["School Admin"]}>
+                        <ProtectedRoute allowedRoles={["School Admin", "Teacher"]}>
 
                             <EarlyWarningPage />
 

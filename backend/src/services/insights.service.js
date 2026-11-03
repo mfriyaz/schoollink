@@ -377,6 +377,7 @@ async function getEarlyWarnings(schoolId, { classId, studentId } = {}) {
             first_name: s.first_name,
             admission_no: s.admission_no,
             class_id: s.class_id,
+            section_id: s.section_id,
             class_name: s.class_name,
             section_name: s.section_name,
             severity,

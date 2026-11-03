@@ -18,6 +18,7 @@ import DashboardSection from "../../components/Dashboard/DashboardSection";
 import RecentStudentCard from "../../components/Dashboard/RecentStudentCard";
 import BirthdayCard from "../../components/Dashboard/BirthdayCard";
 import RecentPostsCard from "../../components/Dashboard/RecentPostsCard";
+import AttentionCard from "../../components/Dashboard/AttentionCard";
 import PendingAcknowledgementsChart from "../../components/Dashboard/PendingAcknowledgementsChart";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
@@ -68,6 +69,7 @@ function DashboardPage() {
             </Box>
             {tab === 0 && (
                 <Box>
+                    <AttentionCard />
                     <SectionTitle>
                         Dashboard Overview
                     </SectionTitle>

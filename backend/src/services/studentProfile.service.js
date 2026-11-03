@@ -1,6 +1,7 @@
 const pool = require("../config/database");
 const insights = require("./insights.service");
 const attendanceService = require("./attendance.service");
+const attention = require("./attention.service");
 
 const r1 = (n) => Math.round(n * 10) / 10;
 
@@ -214,7 +215,8 @@ async function getProfile(studentId) {
         },
         marks,
         homework: hw.rows[0],
-        warning
+        warning,
+        followups: await attention.history(studentId)
     };
 
 }

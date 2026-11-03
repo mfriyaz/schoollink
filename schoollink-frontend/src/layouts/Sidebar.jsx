@@ -137,7 +137,7 @@ const adminMenus = [
     },
 
     {
-        title: "Early Warning",
+        title: "Needs Attention",
         path: "/early-warning",
         icon: <WarningAmberIcon />
     },
@@ -198,6 +198,12 @@ const teacherMenus = [
         title: "Leave Requests",
         path: "/leave-requests",
         icon: <EventBusyOutlinedIcon />
+    },
+
+    {
+        title: "Needs Attention",
+        path: "/early-warning",
+        icon: <WarningAmberIcon />
     },
 
     {
@@ -322,7 +328,7 @@ const iconColors = {
     "Grading Scale": "#FACC15",
     "Reports": "#818CF8",
     "This Week": "#2DD4BF",
-    "Early Warning": "#FB923C",
+    "Needs Attention": "#FB923C",
     "Activity Log": "#F59E0B",
     "School Calendar": "#C084FC",
     "Profile": "#22D3EE",
@@ -346,7 +352,7 @@ const adminGroups = {
     "Dashboard": "Overview", "Attendance Board": "Overview", "Attendance Report": "Overview", "Leave Requests": "Overview",
     "Teachers": "People", "Students": "People", "Classes": "People", "Subjects": "People",
     "Posts": "Communication", "Create Announcement": "Communication", "Expired Announcements": "Communication", "School Calendar": "Communication",
-    "Exams": "Academics", "Academic Year": "Academics", "Grading Scale": "Academics", "Reports": "Academics", "Early Warning": "Academics",
+    "Exams": "Academics", "Academic Year": "Academics", "Grading Scale": "Academics", "Reports": "Academics", "Needs Attention": "Overview",
     "Activity Log": "Account", "Profile": "Account", "Settings": "Account"
 };
 
