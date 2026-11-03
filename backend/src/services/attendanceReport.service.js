@@ -56,7 +56,10 @@ async function getReport(schoolId, query) {
                AND a.attendance_date BETWEEN $2::date AND $3::date
              GROUP BY a.student_id, a.attendance_date
         ), st AS (
-            SELECT student_id,
+            SELECT day.student_id,
+                   EXISTS (SELECT 1 FROM leave_requests lr
+                            WHERE lr.student_id = day.student_id AND lr.status = 'Approved'
+                              AND day.attendance_date BETWEEN lr.from_date AND lr.to_date) AS covered,
                    CASE
                        WHEN ab * 2 > n THEN 'absent'
                        WHEN n = 2 AND ab = 1 THEN 'half'
@@ -71,7 +74,8 @@ async function getReport(schoolId, query) {
                COUNT(*) FILTER (WHERE st.state = 'present')::int AS present,
                COUNT(*) FILTER (WHERE st.state = 'late')::int AS late,
                COUNT(*) FILTER (WHERE st.state = 'half')::int AS half,
-               COUNT(*) FILTER (WHERE st.state = 'absent')::int AS absent
+               COUNT(*) FILTER (WHERE st.state = 'absent')::int AS absent,
+               COUNT(*) FILTER (WHERE st.state = 'absent' AND st.covered)::int AS on_leave
           FROM students s
           JOIN classes c ON c.id = s.class_id
           JOIN sections sec ON sec.id = s.section_id
@@ -123,7 +127,7 @@ async function buildWorkbook(report) {
 
     ws.addRow([]);
 
-    const head = ws.addRow(["Admission no", "Student", "Class", "Section", "Days recorded", "Present", "Late", "Half day", "Absent", "Attendance %", "Parent phone"]);
+    const head = ws.addRow(["Admission no", "Student", "Class", "Section", "Days recorded", "Present", "Late", "Half day", "Absent", "Absent on leave", "Attendance %", "Parent phone"]);
 
     head.font = { bold: true };
 
@@ -135,13 +139,13 @@ async function buildWorkbook(report) {
             safeCell(`${r.first_name} ${r.last_name || ""}`.trim()),
             safeCell(r.class_name),
             safeCell(r.section_name),
-            r.recorded, r.present, r.late, r.half, r.absent,
+            r.recorded, r.present, r.late, r.half, r.absent, r.on_leave,
             r.percent,
             safeCell(r.parent_phone || "")
         ]);
     }
 
-    [14, 26, 12, 10, 14, 10, 8, 10, 8, 14, 18].forEach((w, i) => { ws.getColumn(i + 1).width = w; });
+    [14, 26, 12, 10, 14, 10, 8, 10, 8, 16, 14, 18].forEach((w, i) => { ws.getColumn(i + 1).width = w; });
 
     ws.views = [{ state: "frozen", ySplit: 3 }];
 

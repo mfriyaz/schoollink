@@ -162,7 +162,7 @@ function AttendanceBoardPage() {
 
                     <Typography sx={{ fontWeight: 800, fontSize: "1.05rem", mb: 0.25 }}>Absent today: follow up</Typography>
                     <Typography sx={{ color: "text.secondary", fontSize: "0.84rem", mb: 1 }}>
-                        Students marked absent, or absent for half the day, with the parent's number.
+                        Students marked absent, or absent for half the day, with the parent's number.{s.absent_on_leave > 0 && ` ${s.absent_on_leave} of them ${s.absent_on_leave === 1 ? "is" : "are"} on approved leave.`}
                     </Typography>
 
                     <TableContainer sx={{ bgcolor: "#fff" }}>
@@ -188,8 +188,8 @@ function AttendanceBoardPage() {
                                             {a.parent_phone ? <a href={`tel:${a.parent_phone}`} style={{ color: "inherit", fontWeight: 600 }}>{a.parent_phone}</a> : "-"}
                                         </TableCell>
                                         <TableCell>
-                                            <Box component="span" sx={{ px: 1.1, py: 0.2, borderRadius: 99, fontSize: "0.74rem", fontWeight: 700, bgcolor: a.state === "Absent" ? "#FEE2E2" : "#FEF3C7", color: a.state === "Absent" ? "#B91C1C" : "#B45309" }}>
-                                                {a.state}
+                                            <Box component="span" sx={{ px: 1.1, py: 0.2, borderRadius: 99, fontSize: "0.74rem", fontWeight: 700, bgcolor: a.on_leave ? "var(--sl-soft)" : a.state === "Absent" ? "#FEE2E2" : "#FEF3C7", color: a.on_leave ? "var(--sl-primary-dark)" : a.state === "Absent" ? "#B91C1C" : "#B45309" }}>
+                                                {a.on_leave ? `${a.state} · on leave` : a.state}
                                             </Box>
                                         </TableCell>
                                     </TableRow>

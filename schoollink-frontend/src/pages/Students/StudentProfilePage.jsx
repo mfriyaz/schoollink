@@ -12,7 +12,8 @@ const STATE_COLORS = {
     present: { bg: "#BBF7D0", label: "Present" },
     late: { bg: "#FDE68A", label: "Late" },
     half: { bg: "#FED7AA", label: "Half day" },
-    absent: { bg: "#FCA5A5", label: "Absent" }
+    absent: { bg: "#FCA5A5", label: "Absent" },
+    leave: { bg: "var(--sl-soft2)", label: "Absent, on leave" }
 };
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -49,7 +50,7 @@ function Row({ label, children }) {
 /** Calendar of the last ~13 weeks, one cell per day, Monday first */
 function AttendanceCalendar({ days, asOf }) {
 
-    const byDate = new Map(days.map((d) => [d.date, d.state]));
+    const byDate = new Map(days.map((d) => [d.date, d.leave ? "leave" : d.state]));
 
     const end = new Date(`${asOf}T00:00:00Z`);
 
@@ -210,6 +211,12 @@ function StudentProfilePage() {
                 avatarSize={52}
             />
 
+            {attendance.on_leave_now && (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                    On approved leave{attendance.on_leave_now.from_date === attendance.on_leave_now.to_date ? " today" : `: ${attendance.on_leave_now.from_date} to ${attendance.on_leave_now.to_date}`}.
+                </Alert>
+            )}
+
             {warning && warning.flags.length > 0 && (
                 <Alert severity={warning.severity === "high" ? "error" : "warning"} sx={{ mb: 2 }}>
                     <b>{warning.severity === "high" ? "Needs attention: " : "Keep an eye: "}</b>
@@ -227,6 +234,12 @@ function StudentProfilePage() {
                         <Stat label="Absent" value={a.absent + (a.half ? 0 : 0)} tone={a.absent ? "#B91C1C" : undefined} />
                         <Stat label="Absent now" value={attendance.streak ? `${attendance.streak} ${attendance.streak === 1 ? "day" : "days"} running` : "No"} tone={attendance.streak ? "#B91C1C" : undefined} />
                     </Box>
+
+                    {attendance.leave_absences > 0 && (
+                        <Typography sx={{ color: "text.secondary", fontSize: "0.84rem", mt: -1.5, mb: 2 }}>
+                            {attendance.leave_absences} of the {a.absent} absent {a.absent === 1 ? "day was" : "days were"} on approved leave.
+                        </Typography>
+                    )}
 
                     <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "auto 1fr" }, gap: { xs: 2.5, md: 5 } }}>
                         <AttendanceCalendar days={attendance.days} asOf={data.as_of} />

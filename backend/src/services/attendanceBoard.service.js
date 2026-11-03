@@ -91,7 +91,10 @@ async function getBoard(schoolId, dateInput) {
         `
         SELECT s.id AS student_id, s.first_name, s.last_name, s.admission_no, s.parent_phone, s.father_name,
                c.class_name, sec.section_name,
-               CASE WHEN d.ab * 2 > d.n THEN 'Absent' ELSE 'Half day' END AS state
+               CASE WHEN d.ab * 2 > d.n THEN 'Absent' ELSE 'Half day' END AS state,
+               EXISTS (SELECT 1 FROM leave_requests lr
+                        WHERE lr.student_id = s.id AND lr.status = 'Approved'
+                          AND $2::date BETWEEN lr.from_date AND lr.to_date) AS on_leave
           FROM (
                 SELECT a.student_id, COUNT(*)::int AS n, COUNT(*) FILTER (WHERE a.status = 'Absent')::int AS ab
                   FROM attendance a JOIN students x ON x.id = a.student_id
@@ -122,7 +125,8 @@ async function getBoard(schoolId, dateInput) {
             percent: sum.marked > 0 ? Math.round(((sum.present + sum.late) / sum.marked) * 100) : null,
             classes: rows.length,
             not_submitted: rows.filter((r) => r.status === "not_submitted").length,
-            partial: rows.filter((r) => r.status === "partial").length
+            partial: rows.filter((r) => r.status === "partial").length,
+            absent_on_leave: absentees.rows.filter((a) => a.on_leave && a.state === "Absent").length
         },
         classes: rows,
         absentees: absentees.rows

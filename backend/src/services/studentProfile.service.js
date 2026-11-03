@@ -51,6 +51,20 @@ async function getProfile(studentId) {
         [studentId, today]
     );
 
+    // approved leave around this window (calendar + "on leave now")
+    const lv = await pool.query(
+        `SELECT from_date::text AS from_date, to_date::text AS to_date
+           FROM leave_requests
+          WHERE student_id = $1 AND status = 'Approved'
+            AND to_date >= ($2::date - 90) AND from_date <= ($2::date + 60)
+          ORDER BY from_date`,
+        [studentId, today]
+    );
+
+    const leaves = lv.rows;
+
+    const onLeave = (d) => leaves.some((l) => d >= l.from_date && d <= l.to_date);
+
     const days = att.rows.map((r) => {
 
         let state = "present";
@@ -59,7 +73,7 @@ async function getProfile(studentId) {
         else if (r.n === 2 && r.ab === 1) state = "half";
         else if (r.lt > 0) state = "late";
 
-        return { date: r.d, state, absent_frac: r.ab / r.n };
+        return { date: r.d, state, absent_frac: r.ab / r.n, leave: state === "absent" && onLeave(r.d) };
 
     });
 
@@ -192,7 +206,10 @@ async function getProfile(studentId) {
             last30: summarise(last30),
             months,
             streak,
-            days: days.filter((d) => ago(d.date) < 90).map((d) => ({ date: d.date, state: d.state })),
+            leave_absences: last30.filter((d) => d.leave).length,
+            on_leave_now: leaves.find((l) => today >= l.from_date && today <= l.to_date) || null,
+            leaves,
+            days: days.filter((d) => ago(d.date) < 90).map((d) => ({ date: d.date, state: d.state, leave: d.leave })),
             warn_limit: await insights.getAttendanceLimit(student.school_id)
         },
         marks,

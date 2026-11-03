@@ -151,7 +151,9 @@ function AttendanceReportPage() {
                                             <TableCell sx={{ whiteSpace: "nowrap" }}>{r.class_name} - {r.section_name}</TableCell>
                                             <TableCell align="right">{r.recorded}</TableCell>
                                             <TableCell align="right">{r.late}</TableCell>
-                                            <TableCell align="right" sx={{ color: r.absent ? "#B91C1C" : undefined }}>{r.absent}</TableCell>
+                                            <TableCell align="right" sx={{ color: r.absent ? "#B91C1C" : undefined }}>
+                                                {r.absent}{r.on_leave > 0 && <Typography component="span" sx={{ color: "text.secondary", fontSize: "0.76rem", ml: 0.5 }}>({r.on_leave} on leave)</Typography>}
+                                            </TableCell>
                                             <TableCell align="right" sx={{ fontWeight: 800, color: r.percent === null ? "text.secondary" : r.percent < warnLimit ? "#B91C1C" : "#15803D" }}>
                                                 {r.percent === null ? "-" : `${r.percent}%`}
                                             </TableCell>
